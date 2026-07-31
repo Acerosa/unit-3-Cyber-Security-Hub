@@ -1,20 +1,66 @@
 /**
- * Planned shared submission helpers for formative activities.
+ * Shared formative submission helpers for Unit 3 activities.
  *
- * Current state:
- * - Incident Classification posts its own payload from
- *   week-1/incident-classification/app.js
- * - Field names and the Google Apps Script collector URL must not be
- *   generalised or changed from this file during the hub foundation work
+ * Preserves the existing Google Apps Script collector contract:
+ * attemptId, classGroup, pairCode, learner1, learner2, score, totalCards,
+ * incorrectCards, hardestCard, justification, completionTime,
+ * activityVersion, sourcePage
  *
- * Future activities may call small helpers from this module once a second
- * collector schema is agreed. Until then, keep this file lightly implemented.
+ * The incident classifier keeps its own COLLECTOR_URL and may continue to
+ * submit locally. New activities can reuse submitViaForm safely.
  */
 
-window.Unit3Submissions = window.Unit3Submissions || {
+(function (global) {
+  'use strict';
+
+  /** Existing Apps Script web app URL ending in /exec */
+  var COLLECTOR_URL =
+    'https://script.google.com/macros/s/AKfycbz3y931cm-BEu_t_fAo8Eit3tzxxMD_dj4mKIFbjo5U_ySu2jfsUn0Lzp0fS3HRsoyE/exec';
+
+  function isConfigured(url) {
+    return Boolean(
+      url &&
+        url.indexOf('PASTE_THE_FULL_GOOGLE_APPS_SCRIPT_EXEC_URL_HERE') === -1 &&
+        /\/exec\/?$/.test(url)
+    );
+  }
+
   /**
-   * Placeholder for a future shared submit helper.
-   * Do not route the Incident Classification collector through this yet.
+   * Submit via a dynamically created HTML form (POST, target=_blank).
+   * @param {Record<string, string>} payload
+   * @param {string} [collectorUrl]
+   * @returns {boolean}
    */
-  note: 'Use activity-local submission until additional activities share a schema.'
-};
+  function submitViaForm(payload, collectorUrl) {
+    var url = collectorUrl || COLLECTOR_URL;
+    if (!isConfigured(url)) {
+      return false;
+    }
+
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = url;
+    form.target = '_blank';
+    form.acceptCharset = 'UTF-8';
+    form.style.display = 'none';
+
+    Object.keys(payload).forEach(function (name) {
+      var input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = payload[name] == null ? '' : String(payload[name]);
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+    return true;
+  }
+
+  global.Unit3Submissions = {
+    COLLECTOR_URL: COLLECTOR_URL,
+    isConfigured: isConfigured,
+    submitViaForm: submitViaForm
+  };
+})(window);
