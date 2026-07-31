@@ -13,11 +13,22 @@
     }
   }
 
+  function setToggleLabel(toggle, expanded) {
+    if (!toggle) {
+      return;
+    }
+    toggle.setAttribute(
+      'aria-label',
+      expanded ? 'Close main menu' : 'Open main menu'
+    );
+  }
+
   function closeMenu(toggle, nav) {
     if (!toggle || !nav) {
       return;
     }
     toggle.setAttribute('aria-expanded', 'false');
+    setToggleLabel(toggle, false);
     nav.classList.remove('is-open');
   }
 
@@ -26,6 +37,7 @@
       return;
     }
     toggle.setAttribute('aria-expanded', 'true');
+    setToggleLabel(toggle, true);
     nav.classList.add('is-open');
   }
 
