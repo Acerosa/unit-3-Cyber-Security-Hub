@@ -1,16 +1,8 @@
 /* Shared reusable activity styles for Unit 3 Cyber Security Hub */
 
-.activity-shell .activity-header h1 {
-  margin: 0 0 0.35rem;
-  font-size: clamp(1.35rem, 3vw, 1.85rem);
-  font-weight: 700;
-  color: inherit;
-}
-
-.activity-shell .activity-header .subtitle {
-  margin: 0;
-  color: #c5d4e0;
-  font-size: 1.05rem;
+.activity-shell {
+  border-left: 4px solid var(--color-teal);
+  padding-left: 1rem;
 }
 
 .activity-panel {
@@ -26,4 +18,14 @@
   margin: 0 0 0.75rem;
   font-size: 1.2rem;
   color: var(--color-navy);
+}
+
+.site-footer a {
+  color: #9fd4de;
+  text-underline-offset: 0.15em;
+}
+
+.site-footer a:hover,
+.site-footer a:focus-visible {
+  color: #fff;
 }

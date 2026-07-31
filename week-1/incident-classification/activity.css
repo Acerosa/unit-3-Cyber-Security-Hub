@@ -1,5 +1,9 @@
 /* Northbank Cyber Incident Classification — activity-specific styles */
 
+.activity-shell {
+  margin-bottom: 0.25rem;
+}
+
 .activity-heading {
   margin: 0 0 0.35rem;
   font-size: clamp(1.35rem, 3vw, 1.85rem);
@@ -11,6 +15,11 @@
   margin: 0;
   color: var(--color-muted);
   font-size: 1.05rem;
+  max-width: 48rem;
+}
+
+.classifier-main {
+  padding-top: 1rem;
 }
 
 .card-title:focus {

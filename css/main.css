@@ -258,10 +258,9 @@ body {
   color: var(--color-muted);
 }
 
-.breadcrumb-list li:not(:last-child)::after {
-  content: ">";
+.breadcrumb-list .breadcrumb-sep {
   color: var(--color-muted);
-  speak: never;
+  margin-left: 0.15rem;
 }
 
 .breadcrumb-list a {
