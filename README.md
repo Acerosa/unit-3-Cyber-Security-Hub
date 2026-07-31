@@ -14,7 +14,7 @@ This repository is the central learner-facing website for Unit 3. It will eventu
 - directed independent study
 - formative result collection
 
-This foundation release provides the hub shell, Week 1 overview, and the migrated Northbank Incident Classification activity.
+This foundation release provides the hub shell, Week 1 overview, the interactive Cyber Security Glossary, and the migrated Northbank Incident Classification activity.
 
 ## 2. Source repository
 
@@ -48,7 +48,7 @@ Unit 3 Cyber Security Hub
 ├── Home
 ├── Week 1
 │   ├── Week 1 Overview
-│   ├── Cyber Security Glossary          (Coming soon)
+│   ├── Cyber Security Glossary          (Active)
 │   ├── Incident Classification          (Active)
 │   ├── Session 2 Retrieval Quiz         (Coming soon)
 │   ├── OCR Command-Word Guide           (Coming soon)
@@ -64,29 +64,36 @@ There is no top-level Activities page. Week activities live inside each week are
 
 Learners follow a weekly sequence. Keeping Session 1, Session 2 and independent study inside the week page preserves that journey and avoids duplicating the full activity list on Home or Resources.
 
-## 7. Current implemented activity
+## 7. Current implemented activities
 
-**Incident Classification**
+### Incident Classification
 
-Route:
-
-`week-1/incident-classification/`
+Route: `week-1/incident-classification/`
 
 Published path (after Pages deployment):
 
 `https://acerosa.github.io/unit-3-Cyber-Security-Hub/week-1/incident-classification/`
 
+### Cyber Security Glossary
+
+Route: `week-1/glossary/`
+
+Published path (after Pages deployment):
+
+`https://acerosa.github.io/unit-3-Cyber-Security-Hub/week-1/glossary/`
+
+Purpose: help learners learn Week 1 terminology, search and filter terms, practise with flashcards, complete a 12-question knowledge check, reflect on one term, and submit a formative result to the existing Google Sheets collector.
+
 ## 8. Planned Week 1 activities
 
 Still marked Coming soon on the Week 1 page:
 
-- Cyber Security Glossary
 - Session 2 Retrieval Quiz
 - OCR Command-Word Guide
 - OCR-Style Question Practice
 - Directed Independent Study
 
-Baseline knowledge check remains an in-class diagnostic for now.
+Baseline knowledge check and CIA triad learning remain planned or in-class for now.
 
 ## 9. File structure
 
@@ -112,6 +119,11 @@ Baseline knowledge check remains an in-class diagnostic for now.
     index.html
   /week-1
     index.html
+    /glossary
+      index.html
+      terms.js
+      glossary.js
+      activity.css
     /incident-classification
       index.html
       app.js
@@ -134,11 +146,12 @@ No frameworks, npm packages, build tools or server-side code.
 
    - `http://localhost:8080/`
    - `http://localhost:8080/week-1/`
+   - `http://localhost:8080/week-1/glossary/`
    - `http://localhost:8080/week-1/incident-classification/`
    - `http://localhost:8080/resources/`
    - `http://localhost:8080/help/`
 
-4. Confirm CSS/JS load, navigation works, and the classifier shows 12 cards.
+4. Confirm CSS/JS load, navigation works, the glossary shows searchable terms, and the classifier shows 12 cards.
 5. Refresh nested URLs directly to confirm GitHub Pages-style deep links work.
 
 ## 11. GitHub Pages deployment
@@ -172,7 +185,110 @@ Week 1 is structured so a future Weeks menu can be added later without a top-lev
 - Session 2
 - Directed independent study
 
-Only Incident Classification is active. Coming soon items are not links and are not clickable cards.
+Cyber Security Glossary and Incident Classification are active. Coming soon items are not links and are not clickable cards.
+
+## 13a. Cyber Security Glossary
+
+Route:
+
+```text
+/week-1/glossary/
+```
+
+Breadcrumb: Home > Week 1 > Cyber Security Glossary
+
+### Term-data structure
+
+Edit `week-1/glossary/terms.js`. Each term object uses:
+
+```javascript
+{
+  id: "confidentiality",
+  term: "Confidentiality",
+  category: "Core cyber security",
+  definition: "...",
+  northbankExample: "...",
+  relatedTerms: ["Authorised", "Information disclosure"]
+}
+```
+
+Categories currently used:
+
+- Core cyber security
+- Incident classifications
+- Information and impact
+- Threats and protection
+- Examination language
+
+### How to add or edit a term
+
+1. Open `week-1/glossary/terms.js`.
+2. Add or edit an object in `GLOSSARY_TERMS`.
+3. Keep `id` values unique and URL-safe.
+4. Keep category names aligned with `GLOSSARY_CATEGORIES`.
+5. Refresh the glossary page and confirm search, filters and flashcards include the term.
+
+### Knowledge-check structure
+
+`week-1/glossary/glossary.js` contains a fixed set of **12** questions covering:
+
+1. cyber security
+2. CIA triad
+3. confidentiality
+4. integrity
+5. availability
+6. unauthorised access
+7. information disclosure
+8. modification of data
+9. inaccessible data
+10. destruction
+11. theft
+12. authentication / multi-factor authentication
+
+Question order does not change between submission and review. Self-rated flashcards do not affect the knowledge-check score.
+
+### Glossary submission mapping
+
+The glossary reuses the same Apps Script collector and field names as the classifier:
+
+| Field | Glossary use |
+| --- | --- |
+| `attemptId` | Glossary Attempt ID (`unit3-glossary-attempt-id`) |
+| `classGroup` | Class or group |
+| `pairCode` | Learner or pair code |
+| `learner1` / `learner2` | Optional names |
+| `score` | Knowledge-check score out of 12 |
+| `totalCards` | Always `12` |
+| `incorrectCards` | Incorrect question numbers, or `None` |
+| `hardestCard` | Hardest question 1–12 |
+| `justification` | Glossary reflection |
+| `completionTime` | Seconds from starting the check to checking answers |
+| `activityVersion` | `1.0` |
+| `sourcePage` | Current glossary page URL |
+
+Shared helper: `js/submissions.js` (`Unit3Submissions.submitViaForm`). The classifier continues to submit with its own local `COLLECTOR_URL` and remains unchanged in behaviour.
+
+### Glossary Attempt ID storage key
+
+`unit3-glossary-attempt-id` in `sessionStorage` only.
+
+This key is separate from the classifier key `northbank-card-sort-attempt-id`.
+
+### Glossary testing checklist
+
+- All terms load; search and category filters update the term count
+- Expandable term cards work with keyboard controls
+- Flashcards reveal, navigate, shuffle, mark understood/review and reset
+- Knowledge check requires all 12 answers before checking
+- Scoring, percentage and incorrect question numbers are correct
+- Start new attempt clears quiz state and the glossary Attempt ID
+- Submission validation blocks incomplete forms
+- Retries reuse the same glossary Attempt ID
+- Incident Classification still loads and submits independently
+
+### Privacy limitations
+
+Do not collect email addresses, dates of birth, home addresses or other sensitive personal information. The glossary is formative only and is not a secure examination system.
 
 ## 14. Classifier route
 
@@ -194,11 +310,12 @@ Subtitle retained:
 
 ## 15. Apps Script configuration
 
-Collector URL is set in:
+Collector URL is configured in:
 
-`week-1/incident-classification/app.js`
+- `week-1/incident-classification/app.js` as `COLLECTOR_URL`
+- `js/submissions.js` as `Unit3Submissions.COLLECTOR_URL` for shared/new activities
 
-as `COLLECTOR_URL` (full web app URL ending in `/exec`).
+Both point to the same Apps Script web app URL ending in `/exec`.
 
 Do not commit spreadsheet IDs, private Google Sheet links, API keys or passwords.
 
