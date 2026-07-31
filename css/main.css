@@ -1,0 +1,28 @@
+/* Unit 3 Cyber Security Hub — shared layout foundations */
+
+:root {
+  --color-navy: #0b1f33;
+  --color-navy-mid: #14324f;
+  --color-teal: #0d7a8c;
+  --color-teal-dark: #0a5f6d;
+  --color-blue: #1a5f8a;
+  --color-bg: #eef2f5;
+  --color-surface: #ffffff;
+  --color-text: #1a2332;
+  --color-muted: #4a5568;
+  --color-border: #d0d7de;
+  --color-success: #1b6b3a;
+  --color-success-bg: #e8f5ee;
+  --color-warning: #8a5a00;
+  --color-warning-bg: #fff6e0;
+  --color-danger: #9b1c1c;
+  --color-danger-bg: #fdeaea;
+  --color-info: #1a5f8a;
+  --color-info-bg: #e8f1f8;
+  --color-focus: #0d7a8c;
+  --radius: 0.5rem;
+  --shadow: 0 1px 3px rgba(11, 31, 51, 0.08);
+  --font: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --space: 1rem;
+  --max-width: 68rem;
+}
