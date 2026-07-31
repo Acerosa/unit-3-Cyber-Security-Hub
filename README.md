@@ -50,7 +50,7 @@ Unit 3 Cyber Security Hub
 │   ├── Week 1 Overview
 │   ├── Cyber Security Glossary          (Active)
 │   ├── Incident Classification          (Active)
-│   ├── Session 2 Retrieval Quiz         (Coming soon)
+│   ├── Session 2 Retrieval Quiz         (Active)
 │   ├── OCR Command-Word Guide           (Coming soon)
 │   ├── OCR-Style Question Practice      (Coming soon)
 │   └── Directed Independent Study       (Coming soon)
@@ -84,11 +84,29 @@ Published path (after Pages deployment):
 
 Purpose: help learners learn Week 1 terminology, search and filter terms, practise with flashcards, complete a 12-question knowledge check, reflect on one term, and submit a formative result to the existing Google Sheets collector.
 
+### Session 2 Retrieval Quiz
+
+Route: `week-1/retrieval-quiz/`
+
+Published path (after Pages deployment):
+
+`https://acerosa.github.io/unit-3-Cyber-Security-Hub/week-1/retrieval-quiz/`
+
+Purpose: a 10-minute, 15-mark formative retrieval starter for Session 2. It checks recall of the CIA triad, the six Week 1 incident types, the difference between confidentiality and integrity, and selecting exact evidence from a scenario.
+
+- Timing: 10 minutes (timer starts on Start quiz)
+- Total marks: 15
+- Numbered questions: 10 (including 2(a), 2(b), 2(c))
+- Response sections: 12
+- Question 9 written response is self-marked using two teacher marking points
+- Attempt ID key: `unit3-session2-retrieval-attempt-id`
+- Submission uses the same collector field names; `totalCards` is sent as `15`
+- Fifteen-mark acceptance requires collector v2 deployment (`docs/apps-script/collector-v2/`)
+
 ## 8. Planned Week 1 activities
 
 Still marked Coming soon on the Week 1 page:
 
-- Session 2 Retrieval Quiz
 - OCR Command-Word Guide
 - OCR-Style Question Practice
 - Directed Independent Study
@@ -124,11 +142,21 @@ Baseline knowledge check and CIA triad learning remain planned or in-class for n
       terms.js
       glossary.js
       activity.css
+    /retrieval-quiz
+      index.html
+      questions.js
+      quiz.js
+      activity.css
     /incident-classification
       index.html
       app.js
       scenarios.js
       activity.css
+  /docs
+    /apps-script
+      /collector-v2
+        Code.gs
+        README.md
 ```
 
 No frameworks, npm packages, build tools or server-side code.
@@ -147,6 +175,7 @@ No frameworks, npm packages, build tools or server-side code.
    - `http://localhost:8080/`
    - `http://localhost:8080/week-1/`
    - `http://localhost:8080/week-1/glossary/`
+   - `http://localhost:8080/week-1/retrieval-quiz/`
    - `http://localhost:8080/week-1/incident-classification/`
    - `http://localhost:8080/resources/`
    - `http://localhost:8080/help/`
@@ -185,7 +214,7 @@ Week 1 is structured so a future Weeks menu can be added later without a top-lev
 - Session 2
 - Directed independent study
 
-Cyber Security Glossary and Incident Classification are active. Coming soon items are not links and are not clickable cards.
+Cyber Security Glossary, Session 2 Retrieval Quiz and Incident Classification are active. Coming soon items are not links and are not clickable cards.
 
 ## 13a. Cyber Security Glossary
 
@@ -316,6 +345,14 @@ Collector URL is configured in:
 - `js/submissions.js` as `Unit3Submissions.COLLECTOR_URL` for shared/new activities
 
 Both point to the same Apps Script web app URL ending in `/exec`.
+
+### Collector v2 (12 and 15 mark totals)
+
+The retrieval quiz sends `totalCards = 15`. Deploy the updated script from:
+
+`docs/apps-script/collector-v2/`
+
+Keep the same `/exec` URL by creating a new version of the existing deployment. Until that is deployed, 15-mark submissions may be rejected by the live collector while 12-mark activities continue to work.
 
 Do not commit spreadsheet IDs, private Google Sheet links, API keys or passwords.
 
