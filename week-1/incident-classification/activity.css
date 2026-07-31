@@ -1,0 +1,506 @@
+/* Northbank Cyber Incident Classification — activity-specific styles */
+
+.activity-heading {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.35rem, 3vw, 1.85rem);
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.activity-subtitle {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 1.05rem;
+}
+
+.card-title:focus {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.card-num-btn[data-status="completed"] {
+  border-color: #4a5fc1;
+}
+
+.card-num-btn[data-status="correct"] {
+  border-color: var(--color-success);
+}
+
+.card-num-btn[data-status="review"] {
+  border-color: var(--color-warning);
+}
+
+.card-num-btn[data-status="in-progress"] {
+  border-style: dashed;
+}
+
+.classifier-main .panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem 1.35rem;
+  margin-bottom: 1.25rem;
+}
+
+.classifier-main .panel h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.2rem;
+  color: var(--color-navy);
+}
+
+.classifier-main .panel h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  color: var(--color-navy-mid);
+}
+
+.classifier-main .panel-note {
+  margin: 0 0 1rem;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.instructions-panel ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.instructions-panel li {
+  margin-bottom: 0.35rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 40rem) {
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.required {
+  color: var(--color-danger);
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--color-muted);
+  font-size: 0.9em;
+}
+
+.classifier-main input[type="text"],
+.classifier-main select,
+.classifier-main textarea {
+  font: inherit;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.35rem;
+  background: #fff;
+  color: var(--color-text);
+  min-height: 2.75rem;
+  width: 100%;
+}
+
+.classifier-main textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.progress-text {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+.progress-bar {
+  height: 0.75rem;
+  background: var(--color-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--color-teal);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+.status-messages {
+  margin-top: 0.75rem;
+  min-height: 1.25rem;
+}
+
+.status-messages .message {
+  margin: 0.35rem 0 0;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.35rem;
+  border-left: 4px solid;
+}
+
+.message-info {
+  background: var(--color-info-bg);
+  border-color: var(--color-info);
+  color: var(--color-info);
+}
+
+.message-success {
+  background: var(--color-success-bg);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.message-warning {
+  background: var(--color-warning-bg);
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
+.message-error {
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.card-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.card-number-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.card-num-btn {
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+
+.card-num-btn[aria-current="page"] {
+  border-color: var(--color-teal);
+  background: var(--color-info-bg);
+  color: var(--color-navy);
+}
+
+.cards-container {
+  display: block;
+}
+
+.incident-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.15rem 1.25rem;
+  background: #fafbfc;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.incident-card[hidden] {
+  display: none !important;
+}
+
+@media (min-width: 64rem) {
+  .incident-card {
+    padding: 1.5rem 1.75rem;
+  }
+
+  .card-nav {
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 40rem) and (max-width: 63.99rem) {
+  .card-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .card-actions .btn-primary {
+    grid-column: 1 / -1;
+  }
+}
+
+.card-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--color-navy);
+}
+
+.card-meta {
+  margin: 0 0 0.75rem;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.card-scenario {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  background: #fff;
+  border-left: 4px solid var(--color-teal);
+  border-radius: 0 0.35rem 0.35rem 0;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+.status-not-started {
+  background: #f0f2f5;
+  border-color: #9aa5b1;
+  color: #3d4a5c;
+}
+
+.status-in-progress {
+  background: var(--color-info-bg);
+  border-color: var(--color-info);
+  color: var(--color-info);
+}
+
+.status-completed {
+  background: #eef0ff;
+  border-color: #4a5fc1;
+  color: #2f3d8f;
+}
+
+.status-correct {
+  background: var(--color-success-bg);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.status-review {
+  background: var(--color-warning-bg);
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
+.fieldset {
+  border: 1px solid var(--color-border);
+  border-radius: 0.35rem;
+  padding: 0.85rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.fieldset legend {
+  font-weight: 600;
+  padding: 0 0.35rem;
+}
+
+.radio-group,
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.choice input {
+  margin-top: 0.2rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+}
+
+.card-actions,
+.submission-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.classifier-main .btn {
+  font: inherit;
+  font-weight: 600;
+  padding: 0.7rem 1.15rem;
+  border-radius: 0.35rem;
+  border: 2px solid transparent;
+  cursor: pointer;
+  min-height: 2.75rem;
+}
+
+.classifier-main .btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.classifier-main .btn-primary {
+  background: var(--color-teal);
+  color: #fff;
+  border-color: var(--color-teal-dark);
+}
+
+.classifier-main .btn-primary:hover:not(:disabled) {
+  background: var(--color-teal-dark);
+}
+
+.classifier-main .btn-secondary {
+  background: #fff;
+  color: var(--color-navy);
+  border-color: var(--color-border);
+}
+
+.classifier-main .btn-secondary:hover:not(:disabled) {
+  background: var(--color-bg);
+}
+
+.classifier-main .btn-danger {
+  background: #fff;
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.classifier-main .btn-danger:hover:not(:disabled) {
+  background: var(--color-danger-bg);
+}
+
+.score-summary,
+.review-feedback,
+.readonly-summary {
+  margin-bottom: 1.25rem;
+}
+
+.char-count {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.classifier-main .privacy-notice {
+  padding: 0.85rem 1rem;
+  background: var(--color-warning-bg);
+  border: 1px solid #e0c47a;
+  border-radius: 0.35rem;
+  color: var(--color-text);
+}
+
+.feedback-block {
+  margin: 0.75rem 0;
+  padding: 0.85rem 1rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--color-border);
+  background: #fff;
+}
+
+.feedback-block.correct {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+}
+
+.feedback-block.incorrect {
+  border-color: var(--color-warning);
+  background: var(--color-warning-bg);
+}
+
+@media (max-width: 39.99rem) {
+  .card-nav .btn,
+  .card-actions .btn,
+  .submission-actions .btn {
+    width: 100%;
+  }
+
+  .card-nav {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .card-number-nav {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .classifier-main .panel {
+    padding: 1rem;
+  }
+
+  .classifier-main input[type="text"],
+  .classifier-main select,
+  .classifier-main textarea,
+  .classifier-main .btn {
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .status-badge,
+  .classifier-main .btn,
+  .fieldset,
+  .classifier-main .panel,
+  .incident-card {
+    border-width: 2px;
+  }
+}
+
+@media print {
+  .site-header,
+  .breadcrumbs,
+  .site-footer,
+  .btn,
+  .card-nav,
+  .submission-panel,
+  .skip-link,
+  .nav-toggle {
+    display: none !important;
+  }
+
+  .incident-card[hidden] {
+    display: block !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .classifier-main .panel {
+    box-shadow: none;
+    border-color: #000;
+  }
+}
