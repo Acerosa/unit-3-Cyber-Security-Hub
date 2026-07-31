@@ -143,10 +143,10 @@ No frameworks, npm packages, build tools or server-side code.
 
 ## 11. GitHub Pages deployment
 
-1. Merge the feature branch into `main` when ready.
+1. Use the default branch `unit-3-Cyber-Security-Hub` (or merge the feature branch into it when ready).
 2. In GitHub: **Settings → Pages**.
 3. Source: **Deploy from a branch**.
-4. Branch: `main`, folder: `/ (root)`.
+4. Branch: `unit-3-Cyber-Security-Hub`, folder: `/ (root)`.
 5. Save and wait for publishing.
 6. Confirm `.nojekyll` is present so asset paths are not processed by Jekyll.
 7. Test the published Home, Week 1 and Incident Classification URLs.
