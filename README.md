@@ -14,7 +14,7 @@ This repository is the central learner-facing website for Unit 3. It will eventu
 - directed independent study
 - formative result collection
 
-This foundation release provides the hub shell, Week 1 overview, the interactive Cyber Security Glossary, and the migrated Northbank Incident Classification activity.
+This foundation release provides the hub shell, Week 1 overview, the Baseline Knowledge Check, the interactive Cyber Security Glossary, Session 2 Retrieval Quiz, and the migrated Northbank Incident Classification activity.
 
 ## 2. Source repository
 
@@ -48,6 +48,7 @@ Unit 3 Cyber Security Hub
 ├── Home
 ├── Week 1
 │   ├── Week 1 Overview
+│   ├── Baseline Knowledge Check         (Active)
 │   ├── Cyber Security Glossary          (Active)
 │   ├── Incident Classification          (Active)
 │   ├── Session 2 Retrieval Quiz         (Active)
@@ -65,6 +66,43 @@ There is no top-level Activities page. Week activities live inside each week are
 Learners follow a weekly sequence. Keeping Session 1, Session 2 and independent study inside the week page preserves that journey and avoids duplicating the full activity list on Home or Resources.
 
 ## 7. Current implemented activities
+
+### Baseline Knowledge Check
+
+Route: `week-1/baseline-knowledge-check/`
+
+Published path (after Pages deployment):
+
+`https://acerosa.github.io/unit-3-Cyber-Security-Hub/week-1/baseline-knowledge-check/`
+
+Purpose: a low-stakes teacher-created baseline diagnostic that identifies learners' starting knowledge before Week 1 cyber security teaching begins. It is completed independently without notes. It is not a formal grade and not an official OCR assessment.
+
+Question structure:
+
+- 10 scored single-choice questions (1 diagnostic mark each)
+- Question 11: required confidence rating (not scored)
+- Question 12: required prior-knowledge free-text response (not scored, max 400 characters)
+- 12 responses in total; maximum diagnostic mark is 10
+
+After checking:
+
+- score, percentage, time used and confidence are shown
+- incorrect scored-question numbers are listed
+- correct answers are not revealed in the learner interface
+
+Submission notes:
+
+- Attempt ID key: `unit3-baseline-knowledge-check-attempt-id` (sessionStorage only)
+- `totalCards` is sent as `10`
+- `justification` includes answer codes for Questions 1 to 10, confidence and the prior-knowledge response
+- answer codes help the tutor diagnose distractor misconceptions without sending full option text
+- ten-mark acceptance requires collector Allowed totals to include `10` (see `docs/apps-script/collector-v2/`)
+
+Privacy and answer-security limitations:
+
+- Do not collect email addresses, passwords or other sensitive personal information
+- Correct answers are stored in public static JavaScript and may be inspected
+- Do not describe this diagnostic as secure or use it for formal grading
 
 ### Incident Classification
 
@@ -107,11 +145,10 @@ Purpose: a 10-minute, 15-mark formative retrieval starter for Session 2. It chec
 
 Still marked Coming soon on the Week 1 page:
 
+- CIA Triad Learning
 - OCR Command-Word Guide
 - OCR-Style Question Practice
 - Directed Independent Study
-
-Baseline knowledge check and CIA triad learning remain planned or in-class for now.
 
 ## 9. File structure
 
@@ -137,6 +174,11 @@ Baseline knowledge check and CIA triad learning remain planned or in-class for n
     index.html
   /week-1
     index.html
+    /baseline-knowledge-check
+      index.html
+      questions.js
+      baseline.js
+      activity.css
     /glossary
       index.html
       terms.js
@@ -174,13 +216,14 @@ No frameworks, npm packages, build tools or server-side code.
 
    - `http://localhost:8080/`
    - `http://localhost:8080/week-1/`
+   - `http://localhost:8080/week-1/baseline-knowledge-check/`
    - `http://localhost:8080/week-1/glossary/`
    - `http://localhost:8080/week-1/retrieval-quiz/`
    - `http://localhost:8080/week-1/incident-classification/`
    - `http://localhost:8080/resources/`
    - `http://localhost:8080/help/`
 
-4. Confirm CSS/JS load, navigation works, the glossary shows searchable terms, and the classifier shows 12 cards.
+4. Confirm CSS/JS load, navigation works, the baseline diagnostic scores out of 10 without revealing answers, the glossary shows searchable terms, and the classifier shows 12 cards.
 5. Refresh nested URLs directly to confirm GitHub Pages-style deep links work.
 
 ## 11. GitHub Pages deployment
@@ -214,7 +257,7 @@ Week 1 is structured so a future Weeks menu can be added later without a top-lev
 - Session 2
 - Directed independent study
 
-Cyber Security Glossary, Session 2 Retrieval Quiz and Incident Classification are active. Coming soon items are not links and are not clickable cards.
+Baseline Knowledge Check, Cyber Security Glossary, Session 2 Retrieval Quiz and Incident Classification are active. Coming soon items are not links and are not clickable cards.
 
 ## 13a. Cyber Security Glossary
 
@@ -346,15 +389,37 @@ Collector URL is configured in:
 
 Both point to the same Apps Script web app URL ending in `/exec`.
 
-### Collector v2 (12 and 15 mark totals)
+### Collector v2 (10, 12 and 15 mark totals)
 
-The retrieval quiz sends `totalCards = 15`. Deploy the updated script from:
+Deploy the updated script from:
 
 `docs/apps-script/collector-v2/`
 
-Keep the same `/exec` URL by creating a new version of the existing deployment. Until that is deployed, 15-mark submissions may be rejected by the live collector while 12-mark activities continue to work.
+Set Configuration **Allowed totals** to `10,12,15`.
+
+| Activity | `totalCards` |
+| --- | --- |
+| Baseline Knowledge Check | `10` |
+| Incident Classification | `12` |
+| Cyber Security Glossary | `12` |
+| Session 2 Retrieval Quiz | `15` |
+
+Keep the same `/exec` URL by creating a new version of the existing deployment. Until that is deployed with Allowed totals including `10`, ten-mark baseline submissions may be rejected while already-supported totals continue according to the live Configuration sheet.
 
 Do not commit spreadsheet IDs, private Google Sheet links, API keys or passwords.
+
+### Baseline Knowledge Check testing checklist
+
+- Exactly 10 scored questions; Questions 11 and 12 are unscored
+- Perfect score is 10; confidence and prior knowledge do not affect the score
+- Elapsed time starts on Start knowledge check and stops on Finish knowledge check
+- Hide time hides the display without stopping timing
+- Incomplete checks show an accessible unanswered summary
+- Feedback is diagnostic: incorrect question numbers only; no correct-answer reveal
+- Start new attempt requires confirmation and clears the baseline Attempt ID
+- Submission sends `totalCards = 10` and answer codes in `justification`
+- Retries reuse `unit3-baseline-knowledge-check-attempt-id`
+- Live authorised test only: `classGroup=TEST`, `pairCode=BASELINE-TEST`, blank learner name
 
 ## 16. Current submission field names
 

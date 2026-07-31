@@ -99,7 +99,7 @@ function ensureConfiguration_(ss) {
 
   var defaults = {
     'Total cards': 12,
-    'Allowed totals': '12,15',
+    'Allowed totals': '10,12,15',
     'Max justification length': 1000,
     'Max completion time seconds': 7200
   };
