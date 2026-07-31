@@ -204,11 +204,15 @@
   }
 
   function getTerms() {
-    return Array.isArray(window.GLOSSARY_TERMS) ? window.GLOSSARY_TERMS.slice() : [];
+    return typeof GLOSSARY_TERMS !== 'undefined' && Array.isArray(GLOSSARY_TERMS)
+      ? GLOSSARY_TERMS.slice()
+      : [];
   }
 
   function getCategories() {
-    return Array.isArray(window.GLOSSARY_CATEGORIES) ? window.GLOSSARY_CATEGORIES.slice() : [];
+    return typeof GLOSSARY_CATEGORIES !== 'undefined' && Array.isArray(GLOSSARY_CATEGORIES)
+      ? GLOSSARY_CATEGORIES.slice()
+      : [];
   }
 
   function sortedTerms() {
