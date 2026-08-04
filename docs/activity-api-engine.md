@@ -6,12 +6,16 @@ Generic learner activity engine for API-driven activities.
 
 | Activity ID | Service | Module |
 | --- | --- | --- |
-| `U3-W01-BASELINE` | Collector v3 | `js/submissions.js` |
+| `U3-W01-BASELINE` (existing page) | Collector v3 | `js/submissions.js` |
+| `U3-W01-BASELINE` (generic engine pilot) | Activity API only | `js/activity-api.js` |
 | `U3-W01-CIA` | Collector v3 | `js/submissions.js` |
 | `U3-W01-INCIDENTS` | Collector v3 | `js/submissions.js` |
 | `U3-W01-GLOSSARY` | Collector v3 | `js/submissions.js` |
 | `U3-W01-RETRIEVAL` | Collector v3 | `js/submissions.js` |
 | `U3-W01-COMMAND-WORDS` | Activity API only | `js/activity-api.js` |
+
+The existing Baseline page at `week-1/baseline-knowledge-check/` continues to use Collector v3.
+The generic-engine pilot for the same Activity ID uses the Activity API only.
 
 Routing is defined in `js/activity-engine-config.js` as `SUBMISSION_ROUTING`.
 
@@ -19,10 +23,11 @@ Do not choose the endpoint from display text or folder location.
 
 Do not send one completed activity to both endpoints.
 
-## Pilot route
+## Pilot routes
 
 ```text
 activities/activity.html?activityId=U3-W01-COMMAND-WORDS
+activities/activity.html?activityId=U3-W01-BASELINE
 ```
 
 The query-string `activityId` takes priority over the HTML fallback.
