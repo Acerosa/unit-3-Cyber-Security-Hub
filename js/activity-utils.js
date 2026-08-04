@@ -65,7 +65,22 @@
     );
   }
 
+  function clearAttemptId(storageKey) {
+    if (global.Unit3Submissions && global.Unit3Submissions.clearAttemptState) {
+      global.Unit3Submissions.clearAttemptState(storageKey);
+      return;
+    }
+    try {
+      sessionStorage.removeItem(storageKey);
+    } catch (err) {
+      /* sessionStorage may be unavailable */
+    }
+  }
+
   function getOrCreateAttemptId(storageKey) {
+    if (global.Unit3Submissions && global.Unit3Submissions.getOrCreateAttemptId) {
+      return global.Unit3Submissions.getOrCreateAttemptId(storageKey);
+    }
     try {
       var existing = sessionStorage.getItem(storageKey);
       if (existing) {
@@ -76,14 +91,6 @@
       return created;
     } catch (err) {
       return createAttemptId();
-    }
-  }
-
-  function clearAttemptId(storageKey) {
-    try {
-      sessionStorage.removeItem(storageKey);
-    } catch (err) {
-      /* sessionStorage may be unavailable */
     }
   }
 

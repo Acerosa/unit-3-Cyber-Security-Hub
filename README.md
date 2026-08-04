@@ -93,10 +93,11 @@ After checking:
 Submission notes:
 
 - Attempt ID key: `unit3-baseline-knowledge-check-attempt-id` (sessionStorage only)
-- `totalCards` is sent as `10`
-- `justification` includes answer codes for Questions 1 to 10, confidence and the prior-knowledge response
+- Activity ID: `U3-W01-BASELINE`
+- Submits Collector schema 3.0 with `maximumScore` 10
+- `reflection` includes answer codes for Questions 1 to 10, confidence and the prior-knowledge response
 - answer codes help the tutor diagnose distractor misconceptions without sending full option text
-- ten-mark acceptance requires collector Allowed totals to include `10` (see `docs/apps-script/collector-v2/`)
+- Requires the live Apps Script deployment to identify as `UNIT3-COLLECTOR-V3.0`
 
 Privacy and answer-security limitations:
 
@@ -138,8 +139,8 @@ Purpose: a 10-minute, 15-mark formative retrieval starter for Session 2. It chec
 - Response sections: 12
 - Question 9 written response is self-marked using two teacher marking points
 - Attempt ID key: `unit3-session2-retrieval-attempt-id`
-- Submission uses the same collector field names; `totalCards` is sent as `15`
-- Fifteen-mark acceptance requires collector v2 deployment (`docs/apps-script/collector-v2/`)
+- Activity ID: `U3-W01-RETRIEVAL`
+- Submits Collector schema 3.0 with `maximumScore` 15 and review items numbered 1 to 10
 
 ## 8. Planned Week 1 activities
 
@@ -164,6 +165,8 @@ Still marked Coming soon on the Week 1 page:
   /js
     navigation.js
     activity-utils.js
+    course-context.js
+    learner-details.js
     submissions.js
   /assets
     /images
@@ -321,24 +324,19 @@ Question order does not change between submission and review. Self-rated flashca
 
 ### Glossary submission mapping
 
-The glossary reuses the same Apps Script collector and field names as the classifier:
+The glossary submits Collector schema 3.0 via `js/submissions.js`:
 
 | Field | Glossary use |
 | --- | --- |
+| `activityId` | `U3-W01-GLOSSARY` |
 | `attemptId` | Glossary Attempt ID (`unit3-glossary-attempt-id`) |
-| `classGroup` | Class or group |
-| `pairCode` | Learner or pair code |
-| `learner1` / `learner2` | Optional names |
-| `score` | Knowledge-check score out of 12 |
-| `totalCards` | Always `12` |
-| `incorrectCards` | Incorrect question numbers, or `None` |
-| `hardestCard` | Hardest question 1–12 |
-| `justification` | Glossary reflection |
-| `completionTime` | Seconds from starting the check to checking answers |
-| `activityVersion` | `1.0` |
+| `studentId` / `firstName` / `surname` / `classGroup` | Learner identity |
+| `score` / `maximumScore` | Knowledge-check score out of 12 |
+| `questionsForReview` | Incorrect question numbers 1 to 12 |
+| `mostDifficultItem` | Hardest question 1 to 12 |
+| `reflection` | Glossary reflection |
+| `completionTimeSeconds` | Seconds from starting the check to checking answers |
 | `sourcePage` | Current glossary page URL |
-
-Shared helper: `js/submissions.js` (`Unit3Submissions.submitViaForm`). The classifier continues to submit with its own local `COLLECTOR_URL` and remains unchanged in behaviour.
 
 ### Glossary Attempt ID storage key
 
@@ -380,84 +378,140 @@ Subtitle retained:
 
 **Classify each incident and identify the affected CIA security aim.**
 
-## 15. Apps Script configuration
+## 15. Collector v3 learner submissions
 
-Collector URL is configured in:
+All four Week 1 activities submit **schema version 3.0** to the existing Apps Script web app URL configured in:
 
-- `week-1/incident-classification/app.js` as `COLLECTOR_URL`
-- `js/submissions.js` as `Unit3Submissions.COLLECTOR_URL` for shared/new activities
+`js/submissions.js` as `Unit3Submissions.COLLECTOR_URL`
 
-Both point to the same Apps Script web app URL ending in `/exec`.
-
-### Collector v2 (10, 12 and 15 mark totals)
-
-Deploy the updated script from:
-
-`docs/apps-script/collector-v2/`
-
-Set Configuration **Allowed totals** to `10,12,15`.
-
-| Activity | `totalCards` |
-| --- | --- |
-| Baseline Knowledge Check | `10` |
-| Incident Classification | `12` |
-| Cyber Security Glossary | `12` |
-| Session 2 Retrieval Quiz | `15` |
-
-Keep the same `/exec` URL by creating a new version of the existing deployment. Until that is deployed with Allowed totals including `10`, ten-mark baseline submissions may be rejected while already-supported totals continue according to the live Configuration sheet.
+Do not change that `/exec` URL from Cursor unless a staff member provides a replacement deployment. Google Apps Script and Google Sheet setup are managed manually outside this repository.
 
 Do not commit spreadsheet IDs, private Google Sheet links, API keys or passwords.
+
+### What learners enter
+
+Before starting each activity, learners enter:
+
+- Student ID
+- First name
+- Surname
+- Class group
+
+Incident Classification also supports optional paired work with Partner Student ID, Partner first name and Partner surname.
+
+### What the app supplies automatically
+
+From `js/course-context.js`:
+
+- Academic year `2026/27`
+- Programme year `Year 1` (payload property `yearGroup`)
+- Level `Level 3`
+- Programme `OCR Level 3 IT`
+- Unit ID, unit name and unit code
+- Activity ID, activity name, week, session, activity type, activity version and maximum score
+
+Learners cannot edit these values.
+
+### Activity IDs
+
+| Activity | Activity ID | Maximum score | Item range |
+| --- | --- | --- | --- |
+| Baseline Knowledge Check | `U3-W01-BASELINE` | 10 | 1 to 10 |
+| Incident Classification | `U3-W01-INCIDENTS` | 12 | 1 to 12 |
+| Cyber Security Glossary | `U3-W01-GLOSSARY` | 12 | 1 to 12 |
+| Session 2 Retrieval Quiz | `U3-W01-RETRIEVAL` | 15 | 1 to 10 |
+
+### Class-group configuration
+
+Edit `classGroups` in `js/course-context.js`.
+
+- Empty array: learners type a class group (trimmed, single spaces, uppercase)
+- Non-empty array: learners choose from a required select list
+
+Confirmed college class-group codes should be added there when available. The browser never reads the private Google Sheet Configuration worksheet.
+
+### Schema 3.0 payload
+
+Learner-facing submissions always send:
+
+- `schemaVersion: "3.0"`
+- `recordType: "LIVE"`
+
+They also send learner identity, course metadata, activity metadata, score, maximum score, questions for review, most difficult item, reflection, completion time in seconds and source page.
+
+They do **not** send:
+
+- `attemptNumber`, `primaryAttemptNumber`, `partnerAttemptNumber`
+- `percentage`
+- legacy fields such as `pairCode`, `learner1`, `totalCards`, `incorrectCards`, `hardestCard`, `justification`, `completionTime`
+
+Attempt numbers are calculated by the collector from academic year + Student ID + Activity ID. Only LIVE rows count as learner attempts.
+
+### Attempt ID behaviour
+
+An Attempt ID is a duplicate-protection identifier, not the learner attempt number.
+
+- Generated with `crypto.randomUUID()` when available
+- Fallback uses letters, numbers, hyphens and underscores
+- Stored only in `sessionStorage` under an activity-specific key
+- Retained across refresh during an unfinished attempt
+- Reused for failed-submission retries
+- Marked completed after a successful submit
+- Regenerated only when the learner deliberately starts another attempt
+- Personal data is never stored in `sessionStorage` or `localStorage`
+
+### TEST versus LIVE
+
+Automated probes must use `recordType: "TEST"` with recognisable test identity such as `TEST-PRIMARY`. TEST rows go to the collector’s test worksheet and do not receive learner attempt numbers. The learner interface never offers a TEST option.
 
 ### Baseline Knowledge Check testing checklist
 
 - Exactly 10 scored questions; Questions 11 and 12 are unscored
 - Perfect score is 10; confidence and prior knowledge do not affect the score
-- Elapsed time starts on Start knowledge check and stops on Finish knowledge check
-- Hide time hides the display without stopping timing
-- Incomplete checks show an accessible unanswered summary
-- Feedback is diagnostic: incorrect question numbers only; no correct-answer reveal
-- Start new attempt requires confirmation and clears the baseline Attempt ID
-- Submission sends `totalCards = 10` and answer codes in `justification`
+- Learner details are required before Start knowledge check
+- Schema 3.0 LIVE payload uses activity ID `U3-W01-BASELINE`
 - Retries reuse `unit3-baseline-knowledge-check-attempt-id`
-- Live authorised test only: `classGroup=TEST`, `pairCode=BASELINE-TEST`, blank learner name
+- Start another attempt creates a new Attempt ID
 
-## 16. Current submission field names
-
-Exact fields posted by the classifier:
+## 16. Current schema 3.0 field names
 
 | Field | Description |
 | --- | --- |
+| `schemaVersion` | Always `3.0` |
+| `recordType` | `LIVE` for learners; `TEST` for automated probes |
 | `attemptId` | Unique attempt identifier |
-| `classGroup` | Class or group name |
-| `pairCode` | Pair code |
-| `learner1` | Optional learner 1 name |
-| `learner2` | Optional learner 2 name |
-| `score` | Score out of 12 |
-| `totalCards` | Always `12` |
-| `incorrectCards` | Comma-separated incorrect card numbers, or `None` |
-| `hardestCard` | Card number 1–12 |
-| `justification` | Written reflection (max 1,000 characters) |
-| `completionTime` | Completion time in seconds |
-| `activityVersion` | Activity version string |
-| `sourcePage` | Page URL used for the attempt |
+| `academicYear` | Fixed course year |
+| `yearGroup` | Fixed programme year |
+| `qualificationLevel` | Fixed level |
+| `programme` | Fixed programme name |
+| `unitId` / `unitName` / `unitCode` | Fixed unit metadata |
+| `classGroup` | Learner class group |
+| `studentId` / `firstName` / `surname` | Primary learner |
+| `partnerStudentId` / `partnerFirstName` / `partnerSurname` | Partner when paired |
+| `activityId` / `activityName` / `weekNumber` / `sessionName` / `activityType` / `activityVersion` | Activity metadata |
+| `score` / `maximumScore` | Result marks |
+| `questionsForReview` | Incorrect item numbers |
+| `mostDifficultItem` | Optional hardest item number |
+| `reflection` | Written response or summary |
+| `completionTimeSeconds` | Elapsed seconds (1 to 7200) |
+| `sourcePage` | Current activity URL |
 
-Submission uses a dynamically created HTML form (`POST`, `target="_blank"`).
+Submission uses a dynamically created HTML form (`POST`, `target="_blank"`). HTTP 200 alone does not prove success; check the confirmation HTML for **Results received** or **Submission not recorded**.
 
-## 17. Attempt ID behaviour
+## 17. Shared front-end modules
 
-- Created with `crypto.randomUUID()` when available
-- Fallback: timestamp + random value
-- Stored only in `sessionStorage` under `northbank-card-sort-attempt-id`
-- Names, answers, scores, pair codes and justifications are not stored in `sessionStorage`
-- Retry reuses the same Attempt ID
-- Reset clears the Attempt ID so the next submission starts a new attempt
+- `js/course-context.js`: fixed course context and activity registry
+- `js/learner-details.js`: course details display, learner form, validation and submission summary
+- `js/submissions.js`: schema 3.0 payload builder, Attempt ID lifecycle and collector POST helper
 
 ## 18. Privacy limitations
 
 - Formative collection only; not a secure examination system
-- Do not ask for email addresses, passwords or sensitive personal data
+- Collect only the requested identity fields
+- Do not ask for email addresses, passwords or other sensitive personal data
 - Browser validation improves usability only; Apps Script must validate again
-- A public static site cannot securely authenticate learners
+- A public static site cannot securely authenticate or verify learner identity
+- Personal details must not appear in URLs, browser storage or console logs
 
 ## 19. How to add a future week
 

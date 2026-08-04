@@ -29,3 +29,97 @@
 .site-footer a:focus-visible {
   color: #fff;
 }
+
+/* Collector v3 learner identification */
+.course-details-panel {
+  margin-bottom: 1rem;
+}
+
+.course-details-list {
+  display: grid;
+  grid-template-columns: minmax(8rem, auto) 1fr;
+  gap: 0.35rem 1rem;
+  margin: 0;
+}
+
+.course-details-list dt {
+  font-weight: 600;
+  color: var(--color-navy-mid);
+}
+
+.course-details-list dd {
+  margin: 0;
+}
+
+.learner-details-form .form-grid,
+.learner-form-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 40rem) {
+  .learner-details-form .form-grid,
+  .learner-form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.learner-details-form .field label,
+.learner-panel .field label {
+  font-weight: 600;
+}
+
+.field-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.field-error {
+  margin: 0.35rem 0 0;
+  color: var(--color-danger);
+  font-size: 0.9rem;
+}
+
+.input-invalid {
+  border-color: var(--color-danger) !important;
+}
+
+.work-mode-fieldset {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.work-mode-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.partner-details-block {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+}
+
+.learner-privacy-notice,
+.submission-summary {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  background: var(--color-warning-bg);
+  border: 1px solid #e0c47a;
+  border-radius: 0.35rem;
+}
+
+.submission-summary p {
+  margin: 0.35rem 0;
+}
+
+.error-list {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}

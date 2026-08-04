@@ -8,12 +8,15 @@
 
   var utils = window.Unit3ActivityUtils || {};
   var submissions = window.Unit3Submissions || {};
+  var learnerDetails = window.Unit3LearnerDetails || {};
+  var courseContext = window.Unit3CourseContext || {};
   var el = utils.el;
   var setStatusMessage = utils.setStatusMessage;
 
+  var ACTIVITY_ID = 'U3-W01-RETRIEVAL';
   var ATTEMPT_KEY = 'unit3-session2-retrieval-attempt-id';
   var TOTAL_SECTIONS = 12;
-  var TOTAL_MARKS = 15;
+  var JUSTIFICATION_MAX = 1000;
 
   var state = {
     started: false,
@@ -30,7 +33,10 @@
     objectiveScore: 0,
     writtenScore: 0,
     incorrectNumbers: [],
-    withinTime: true
+    withinTime: true,
+    submitted: false,
+    learner: null,
+    activityMeta: null
   };
 
   function ready(fn) {
@@ -80,6 +86,19 @@
 
   function questions() {
     return quiz() ? quiz().questions : [];
+  }
+
+  function activityMeta() {
+    if (state.activityMeta) return state.activityMeta;
+    state.activityMeta = courseContext.getActivity
+      ? courseContext.getActivity(ACTIVITY_ID)
+      : null;
+    return state.activityMeta;
+  }
+
+  function maximumScore() {
+    var meta = activityMeta();
+    return meta && meta.maximumScore ? meta.maximumScore : 15;
   }
 
   function formatTime(totalSeconds) {
@@ -494,11 +513,12 @@
   }
 
   function showResults() {
+    var maxScore = maximumScore();
     var total = state.objectiveScore + state.writtenScore;
-    var percentage = Math.round((total / TOTAL_MARKS) * 100);
+    var percentage = Math.round((total / maxScore) * 100);
     var summary = document.getElementById('score-summary');
     summary.textContent = '';
-    summary.appendChild(el('p', { textContent: 'Final score: ' + total + ' / ' + TOTAL_MARKS + ' (' + percentage + '%)' }));
+    summary.appendChild(el('p', { textContent: 'Final score: ' + total + ' / ' + maxScore + ' (' + percentage + '%)' }));
     summary.appendChild(el('p', { textContent: 'Objective subtotal: ' + state.objectiveScore + ' / 13' }));
     summary.appendChild(el('p', { textContent: 'Question 9 self-mark: ' + state.writtenScore + ' / 2' }));
     summary.appendChild(el('p', { textContent: 'Time taken: ' + state.completionTime + ' seconds' }));
@@ -551,36 +571,32 @@
     document.getElementById('hardest-card').focus();
   }
 
-  function getLearnerDetails() {
-    return {
-      classGroup: (document.getElementById('class-group').value || '').trim(),
-      pairCode: (document.getElementById('pair-code').value || '').trim(),
-      learner1: (document.getElementById('learner-1').value || '').trim(),
-      learner2: ''
-    };
-  }
-
-  function buildJustification() {
+  function buildReflectionSummary() {
     var parts = [
       'Question 9 response: ' + (state.answers.q9 || '').trim(),
       'Question 9 self-mark: ' + state.writtenScore + '/2',
       'Term to revisit: ' + (document.getElementById('revisit-term').value || '').trim(),
       'Timer status: ' + (state.withinTime ? 'within time' : 'over time')
     ];
-    return parts.join('\n').slice(0, 1000);
+    return parts.join('\n').slice(0, JUSTIFICATION_MAX);
   }
 
   function validateSubmission() {
-    var details = getLearnerDetails();
     var hardest = document.getElementById('hardest-card').value;
     var revisit = (document.getElementById('revisit-term').value || '').trim();
     var errors = [];
     var total = state.objectiveScore + state.writtenScore;
+    var maxScore = maximumScore();
 
-    if (!state.checked || !state.selfMarked) errors.push('Complete checking and Question 9 self-marking first.');
-    if (!details.classGroup) errors.push('Class or group is required.');
-    if (!details.pairCode) errors.push('Learner code is required.');
-    if (total < 0 || total > TOTAL_MARKS) errors.push('Score must be between 0 and 15.');
+    if (!state.checked || !state.selfMarked) {
+      errors.push('Complete checking and Question 9 self-marking first.');
+    }
+    if (!state.learner) {
+      errors.push('Learner details are missing. Return to the start screen.');
+    }
+    if (total < 0 || total > maxScore) {
+      errors.push('Score must be between 0 and ' + maxScore + '.');
+    }
     if (!hardest || Number(hardest) < 1 || Number(hardest) > 10) {
       errors.push('Choose the hardest numbered question (1 to 10).');
     }
@@ -592,49 +608,76 @@
     return {
       valid: errors.length === 0,
       errors: errors,
-      details: details,
       hardestCard: Number(hardest),
       total: total
     };
   }
 
-  function buildPayload(validation) {
-    var attemptId = utils.getOrCreateAttemptId
-      ? utils.getOrCreateAttemptId(ATTEMPT_KEY)
+  function buildSubmissionInput(validation) {
+    var attemptId = submissions.getOrCreateAttemptId
+      ? submissions.getOrCreateAttemptId(ATTEMPT_KEY)
       : String(Date.now());
     return {
+      recordType: 'LIVE',
       attemptId: attemptId,
-      classGroup: validation.details.classGroup,
-      pairCode: validation.details.pairCode,
-      learner1: validation.details.learner1,
-      learner2: '',
-      score: String(validation.total),
-      totalCards: String(TOTAL_MARKS),
-      incorrectCards: state.incorrectNumbers.length ? state.incorrectNumbers.join(',') : 'None',
-      hardestCard: String(validation.hardestCard),
-      justification: buildJustification(),
-      completionTime: String(state.completionTime || 0),
-      activityVersion: quiz().activityVersion,
+      courseContext: courseContext.COURSE_CONTEXT,
+      activity: activityMeta(),
+      learner: state.learner,
+      score: validation.total,
+      questionsForReview: state.incorrectNumbers,
+      mostDifficultItem: String(validation.hardestCard),
+      reflection: buildReflectionSummary(),
+      completionTimeSeconds: state.completionTime || 1,
       sourcePage: window.location.href
     };
+  }
+
+  function showSubmissionSummaryPanel() {
+    if (!learnerDetails.renderSubmissionSummary || !state.learner) return;
+    learnerDetails.renderSubmissionSummary('submission-summary-host', {
+      firstName: state.learner.firstName,
+      surname: state.learner.surname,
+      studentId: state.learner.studentId,
+      classGroup: state.learner.classGroup,
+      activityName: activityMeta().activityName,
+      score: state.objectiveScore + state.writtenScore,
+      maximumScore: maximumScore()
+    });
   }
 
   function handleSubmit() {
     var validation = validateSubmission();
     if (!validation.valid) {
       setStatusMessage('submission-messages', validation.errors.join(' '), 'error');
+      if (!document.getElementById('hardest-card').value) {
+        document.getElementById('hardest-card').focus();
+      }
       return;
     }
-    var ok = submissions.submitViaForm(buildPayload(validation));
-    if (!ok) {
-      setStatusMessage('submission-messages', 'Submission could not be started. Check the collector URL and collector v2 deployment.', 'error');
-      return;
-    }
+
+    showSubmissionSummaryPanel();
     document.getElementById('btn-submit').disabled = true;
+    setStatusMessage('submission-messages', 'Sending your retrieval quiz result.', 'info');
+
+    var result = submissions.submitSchema3
+      ? submissions.submitSchema3(buildSubmissionInput(validation))
+      : { started: false, errors: ['Submission helper unavailable.'] };
+
+    if (!result.started) {
+      document.getElementById('btn-submit').disabled = false;
+      setStatusMessage('submission-messages', result.errors.join(' '), 'error');
+      return;
+    }
+
+    state.submitted = true;
+    if (submissions.markAttemptCompleted) {
+      submissions.markAttemptCompleted(ATTEMPT_KEY);
+    }
     document.getElementById('btn-retry').hidden = false;
+    document.getElementById('btn-start-another').hidden = false;
     setStatusMessage(
       'submission-messages',
-      'A confirmation tab has opened. Check that your result was accepted. Opening a tab does not by itself prove the result was saved. Fifteen-mark rows require collector v2 to be deployed.',
+      'A confirmation tab has opened. Check whether the result was accepted. Opening a tab does not by itself prove the result was saved.',
       'info'
     );
   }
@@ -645,28 +688,42 @@
       setStatusMessage('submission-messages', validation.errors.join(' '), 'error');
       return;
     }
-    var ok = submissions.submitViaForm(buildPayload(validation));
-    if (!ok) {
-      setStatusMessage('submission-messages', 'Retry could not be started.', 'error');
+
+    setStatusMessage('submission-messages', 'Retrying submission with the same Attempt ID.', 'info');
+    var result = submissions.submitSchema3
+      ? submissions.submitSchema3(buildSubmissionInput(validation))
+      : { started: false, errors: ['Submission helper unavailable.'] };
+
+    if (!result.started) {
+      setStatusMessage('submission-messages', result.errors.join(' '), 'error');
       return;
     }
+
     setStatusMessage(
       'submission-messages',
-      'A confirmation tab has opened. Check that your result was accepted. The same Attempt ID was reused for this retry.',
+      'A confirmation tab has opened. Check whether the result was accepted. The same Attempt ID was reused for this retry.',
       'info'
     );
   }
 
   function startQuiz() {
-    var details = getLearnerDetails();
-    if (!details.classGroup || !details.pairCode) {
-      setStatusMessage('start-status', 'Enter class or group and learner code before starting.', 'error');
-      document.getElementById(!details.classGroup ? 'class-group' : 'pair-code').focus();
+    var learnerValidation = learnerDetails.validateLearnerDetails
+      ? learnerDetails.validateLearnerDetails({ showPartner: false })
+      : { valid: false, errors: ['Learner details form is unavailable.'] };
+
+    if (!learnerValidation.valid) {
+      learnerDetails.showValidationSummary('learner-details-errors', learnerValidation);
+      setStatusMessage('start-status', 'Complete your details before starting.', 'error');
       return;
     }
     if (!quiz()) {
       setStatusMessage('start-status', 'Quiz data failed to load.', 'error');
       return;
+    }
+
+    state.learner = learnerValidation.learner;
+    if (submissions.getOrCreateAttemptId) {
+      submissions.getOrCreateAttemptId(ATTEMPT_KEY);
     }
 
     state.started = true;
@@ -686,9 +743,10 @@
       return;
     }
     stopTimer();
-    if (utils.clearAttemptId) utils.clearAttemptId(ATTEMPT_KEY);
-    else {
-      try { sessionStorage.removeItem(ATTEMPT_KEY); } catch (err) { /* ignore */ }
+    if (submissions.startNewAttempt) {
+      submissions.startNewAttempt(ATTEMPT_KEY);
+    } else if (utils.clearAttemptId) {
+      utils.clearAttemptId(ATTEMPT_KEY);
     }
 
     state.started = false;
@@ -704,6 +762,8 @@
     state.writtenScore = 0;
     state.incorrectNumbers = [];
     state.withinTime = true;
+    state.submitted = false;
+    state.learner = null;
 
     document.getElementById('start-panel').hidden = false;
     document.getElementById('quiz-panel').hidden = true;
@@ -712,11 +772,24 @@
     document.getElementById('submission-panel').hidden = true;
     document.getElementById('btn-submit').disabled = false;
     document.getElementById('btn-retry').hidden = true;
+    document.getElementById('btn-start-another').hidden = true;
     document.getElementById('hardest-card').value = '';
     document.getElementById('revisit-term').value = '';
+    document.getElementById('submission-summary-host').textContent = '';
     setStatusMessage('submission-messages', '', 'info');
     setStatusMessage('start-status', 'Ready for a new attempt. The timer starts when you select Start quiz.', 'info');
     document.getElementById('btn-start').focus();
+  }
+
+  function initLearnerDetails() {
+    var meta = activityMeta();
+    if (!meta) return;
+    if (learnerDetails.renderCourseDetails) {
+      learnerDetails.renderCourseDetails('course-details-host', meta);
+    }
+    if (learnerDetails.renderLearnerForm) {
+      learnerDetails.renderLearnerForm('learner-details-host', { showPartner: false });
+    }
   }
 
   function bindControls() {
@@ -746,6 +819,7 @@
     document.getElementById('btn-finish').addEventListener('click', finishAndCheck);
     document.getElementById('btn-confirm-selfmark').addEventListener('click', confirmSelfMark);
     document.getElementById('btn-new-attempt').addEventListener('click', resetAttempt);
+    document.getElementById('btn-start-another').addEventListener('click', resetAttempt);
     document.getElementById('btn-submit').addEventListener('click', handleSubmit);
     document.getElementById('btn-retry').addEventListener('click', handleRetry);
   }
@@ -757,6 +831,7 @@
       return;
     }
     bindControls();
+    initLearnerDetails();
     updateTimerDisplay(false);
   });
 })();

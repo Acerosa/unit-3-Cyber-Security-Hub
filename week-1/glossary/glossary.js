@@ -8,13 +8,21 @@
 
   var utils = window.Unit3ActivityUtils || {};
   var submissions = window.Unit3Submissions || {};
+  var learnerDetails = window.Unit3LearnerDetails || {};
+  var courseContext = window.Unit3CourseContext || {};
   var el = utils.el;
   var setStatusMessage = utils.setStatusMessage;
 
+  var ACTIVITY_ID = 'U3-W01-GLOSSARY';
   var ATTEMPT_STORAGE_KEY = 'unit3-glossary-attempt-id';
   var FLASH_STORAGE_KEY = 'unit3-glossary-flash-progress';
   var TOTAL_QUESTIONS = 12;
-  var ACTIVITY_VERSION = '1.0';
+
+  var state = {
+    learner: null,
+    submitted: false,
+    activityMeta: null
+  };
 
   var quizState = {
     answers: {},
@@ -221,6 +229,53 @@
     });
   }
 
+  function activityMeta() {
+    if (state.activityMeta) return state.activityMeta;
+    state.activityMeta = courseContext.getActivity
+      ? courseContext.getActivity(ACTIVITY_ID)
+      : null;
+    return state.activityMeta;
+  }
+
+  function initLearnerDetails() {
+    var meta = activityMeta();
+    if (!meta) return;
+    if (learnerDetails.renderCourseDetails) {
+      learnerDetails.renderCourseDetails('course-details-host', meta);
+    }
+    if (learnerDetails.renderLearnerForm) {
+      learnerDetails.renderLearnerForm('learner-details-host', { showPartner: false });
+    }
+  }
+
+  function ensureLearnerDetails() {
+    if (state.learner) {
+      return { valid: true, learner: state.learner };
+    }
+
+    var validation = learnerDetails.validateLearnerDetails
+      ? learnerDetails.validateLearnerDetails({ showPartner: false })
+      : { valid: false, errors: ['Learner details form is unavailable.'] };
+
+    if (!validation.valid) {
+      if (learnerDetails.showValidationSummary) {
+        learnerDetails.showValidationSummary('learner-details-errors', validation);
+      }
+      setStatusMessage('quiz-status', 'Complete your details before continuing.', 'error');
+      var learnerPanel = document.querySelector('.learner-panel');
+      if (learnerPanel) {
+        learnerPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      return { valid: false };
+    }
+
+    state.learner = validation.learner;
+    if (submissions.getOrCreateAttemptId) {
+      submissions.getOrCreateAttemptId(ATTEMPT_STORAGE_KEY);
+    }
+    return { valid: true, learner: state.learner };
+  }
+
   function setMode(mode) {
     var panels = {
       glossary: document.getElementById('panel-glossary'),
@@ -243,6 +298,8 @@
     document.getElementById('tab-glossary').addEventListener('click', function () { setMode('glossary'); });
     document.getElementById('tab-flashcards').addEventListener('click', function () { setMode('flashcards'); });
     document.getElementById('tab-quiz').addEventListener('click', function () {
+      var details = ensureLearnerDetails();
+      if (!details.valid) return;
       setMode('quiz');
       if (!quizState.startTime && !quizState.checked) {
         quizState.startTime = Date.now();
@@ -643,6 +700,9 @@
   }
 
   function checkQuiz() {
+    var details = ensureLearnerDetails();
+    if (!details.valid) return;
+
     var unanswered = unansweredIds();
     if (unanswered.length) {
       setStatusMessage(
@@ -693,43 +753,53 @@
     document.getElementById('hardest-card').focus();
   }
 
-  function startNewAttempt() {
-    if (!window.confirm('Start a new attempt? This clears quiz answers, score, reflection and the glossary Attempt ID.')) {
+  function startAnotherAttempt() {
+    if (!window.confirm(
+      'Starting another attempt will create a new submission record. Your previous submitted attempt will remain in the results sheet. Continue only if your tutor has asked you to repeat the activity.'
+    )) {
       return;
     }
-    if (utils.clearAttemptId) {
+
+    if (submissions.startNewAttempt) {
+      submissions.startNewAttempt(ATTEMPT_STORAGE_KEY);
+    } else if (utils.clearAttemptId) {
       utils.clearAttemptId(ATTEMPT_STORAGE_KEY);
-    } else {
-      try { sessionStorage.removeItem(ATTEMPT_STORAGE_KEY); } catch (err) { /* ignore */ }
     }
 
     quizState.answers = {};
     quizState.checked = false;
     quizState.score = 0;
     quizState.incorrectQuestions = [];
-    quizState.startTime = Date.now();
+    quizState.startTime = null;
     quizState.completionTime = null;
+    state.learner = null;
+    state.submitted = false;
 
     document.getElementById('results-panel').hidden = true;
     document.getElementById('submission-panel').hidden = true;
     document.getElementById('btn-new-attempt').hidden = true;
     document.getElementById('btn-submit').disabled = false;
     document.getElementById('btn-retry').hidden = true;
+    document.getElementById('btn-start-another').hidden = true;
     document.getElementById('hardest-card').value = '';
     document.getElementById('justification').value = '';
+    document.getElementById('submission-summary-host').textContent = '';
     updateJustificationCount();
     setStatusMessage('submission-messages', '', 'info');
+    initLearnerDetails();
     renderQuiz();
-    setStatusMessage('quiz-status', 'New attempt started. A new Attempt ID will be created when you submit.', 'info');
-  }
+    setStatusMessage(
+      'quiz-status',
+      'Ready for a new attempt. Complete your details, then answer all 12 questions.',
+      'info'
+    );
 
-  function getLearnerDetails() {
-    return {
-      classGroup: (document.getElementById('class-group').value || '').trim(),
-      pairCode: (document.getElementById('pair-code').value || '').trim(),
-      learner1: (document.getElementById('learner-1').value || '').trim(),
-      learner2: (document.getElementById('learner-2').value || '').trim()
-    };
+    var learnerPanel = document.querySelector('.learner-panel');
+    if (learnerPanel) {
+      learnerPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    var firstField = document.getElementById('ld-student-id');
+    if (firstField) firstField.focus();
   }
 
   function updateJustificationCount() {
@@ -739,13 +809,23 @@
   }
 
   function validateSubmission() {
-    var details = getLearnerDetails();
+    if (!state.learner) {
+      var learnerCheck = ensureLearnerDetails();
+      if (!learnerCheck.valid) {
+        return {
+          valid: false,
+          errors: ['Complete your learner details before submitting.']
+        };
+      }
+    }
+
     var hardest = document.getElementById('hardest-card');
     var justification = (document.getElementById('justification').value || '').trim();
     var errors = [];
 
-    if (!details.classGroup) errors.push('Class or group is required.');
-    if (!details.pairCode) errors.push('Learner or pair code is required.');
+    if (!state.learner) {
+      errors.push('Learner details are missing. Complete your details before submitting.');
+    }
     if (!quizState.checked) errors.push('Check your answers before submitting results.');
     if (quizState.score < 0 || quizState.score > TOTAL_QUESTIONS) {
       errors.push('Score must be between 0 and 12.');
@@ -757,70 +837,88 @@
     if (!justification) errors.push('A written reflection is required.');
     else if (justification.length > 1000) errors.push('Reflection must be no longer than 1,000 characters.');
 
-    var collector = submissions.COLLECTOR_URL;
-    if (!submissions.isConfigured || !submissions.isConfigured(collector)) {
-      errors.push('Submission is not configured yet. Ask your teacher to check the collector URL.');
+    if (!submissions.isConfigured || !submissions.isConfigured(submissions.COLLECTOR_URL)) {
+      errors.push('Submission is not configured yet.');
     }
 
     return {
       valid: errors.length === 0,
       errors: errors,
-      details: details,
       hardestCard: hardestValue,
       justification: justification
     };
   }
 
-  function buildPayload(validation) {
-    var attemptId = utils.getOrCreateAttemptId
-      ? utils.getOrCreateAttemptId(ATTEMPT_STORAGE_KEY)
+  function buildSubmissionInput(validation) {
+    var attemptId = submissions.getOrCreateAttemptId
+      ? submissions.getOrCreateAttemptId(ATTEMPT_STORAGE_KEY)
       : String(Date.now());
     return {
+      recordType: 'LIVE',
       attemptId: attemptId,
-      classGroup: validation.details.classGroup,
-      pairCode: validation.details.pairCode,
-      learner1: validation.details.learner1,
-      learner2: validation.details.learner2,
-      score: String(quizState.score),
-      totalCards: String(TOTAL_QUESTIONS),
-      incorrectCards: quizState.incorrectQuestions.length
-        ? quizState.incorrectQuestions.join(',')
-        : 'None',
-      hardestCard: String(validation.hardestCard),
-      justification: validation.justification,
-      completionTime: String(quizState.completionTime || 0),
-      activityVersion: ACTIVITY_VERSION,
+      courseContext: courseContext.COURSE_CONTEXT,
+      activity: activityMeta(),
+      learner: state.learner,
+      score: quizState.score,
+      questionsForReview: quizState.incorrectQuestions,
+      mostDifficultItem: String(validation.hardestCard),
+      reflection: validation.justification,
+      completionTimeSeconds: quizState.completionTime || 1,
       sourcePage: window.location.href
     };
+  }
+
+  function showSubmissionSummaryPanel() {
+    if (!learnerDetails.renderSubmissionSummary || !state.learner) return;
+    var meta = activityMeta();
+    learnerDetails.renderSubmissionSummary('submission-summary-host', {
+      firstName: state.learner.firstName,
+      surname: state.learner.surname,
+      studentId: state.learner.studentId,
+      classGroup: state.learner.classGroup,
+      activityName: meta ? meta.activityName : 'Cyber Security Glossary',
+      score: quizState.score,
+      maximumScore: meta ? meta.maximumScore : TOTAL_QUESTIONS
+    });
   }
 
   function handleSubmit() {
     var validation = validateSubmission();
     if (!validation.valid) {
       setStatusMessage('submission-messages', validation.errors.join(' '), 'error');
-      var focusId = !validation.details.classGroup
-        ? 'class-group'
-        : !validation.details.pairCode
-          ? 'pair-code'
-          : !document.getElementById('hardest-card').value
-            ? 'hardest-card'
-            : 'justification';
-      document.getElementById(focusId).focus();
+      var focusId = !state.learner
+        ? 'ld-student-id'
+        : !document.getElementById('hardest-card').value
+          ? 'hardest-card'
+          : 'justification';
+      var focusTarget = document.getElementById(focusId);
+      if (focusTarget) focusTarget.focus();
       return;
     }
-    var payload = buildPayload(validation);
-    var ok = submissions.submitViaForm
-      ? submissions.submitViaForm(payload)
-      : false;
-    if (!ok) {
-      setStatusMessage('submission-messages', 'Submission could not be started. Check the collector URL.', 'error');
-      return;
-    }
+
+    showSubmissionSummaryPanel();
     document.getElementById('btn-submit').disabled = true;
+    setStatusMessage('submission-messages', 'Sending your glossary result.', 'info');
+
+    var result = submissions.submitSchema3
+      ? submissions.submitSchema3(buildSubmissionInput(validation))
+      : { started: false, errors: ['Submission helper unavailable.'] };
+
+    if (!result.started) {
+      document.getElementById('btn-submit').disabled = false;
+      setStatusMessage('submission-messages', result.errors.join(' '), 'error');
+      return;
+    }
+
+    state.submitted = true;
+    if (submissions.markAttemptCompleted) {
+      submissions.markAttemptCompleted(ATTEMPT_STORAGE_KEY);
+    }
     document.getElementById('btn-retry').hidden = false;
+    document.getElementById('btn-start-another').hidden = false;
     setStatusMessage(
       'submission-messages',
-      'A confirmation tab has opened. Check that your result was accepted. Opening a tab does not by itself prove the result was saved.',
+      'A confirmation tab has opened. Check whether the result was accepted. Opening a tab does not by itself prove the result was saved.',
       'info'
     );
   }
@@ -831,15 +929,20 @@
       setStatusMessage('submission-messages', validation.errors.join(' '), 'error');
       return;
     }
-    var payload = buildPayload(validation);
-    var ok = submissions.submitViaForm ? submissions.submitViaForm(payload) : false;
-    if (!ok) {
-      setStatusMessage('submission-messages', 'Retry could not be started. Check the collector URL.', 'error');
+
+    setStatusMessage('submission-messages', 'Retrying submission with the same Attempt ID.', 'info');
+    var result = submissions.submitSchema3
+      ? submissions.submitSchema3(buildSubmissionInput(validation))
+      : { started: false, errors: ['Submission helper unavailable.'] };
+
+    if (!result.started) {
+      setStatusMessage('submission-messages', result.errors.join(' '), 'error');
       return;
     }
+
     setStatusMessage(
       'submission-messages',
-      'A confirmation tab has opened. Check that your result was accepted. The same Attempt ID was reused for this retry.',
+      'A confirmation tab has opened. Check whether the result was accepted. The same Attempt ID was reused for this retry.',
       'info'
     );
   }
@@ -866,7 +969,8 @@
       }
     });
     document.getElementById('btn-check-quiz').addEventListener('click', checkQuiz);
-    document.getElementById('btn-new-attempt').addEventListener('click', startNewAttempt);
+    document.getElementById('btn-new-attempt').addEventListener('click', startAnotherAttempt);
+    document.getElementById('btn-start-another').addEventListener('click', startAnotherAttempt);
     document.getElementById('justification').addEventListener('input', updateJustificationCount);
     document.getElementById('btn-submit').addEventListener('click', handleSubmit);
     document.getElementById('btn-retry').addEventListener('click', handleRetry);
@@ -885,6 +989,7 @@
     renderGlossaryList();
     bindFlashcards();
     bindQuiz();
+    initLearnerDetails();
     setMode('glossary');
   });
 })();

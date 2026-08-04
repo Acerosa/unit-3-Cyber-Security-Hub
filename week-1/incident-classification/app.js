@@ -12,12 +12,17 @@
  * - Learner text must never be inserted with innerHTML; use textContent or safe DOM APIs.
  */
 
-/** Paste the full Google Apps Script web app URL ending in /exec */
-const COLLECTOR_URL = 'https://script.google.com/macros/s/AKfycbz3y931cm-BEu_t_fAo8Eit3tzxxMD_dj4mKIFbjo5U_ySu2jfsUn0Lzp0fS3HRsoyE/exec';
+(function () {
+  'use strict';
 
-const TOTAL_CARDS = 12;
-const ACTIVITY_VERSION = '1.0';
-const ATTEMPT_STORAGE_KEY = 'northbank-card-sort-attempt-id';
+  var utils = window.Unit3ActivityUtils || {};
+  var submissions = window.Unit3Submissions || {};
+  var learnerDetails = window.Unit3LearnerDetails || {};
+  var courseContext = window.Unit3CourseContext || {};
+
+  var ACTIVITY_ID = 'U3-W01-INCIDENTS';
+  var TOTAL_CARDS = 12;
+  var ATTEMPT_STORAGE_KEY = 'northbank-card-sort-attempt-id';
 
 const CIA_OPTIONS = ['Confidentiality', 'Integrity', 'Availability'];
 
@@ -37,16 +42,74 @@ const STATUS_LABELS = {
   review: { text: 'Requires review', icon: '!' }
 };
 
-/** @type {{ answers: Record<number, { incidentType: string, cia: string[], evidence: string }>, checked: boolean, score: number, incorrectCards: number[], startTime: number, completionTime: number|null }} */
-const state = {
+/** @type {{ answers: Record<number, { incidentType: string, cia: string[], evidence: string }>, checked: boolean, score: number, incorrectCards: number[], startTime: number, completionTime: number|null, currentIndex: number, learner: object|null, submitted: boolean, activityMeta: object|null }} */
+var state = {
   answers: {},
   checked: false,
   score: 0,
   incorrectCards: [],
   startTime: Date.now(),
   completionTime: null,
-  currentIndex: 0
+  currentIndex: 0,
+  learner: null,
+  submitted: false,
+  activityMeta: null
 };
+
+function activityMeta() {
+  if (state.activityMeta) {
+    return state.activityMeta;
+  }
+  state.activityMeta = courseContext.getActivity
+    ? courseContext.getActivity(ACTIVITY_ID)
+    : null;
+  return state.activityMeta;
+}
+
+function initLearnerDetails() {
+  var meta = activityMeta();
+  if (!meta) {
+    return;
+  }
+  if (learnerDetails.renderCourseDetails) {
+    learnerDetails.renderCourseDetails('course-details-host', meta);
+  }
+  if (learnerDetails.renderLearnerForm) {
+    learnerDetails.renderLearnerForm('learner-details-host', { showPartner: true });
+  }
+}
+
+function ensureLearnerDetails() {
+  if (state.learner) {
+    return { valid: true, learner: state.learner };
+  }
+
+  var validation = learnerDetails.validateLearnerDetails
+    ? learnerDetails.validateLearnerDetails({ showPartner: true })
+    : { valid: false, errors: ['Learner details form is unavailable.'] };
+
+  if (!validation.valid) {
+    if (learnerDetails.showValidationSummary) {
+      learnerDetails.showValidationSummary('learner-details-errors', validation);
+    }
+    setStatusMessage(
+      'status-messages',
+      'Complete your details before continuing.',
+      'error'
+    );
+    var learnerPanel = document.querySelector('.learner-panel');
+    if (learnerPanel) {
+      learnerPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    return { valid: false };
+  }
+
+  state.learner = validation.learner;
+  if (submissions.getOrCreateAttemptId) {
+    submissions.getOrCreateAttemptId(ATTEMPT_STORAGE_KEY);
+  }
+  return { valid: true, learner: state.learner };
+}
 
 function el(tag, attrs, children) {
   const node = document.createElement(tag);
@@ -573,6 +636,14 @@ function resetActivity() {
   if (retryBtn) {
     retryBtn.hidden = true;
   }
+  var startAnotherBtn = document.getElementById('btn-start-another');
+  if (startAnotherBtn) {
+    startAnotherBtn.hidden = true;
+  }
+  var summaryHost = document.getElementById('submission-summary-host');
+  if (summaryHost) {
+    summaryHost.textContent = '';
+  }
   setStatusMessage('submission-messages', '', 'info');
 
   setStatusMessage(
@@ -720,6 +791,11 @@ function renderAllFeedback() {
 }
 
 function checkAnswers() {
+  var learnerCheck = ensureLearnerDetails();
+  if (!learnerCheck.valid) {
+    return;
+  }
+
   const unanswered = getUnansweredIds();
   if (unanswered.length > 0) {
     setStatusMessage(
@@ -858,34 +934,17 @@ function updateJustificationCount() {
   counter.textContent = textarea.value.length + ' / 1000 characters';
 }
 
-function getLearnerDetails() {
-  const classGroupEl = document.getElementById('class-group');
-  const pairCodeEl = document.getElementById('pair-code');
-  const learner1El = document.getElementById('learner-1');
-  const learner2El = document.getElementById('learner-2');
-  return {
-    classGroup: classGroupEl ? classGroupEl.value.trim() : '',
-    pairCode: pairCodeEl ? pairCodeEl.value.trim() : '',
-    learner1: learner1El ? learner1El.value.trim() : '',
-    learner2: learner2El ? learner2El.value.trim() : ''
-  };
-}
-
 /**
  * Browser validation improves usability only.
  * The Apps Script validates all values again.
  */
-function validateReflectionAndDetails() {
-  const details = getLearnerDetails();
+function validateReflection() {
   const hardest = document.getElementById('hardest-card');
   const justification = document.getElementById('justification');
   const errors = [];
 
-  if (!details.classGroup) {
-    errors.push('Class or group is required.');
-  }
-  if (!details.pairCode) {
-    errors.push('Pair code is required.');
+  if (!state.learner) {
+    errors.push('Learner details are missing. Complete your details before submitting.');
   }
   if (!state.checked) {
     errors.push('Check your answers before submitting results.');
@@ -910,13 +969,57 @@ function validateReflectionAndDetails() {
     errors.push('Justification must be no longer than 1,000 characters.');
   }
 
+  if (!submissions.isConfigured || !submissions.isConfigured(submissions.COLLECTOR_URL)) {
+    errors.push('Submission is not configured yet.');
+  }
+
   return {
     valid: errors.length === 0,
     errors: errors,
-    details: details,
     hardestCard: hardestValue,
     justification: justificationText
   };
+}
+
+function buildSubmissionInput(validation) {
+  var attemptId = submissions.getOrCreateAttemptId
+    ? submissions.getOrCreateAttemptId(ATTEMPT_STORAGE_KEY)
+    : String(Date.now());
+  return {
+    recordType: 'LIVE',
+    attemptId: attemptId,
+    courseContext: courseContext.COURSE_CONTEXT,
+    activity: activityMeta(),
+    learner: state.learner,
+    score: state.score,
+    questionsForReview: state.incorrectCards,
+    mostDifficultItem: String(validation.hardestCard),
+    reflection: validation.justification,
+    completionTimeSeconds: state.completionTime || 1,
+    sourcePage: window.location.href
+  };
+}
+
+function showSubmissionSummaryPanel() {
+  if (!learnerDetails.renderSubmissionSummary || !state.learner) {
+    return;
+  }
+  var meta = activityMeta();
+  var summary = {
+    firstName: state.learner.firstName,
+    surname: state.learner.surname,
+    studentId: state.learner.studentId,
+    classGroup: state.learner.classGroup,
+    activityName: meta ? meta.activityName : 'Incident Classification',
+    score: state.score,
+    maximumScore: TOTAL_CARDS
+  };
+  if (state.learner.isPaired && state.learner.partnerStudentId) {
+    summary.partnerStudentId = state.learner.partnerStudentId;
+    summary.partnerFirstName = state.learner.partnerFirstName;
+    summary.partnerSurname = state.learner.partnerSurname;
+  }
+  learnerDetails.renderSubmissionSummary('submission-summary-host', summary);
 }
 
 function bindReflectionForm() {
@@ -928,124 +1031,18 @@ function bindReflectionForm() {
   populateHardestCardOptions();
 }
 
-/**
- * Generate a unique Attempt ID.
- * Prefer crypto.randomUUID(); fall back to timestamp + random value.
- * Only the Attempt ID is stored in sessionStorage — never names, answers,
- * scores, pair codes or written justifications.
- */
-function createAttemptId() {
-  if (window.crypto && typeof window.crypto.randomUUID === 'function') {
-    return window.crypto.randomUUID();
-  }
-  return (
-    'attempt-' +
-    Date.now().toString(36) +
-    '-' +
-    Math.random().toString(36).slice(2, 10)
-  );
-}
-
-function getOrCreateAttemptId() {
-  try {
-    const existing = sessionStorage.getItem(ATTEMPT_STORAGE_KEY);
-    if (existing) {
-      return existing;
-    }
-    const created = createAttemptId();
-    sessionStorage.setItem(ATTEMPT_STORAGE_KEY, created);
-    return created;
-  } catch (err) {
-    return createAttemptId();
-  }
-}
-
-function clearAttemptId() {
-  try {
-    sessionStorage.removeItem(ATTEMPT_STORAGE_KEY);
-  } catch (err) {
-    /* sessionStorage may be unavailable */
-  }
-}
-
-function buildSubmissionPayload(validation) {
-  const percentage = Math.round((state.score / TOTAL_CARDS) * 100);
-  return {
-    attemptId: getOrCreateAttemptId(),
-    classGroup: validation.details.classGroup,
-    pairCode: validation.details.pairCode,
-    learner1: validation.details.learner1,
-    learner2: validation.details.learner2,
-    score: String(state.score),
-    totalCards: String(TOTAL_CARDS),
-    incorrectCards: state.incorrectCards.length
-      ? state.incorrectCards.join(',')
-      : 'None',
-    hardestCard: String(validation.hardestCard),
-    justification: validation.justification,
-    completionTime: String(state.completionTime || 0),
-    activityVersion: ACTIVITY_VERSION,
-    sourcePage: window.location.href
-  };
-}
-
-/**
- * Submit via a dynamically created HTML form (POST, target=_blank).
- * Do not use JSON fetch as the main submission method.
- * A public static site cannot securely authenticate learners.
- */
-function submitResultsViaForm(payload) {
-  if (
-    !COLLECTOR_URL ||
-    COLLECTOR_URL.indexOf('PASTE_THE_FULL_GOOGLE_APPS_SCRIPT_EXEC_URL_HERE') !== -1
-  ) {
+function handleSubmitResults() {
+  var learnerCheck = ensureLearnerDetails();
+  if (!learnerCheck.valid) {
     setStatusMessage(
       'submission-messages',
-      'Submission is not configured yet. Ask your teacher to paste the Google Apps Script /exec URL into js/app.js (COLLECTOR_URL).',
+      'Complete your details before submitting results.',
       'error'
     );
-    return false;
+    return;
   }
 
-  const form = document.createElement('form');
-  form.method = 'POST';
-  form.action = COLLECTOR_URL;
-  form.target = '_blank';
-  form.acceptCharset = 'UTF-8';
-  form.style.display = 'none';
-
-  Object.keys(payload).forEach(function (name) {
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = name;
-    input.value = payload[name];
-    form.appendChild(input);
-  });
-
-  document.body.appendChild(form);
-  form.submit();
-  document.body.removeChild(form);
-  return true;
-}
-
-function markSubmissionAttempted() {
-  const submitBtn = document.getElementById('btn-submit');
-  const retryBtn = document.getElementById('btn-retry');
-  if (submitBtn) {
-    submitBtn.disabled = true;
-  }
-  if (retryBtn) {
-    retryBtn.hidden = false;
-  }
-  setStatusMessage(
-    'submission-messages',
-    'A confirmation tab has opened. Check that your result was accepted.',
-    'info'
-  );
-}
-
-function handleSubmitResults() {
-  const validation = validateReflectionAndDetails();
+  const validation = validateReflection();
   if (!validation.valid) {
     setStatusMessage(
       'submission-messages',
@@ -1053,31 +1050,68 @@ function handleSubmitResults() {
       'error'
     );
     const firstInvalid =
-      document.getElementById('class-group') &&
-      !document.getElementById('class-group').value.trim()
-        ? document.getElementById('class-group')
-        : document.getElementById('pair-code') &&
-            !document.getElementById('pair-code').value.trim()
-          ? document.getElementById('pair-code')
-          : document.getElementById('hardest-card') &&
-              !document.getElementById('hardest-card').value
-            ? document.getElementById('hardest-card')
-            : document.getElementById('justification');
+      !state.learner
+        ? document.getElementById('ld-student-id')
+        : document.getElementById('hardest-card') &&
+            !document.getElementById('hardest-card').value
+          ? document.getElementById('hardest-card')
+          : document.getElementById('justification');
     if (firstInvalid) {
       firstInvalid.focus();
     }
     return;
   }
 
-  const payload = buildSubmissionPayload(validation);
-  const submitted = submitResultsViaForm(payload);
-  if (submitted) {
-    markSubmissionAttempted();
+  showSubmissionSummaryPanel();
+  var submitBtn = document.getElementById('btn-submit');
+  if (submitBtn) {
+    submitBtn.disabled = true;
   }
+  setStatusMessage('submission-messages', 'Sending your results.', 'info');
+
+  var result = submissions.submitSchema3
+    ? submissions.submitSchema3(buildSubmissionInput(validation))
+    : { started: false, errors: ['Submission helper unavailable.'] };
+
+  if (!result.started) {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+    }
+    setStatusMessage('submission-messages', result.errors.join(' '), 'error');
+    return;
+  }
+
+  state.submitted = true;
+  if (submissions.markAttemptCompleted) {
+    submissions.markAttemptCompleted(ATTEMPT_STORAGE_KEY);
+  }
+  var retryBtn = document.getElementById('btn-retry');
+  if (retryBtn) {
+    retryBtn.hidden = false;
+  }
+  var startAnotherBtn = document.getElementById('btn-start-another');
+  if (startAnotherBtn) {
+    startAnotherBtn.hidden = false;
+  }
+  setStatusMessage(
+    'submission-messages',
+    'A confirmation tab has opened. Check whether the result was accepted. Opening a tab does not by itself prove the result was saved.',
+    'info'
+  );
 }
 
 function handleRetrySubmission() {
-  const validation = validateReflectionAndDetails();
+  var learnerCheck = ensureLearnerDetails();
+  if (!learnerCheck.valid) {
+    setStatusMessage(
+      'submission-messages',
+      'Complete your details before retrying submission.',
+      'error'
+    );
+    return;
+  }
+
+  const validation = validateReflection();
   if (!validation.valid) {
     setStatusMessage(
       'submission-messages',
@@ -1086,25 +1120,121 @@ function handleRetrySubmission() {
     );
     return;
   }
-  const payload = buildSubmissionPayload(validation);
-  const submitted = submitResultsViaForm(payload);
-  if (submitted) {
-    setStatusMessage(
-      'submission-messages',
-      'A confirmation tab has opened. Check that your result was accepted. The same Attempt ID was reused for this retry.',
-      'info'
-    );
+
+  setStatusMessage(
+    'submission-messages',
+    'Retrying submission with the same Attempt ID.',
+    'info'
+  );
+  var result = submissions.submitSchema3
+    ? submissions.submitSchema3(buildSubmissionInput(validation))
+    : { started: false, errors: ['Submission helper unavailable.'] };
+
+  if (!result.started) {
+    setStatusMessage('submission-messages', result.errors.join(' '), 'error');
+    return;
+  }
+
+  setStatusMessage(
+    'submission-messages',
+    'A confirmation tab has opened. Check whether the result was accepted. The same Attempt ID was reused for this retry.',
+    'info'
+  );
+}
+
+function startAnotherAttempt() {
+  var confirmed = window.confirm(
+    'Starting another attempt will create a new submission record. Your previous submitted attempt will remain in the results sheet. Continue only if your tutor has asked you to repeat the activity.'
+  );
+  if (!confirmed) {
+    return;
+  }
+
+  if (submissions.startNewAttempt) {
+    submissions.startNewAttempt(ATTEMPT_STORAGE_KEY);
+  } else if (utils.clearAttemptId) {
+    utils.clearAttemptId(ATTEMPT_STORAGE_KEY);
+  }
+
+  state.answers = {};
+  state.checked = false;
+  state.score = 0;
+  state.incorrectCards = [];
+  state.completionTime = null;
+  state.startTime = Date.now();
+  state.currentIndex = 0;
+  state.learner = null;
+  state.submitted = false;
+
+  renderCards();
+  buildCardNumberNav();
+  showCard(0);
+
+  var resultsPanel = document.getElementById('results-panel');
+  var submissionPanel = document.getElementById('submission-panel');
+  var hardest = document.getElementById('hardest-card');
+  var justification = document.getElementById('justification');
+  var submitBtn = document.getElementById('btn-submit');
+  var retryBtn = document.getElementById('btn-retry');
+  var startAnotherBtn = document.getElementById('btn-start-another');
+  var summaryHost = document.getElementById('submission-summary-host');
+
+  if (resultsPanel) {
+    resultsPanel.hidden = true;
+  }
+  if (submissionPanel) {
+    submissionPanel.hidden = true;
+  }
+  if (hardest) {
+    hardest.value = '';
+  }
+  if (justification) {
+    justification.value = '';
+    updateJustificationCount();
+  }
+  if (submitBtn) {
+    submitBtn.disabled = false;
+  }
+  if (retryBtn) {
+    retryBtn.hidden = true;
+  }
+  if (startAnotherBtn) {
+    startAnotherBtn.hidden = true;
+  }
+  if (summaryHost) {
+    summaryHost.textContent = '';
+  }
+
+  initLearnerDetails();
+  setStatusMessage('submission-messages', '', 'info');
+  setStatusMessage(
+    'status-messages',
+    'Ready for a new attempt. Complete your details, then work through the cards.',
+    'info'
+  );
+
+  var learnerPanel = document.querySelector('.learner-panel');
+  if (learnerPanel) {
+    learnerPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  var firstField = document.getElementById('ld-student-id');
+  if (firstField) {
+    firstField.focus();
   }
 }
 
 function bindSubmissionControls() {
   const submitBtn = document.getElementById('btn-submit');
   const retryBtn = document.getElementById('btn-retry');
+  const startAnotherBtn = document.getElementById('btn-start-another');
   if (submitBtn) {
     submitBtn.addEventListener('click', handleSubmitResults);
   }
   if (retryBtn) {
     retryBtn.addEventListener('click', handleRetrySubmission);
+  }
+  if (startAnotherBtn) {
+    startAnotherBtn.addEventListener('click', startAnotherAttempt);
   }
 }
 
@@ -1179,6 +1309,7 @@ function bindNavigation() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  initLearnerDetails();
   renderCards();
   buildCardNumberNav();
   bindNavigation();
@@ -1188,7 +1319,8 @@ document.addEventListener('DOMContentLoaded', function () {
   showCard(0, { announce: false });
   setStatusMessage(
     'status-messages',
-    'Complete each card by selecting an incident type, CIA aim(s) and a short justification. Use Previous, Next, card numbers, or Left and Right arrow keys to move between cards.',
+    'Complete your details, then work through each card by selecting an incident type, CIA aim(s) and a short justification. Use Previous, Next, card numbers, or Left and Right arrow keys to move between cards.',
     'info'
   );
 });
+})();
