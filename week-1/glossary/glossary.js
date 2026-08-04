@@ -30,7 +30,8 @@
     score: 0,
     incorrectQuestions: [],
     startTime: null,
-    completionTime: null
+    completionTime: null,
+    currentIndex: 0
   };
 
   var flashState = {
@@ -588,75 +589,116 @@
 
   function refreshQuizProgress() {
     var completed = answeredCount();
-    document.getElementById('quiz-progress').textContent = completed + ' of ' + TOTAL_QUESTIONS + ' answered';
-    document.getElementById('btn-check-quiz').disabled = completed < TOTAL_QUESTIONS || quizState.checked;
+    var current = quizState.currentIndex + 1;
+    var progress = document.getElementById('quiz-progress');
+    if (quizState.checked) {
+      progress.textContent =
+        'Checked: ' + completed + ' of ' + TOTAL_QUESTIONS + ' answered';
+    } else {
+      progress.textContent =
+        'Question ' + current + ' of ' + TOTAL_QUESTIONS + ' · ' + completed + ' answered';
+    }
+    document.getElementById('btn-check-quiz').disabled =
+      completed < TOTAL_QUESTIONS || quizState.checked;
+    var prev = document.getElementById('btn-quiz-prev');
+    var next = document.getElementById('btn-quiz-next');
+    if (prev && next) {
+      prev.disabled = quizState.checked || quizState.currentIndex <= 0;
+      next.disabled =
+        quizState.checked || quizState.currentIndex >= QUIZ_QUESTIONS.length - 1;
+      prev.hidden = quizState.checked;
+      next.hidden = quizState.checked;
+    }
+  }
+
+  function renderOneQuizQuestion(question) {
+    var fieldset = el('fieldset', {
+      className: 'quiz-question',
+      id: 'question-' + question.id
+    });
+    fieldset.appendChild(
+      el('legend', {
+        textContent: 'Question ' + question.id + ': ' + question.prompt
+      })
+    );
+    var list = el('div', {
+      className: 'choice-list',
+      role: 'radiogroup',
+      'aria-label': 'Answers for question ' + question.id
+    });
+    question.options.forEach(function (option, index) {
+      var inputId = 'q' + question.id + '-opt' + index;
+      var input = el('input', {
+        type: 'radio',
+        name: 'question-' + question.id,
+        id: inputId,
+        value: String(index)
+      });
+      if (String(quizState.answers[question.id]) === String(index)) {
+        input.checked = true;
+      }
+      if (quizState.checked) {
+        input.disabled = true;
+      }
+      input.addEventListener('change', function () {
+        if (quizState.checked) return;
+        if (!quizState.startTime) quizState.startTime = Date.now();
+        quizState.answers[question.id] = index;
+        refreshQuizProgress();
+      });
+      list.appendChild(
+        el('div', { className: 'choice' }, [
+          input,
+          el('label', { htmlFor: inputId, textContent: option })
+        ])
+      );
+    });
+    fieldset.appendChild(list);
+
+    if (quizState.checked) {
+      var correct = Number(quizState.answers[question.id]) === question.correctIndex;
+      fieldset.appendChild(
+        el('div', {
+          className: 'quiz-explanation ' + (correct ? 'correct' : 'incorrect'),
+          role: 'region',
+          'aria-label': 'Feedback for question ' + question.id
+        }, [
+          el('p', { textContent: correct ? 'Result: Correct' : 'Result: Requires review' }),
+          el('p', { textContent: 'Correct answer: ' + question.options[question.correctIndex] }),
+          el('p', { textContent: 'Explanation: ' + question.explanation })
+        ])
+      );
+    }
+
+    return fieldset;
   }
 
   function renderQuiz() {
     var host = document.getElementById('quiz-container');
     host.textContent = '';
-    QUIZ_QUESTIONS.forEach(function (question) {
-      var fieldset = el('fieldset', {
-        className: 'quiz-question',
-        id: 'question-' + question.id
-      });
-      fieldset.appendChild(
-        el('legend', {
-          textContent: 'Question ' + question.id + ': ' + question.prompt
-        })
-      );
-      var list = el('div', {
-        className: 'choice-list',
-        role: 'radiogroup',
-        'aria-label': 'Answers for question ' + question.id
-      });
-      question.options.forEach(function (option, index) {
-        var inputId = 'q' + question.id + '-opt' + index;
-        var input = el('input', {
-          type: 'radio',
-          name: 'question-' + question.id,
-          id: inputId,
-          value: String(index)
-        });
-        if (String(quizState.answers[question.id]) === String(index)) {
-          input.checked = true;
-        }
-        if (quizState.checked) {
-          input.disabled = true;
-        }
-        input.addEventListener('change', function () {
-          if (quizState.checked) return;
-          if (!quizState.startTime) quizState.startTime = Date.now();
-          quizState.answers[question.id] = index;
-          refreshQuizProgress();
-        });
-        list.appendChild(
-          el('div', { className: 'choice' }, [
-            input,
-            el('label', { htmlFor: inputId, textContent: option })
-          ])
-        );
-      });
-      fieldset.appendChild(list);
 
-      if (quizState.checked) {
-        var correct = Number(quizState.answers[question.id]) === question.correctIndex;
-        fieldset.appendChild(
-          el('div', {
-            className: 'quiz-explanation ' + (correct ? 'correct' : 'incorrect'),
-            role: 'region',
-            'aria-label': 'Feedback for question ' + question.id
-          }, [
-            el('p', { textContent: correct ? 'Result: Correct' : 'Result: Requires review' }),
-            el('p', { textContent: 'Correct answer: ' + question.options[question.correctIndex] }),
-            el('p', { textContent: 'Explanation: ' + question.explanation })
-          ])
-        );
+    if (quizState.checked) {
+      QUIZ_QUESTIONS.forEach(function (question) {
+        host.appendChild(renderOneQuizQuestion(question));
+      });
+    } else {
+      if (quizState.currentIndex < 0) quizState.currentIndex = 0;
+      if (quizState.currentIndex >= QUIZ_QUESTIONS.length) {
+        quizState.currentIndex = QUIZ_QUESTIONS.length - 1;
       }
+      host.appendChild(renderOneQuizQuestion(QUIZ_QUESTIONS[quizState.currentIndex]));
+      var firstControl = host.querySelector('input, button');
+      if (firstControl) firstControl.focus();
+    }
 
-      host.appendChild(fieldset);
-    });
     refreshQuizProgress();
+  }
+
+  function showQuizQuestion(index) {
+    if (quizState.checked) return;
+    if (index < 0 || index >= QUIZ_QUESTIONS.length) return;
+    quizState.currentIndex = index;
+    renderQuiz();
   }
 
   function populateHardestOptions() {
@@ -710,7 +752,7 @@
         'Complete all questions before checking answers. Still unanswered: ' + unanswered.join(', '),
         'error'
       );
-      document.getElementById('question-' + unanswered[0]).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showQuizQuestion(unanswered[0] - 1);
       return;
     }
 
@@ -772,6 +814,7 @@
     quizState.incorrectQuestions = [];
     quizState.startTime = null;
     quizState.completionTime = null;
+    quizState.currentIndex = 0;
     state.learner = null;
     state.submitted = false;
 
@@ -950,6 +993,12 @@
   function bindQuiz() {
     renderQuiz();
     populateHardestOptions();
+    document.getElementById('btn-quiz-prev').addEventListener('click', function () {
+      showQuizQuestion(quizState.currentIndex - 1);
+    });
+    document.getElementById('btn-quiz-next').addEventListener('click', function () {
+      showQuizQuestion(quizState.currentIndex + 1);
+    });
     document.getElementById('btn-review-unanswered').addEventListener('click', function () {
       var unanswered = unansweredIds();
       if (!unanswered.length) {
@@ -961,12 +1010,7 @@
         'Unanswered questions: ' + unanswered.join(', ') + '. Showing question ' + unanswered[0] + '.',
         'warning'
       );
-      var target = document.getElementById('question-' + unanswered[0]);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        var control = target.querySelector('input');
-        if (control) control.focus();
-      }
+      showQuizQuestion(unanswered[0] - 1);
     });
     document.getElementById('btn-check-quiz').addEventListener('click', checkQuiz);
     document.getElementById('btn-new-attempt').addEventListener('click', startAnotherAttempt);
