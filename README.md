@@ -53,7 +53,7 @@ Unit 3 Cyber Security Hub
 │   ├── Incident Classification          (Active)
 │   ├── Cyber Security Glossary          (Active)
 │   ├── Session 2 Retrieval Quiz         (Active)
-│   ├── OCR Command-Word Guide           (Coming soon)
+│   ├── OCR Command-Word Guide           (Active API pilot)
 │   ├── OCR-Style Question Practice      (Coming soon)
 │   └── Directed Independent Study       (Coming soon)
 ├── Resources
@@ -205,9 +205,14 @@ Purpose: a 10-minute, 15-mark formative retrieval starter for Session 2. It chec
 
 Still marked Coming soon on the Week 1 page:
 
-- OCR Command-Word Guide
 - OCR-Style Question Practice
 - Directed Independent Study
+
+The OCR Command-Word Guide is an Active API pilot at:
+
+`activities/activity.html?activityId=U3-W01-COMMAND-WORDS`
+
+It uses the Activity API only. See `docs/activity-api-engine.md`.
 
 ## 9. File structure
 
@@ -220,6 +225,7 @@ Still marked Coming soon on the Week 1 page:
   /css
     main.css
     activity.css
+    activity-engine.css
   /js
     navigation.js
     session-disclosure.js
@@ -227,6 +233,13 @@ Still marked Coming soon on the Week 1 page:
     course-context.js
     learner-details.js
     submissions.js
+    activity-engine-config.js
+    activity-api.js
+    activity-state.js
+    activity-renderer.js
+    activity-engine.js
+  /activities
+    activity.html
   /assets
     /images
     /icons
@@ -501,6 +514,9 @@ Learners cannot edit these values.
 | Incident Classification | `U3-W01-INCIDENTS` | 12 | 1 to 12 |
 | Cyber Security Glossary | `U3-W01-GLOSSARY` | 12 | 1 to 12 |
 | Session 2 Retrieval Quiz | `U3-W01-RETRIEVAL` | 15 | 1 to 10 |
+| OCR Command-Word Guide (Activity API pilot) | `U3-W01-COMMAND-WORDS` | 12 | Q001 to Q006 |
+
+Collector v3 continues to serve the first five activities. The Command-Word pilot submits only through the Activity API (`docs/activity-api-engine.md`).
 
 ### Class-group configuration
 
