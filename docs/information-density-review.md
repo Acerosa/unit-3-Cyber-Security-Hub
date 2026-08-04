@@ -48,10 +48,10 @@ Most interactive activities already limit what learners see at once (one questio
 
 ### CIA Triad Learning
 
-- Concern: Low for stage model (already staged). Scenarios show six items in one stage.
-- Decision: No change now.
-- Reason: Staging already hides future panels. Six scenario radios are manageable after definitions; splitting further would add clicks without clear benefit yet.
-- Change made: No.
+- Concern: Former Collector page staged many panels in one journey.
+- Decision: Activity now uses the generic Activity API engine route.
+- Pattern: API-driven learning and assessment sections with progressive disclosure in the generic engine.
+- Change made: Yes (Collector CIA page removed; API route is the sole CIA entry).
 
 ### Incident Classification
 

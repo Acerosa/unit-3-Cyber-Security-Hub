@@ -44,7 +44,7 @@
       itemMinimum: 1,
       itemMaximum: 12,
       allowsPartner: false,
-      attemptStorageKey: 'unit3-w01-cia-attempt-id'
+      attemptStorageKey: 'unit3-activity-api-state:U3-W01-CIA'
     }),
     'U3-W01-INCIDENTS': Object.freeze({
       activityId: 'U3-W01-INCIDENTS',

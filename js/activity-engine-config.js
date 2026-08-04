@@ -40,7 +40,7 @@
     'U3-W01-BASELINE': SUBMISSION_SERVICE.ACTIVITY_API,
     'U3-W01-CIA': SUBMISSION_SERVICE.ACTIVITY_API,
     'U3-W01-COMMAND-WORDS': SUBMISSION_SERVICE.ACTIVITY_API,
-    // Existing dedicated Week 1 pages continue to post via js/submissions.js
+    // Remaining dedicated Week 1 pages continue to post via js/submissions.js
     'U3-W01-INCIDENTS': SUBMISSION_SERVICE.COLLECTOR_V3,
     'U3-W01-GLOSSARY': SUBMISSION_SERVICE.COLLECTOR_V3,
     'U3-W01-RETRIEVAL': SUBMISSION_SERVICE.COLLECTOR_V3
