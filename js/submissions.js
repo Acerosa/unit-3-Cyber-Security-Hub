@@ -9,7 +9,7 @@
   'use strict';
 
   var COLLECTOR_URL =
-    'https://script.google.com/macros/s/AKfycbz3y931cm-BEu_t_fAo8Eit3tzxxMD_dj4mKIFbjo5U_ySu2jfsUn0Lzp0fS3HRsoyE/exec';
+    'https://script.google.com/macros/s/AKfycbwiweqkdfL7SZvJbxBWST_iBgC89_cqsDdNjUfjZZOlyXYSxajec3wAYXiKh93TX5Isuw/exec';
 
   var COMPLETED_SUFFIX = '-completed';
 
