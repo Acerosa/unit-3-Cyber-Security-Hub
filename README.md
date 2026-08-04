@@ -14,7 +14,7 @@ This repository is the central learner-facing website for Unit 3. It will eventu
 - directed independent study
 - formative result collection
 
-This foundation release provides the hub shell, Week 1 overview, the Baseline Knowledge Check, the interactive Cyber Security Glossary, Session 2 Retrieval Quiz, and the migrated Northbank Incident Classification activity.
+This foundation release provides the hub shell, Week 1 overview, the Baseline Knowledge Check, CIA Triad Learning, the interactive Cyber Security Glossary, Session 2 Retrieval Quiz, and the migrated Northbank Incident Classification activity.
 
 ## 2. Source repository
 
@@ -49,8 +49,9 @@ Unit 3 Cyber Security Hub
 ├── Week 1
 │   ├── Week 1 Overview
 │   ├── Baseline Knowledge Check         (Active)
-│   ├── Cyber Security Glossary          (Active)
+│   ├── CIA Triad Learning               (Active)
 │   ├── Incident Classification          (Active)
+│   ├── Cyber Security Glossary          (Active)
 │   ├── Session 2 Retrieval Quiz         (Active)
 │   ├── OCR Command-Word Guide           (Coming soon)
 │   ├── OCR-Style Question Practice      (Coming soon)
@@ -105,6 +106,64 @@ Privacy and answer-security limitations:
 - Correct answers are stored in public static JavaScript and may be inspected
 - Do not describe this diagnostic as secure or use it for formal grading
 
+### CIA Triad Learning
+
+Route: `week-1/cia-triad-learning/`
+
+Published path (after Pages deployment):
+
+`https://acerosa.github.io/unit-3-Cyber-Security-Hub/week-1/cia-triad-learning/`
+
+Purpose: guided formative learning on the CIA triad (confidentiality, integrity and availability), with Northbank examples, unscored guided practice, then a 15-mark knowledge check.
+
+Learning stages:
+
+1. Your details
+2. Learn the model
+3. Guided examples (not scored)
+4. Definition check (Questions 1 to 3, 3 marks)
+5. Northbank scenarios (Questions 4 to 9, 6 marks)
+6. Combined impacts (Questions 10 to 12, 6 marks)
+7. Reflection and result
+
+Scoring notes:
+
+- Maximum score: 15
+- Item range: 1 to 12
+- Questions 10 to 12 award one mark per correct selected aim (maximum 2 per question)
+- Partially correct multi-aim items are included in `questionsForReview`
+- Reflection is required (40 to 500 characters) and is not auto-scored
+
+Submission notes:
+
+- Attempt ID key: `unit3-w01-cia-attempt-id` (sessionStorage only)
+- Activity ID: `U3-W01-CIA`
+- Activity type: Guided learning
+- Schema version: 3.0
+- Partner fields are not shown
+- Browser probe helper: `window.Unit3CiaProbe` (TEST only; no TEST option in the learner UI)
+
+Collector registry dependency (manual staff action):
+
+The live Apps Script collector validates Activity IDs against its Activities worksheet. Cursor cannot edit that private sheet. Before LIVE or TEST submissions can be accepted for this activity, staff must add this row:
+
+| Field | Value |
+| --- | --- |
+| Activity ID | `U3-W01-CIA` |
+| Activity name | CIA Triad Learning |
+| Unit ID | `U3` |
+| Week number | `1` |
+| Session | Session 1 |
+| Activity type | Guided learning |
+| Maximum score | `15` |
+| Activity version | `1.0` |
+| Allows partner | `FALSE` |
+| Item minimum | `1` |
+| Item maximum | `12` |
+| Active | `TRUE` |
+
+Until that row is Active, endpoint tests should report the missing registry dependency rather than remapping the payload to another activity.
+
 ### Incident Classification
 
 Route: `week-1/incident-classification/`
@@ -146,7 +205,6 @@ Purpose: a 10-minute, 15-mark formative retrieval starter for Session 2. It chec
 
 Still marked Coming soon on the Week 1 page:
 
-- CIA Triad Learning
 - OCR Command-Word Guide
 - OCR-Style Question Practice
 - Directed Independent Study
@@ -182,6 +240,11 @@ Still marked Coming soon on the Week 1 page:
       questions.js
       baseline.js
       activity.css
+    /cia-triad-learning
+      index.html
+      content.js
+      app.js
+      styles.css
     /glossary
       index.html
       terms.js
@@ -220,6 +283,7 @@ No frameworks, npm packages, build tools or server-side code.
    - `http://localhost:8080/`
    - `http://localhost:8080/week-1/`
    - `http://localhost:8080/week-1/baseline-knowledge-check/`
+   - `http://localhost:8080/week-1/cia-triad-learning/`
    - `http://localhost:8080/week-1/glossary/`
    - `http://localhost:8080/week-1/retrieval-quiz/`
    - `http://localhost:8080/week-1/incident-classification/`
@@ -260,7 +324,7 @@ Week 1 is structured so a future Weeks menu can be added later without a top-lev
 - Session 2
 - Directed independent study
 
-Baseline Knowledge Check, Cyber Security Glossary, Session 2 Retrieval Quiz and Incident Classification are active. Coming soon items are not links and are not clickable cards.
+Five Week 1 activities are active: Baseline Knowledge Check, CIA Triad Learning, Incident Classification, Cyber Security Glossary and Session 2 Retrieval Quiz. Coming soon items are not links and are not clickable cards.
 
 ## 13a. Cyber Security Glossary
 
@@ -380,7 +444,7 @@ Subtitle retained:
 
 ## 15. Collector v3 learner submissions
 
-All four Week 1 activities submit **schema version 3.0** to the existing Apps Script web app URL configured in:
+All five Week 1 activities submit **schema version 3.0** to the existing Apps Script web app URL configured in:
 
 `js/submissions.js` as `Unit3Submissions.COLLECTOR_URL`
 
@@ -417,6 +481,7 @@ Learners cannot edit these values.
 | Activity | Activity ID | Maximum score | Item range |
 | --- | --- | --- | --- |
 | Baseline Knowledge Check | `U3-W01-BASELINE` | 10 | 1 to 10 |
+| CIA Triad Learning | `U3-W01-CIA` | 15 | 1 to 12 |
 | Incident Classification | `U3-W01-INCIDENTS` | 12 | 1 to 12 |
 | Cyber Security Glossary | `U3-W01-GLOSSARY` | 12 | 1 to 12 |
 | Session 2 Retrieval Quiz | `U3-W01-RETRIEVAL` | 15 | 1 to 10 |

@@ -33,6 +33,19 @@
       allowsPartner: false,
       attemptStorageKey: 'unit3-baseline-knowledge-check-attempt-id'
     }),
+    'U3-W01-CIA': Object.freeze({
+      activityId: 'U3-W01-CIA',
+      activityName: 'CIA Triad Learning',
+      weekNumber: 1,
+      sessionName: 'Session 1',
+      activityType: 'Guided learning',
+      activityVersion: '1.0',
+      maximumScore: 15,
+      itemMinimum: 1,
+      itemMaximum: 12,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-w01-cia-attempt-id'
+    }),
     'U3-W01-INCIDENTS': Object.freeze({
       activityId: 'U3-W01-INCIDENTS',
       activityName: 'Incident Classification',

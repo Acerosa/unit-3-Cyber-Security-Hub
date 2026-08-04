@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Guided Week 1 learning on the CIA triad for OCR Level 3 IT Unit 3 Cyber Security.">
+  <title>CIA Triad Learning | Unit 3 Cyber Security Hub</title>
+  <link rel="stylesheet" href="../../css/main.css">
+  <link rel="stylesheet" href="../../css/activity.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header" role="banner">
+    <div class="header-bar">
+      <a class="site-brand" href="../../index.html">
+        <p class="brand-title">Unit 3 Cyber Security Hub</p>
+        <p class="brand-tagline">OCR Level 3 IT</p>
+      </a>
+      <button
+        type="button"
+        class="nav-toggle"
+        id="nav-toggle"
+        aria-controls="site-navigation"
+        aria-expanded="false"
+        aria-label="Open main menu"
+      >
+        Menu
+      </button>
+      <nav class="site-nav" id="site-navigation" aria-label="Main">
+        <ul class="nav-list">
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../" aria-current="page">Week 1</a></li>
+          <li><a href="../../resources/">Resources</a></li>
+          <li><a href="../../help/">Help</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li><a href="../../index.html">Home</a><span class="breadcrumb-sep" aria-hidden="true"> &gt; </span></li>
+      <li><a href="../">Week 1</a><span class="breadcrumb-sep" aria-hidden="true"> &gt; </span></li>
+      <li><span aria-current="page">CIA Triad Learning</span></li>
+    </ol>
+  </nav>
+
+  <header class="page-header activity-shell">
+    <h1 class="activity-heading">CIA Triad Learning</h1>
+    <p class="activity-subtitle">
+      Learn confidentiality, integrity and availability, then check your understanding with Northbank scenarios.
+    </p>
+    <p class="meta-row">
+      <span>Suggested time: 20 minutes</span>
+      <span aria-hidden="true">|</span>
+      <span>15 formative marks</span>
+      <span aria-hidden="true">|</span>
+      <span>Guided learning with feedback</span>
+    </p>
+  </header>
+
+  <main id="main-content" class="site-main cia-main" tabindex="-1">
+    <p class="notice-banner" role="note">
+      This is formative guided learning. Explanations appear after each scored section.
+      It is not a formal grade and not an official OCR assessment.
+    </p>
+
+    <nav id="progress-nav" class="cia-progress" aria-label="Activity progress">
+      <p id="progress-text" class="progress-text">Stage 1 of 7: Your details</p>
+      <ol class="cia-progress-list">
+        <li data-stage="details" class="is-current"><span class="cia-progress-num">1</span> Your details</li>
+        <li data-stage="learn"><span class="cia-progress-num">2</span> Learn the model</li>
+        <li data-stage="guided"><span class="cia-progress-num">3</span> Guided examples</li>
+        <li data-stage="definitions"><span class="cia-progress-num">4</span> Definition check</li>
+        <li data-stage="scenarios"><span class="cia-progress-num">5</span> Northbank scenarios</li>
+        <li data-stage="multi"><span class="cia-progress-num">6</span> Combined impacts</li>
+        <li data-stage="result"><span class="cia-progress-num">7</span> Reflection and result</li>
+      </ol>
+    </nav>
+
+    <section id="panel-details" class="panel" aria-labelledby="details-heading">
+      <h2 id="details-heading">Before you begin</h2>
+      <p>
+        Cyber security protects digital systems and the information stored, processed or
+        transferred by them. This activity teaches the CIA triad and then checks your
+        understanding with Northbank Community Health Partnership examples.
+      </p>
+      <h3>Instructions</h3>
+      <ul class="section-list">
+        <li>Complete your details before starting.</li>
+        <li>Work through the learning stages in order.</li>
+        <li>Guided examples are not scored.</li>
+        <li>Check each scored section before moving on.</li>
+        <li>Answers lock after a section is checked.</li>
+        <li>Your result is not a formal grade.</li>
+      </ul>
+
+      <div id="course-details-host"></div>
+      <div id="learner-details-host"></div>
+
+      <div id="start-status" class="status-messages" aria-live="polite" aria-atomic="true"></div>
+      <div class="quiz-actions">
+        <button type="button" id="btn-start" class="btn btn-primary">Start CIA Triad Learning</button>
+      </div>
+    </section>
+
+    <section id="panel-learn" class="panel" aria-labelledby="learn-heading" hidden>
+      <h2 id="learn-heading">Learn the CIA triad</h2>
+      <p>
+        Cyber security is not only about keeping information secret. Confidentiality is
+        only one of the three aims. The CIA triad also includes integrity and availability.
+      </p>
+      <div id="cia-triad-host" class="cia-triad" role="list" aria-label="CIA triad aims"></div>
+      <div class="quiz-actions">
+        <button type="button" id="btn-to-guided" class="btn btn-primary">Continue to guided examples</button>
+      </div>
+    </section>
+
+    <section id="panel-guided" class="panel" aria-labelledby="guided-heading" hidden>
+      <h2 id="guided-heading">Guided examples</h2>
+      <p class="panel-note">
+        These examples are not scored. Predict the main CIA aim, then reveal the explanation.
+      </p>
+      <div id="guided-host"></div>
+      <div class="quiz-actions">
+        <button type="button" id="btn-to-definitions" class="btn btn-primary" disabled>
+          Continue to definition check
+        </button>
+      </div>
+    </section>
+
+    <section id="panel-definitions" class="panel" aria-labelledby="definitions-heading" hidden>
+      <h2 id="definitions-heading">Definition check</h2>
+      <p class="panel-note">Questions 1 to 3. Each question is worth 1 mark. Check the section before continuing.</p>
+      <div id="definitions-status" class="status-messages" aria-live="polite" aria-atomic="true"></div>
+      <form id="definitions-form" novalidate></form>
+      <div id="definitions-feedback" class="section-feedback" hidden></div>
+      <div class="quiz-actions">
+        <button type="button" id="btn-check-definitions" class="btn btn-primary">Check definitions</button>
+        <button type="button" id="btn-to-scenarios" class="btn btn-primary" hidden>Continue to Northbank scenarios</button>
+      </div>
+    </section>
+
+    <section id="panel-scenarios" class="panel" aria-labelledby="scenarios-heading" hidden>
+      <h2 id="scenarios-heading">Northbank scenario classification</h2>
+      <p class="panel-note">Questions 4 to 9. Select the main CIA aim affected. Each question is worth 1 mark.</p>
+      <div id="scenarios-status" class="status-messages" aria-live="polite" aria-atomic="true"></div>
+      <form id="scenarios-form" novalidate></form>
+      <div id="scenarios-feedback" class="section-feedback" hidden></div>
+      <div class="quiz-actions">
+        <button type="button" id="btn-check-scenarios" class="btn btn-primary">Check scenarios</button>
+        <button type="button" id="btn-to-multi" class="btn btn-primary" hidden>Continue to combined impacts</button>
+      </div>
+    </section>
+
+    <section id="panel-multi" class="panel" aria-labelledby="multi-heading" hidden>
+      <h2 id="multi-heading">More than one CIA aim</h2>
+      <p class="panel-note">
+        Questions 10 to 12. Each scenario affects exactly two CIA aims. Select all that apply.
+        Each question is worth up to 2 marks.
+      </p>
+      <div id="multi-status" class="status-messages" aria-live="polite" aria-atomic="true"></div>
+      <form id="multi-form" novalidate></form>
+      <div id="multi-feedback" class="section-feedback" hidden></div>
+      <div class="quiz-actions">
+        <button type="button" id="btn-check-multi" class="btn btn-primary">Check combined impacts</button>
+        <button type="button" id="btn-to-result" class="btn btn-primary" hidden>Continue to reflection and result</button>
+      </div>
+    </section>
+
+    <section id="panel-result" class="panel" aria-labelledby="result-heading" hidden>
+      <h2 id="result-heading">Reflection and result</h2>
+      <div id="score-summary" class="score-summary"></div>
+
+      <form id="result-form" novalidate>
+        <div class="field">
+          <label for="most-difficult">Which question did you find most difficult? <span class="optional">(optional)</span></label>
+          <select id="most-difficult" name="mostDifficultItem">
+            <option value="">None</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="reflection">
+            Explain why cyber security is not only about confidentiality. Refer to at
+            least two CIA aims and include one Northbank example.
+            <span class="required" aria-hidden="true">*</span>
+            <span class="visually-hidden"> (required)</span>
+          </label>
+          <textarea
+            id="reflection"
+            name="reflection"
+            rows="5"
+            maxlength="500"
+            required
+            aria-required="true"
+            aria-describedby="reflection-count reflection-hint"
+          ></textarea>
+          <p id="reflection-hint" class="field-hint">Minimum 40 characters. Maximum 500 characters.</p>
+          <p id="reflection-count" class="char-count" aria-live="polite">0 / 500</p>
+        </div>
+      </form>
+
+      <div id="submission-summary-host"></div>
+      <p class="privacy-notice" role="note">
+        Results are sent to a staff-controlled Google Sheet for formative support.
+        Do not enter sensitive personal information. This activity is not a secure examination system.
+      </p>
+      <div class="submission-actions">
+        <button type="button" id="btn-submit" class="btn btn-primary">Submit result</button>
+        <button type="button" id="btn-retry" class="btn btn-secondary" hidden>Retry submission</button>
+        <button type="button" id="btn-start-another" class="btn btn-secondary" hidden>Start another attempt</button>
+      </div>
+      <div id="submission-messages" class="status-messages" aria-live="polite" aria-atomic="true"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <p>CIA Triad Learning - OCR Level 3 IT Unit 3 formative guided learning</p>
+    <p>
+      <a href="../">Back to Week 1</a> ·
+      <a href="../baseline-knowledge-check/">Previous: Baseline Knowledge Check</a> ·
+      <a href="../incident-classification/">Next: Incident Classification</a> ·
+      <a href="../../index.html">Hub home</a>
+    </p>
+  </footer>
+
+  <script src="../../js/navigation.js"></script>
+  <script src="../../js/course-context.js"></script>
+  <script src="../../js/activity-utils.js"></script>
+  <script src="../../js/submissions.js"></script>
+  <script src="../../js/learner-details.js"></script>
+  <script src="content.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
