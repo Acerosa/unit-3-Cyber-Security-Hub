@@ -7,13 +7,17 @@ Generic learner activity engine for API-driven activities.
 | Activity ID | Service | Module |
 | --- | --- | --- |
 | `U3-W01-BASELINE` | Activity API only | `js/activity-api.js` |
-| `U3-W01-CIA` | Collector v3 | `js/submissions.js` |
+| `U3-W01-CIA` (existing page) | Collector v3 | `js/submissions.js` |
+| `U3-W01-CIA` (generic engine pilot) | Activity API only | `js/activity-api.js` |
 | `U3-W01-INCIDENTS` | Collector v3 | `js/submissions.js` |
 | `U3-W01-GLOSSARY` | Collector v3 | `js/submissions.js` |
 | `U3-W01-RETRIEVAL` | Collector v3 | `js/submissions.js` |
 | `U3-W01-COMMAND-WORDS` | Activity API only | `js/activity-api.js` |
 
 Baseline Knowledge Check uses the generic Activity API engine only. The former Collector-based Baseline page has been removed.
+
+The existing CIA page at `week-1/cia-triad-learning/` continues to use Collector v3.
+The generic-engine pilot for the same Activity ID uses the Activity API only.
 
 Routing is defined in `js/activity-engine-config.js` as `SUBMISSION_ROUTING`.
 
@@ -26,6 +30,7 @@ Do not send one completed activity to both endpoints.
 ```text
 activities/activity.html?activityId=U3-W01-COMMAND-WORDS
 activities/activity.html?activityId=U3-W01-BASELINE
+activities/activity.html?activityId=U3-W01-CIA
 ```
 
 The query-string `activityId` takes priority over the HTML fallback.
