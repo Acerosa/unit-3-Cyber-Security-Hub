@@ -103,61 +103,30 @@ Privacy and answer-security notes:
 
 ### CIA Triad Learning
 
-Route: `week-1/cia-triad-learning/`
+Route: `activities/activity.html?activityId=U3-W01-CIA`
 
 Published path (after Pages deployment):
 
-`https://acerosa.github.io/unit-3-Cyber-Security-Hub/week-1/cia-triad-learning/`
+`https://acerosa.github.io/unit-3-Cyber-Security-Hub/activities/activity.html?activityId=U3-W01-CIA`
 
-Purpose: guided formative learning on the CIA triad (confidentiality, integrity and availability), with Northbank examples, unscored guided practice, then a 15-mark knowledge check.
+Purpose: guided formative learning on the CIA triad (confidentiality, integrity and availability), with Northbank examples and a 15-mark knowledge check.
 
-Learning stages:
+It uses the generic Activity API engine. Content and marking come from the private Activity API. Browser code does not contain the question bank or answer key.
 
-1. Your details
-2. Learn the model
-3. Guided examples (not scored)
-4. Definition check (Questions 1 to 3, 3 marks)
-5. Northbank scenarios (Questions 4 to 9, 6 marks)
-6. Combined impacts (Questions 10 to 12, 6 marks)
-7. Reflection and result
+Expected API structure:
 
-Scoring notes:
-
-- Maximum score: 15
-- Item range: 1 to 12
-- Questions 10 to 12 award one mark per correct selected aim (maximum 2 per question)
-- Partially correct multi-aim items are included in `questionsForReview`
-- Reflection is required (40 to 500 characters) and is not auto-scored
+- nine sections
+- twelve single-choice questions
+- four assessment sections (maximum scores 3, 3, 3 and 6)
+- maximum score 15
 
 Submission notes:
 
-- Attempt ID key: `unit3-w01-cia-attempt-id` (sessionStorage only)
 - Activity ID: `U3-W01-CIA`
-- Activity type: Guided learning
-- Schema version: 3.0
-- Partner fields are not shown
-- Browser probe helper: `window.Unit3CiaProbe` (TEST only; no TEST option in the learner UI)
-
-Collector registry dependency (manual staff action):
-
-The live Apps Script collector validates Activity IDs against its Activities worksheet. Cursor cannot edit that private sheet. Before LIVE or TEST submissions can be accepted for this activity, staff must add this row:
-
-| Field | Value |
-| --- | --- |
-| Activity ID | `U3-W01-CIA` |
-| Activity name | CIA Triad Learning |
-| Unit ID | `U3` |
-| Week number | `1` |
-| Session | Session 1 |
-| Activity type | Guided learning |
-| Maximum score | `15` |
-| Activity version | `1.0` |
-| Allows partner | `FALSE` |
-| Item minimum | `1` |
-| Item maximum | `12` |
-| Active | `TRUE` |
-
-Until that row is Active, endpoint tests should report the missing registry dependency rather than remapping the payload to another activity.
+- Submits through the Activity API only (`markSection` and `submitAttempt`)
+- Current Hub configuration keeps `submissionMode: 'TEST'` and `allowLiveSubmissions: false`
+- Does not use Collector v3
+- See `docs/activity-api-engine.md`
 
 ### Incident Classification
 
@@ -244,11 +213,6 @@ It uses the Activity API only. See `docs/activity-api-engine.md`.
     index.html
   /week-1
     index.html
-    /cia-triad-learning
-      index.html
-      content.js
-      app.js
-      styles.css
     /glossary
       index.html
       terms.js
@@ -287,7 +251,7 @@ No frameworks, npm packages, build tools or server-side code.
    - `http://localhost:8080/`
    - `http://localhost:8080/week-1/`
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-BASELINE`
-   - `http://localhost:8080/week-1/cia-triad-learning/`
+   - `http://localhost:8080/activities/activity.html?activityId=U3-W01-CIA`
    - `http://localhost:8080/week-1/glossary/`
    - `http://localhost:8080/week-1/retrieval-quiz/`
    - `http://localhost:8080/week-1/incident-classification/`
@@ -500,13 +464,13 @@ Learners cannot edit these values.
 | Activity | Activity ID | Maximum score | Item range |
 | --- | --- | --- | --- |
 | Baseline Knowledge Check (Activity API) | `U3-W01-BASELINE` | 10 | BAS-Q01 to BAS-Q10 |
-| CIA Triad Learning | `U3-W01-CIA` | 15 | 1 to 12 |
+| CIA Triad Learning (Activity API) | `U3-W01-CIA` | 15 | CIA-Q01 to CIA-Q12 |
 | Incident Classification | `U3-W01-INCIDENTS` | 12 | 1 to 12 |
 | Cyber Security Glossary | `U3-W01-GLOSSARY` | 12 | 1 to 12 |
 | Session 2 Retrieval Quiz | `U3-W01-RETRIEVAL` | 15 | 1 to 10 |
 | OCR Command-Word Guide (Activity API pilot) | `U3-W01-COMMAND-WORDS` | 12 | Q001 to Q006 |
 
-Collector v3 continues to serve CIA, Incidents, Glossary and Retrieval. Baseline and the Command-Word Guide submit only through the Activity API (`docs/activity-api-engine.md`).
+Collector v3 continues to serve Incidents, Glossary and Retrieval. Baseline, CIA and the Command-Word Guide submit only through the Activity API (`docs/activity-api-engine.md`).
 
 ### Class-group configuration
 
