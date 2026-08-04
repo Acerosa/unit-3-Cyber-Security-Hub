@@ -116,11 +116,13 @@
 
     <section id="panel-quiz" class="panel mode-panel" role="tabpanel" aria-labelledby="tab-quiz" hidden>
       <h2 id="quiz-heading">Knowledge check</h2>
-      <p class="panel-note">Answer all 12 questions. Check answers only becomes available when the set is complete.</p>
-      <p id="quiz-progress" class="progress-text" aria-live="polite">0 of 12 answered</p>
+      <p class="panel-note">Answer all 12 questions one at a time. Check answers becomes available when the set is complete.</p>
+      <p id="quiz-progress" class="progress-text" aria-live="polite">Question 1 of 12 · 0 answered</p>
       <div id="quiz-status" class="status-messages" aria-live="polite" aria-atomic="true"></div>
       <div id="quiz-container" class="quiz-container"></div>
       <div class="quiz-actions">
+        <button type="button" id="btn-quiz-prev" class="btn btn-secondary">Previous</button>
+        <button type="button" id="btn-quiz-next" class="btn btn-secondary">Next</button>
         <button type="button" id="btn-review-unanswered" class="btn btn-secondary">Review unanswered questions</button>
         <button type="button" id="btn-check-quiz" class="btn btn-primary" disabled>Check answers</button>
         <button type="button" id="btn-new-attempt" class="btn btn-danger" hidden>Start new attempt</button>

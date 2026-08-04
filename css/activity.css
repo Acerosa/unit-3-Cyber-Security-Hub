@@ -31,7 +31,8 @@
 }
 
 /* Collector v3 learner identification */
-.course-details-panel {
+.course-details-panel,
+.course-details-disclosure {
   margin-bottom: 1rem;
 }
 

@@ -333,11 +333,14 @@ Session and study groups use native HTML `details` and `summary` disclosure cont
 
 - Session 1 opens by default
 - Session 2 and Directed independent study are collapsed by default
+- Week 1 topic summary groups are collapsed by default
 - Multiple sections may remain open at the same time
 - Expanded or collapsed state is not stored in browser storage
 - Individual activity cards are not collapsible
 - The same pattern can be reused for later weeks
 - `js/session-disclosure.js` only opens a collapsed section when a URL fragment targets content inside it; disclosure still works without JavaScript
+
+Cognitive-load decisions for the wider hub are recorded in `docs/information-density-review.md`.
 
 ## 13a. Cyber Security Glossary
 
