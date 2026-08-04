@@ -56,7 +56,7 @@
     <section class="panel instructions-panel" aria-labelledby="instructions-heading">
       <h2 id="instructions-heading">Instructions</h2>
       <ul>
-        <li>Work with your partner.</li>
+        <li>Work individually or with a partner.</li>
         <li>Read each incident carefully.</li>
         <li>Select the most appropriate incident type.</li>
         <li>Select all affected CIA aims.</li>
@@ -66,26 +66,9 @@
     </section>
 
     <section class="panel learner-panel" aria-labelledby="learner-heading">
-      <h2 id="learner-heading">Learner details</h2>
-      <p class="panel-note">Do not enter email addresses or other sensitive personal information.</p>
-      <div class="form-grid">
-        <div class="field">
-          <label for="class-group">Class or group <span class="required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label>
-          <input type="text" id="class-group" name="classGroup" required aria-required="true" autocomplete="off" maxlength="100">
-        </div>
-        <div class="field">
-          <label for="pair-code">Pair code <span class="required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label>
-          <input type="text" id="pair-code" name="pairCode" required aria-required="true" autocomplete="off" maxlength="50">
-        </div>
-        <div class="field">
-          <label for="learner-1">Learner 1 <span class="optional">(optional)</span></label>
-          <input type="text" id="learner-1" name="learner1" autocomplete="off" maxlength="100">
-        </div>
-        <div class="field">
-          <label for="learner-2">Learner 2 <span class="optional">(optional)</span></label>
-          <input type="text" id="learner-2" name="learner2" autocomplete="off" maxlength="100">
-        </div>
-      </div>
+      <h2 id="learner-heading">Before you begin</h2>
+      <div id="course-details-host"></div>
+      <div id="learner-details-host"></div>
     </section>
 
     <section class="panel progress-panel" aria-labelledby="progress-heading">
@@ -142,15 +125,14 @@
       <p class="privacy-notice" role="note">
         Results are sent to a staff-controlled Google Sheet for formative assessment. Do not enter sensitive personal information. This activity is not a secure examination system.
       </p>
-      <!--
-        Browser validation improves usability only.
-        The Apps Script validates all values again.
-        A public static site cannot securely authenticate learners.
-        This activity is for formative evidence only.
-      -->
+      <p class="panel-note">
+        Submissions use Collector schema 3.0.
+      </p>
+      <div id="submission-summary-host"></div>
       <div class="submission-actions">
         <button type="button" id="btn-submit" class="btn btn-primary">Submit results</button>
         <button type="button" id="btn-retry" class="btn btn-secondary" hidden>Retry submission</button>
+        <button type="button" id="btn-start-another" class="btn btn-secondary" hidden>Start another attempt</button>
       </div>
       <div id="submission-messages" class="status-messages" aria-live="polite" aria-atomic="true"></div>
     </section>
@@ -162,6 +144,10 @@
   </footer>
 
   <script src="../../js/navigation.js"></script>
+  <script src="../../js/course-context.js"></script>
+  <script src="../../js/activity-utils.js"></script>
+  <script src="../../js/submissions.js"></script>
+  <script src="../../js/learner-details.js"></script>
   <script src="scenarios.js"></script>
   <script src="app.js"></script>
 </body>
