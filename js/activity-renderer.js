@@ -1,0 +1,361 @@
+/**
+ * Renders Activity API content into the generic activity page.
+ * Does not contain activity-specific questions or answer keys.
+ */
+
+(function (global) {
+  'use strict';
+
+  var utils = global.Unit3ActivityUtils || {};
+  var el = utils.el;
+
+  function ensureEl() {
+    if (el) return;
+    el = function (tag, attrs, children) {
+      var node = document.createElement(tag);
+      if (attrs) {
+        Object.keys(attrs).forEach(function (key) {
+          var value = attrs[key];
+          if (key === 'className') node.className = value;
+          else if (key === 'textContent') node.textContent = value;
+          else if (key === 'htmlFor') node.htmlFor = value;
+          else if (value !== null && value !== undefined && value !== false) {
+            node.setAttribute(key, value === true ? '' : String(value));
+          }
+        });
+      }
+      (children || []).forEach(function (child) {
+        if (child == null) return;
+        node.appendChild(
+          typeof child === 'string' ? document.createTextNode(child) : child
+        );
+      });
+      return node;
+    };
+  }
+
+  function sortByDisplayOrder(items) {
+    return (items || []).slice().sort(function (a, b) {
+      return (a.displayOrder || 0) - (b.displayOrder || 0);
+    });
+  }
+
+  function renderContentBlock(block) {
+    ensureEl();
+    var article = el('article', {
+      className: 'ae-content-block ae-block-' + (block.blockType || 'information'),
+      id: block.blockId || undefined
+    });
+    if (block.heading) {
+      article.appendChild(el('h4', { textContent: block.heading }));
+    }
+    var typeLabel = {
+      information: 'Information',
+      checklist: 'Checklist',
+      definition: 'Definition',
+      'worked-example': 'Worked example'
+    }[block.blockType];
+    if (typeLabel) {
+      article.appendChild(
+        el('p', { className: 'ae-block-type', textContent: typeLabel })
+      );
+    }
+    if (block.content) {
+      article.appendChild(el('p', { textContent: block.content }));
+    }
+    return article;
+  }
+
+  function renderQuestion(question, state, markResult, handlers) {
+    ensureEl();
+    var qid = question.questionId;
+    var selected = state.responses[qid] || '';
+    var itemResult = null;
+    if (markResult && markResult.results) {
+      for (var i = 0; i < markResult.results.length; i += 1) {
+        if (markResult.results[i].questionId === qid) {
+          itemResult = markResult.results[i];
+          break;
+        }
+      }
+    }
+
+    var fieldset = el('fieldset', {
+      className:
+        'ae-question' +
+        (itemResult
+          ? itemResult.status === 'correct'
+            ? ' is-correct'
+            : ' is-incorrect'
+          : ''),
+      id: 'question-' + qid
+    });
+
+    var marks = question.marks || question.maximumMarks || 1;
+    fieldset.appendChild(
+      el('legend', {
+        textContent:
+          qid +
+          '. ' +
+          (question.prompt || '') +
+          ' (' +
+          marks +
+          (marks === 1 ? ' mark' : ' marks') +
+          ')'
+      })
+    );
+
+    if (question.instruction) {
+      fieldset.appendChild(
+        el('p', { className: 'ae-question-instruction', textContent: question.instruction })
+      );
+    }
+
+    if (question.questionType !== 'single-choice') {
+      fieldset.appendChild(
+        el('p', {
+          className: 'message message-error',
+          textContent:
+            'This question type (' +
+            (question.questionType || 'unknown') +
+            ') is not supported in this version of the activity engine.'
+        })
+      );
+      return fieldset;
+    }
+
+    var list = el('ul', { className: 'ae-choice-list' });
+    sortByDisplayOrder(question.options).forEach(function (option) {
+      var inputId = qid + '-' + option.optionId;
+      var input = el('input', {
+        type: 'radio',
+        name: 'question-' + qid,
+        id: inputId,
+        value: option.optionId
+      });
+      if (selected === option.optionId) input.checked = true;
+      input.addEventListener('change', function () {
+        if (handlers && handlers.onAnswer) {
+          handlers.onAnswer(qid, option.optionId);
+        }
+      });
+
+      var labelClass = 'ae-choice';
+      if (itemResult) {
+        if (itemResult.correctValue && option.optionId === itemResult.correctValue) {
+          labelClass += ' is-correct-option';
+        } else if (
+          selected === option.optionId &&
+          itemResult.status !== 'correct'
+        ) {
+          labelClass += ' is-incorrect-selected';
+        }
+      }
+
+      var label = el('label', { className: labelClass, htmlFor: inputId }, [
+        input,
+        el('span', {
+          className: 'ae-option-id',
+          textContent: option.optionId
+        }),
+        el('span', { textContent: option.text || '' })
+      ]);
+      list.appendChild(el('li', null, [label]));
+    });
+    fieldset.appendChild(list);
+
+    if (itemResult) {
+      var feedback = el('div', {
+        className: 'ae-question-feedback',
+        role: 'region',
+        'aria-label': 'Feedback for ' + qid
+      });
+      feedback.appendChild(
+        el('p', {
+          textContent:
+            itemResult.status === 'correct'
+              ? 'Correct'
+              : 'Requires review'
+        })
+      );
+      if (itemResult.feedback) {
+        feedback.appendChild(el('p', { textContent: itemResult.feedback }));
+      }
+      if (itemResult.explanation) {
+        feedback.appendChild(el('p', { textContent: itemResult.explanation }));
+      }
+      if (itemResult.correctValue) {
+        feedback.appendChild(
+          el('p', {
+            textContent: 'Correct option: ' + itemResult.correctValue
+          })
+        );
+      }
+      fieldset.appendChild(feedback);
+    }
+
+    return fieldset;
+  }
+
+  function renderSection(section, state, handlers, options) {
+    ensureEl();
+    options = options || {};
+    var sectionId = section.sectionId;
+    var isAssessment = section.sectionType === 'assessment';
+    var markResult = state.markedSections[sectionId] || null;
+    var openByDefault = options.open === true;
+
+    var details = el('details', {
+      className:
+        'session-disclosure ae-section ae-section-' +
+        (section.sectionType || 'learning'),
+      id: 'section-' + sectionId,
+      open: openByDefault
+    });
+
+    var summary = el('summary', { className: 'session-disclosure__summary' });
+    var text = el('span', { className: 'session-disclosure__text' });
+    text.appendChild(
+      el('h3', {
+        className: 'session-disclosure__heading',
+        textContent: section.title || sectionId
+      })
+    );
+    var metaBits = [section.sectionType || 'section'];
+    if (isAssessment) {
+      var markedScore =
+        markResult &&
+        (markResult.score != null ? markResult.score : markResult.sectionScore);
+      var markedMax =
+        markResult &&
+        (markResult.maximumScore != null
+          ? markResult.maximumScore
+          : markResult.maximumMarks);
+      metaBits.push(
+        markResult
+          ? 'Checked: ' +
+              (markedScore != null ? markedScore : '?') +
+              ' / ' +
+              (markedMax != null ? markedMax : '?')
+          : 'Not checked yet'
+      );
+    }
+    text.appendChild(
+      el('span', {
+        className: 'session-disclosure__meta',
+        textContent: metaBits.join(' · ')
+      })
+    );
+    summary.appendChild(text);
+    summary.appendChild(
+      el('span', { className: 'session-disclosure__icon', 'aria-hidden': 'true' })
+    );
+    details.appendChild(summary);
+
+    var content = el('div', { className: 'session-disclosure__content ae-section-content' });
+    sortByDisplayOrder(section.contentBlocks).forEach(function (block) {
+      content.appendChild(renderContentBlock(block));
+    });
+
+    var questions = sortByDisplayOrder(section.questions);
+    questions.forEach(function (question) {
+      content.appendChild(
+        renderQuestion(question, state, markResult, handlers)
+      );
+    });
+
+    if (isAssessment) {
+      var actions = el('div', { className: 'ae-section-actions' });
+      var checkBtn = el('button', {
+        type: 'button',
+        className: 'btn btn-primary',
+        textContent: 'Check this section'
+      });
+      checkBtn.addEventListener('click', function () {
+        if (handlers && handlers.onMarkSection) {
+          handlers.onMarkSection(sectionId);
+        }
+      });
+      actions.appendChild(checkBtn);
+      content.appendChild(actions);
+
+      var status = el('div', {
+        className: 'status-messages ae-section-status',
+        id: 'section-status-' + sectionId,
+        'aria-live': 'polite',
+        'aria-atomic': 'true'
+      });
+      content.appendChild(status);
+
+      if (markResult) {
+        var sectionScore =
+          markResult.score != null ? markResult.score : markResult.sectionScore;
+        var sectionMax =
+          markResult.maximumScore != null
+            ? markResult.maximumScore
+            : markResult.maximumMarks;
+        content.appendChild(
+          el('p', {
+            className: 'ae-section-score',
+            textContent:
+              'Section score: ' +
+              (sectionScore != null ? sectionScore : '0') +
+              ' / ' +
+              (sectionMax != null ? sectionMax : '?')
+          })
+        );
+      }
+    }
+
+    details.appendChild(content);
+    return details;
+  }
+
+  function renderMetadata(host, activity, recordType) {
+    ensureEl();
+    host.textContent = '';
+    var list = el('dl', { className: 'ae-meta-list' });
+    function row(label, value) {
+      list.appendChild(el('dt', { textContent: label }));
+      list.appendChild(el('dd', { textContent: value }));
+    }
+    row('Activity', activity.activityName || '');
+    row('Week', 'Week ' + (activity.weekNumber || ''));
+    row('Session', activity.sessionName || '');
+    row('Type', activity.activityType || '');
+    row('Version', activity.activityVersion || '');
+    row('Maximum score', String(activity.maximumScore || ''));
+    row('Submission mode', recordType === 'LIVE' ? 'LIVE' : 'TEST');
+    host.appendChild(list);
+    if (recordType !== 'LIVE') {
+      host.appendChild(
+        el('p', {
+          className: 'ae-test-banner',
+          role: 'status',
+          textContent:
+            'TEST mode: submissions are recorded for checking only and do not count as learner attempts.'
+        })
+      );
+    }
+  }
+
+  function renderProgress(host, completed, total) {
+    ensureEl();
+    host.textContent = '';
+    host.appendChild(
+      el('p', {
+        className: 'progress-text',
+        textContent:
+          'Assessment progress: ' + completed + ' of ' + total + ' sections checked'
+      })
+    );
+  }
+
+  global.Unit3ActivityRenderer = {
+    sortByDisplayOrder: sortByDisplayOrder,
+    renderMetadata: renderMetadata,
+    renderProgress: renderProgress,
+    renderSection: renderSection,
+    renderQuestion: renderQuestion
+  };
+})(window);
