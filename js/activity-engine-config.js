@@ -1,9 +1,9 @@
 /**
  * Activity engine configuration and submission-service routing.
  *
- * Existing Week 1 activity pages continue to use Collector v3 via js/submissions.js.
- * API-driven pilots (Baseline and OCR Command-Word Guide) use the Activity API only
- * through the generic engine route.
+ * Existing Collector Week 1 activity pages continue to use js/submissions.js.
+ * Baseline and OCR Command-Word Guide use the Activity API only through the
+ * generic engine route.
  */
 
 (function (global) {
