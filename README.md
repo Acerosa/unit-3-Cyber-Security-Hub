@@ -222,6 +222,7 @@ Still marked Coming soon on the Week 1 page:
     activity.css
   /js
     navigation.js
+    session-disclosure.js
     activity-utils.js
     course-context.js
     learner-details.js
@@ -325,6 +326,18 @@ Week 1 is structured so a future Weeks menu can be added later without a top-lev
 - Directed independent study
 
 Five Week 1 activities are active: Baseline Knowledge Check, CIA Triad Learning, Incident Classification, Cyber Security Glossary and Session 2 Retrieval Quiz. Coming soon items are not links and are not clickable cards.
+
+### Collapsible session sections
+
+Session and study groups use native HTML `details` and `summary` disclosure controls with the reusable `.session-disclosure` styles in `css/main.css`.
+
+- Session 1 opens by default
+- Session 2 and Directed independent study are collapsed by default
+- Multiple sections may remain open at the same time
+- Expanded or collapsed state is not stored in browser storage
+- Individual activity cards are not collapsible
+- The same pattern can be reused for later weeks
+- `js/session-disclosure.js` only opens a collapsed section when a URL fragment targets content inside it; disclosure still works without JavaScript
 
 ## 13a. Cyber Security Glossary
 
