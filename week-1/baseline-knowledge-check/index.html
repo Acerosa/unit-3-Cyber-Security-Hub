@@ -81,22 +81,10 @@
         <li>Your result is not a formal grade.</li>
       </ul>
 
-      <h3>Learner details</h3>
-      <p class="panel-note">Do not enter email addresses, passwords or other sensitive personal information.</p>
-      <div class="form-grid">
-        <div class="field">
-          <label for="class-group">Class or group <span class="required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label>
-          <input type="text" id="class-group" name="classGroup" required aria-required="true" autocomplete="off" maxlength="100">
-        </div>
-        <div class="field">
-          <label for="pair-code">Learner code <span class="required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></label>
-          <input type="text" id="pair-code" name="pairCode" required aria-required="true" autocomplete="off" maxlength="50">
-        </div>
-        <div class="field">
-          <label for="learner-1">Learner name <span class="optional">(optional)</span></label>
-          <input type="text" id="learner-1" name="learner1" autocomplete="off" maxlength="100">
-        </div>
-      </div>
+      <div id="course-details-host"></div>
+
+      <div id="learner-details-host"></div>
+
       <div id="start-status" class="status-messages" aria-live="polite" aria-atomic="true"></div>
       <div class="quiz-actions">
         <button type="button" id="btn-start" class="btn btn-primary">Start knowledge check</button>
@@ -154,11 +142,13 @@
         This activity is not a secure examination system.
       </p>
       <p class="panel-note">
-        Ten-mark submissions require the collector Allowed totals setting to include 10.
+        Ten-mark submissions use Collector schema 3.0.
       </p>
+      <div id="submission-summary-host"></div>
       <div class="submission-actions">
         <button type="button" id="btn-submit" class="btn btn-primary">Submit baseline</button>
         <button type="button" id="btn-retry" class="btn btn-secondary" hidden>Retry submission</button>
+        <button type="button" id="btn-start-another" class="btn btn-secondary" hidden>Start another attempt</button>
       </div>
       <div id="submission-messages" class="status-messages" aria-live="polite" aria-atomic="true"></div>
     </section>
@@ -170,8 +160,10 @@
   </footer>
 
   <script src="../../js/navigation.js"></script>
+  <script src="../../js/course-context.js"></script>
   <script src="../../js/activity-utils.js"></script>
   <script src="../../js/submissions.js"></script>
+  <script src="../../js/learner-details.js"></script>
   <script src="questions.js"></script>
   <script src="baseline.js"></script>
 </body>

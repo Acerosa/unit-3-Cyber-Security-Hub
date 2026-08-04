@@ -12,9 +12,12 @@
 
   var utils = window.Unit3ActivityUtils || {};
   var submissions = window.Unit3Submissions || {};
+  var learnerDetails = window.Unit3LearnerDetails || {};
+  var courseContext = window.Unit3CourseContext || {};
   var el = utils.el;
   var setStatusMessage = utils.setStatusMessage;
 
+  var ACTIVITY_ID = 'U3-W01-BASELINE';
   var ATTEMPT_KEY = 'unit3-baseline-knowledge-check-attempt-id';
   var TOTAL_RESPONSES = 12;
   var TOTAL_MARKS = 10;
@@ -33,7 +36,9 @@
     score: 0,
     incorrectNumbers: [],
     confidence: '',
-    submitted: false
+    submitted: false,
+    learner: null,
+    activityMeta: null
   };
 
   function ready(fn) {
@@ -540,16 +545,15 @@
     showResults();
   }
 
-  function getLearnerDetails() {
-    return {
-      classGroup: (document.getElementById('class-group').value || '').trim(),
-      pairCode: (document.getElementById('pair-code').value || '').trim(),
-      learner1: (document.getElementById('learner-1').value || '').trim(),
-      learner2: ''
-    };
+  function activityMeta() {
+    if (state.activityMeta) return state.activityMeta;
+    state.activityMeta = courseContext.getActivity
+      ? courseContext.getActivity(ACTIVITY_ID)
+      : null;
+    return state.activityMeta;
   }
 
-  function buildJustification() {
+  function buildReflectionSummary() {
     var answerParts = scoredQuestions().map(function (question) {
       return question.number + '=' + (state.answers[question.id] || '');
     });
@@ -566,14 +570,12 @@
   }
 
   function validateSubmission() {
-    var details = getLearnerDetails();
     var hardest = document.getElementById('hardest-card').value;
     var errors = [];
     var prior = (state.answers.q12 || '').trim();
 
     if (!state.checked) errors.push('Complete the knowledge check before submitting.');
-    if (!details.classGroup) errors.push('Class or group is required.');
-    if (!details.pairCode) errors.push('Learner code is required.');
+    if (!state.learner) errors.push('Learner details are missing. Return to the start screen.');
     if (state.score < 0 || state.score > TOTAL_MARKS) {
       errors.push('Score must be between 0 and 10.');
     }
@@ -589,33 +591,40 @@
     return {
       valid: errors.length === 0,
       errors: errors,
-      details: details,
       hardestCard: Number(hardest)
     };
   }
 
-  function buildPayload(validation) {
-    var attemptId = utils.getOrCreateAttemptId
-      ? utils.getOrCreateAttemptId(ATTEMPT_KEY)
+  function buildSubmissionInput(validation) {
+    var attemptId = submissions.getOrCreateAttemptId
+      ? submissions.getOrCreateAttemptId(ATTEMPT_KEY)
       : String(Date.now());
-
     return {
+      recordType: 'LIVE',
       attemptId: attemptId,
-      classGroup: validation.details.classGroup,
-      pairCode: validation.details.pairCode,
-      learner1: validation.details.learner1,
-      learner2: '',
-      score: String(state.score),
-      totalCards: String(TOTAL_MARKS),
-      incorrectCards: state.incorrectNumbers.length
-        ? state.incorrectNumbers.join(',')
-        : 'None',
-      hardestCard: String(validation.hardestCard),
-      justification: buildJustification(),
-      completionTime: String(state.completionTime || 0),
-      activityVersion: quiz().activityVersion,
+      courseContext: courseContext.COURSE_CONTEXT,
+      activity: activityMeta(),
+      learner: state.learner,
+      score: state.score,
+      questionsForReview: state.incorrectNumbers,
+      mostDifficultItem: String(validation.hardestCard),
+      reflection: buildReflectionSummary(),
+      completionTimeSeconds: state.completionTime || 1,
       sourcePage: window.location.href
     };
+  }
+
+  function showSubmissionSummaryPanel() {
+    if (!learnerDetails.renderSubmissionSummary || !state.learner) return;
+    learnerDetails.renderSubmissionSummary('submission-summary-host', {
+      firstName: state.learner.firstName,
+      surname: state.learner.surname,
+      studentId: state.learner.studentId,
+      classGroup: state.learner.classGroup,
+      activityName: activityMeta().activityName,
+      score: state.score,
+      maximumScore: TOTAL_MARKS
+    });
   }
 
   function handleSubmit() {
@@ -628,22 +637,29 @@
       return;
     }
 
-    var ok = submissions.submitViaForm(buildPayload(validation));
-    if (!ok) {
-      setStatusMessage(
-        'submission-messages',
-        'Submission could not be started. Check the collector URL and that Allowed totals includes 10.',
-        'error'
-      );
+    showSubmissionSummaryPanel();
+    document.getElementById('btn-submit').disabled = true;
+    setStatusMessage('submission-messages', 'Sending your baseline result.', 'info');
+
+    var result = submissions.submitSchema3
+      ? submissions.submitSchema3(buildSubmissionInput(validation))
+      : { started: false, errors: ['Submission helper unavailable.'] };
+
+    if (!result.started) {
+      document.getElementById('btn-submit').disabled = false;
+      setStatusMessage('submission-messages', result.errors.join(' '), 'error');
       return;
     }
 
     state.submitted = true;
-    document.getElementById('btn-submit').disabled = true;
+    if (submissions.markAttemptCompleted) {
+      submissions.markAttemptCompleted(ATTEMPT_KEY);
+    }
     document.getElementById('btn-retry').hidden = false;
+    document.getElementById('btn-start-another').hidden = false;
     setStatusMessage(
       'submission-messages',
-      'A confirmation tab has opened. Check whether the result was accepted. Opening a tab does not by itself prove the result was saved. Ten-mark rows require Allowed totals to include 10.',
+      'A confirmation tab has opened. Check whether the result was accepted. Opening a tab does not by itself prove the result was saved.',
       'info'
     );
   }
@@ -655,9 +671,13 @@
       return;
     }
 
-    var ok = submissions.submitViaForm(buildPayload(validation));
-    if (!ok) {
-      setStatusMessage('submission-messages', 'Retry could not be started.', 'error');
+    setStatusMessage('submission-messages', 'Retrying submission with the same Attempt ID.', 'info');
+    var result = submissions.submitSchema3
+      ? submissions.submitSchema3(buildSubmissionInput(validation))
+      : { started: false, errors: ['Submission helper unavailable.'] };
+
+    if (!result.started) {
+      setStatusMessage('submission-messages', result.errors.join(' '), 'error');
       return;
     }
 
@@ -669,23 +689,24 @@
   }
 
   function startQuiz() {
-    var details = getLearnerDetails();
-    if (!details.classGroup || !details.pairCode) {
-      setStatusMessage(
-        'start-status',
-        'Enter class or group and learner code before starting.',
-        'error'
-      );
-      document.getElementById(!details.classGroup ? 'class-group' : 'pair-code').focus();
+    var learnerValidation = learnerDetails.validateLearnerDetails
+      ? learnerDetails.validateLearnerDetails({ showPartner: false })
+      : { valid: false, errors: ['Learner details form is unavailable.'] };
+
+    if (!learnerValidation.valid) {
+      learnerDetails.showValidationSummary('learner-details-errors', learnerValidation);
+      setStatusMessage('start-status', 'Complete your details before starting.', 'error');
       return;
     }
+
     if (!quiz()) {
       setStatusMessage('start-status', 'Quiz data failed to load.', 'error');
       return;
     }
 
-    if (utils.getOrCreateAttemptId) {
-      utils.getOrCreateAttemptId(ATTEMPT_KEY);
+    state.learner = learnerValidation.learner;
+    if (submissions.getOrCreateAttemptId) {
+      submissions.getOrCreateAttemptId(ATTEMPT_KEY);
     }
 
     state.started = true;
@@ -708,13 +729,10 @@
     if (!confirmed) return;
 
     stopElapsedTimer();
-    if (utils.clearAttemptId) utils.clearAttemptId(ATTEMPT_KEY);
-    else {
-      try {
-        sessionStorage.removeItem(ATTEMPT_KEY);
-      } catch (err) {
-        /* sessionStorage may be unavailable */
-      }
+    if (submissions.startNewAttempt) {
+      submissions.startNewAttempt(ATTEMPT_KEY);
+    } else if (utils.clearAttemptId) {
+      utils.clearAttemptId(ATTEMPT_KEY);
     }
 
     state.started = false;
@@ -729,6 +747,7 @@
     state.incorrectNumbers = [];
     state.confidence = '';
     state.submitted = false;
+    state.learner = null;
 
     document.getElementById('start-panel').hidden = false;
     document.getElementById('quiz-panel').hidden = true;
@@ -736,10 +755,12 @@
     document.getElementById('submission-panel').hidden = true;
     document.getElementById('btn-submit').disabled = false;
     document.getElementById('btn-retry').hidden = true;
+    document.getElementById('btn-start-another').hidden = true;
     document.getElementById('hardest-card').value = '';
     document.getElementById('btn-toggle-time').textContent = 'Hide time';
     document.getElementById('question-stage').textContent = '';
     document.getElementById('question-nav').textContent = '';
+    document.getElementById('submission-summary-host').textContent = '';
     clearValidationSummary();
     updateElapsedDisplay();
     setStatusMessage('submission-messages', '', 'info');
@@ -749,6 +770,17 @@
       'info'
     );
     document.getElementById('btn-start').focus();
+  }
+
+  function initLearnerDetails() {
+    var meta = activityMeta();
+    if (!meta) return;
+    if (learnerDetails.renderCourseDetails) {
+      learnerDetails.renderCourseDetails('course-details-host', meta);
+    }
+    if (learnerDetails.renderLearnerForm) {
+      learnerDetails.renderLearnerForm('learner-details-host', { showPartner: false });
+    }
   }
 
   function bindControls() {
@@ -774,6 +806,7 @@
     });
     document.getElementById('btn-finish').addEventListener('click', finishAndCheck);
     document.getElementById('btn-new-attempt').addEventListener('click', resetAttempt);
+    document.getElementById('btn-start-another').addEventListener('click', resetAttempt);
     document.getElementById('btn-submit').addEventListener('click', handleSubmit);
     document.getElementById('btn-retry').addEventListener('click', handleRetry);
   }
@@ -789,6 +822,7 @@
       return;
     }
     bindControls();
+    initLearnerDetails();
     updateElapsedDisplay();
   });
 })();
