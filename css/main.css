@@ -482,6 +482,99 @@ body {
   }
 }
 
+/* Reusable session / study group disclosures (native details/summary) */
+.session-disclosure {
+  padding: 0;
+}
+
+.session-disclosure__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  list-style: none;
+  cursor: pointer;
+  padding: 1.1rem 1.35rem;
+  min-height: 3.25rem;
+  border-radius: var(--radius);
+}
+
+.session-disclosure__summary::-webkit-details-marker {
+  display: none;
+}
+
+.session-disclosure__summary::marker {
+  content: '';
+}
+
+.session-disclosure__summary:hover {
+  background: #f3f7f9;
+}
+
+.session-disclosure__summary:focus {
+  outline: none;
+}
+
+.session-disclosure__summary:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.session-disclosure__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.session-disclosure__heading {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--color-navy);
+}
+
+.session-disclosure__meta {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.session-disclosure__icon {
+  flex: 0 0 auto;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-right: 2px solid var(--color-navy);
+  border-bottom: 2px solid var(--color-navy);
+  transform: rotate(-45deg);
+  margin-right: 0.25rem;
+}
+
+.session-disclosure[open] > .session-disclosure__summary .session-disclosure__icon {
+  transform: rotate(45deg);
+  margin-top: -0.2rem;
+}
+
+.session-disclosure__content {
+  padding: 0 1.35rem 1.25rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.session-disclosure__content > .panel-note {
+  margin-top: 1rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .session-disclosure__icon {
+    transition: transform 0.16s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .session-disclosure__icon {
+    transition: none;
+  }
+}
+
 @media (prefers-contrast: more) {
   :root {
     --color-border: #1a2332;
@@ -491,7 +584,8 @@ body {
 
   .panel,
   .hub-card,
-  .nav-list a[aria-current="page"] {
+  .nav-list a[aria-current="page"],
+  .session-disclosure {
     border-width: 2px;
   }
 
