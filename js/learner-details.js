@@ -59,11 +59,37 @@
     if (!host || !activityMeta) return;
     var ctx = getCourseContext();
     host.textContent = '';
-    var section = el('section', {
-      className: 'course-details-panel',
-      'aria-labelledby': 'course-details-heading'
+    var details = el('details', {
+      className: 'session-disclosure course-details-disclosure'
     });
-    section.appendChild(el('h3', { id: 'course-details-heading', textContent: 'Course details' }));
+    var summary = el('summary', { className: 'session-disclosure__summary' });
+    var text = el('span', { className: 'session-disclosure__text' });
+    text.appendChild(
+      el('h3', {
+        id: 'course-details-heading',
+        className: 'session-disclosure__heading',
+        textContent: 'Course details'
+      })
+    );
+    text.appendChild(
+      el('span', {
+        className: 'session-disclosure__meta',
+        textContent: activityMeta.activityName || 'Read-only course information'
+      })
+    );
+    text.appendChild(
+      el('span', {
+        className: 'visually-hidden',
+        textContent: '. Show or hide course details'
+      })
+    );
+    summary.appendChild(text);
+    summary.appendChild(
+      el('span', { className: 'session-disclosure__icon', 'aria-hidden': 'true' })
+    );
+    details.appendChild(summary);
+
+    var content = el('div', { className: 'session-disclosure__content' });
     var list = el('dl', { className: 'course-details-list' });
     function row(label, value) {
       list.appendChild(el('dt', { textContent: label }));
@@ -76,8 +102,9 @@
     row('Unit', ctx.unitDisplayName || ctx.unitName || '');
     row('Week', 'Week ' + activityMeta.weekNumber);
     row('Activity', activityMeta.activityName || '');
-    section.appendChild(list);
-    host.appendChild(section);
+    content.appendChild(list);
+    details.appendChild(content);
+    host.appendChild(details);
   }
 
   function renderClassGroupField(ctx) {

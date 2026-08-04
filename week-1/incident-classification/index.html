@@ -53,17 +53,26 @@
   </header>
 
   <main id="main-content" class="site-main classifier-main" tabindex="-1">
-    <section class="panel instructions-panel" aria-labelledby="instructions-heading">
-      <h2 id="instructions-heading">Instructions</h2>
-      <ul>
-        <li>Work individually or with a partner.</li>
-        <li>Read each incident carefully.</li>
-        <li>Select the most appropriate incident type.</li>
-        <li>Select all affected CIA aims.</li>
-        <li>Enter a short justification.</li>
-        <li>Complete all 12 cards before checking your answers.</li>
-      </ul>
-    </section>
+    <details class="session-disclosure panel instructions-panel">
+      <summary class="session-disclosure__summary">
+        <span class="session-disclosure__text">
+          <h2 id="instructions-heading" class="session-disclosure__heading">Instructions</h2>
+          <span class="session-disclosure__meta">Optional guidance</span>
+          <span class="visually-hidden">. Show or hide activity instructions</span>
+        </span>
+        <span class="session-disclosure__icon" aria-hidden="true"></span>
+      </summary>
+      <div class="session-disclosure__content">
+        <ul>
+          <li>Work individually or with a partner.</li>
+          <li>Read each incident carefully.</li>
+          <li>Select the most appropriate incident type.</li>
+          <li>Select all affected CIA aims.</li>
+          <li>Enter a short justification.</li>
+          <li>Complete all 12 cards before checking your answers.</li>
+        </ul>
+      </div>
+    </details>
 
     <section class="panel learner-panel" aria-labelledby="learner-heading">
       <h2 id="learner-heading">Before you begin</h2>
