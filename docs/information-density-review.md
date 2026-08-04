@@ -41,10 +41,10 @@ Most interactive activities already limit what learners see at once (one questio
 
 ### Baseline Knowledge Check
 
-- Concern: Start screen includes course metadata plus learner form; quiz already shows one question.
-- Decision: Minor simplification via shared course-details disclosure.
-- Pattern: Course details collapsed by default; learner fields and Start remain visible. Keep one-question quiz flow.
-- Change made: Yes (shared course-details disclosure).
+- Concern: Former Collector page packed course metadata and learner form on start.
+- Decision: Activity now uses the generic Activity API engine route.
+- Pattern: API-driven sections with progressive disclosure in the generic engine.
+- Change made: Yes (Collector Baseline page removed; API route is the sole Baseline entry).
 
 ### CIA Triad Learning
 

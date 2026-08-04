@@ -31,7 +31,7 @@
       itemMinimum: 1,
       itemMaximum: 10,
       allowsPartner: false,
-      attemptStorageKey: 'unit3-baseline-knowledge-check-attempt-id'
+      attemptStorageKey: 'unit3-activity-api-state:U3-W01-BASELINE'
     }),
     'U3-W01-CIA': Object.freeze({
       activityId: 'U3-W01-CIA',

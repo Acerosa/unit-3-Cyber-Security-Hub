@@ -70,41 +70,36 @@ Learners follow a weekly sequence. Keeping Session 1, Session 2 and independent 
 
 ### Baseline Knowledge Check
 
-Route: `week-1/baseline-knowledge-check/`
+Route: `activities/activity.html?activityId=U3-W01-BASELINE`
 
 Published path (after Pages deployment):
 
-`https://acerosa.github.io/unit-3-Cyber-Security-Hub/week-1/baseline-knowledge-check/`
+`https://acerosa.github.io/unit-3-Cyber-Security-Hub/activities/activity.html?activityId=U3-W01-BASELINE`
 
 Purpose: a low-stakes teacher-created baseline diagnostic that identifies learners' starting knowledge before Week 1 cyber security teaching begins. It is completed independently without notes. It is not a formal grade and not an official OCR assessment.
 
-Question structure:
+It uses the generic Activity API engine. Content and marking come from the private Activity API. Browser code does not contain the question bank or answer key.
 
-- 10 scored single-choice questions (1 diagnostic mark each)
-- Question 11: required confidence rating (not scored)
-- Question 12: required prior-knowledge free-text response (not scored, max 400 characters)
-- 12 responses in total; maximum diagnostic mark is 10
+Question structure (from the API):
 
-After checking:
-
-- score, percentage, time used and confidence are shown
-- incorrect scored-question numbers are listed
-- correct answers are not revealed in the learner interface
+- three sections
+- ten scored single-choice questions
+- maximum score 10
+- inactive diagnostic extension questions are not published to the browser
 
 Submission notes:
 
-- Attempt ID key: `unit3-baseline-knowledge-check-attempt-id` (sessionStorage only)
 - Activity ID: `U3-W01-BASELINE`
-- Submits Collector schema 3.0 with `maximumScore` 10
-- `reflection` includes answer codes for Questions 1 to 10, confidence and the prior-knowledge response
-- answer codes help the tutor diagnose distractor misconceptions without sending full option text
-- Requires the live Apps Script deployment to identify as `UNIT3-COLLECTOR-V3.0`
+- Submits through the Activity API only (`markSection` and `submitAttempt`)
+- Current Hub configuration keeps `submissionMode: 'TEST'` and `allowLiveSubmissions: false`
+- Does not use Collector v3
+- See `docs/activity-api-engine.md`
 
-Privacy and answer-security limitations:
+Privacy and answer-security notes:
 
 - Do not collect email addresses, passwords or other sensitive personal information
-- Correct answers are stored in public static JavaScript and may be inspected
-- Do not describe this diagnostic as secure or use it for formal grading
+- Correct answers are not hard-coded in the Hub repository
+- Do not describe this diagnostic as a secure examination or use it for formal grading
 
 ### CIA Triad Learning
 
@@ -249,11 +244,6 @@ It uses the Activity API only. See `docs/activity-api-engine.md`.
     index.html
   /week-1
     index.html
-    /baseline-knowledge-check
-      index.html
-      questions.js
-      baseline.js
-      activity.css
     /cia-triad-learning
       index.html
       content.js
@@ -296,7 +286,7 @@ No frameworks, npm packages, build tools or server-side code.
 
    - `http://localhost:8080/`
    - `http://localhost:8080/week-1/`
-   - `http://localhost:8080/week-1/baseline-knowledge-check/`
+   - `http://localhost:8080/activities/activity.html?activityId=U3-W01-BASELINE`
    - `http://localhost:8080/week-1/cia-triad-learning/`
    - `http://localhost:8080/week-1/glossary/`
    - `http://localhost:8080/week-1/retrieval-quiz/`
@@ -304,7 +294,7 @@ No frameworks, npm packages, build tools or server-side code.
    - `http://localhost:8080/resources/`
    - `http://localhost:8080/help/`
 
-4. Confirm CSS/JS load, navigation works, the baseline diagnostic scores out of 10 without revealing answers, the glossary shows searchable terms, and the classifier shows 12 cards.
+4. Confirm CSS/JS load, navigation works, the Baseline Activity API activity loads ten questions without hard-coded answers, the glossary shows searchable terms, and the classifier shows 12 cards.
 5. Refresh nested URLs directly to confirm GitHub Pages-style deep links work.
 
 ## 11. GitHub Pages deployment
@@ -509,14 +499,14 @@ Learners cannot edit these values.
 
 | Activity | Activity ID | Maximum score | Item range |
 | --- | --- | --- | --- |
-| Baseline Knowledge Check | `U3-W01-BASELINE` | 10 | 1 to 10 |
+| Baseline Knowledge Check (Activity API) | `U3-W01-BASELINE` | 10 | BAS-Q01 to BAS-Q10 |
 | CIA Triad Learning | `U3-W01-CIA` | 15 | 1 to 12 |
 | Incident Classification | `U3-W01-INCIDENTS` | 12 | 1 to 12 |
 | Cyber Security Glossary | `U3-W01-GLOSSARY` | 12 | 1 to 12 |
 | Session 2 Retrieval Quiz | `U3-W01-RETRIEVAL` | 15 | 1 to 10 |
 | OCR Command-Word Guide (Activity API pilot) | `U3-W01-COMMAND-WORDS` | 12 | Q001 to Q006 |
 
-Collector v3 continues to serve the first five activities. The Command-Word pilot submits only through the Activity API (`docs/activity-api-engine.md`).
+Collector v3 continues to serve CIA, Incidents, Glossary and Retrieval. Baseline and the Command-Word Guide submit only through the Activity API (`docs/activity-api-engine.md`).
 
 ### Class-group configuration
 
@@ -563,12 +553,15 @@ Automated probes must use `recordType: "TEST"` with recognisable test identity s
 
 ### Baseline Knowledge Check testing checklist
 
-- Exactly 10 scored questions; Questions 11 and 12 are unscored
-- Perfect score is 10; confidence and prior knowledge do not affect the score
-- Learner details are required before Start knowledge check
-- Schema 3.0 LIVE payload uses activity ID `U3-W01-BASELINE`
-- Retries reuse `unit3-baseline-knowledge-check-attempt-id`
-- Start another attempt creates a new Attempt ID
+- Opens via `activities/activity.html?activityId=U3-W01-BASELINE`
+- Health and `getActivity` succeed for `U3-W01-BASELINE`
+- Three sections and ten single-choice questions render from the API
+- BAS-Q11 and BAS-Q12 do not appear
+- No correct answers appear before section marking
+- `markSection` returns a score out of 10
+- Final `submitAttempt` uses `recordType: TEST` while LIVE remains disabled
+- The page does not load `js/submissions.js` or call Collector v3
+- Refresh restores Attempt ID and selected responses from sessionStorage
 
 ## 16. Current schema 3.0 field names
 
