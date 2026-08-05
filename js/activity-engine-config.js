@@ -1,8 +1,8 @@
 /**
  * Activity engine configuration and submission-service routing.
  *
- * Retrieval continues to use js/submissions.js (Collector v3).
  * Activity API activities use the generic engine route only.
+ * Collector v3 remains available in js/submissions.js for any legacy callers.
  */
 
 (function (global) {
@@ -42,8 +42,7 @@
     'U3-W01-INCIDENTS': SUBMISSION_SERVICE.ACTIVITY_API,
     'U3-W01-COMMAND-WORDS': SUBMISSION_SERVICE.ACTIVITY_API,
     'U3-W01-GLOSSARY': SUBMISSION_SERVICE.ACTIVITY_API,
-    // Remaining dedicated Week 1 pages continue to post via js/submissions.js
-    'U3-W01-RETRIEVAL': SUBMISSION_SERVICE.COLLECTOR_V3
+    'U3-W01-RETRIEVAL': SUBMISSION_SERVICE.ACTIVITY_API
   });
 
   function getSubmissionService(activityId) {
