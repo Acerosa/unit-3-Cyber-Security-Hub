@@ -11,6 +11,34 @@
   "jsonExtensions": [
     ".json"
   ],
-  "filePushOrder": [],
+  "filePushOrder": [
+    "appsscript.json",
+    "Config.gs",
+    "Week2ActivityManifest.gs",
+    "Week2Activities.gs",
+    "Week2Session1RetrievalData.gs",
+    "Week2ThreatVulnerabilityLearningData.gs",
+    "Week2MalwareSymptomsData.gs",
+    "Week2ThreatVulnerabilitySortData.gs",
+    "Week2Vulnerabilities101Data.gs",
+    "Week2Session2RetrievalData.gs",
+    "Week2NorthbankAnalysisData.gs",
+    "Week2SixMarkGuideData.gs",
+    "Week2OcrPracticeData.gs",
+    "Week2PeerMarkingData.gs",
+    "Week2VulnerabilityRegisterData.gs",
+    "Week2ActivityDataService.gs",
+    "RequestParser.gs",
+    "SubmissionValidator.gs",
+    "DuplicateChecker.gs",
+    "SheetRepository.gs",
+    "ResponseFactory.gs",
+    "SubmissionService.gs",
+    "SetupWorkbook.gs",
+    "Week2ActivitySeed.gs",
+    "Week2Tests.gs",
+    "Week2ActivityDataTests.gs",
+    "Code.gs"
+  ],
   "skipSubdirectories": false
 }

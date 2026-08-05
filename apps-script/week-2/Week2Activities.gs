@@ -1,99 +1,49 @@
 /**
- * Week 2 activity registry.
+ * Week 2 activity registry used by submission validation.
  *
- * Expected totals and versions are defined here only. Validation must read
- * from this registry and must not accept unknown activity IDs.
+ * Totals, versions and enabled flags are derived from WEEK_2_ACTIVITY_MANIFEST
+ * so content packs, validators and seeds cannot drift apart.
  */
 
-var WEEK_2_ACTIVITIES = Object.freeze({
-  'week2-session1-retrieval': Object.freeze({
-    week: 2,
-    session: 1,
-    version: '1.0',
-    total: 10,
-    enabled: true
-  }),
-  'week2-threat-vulnerability-learning': Object.freeze({
-    week: 2,
-    session: 1,
-    version: '1.0',
-    total: 6,
-    enabled: true
-  }),
-  'week2-malware-symptoms': Object.freeze({
-    week: 2,
-    session: 1,
-    version: '1.0',
-    total: 10,
-    enabled: true
-  }),
-  'week2-threat-vulnerability-sort': Object.freeze({
-    week: 2,
-    session: 1,
-    version: '1.0',
-    total: 12,
-    enabled: true
-  }),
-  'week2-vulnerabilities101-reflection': Object.freeze({
-    week: 2,
-    session: 1,
-    version: '1.0',
-    total: 2,
-    enabled: true
-  }),
-  'week2-session2-retrieval': Object.freeze({
-    week: 2,
-    session: 2,
-    version: '1.0',
-    total: 10,
-    enabled: true
-  }),
-  'week2-northbank-vulnerability-analysis': Object.freeze({
-    week: 2,
-    session: 2,
-    version: '1.0',
-    total: 5,
-    enabled: true
-  }),
-  'week2-six-mark-response-guide': Object.freeze({
-    week: 2,
-    session: 2,
-    version: '1.0',
-    total: 3,
-    enabled: true
-  }),
-  'week2-ocr-question-practice': Object.freeze({
-    week: 2,
-    session: 2,
-    version: '1.0',
-    total: 20,
-    enabled: true
-  }),
-  'week2-peer-marking-answer-improvement': Object.freeze({
-    week: 2,
-    session: 2,
-    version: '1.0',
-    total: 6,
-    enabled: true
-  }),
-  'week2-northbank-vulnerability-register': Object.freeze({
-    week: 2,
-    session: 2,
-    version: '1.0',
-    total: 5,
-    enabled: true
-  })
-});
+var WEEK_2_ACTIVITIES_CACHE_ = null;
+
+/**
+ * @return {Object}
+ */
+function getWeek2ActivitiesMap_() {
+  if (WEEK_2_ACTIVITIES_CACHE_) {
+    return WEEK_2_ACTIVITIES_CACHE_;
+  }
+
+  var mapped = {};
+  getWeek2ManifestIds_().forEach(function (activityId) {
+    var entry = getWeek2ManifestEntry_(activityId);
+    mapped[activityId] = Object.freeze({
+      week: entry.weekNumber,
+      session: entry.sessionNumber,
+      version: entry.activityVersion,
+      total: entry.maximumScore,
+      enabled: entry.enabled === true,
+      activityType: entry.activityType,
+      activityName: entry.activityName,
+      componentId: entry.componentId
+    });
+  });
+
+  WEEK_2_ACTIVITIES_CACHE_ = Object.freeze(mapped);
+  return WEEK_2_ACTIVITIES_CACHE_;
+}
 
 /**
  * @param {string} activityId
  * @return {Object|null}
  */
 function getWeek2Activity_(activityId) {
-  if (!activityId || !Object.prototype.hasOwnProperty.call(WEEK_2_ACTIVITIES, activityId)) {
+  var map = getWeek2ActivitiesMap_();
+  if (!activityId || !Object.prototype.hasOwnProperty.call(map, activityId)) {
     return null;
   }
-  return WEEK_2_ACTIVITIES[activityId];
+  return map[activityId];
 }
 
 /**
@@ -109,5 +59,5 @@ function isWeek2ActivityEnabled_(activityId) {
  * @return {string[]}
  */
 function getWeek2ActivityIds_() {
-  return Object.keys(WEEK_2_ACTIVITIES);
+  return Object.keys(getWeek2ActivitiesMap_());
 }
