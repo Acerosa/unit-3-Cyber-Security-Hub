@@ -1,19 +1,30 @@
-# Collector configuration note for Week 2
+# Week 2 Apps Script notes
 
-Week 2 formative activities submit schema 3.0 payloads through the existing Collector `/exec` URL in `js/submissions.js`.
+## Dedicated Week 2 API
 
-Do not create a new spreadsheet or a new web app deployment.
+A standalone Week 2 Apps Script API lives in `apps-script/week-2/`.
+
+- Opens the shared Unit 3 spreadsheet with `SpreadsheetApp.openById(CONFIG.spreadsheetId)`
+- Validates Week 2 activity IDs, versions and totals from `Week2Activities.gs`
+- Writes to `All Submissions`, `Week 2 Results`, and `Errors and Rejections`
+- Deploy and operate using `apps-script/week-2/README.md`
+
+Do not modify the Week 1 Activity API project when changing Week 2 collection.
+
+## Current frontend routing
+
+Week 2 formative activities currently still submit Collector schema 3.0 payloads through the existing Collector `/exec` URL in `js/submissions.js`.
+
+Point the frontend at the Week 2 API `/exec` URL only after that web app has been deployed and smoke-tested.
 
 ## Allowed totals
 
-Ensure the Configuration sheet **Allowed totals** includes at least:
+Whether using the Collector or the Week 2 API, accepted Week 2 totals include:
 
 ```text
-2,3,5,6,10,12,15,20
+2,3,5,6,10,12,20
 ```
-
-Week 2 introduces totals `2`, `3`, `5`, `6`, `20` in addition to existing Week 1 values.
 
 ## Registered Week 2 activity IDs
 
-See `js/course-context.js` and `docs/week-2.md`. Every Week 2 activity uses `activityVersion: "1.0"`.
+See `js/course-context.js`, `docs/week-2.md`, and `apps-script/week-2/Week2Activities.gs`. Every Week 2 activity uses `activityVersion: "1.0"`.
