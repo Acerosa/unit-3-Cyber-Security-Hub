@@ -366,18 +366,24 @@
     });
 
     var marks = question.marks || question.maximumMarks || 1;
-    fieldset.appendChild(
-      el('legend', {
-        textContent:
-          qid +
-          '. ' +
-          (question.prompt || '') +
-          ' (' +
-          marks +
-          (marks === 1 ? ' mark' : ' marks') +
-          ')'
+    var promptText =
+      qid +
+      '. ' +
+      (question.prompt || '') +
+      ' (' +
+      marks +
+      (marks === 1 ? ' mark' : ' marks') +
+      ')';
+    // Wrap the prompt so long legends stay inside the bordered panel.
+    var legend = el('legend', { className: 'ae-question-legend' });
+    legend.appendChild(
+      el('span', {
+        className: 'ae-question-prompt',
+        id: 'question-prompt-' + qid,
+        textContent: promptText
       })
     );
+    fieldset.appendChild(legend);
 
     if (question.instruction) {
       fieldset.appendChild(

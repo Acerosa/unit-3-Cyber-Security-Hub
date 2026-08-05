@@ -531,6 +531,7 @@ body {
   margin: 0;
   font-size: 1.2rem;
   color: var(--color-navy);
+  overflow-wrap: anywhere;
 }
 
 .session-disclosure__meta {
