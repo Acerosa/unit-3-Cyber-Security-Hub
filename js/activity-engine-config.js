@@ -12,7 +12,8 @@
   var SUBMISSION_SERVICE = Object.freeze({
     COLLECTOR_V3: 'collector-v3',
     ACTIVITY_API: 'activity-api',
-    WEEK2_API: 'week2-api'
+    WEEK2_API: 'week2-api',
+    WEEK3_API: 'week3-api'
   });
 
   var ACTIVITY_ENGINE_CONFIG = Object.freeze({
@@ -20,6 +21,8 @@
       'https://script.google.com/macros/s/AKfycbxXc8_4w2693bv7vyPmxrKFKb_EUGIiiZBefVMyLLPxHJfigxNb2GhhT11gTSNx2GpL/exec',
     week2ApiBaseUrl:
       'https://script.google.com/macros/s/AKfycbzwsxquK34pzICjP0prAL9RBLmi_Bo8qgntJcYCn7QXSxEFQeK5mRbK5QnsUy2Bi3U9pA/exec',
+    // Set after clasp deploy of apps-script/week-3 (see docs/week-3.md).
+    week3ApiBaseUrl: '',
     apiVersion: '1.0',
     submissionMode: 'TEST',
     allowLiveSubmissions: false,
@@ -61,7 +64,16 @@
     'week2-six-mark-response-guide': SUBMISSION_SERVICE.WEEK2_API,
     'week2-ocr-question-practice': SUBMISSION_SERVICE.WEEK2_API,
     'week2-peer-marking-answer-improvement': SUBMISSION_SERVICE.WEEK2_API,
-    'week2-northbank-vulnerability-register': SUBMISSION_SERVICE.WEEK2_API
+    'week2-northbank-vulnerability-register': SUBMISSION_SERVICE.WEEK2_API,
+
+    // Week 3 local activities submit through the Week 3 Apps Script API.
+    'week3-session1-retrieval': SUBMISSION_SERVICE.WEEK3_API,
+    'week3-attacker-types-learning': SUBMISSION_SERVICE.WEEK3_API,
+    'week3-attacker-case-matching': SUBMISSION_SERVICE.WEEK3_API,
+    'week3-justified-identification': SUBMISSION_SERVICE.WEEK3_API,
+    'week3-session2-retrieval': SUBMISSION_SERVICE.WEEK3_API,
+    'week3-ocr-question-practice': SUBMISSION_SERVICE.WEEK3_API,
+    'week3-peer-marking': SUBMISSION_SERVICE.WEEK3_API
   });
 
   function getSubmissionService(activityId) {
@@ -80,8 +92,16 @@
     return getSubmissionService(activityId) === SUBMISSION_SERVICE.WEEK2_API;
   }
 
+  function usesWeek3Api(activityId) {
+    return getSubmissionService(activityId) === SUBMISSION_SERVICE.WEEK3_API;
+  }
+
   function getWeek2ApiBaseUrl() {
     return ACTIVITY_ENGINE_CONFIG.week2ApiBaseUrl || '';
+  }
+
+  function getWeek3ApiBaseUrl() {
+    return ACTIVITY_ENGINE_CONFIG.week3ApiBaseUrl || '';
   }
 
   function resolveRecordType() {
@@ -106,7 +126,9 @@
     usesActivityApi: usesActivityApi,
     usesCollectorV3: usesCollectorV3,
     usesWeek2Api: usesWeek2Api,
+    usesWeek3Api: usesWeek3Api,
     getWeek2ApiBaseUrl: getWeek2ApiBaseUrl,
+    getWeek3ApiBaseUrl: getWeek3ApiBaseUrl,
     resolveRecordType: resolveRecordType,
     isLiveSubmissionEnabled: isLiveSubmissionEnabled
   };

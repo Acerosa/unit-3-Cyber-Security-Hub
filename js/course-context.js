@@ -268,6 +268,98 @@
       itemMaximum: 5,
       allowsPartner: false,
       attemptStorageKey: 'unit3-week2-attempt:week2-northbank-vulnerability-register'
+    }),
+
+    'week3-session1-retrieval': Object.freeze({
+      activityId: 'week3-session1-retrieval',
+      activityName: 'Session 1 Retrieval Quiz',
+      weekNumber: 3,
+      sessionName: 'Session 1',
+      activityType: 'Retrieval quiz',
+      activityVersion: '1.0',
+      maximumScore: 10,
+      itemMinimum: 1,
+      itemMaximum: 10,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week3-attempt:week3-session1-retrieval'
+    }),
+    'week3-attacker-types-learning': Object.freeze({
+      activityId: 'week3-attacker-types-learning',
+      activityName: 'Attacker Types Learning',
+      weekNumber: 3,
+      sessionName: 'Session 1',
+      activityType: 'Guided learning',
+      activityVersion: '1.0',
+      maximumScore: 8,
+      itemMinimum: 1,
+      itemMaximum: 8,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week3-attempt:week3-attacker-types-learning'
+    }),
+    'week3-attacker-case-matching': Object.freeze({
+      activityId: 'week3-attacker-case-matching',
+      activityName: 'Attacker Case Study Matching',
+      weekNumber: 3,
+      sessionName: 'Session 1',
+      activityType: 'Scenario matching',
+      activityVersion: '1.0',
+      maximumScore: 8,
+      itemMinimum: 1,
+      itemMaximum: 8,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week3-attempt:week3-attacker-case-matching'
+    }),
+    'week3-justified-identification': Object.freeze({
+      activityId: 'week3-justified-identification',
+      activityName: 'Justified Identification Practice',
+      weekNumber: 3,
+      sessionName: 'Session 1',
+      activityType: 'Exam skills',
+      activityVersion: '1.0',
+      maximumScore: 12,
+      itemMinimum: 1,
+      itemMaximum: 12,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week3-attempt:week3-justified-identification'
+    }),
+    'week3-session2-retrieval': Object.freeze({
+      activityId: 'week3-session2-retrieval',
+      activityName: 'Session 2 Retrieval Quiz',
+      weekNumber: 3,
+      sessionName: 'Session 2',
+      activityType: 'Retrieval quiz',
+      activityVersion: '1.0',
+      maximumScore: 12,
+      itemMinimum: 1,
+      itemMaximum: 12,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week3-attempt:week3-session2-retrieval'
+    }),
+    'week3-ocr-question-practice': Object.freeze({
+      activityId: 'week3-ocr-question-practice',
+      activityName: 'OCR-Style Question Practice',
+      weekNumber: 3,
+      sessionName: 'Session 2',
+      activityType: 'Exam skills',
+      activityVersion: '1.0',
+      maximumScore: 20,
+      itemMinimum: 1,
+      itemMaximum: 20,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week3-attempt:week3-ocr-question-practice'
+    }),
+    'week3-peer-marking': Object.freeze({
+      activityId: 'week3-peer-marking',
+      activityName: 'Peer Marking and Answer Improvement',
+      weekNumber: 3,
+      sessionName: 'Session 2',
+      activityType: 'Reflection',
+      activityVersion: '1.0',
+      maximumScore: 6,
+      itemMinimum: 1,
+      itemMaximum: 6,
+      allowsPartner: true,
+      attemptStorageKey: 'unit3-week3-attempt:week3-peer-marking'
     })
   });
 

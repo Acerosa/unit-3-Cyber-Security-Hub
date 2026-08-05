@@ -61,6 +61,10 @@ Unit 3 Cyber Security Hub
 │   ├── Week 2 Overview
 │   ├── Session 1 activities (Active) — see docs/week-2.md
 │   └── Session 2 activities (Active) — see docs/week-2.md
+├── Week 3
+│   ├── Week 3 Overview
+│   ├── Types of attacker activities (Active) — see docs/week-3.md
+│   └── TryHackMe / directed study guidance
 ├── Resources
 └── Help
 ```
