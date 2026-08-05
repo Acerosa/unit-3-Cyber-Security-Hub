@@ -163,6 +163,7 @@
         completionTimeSeconds: options.getCompletionTimeSeconds
           ? options.getCompletionTimeSeconds()
           : 60,
+        onSubmitted: options.onSubmitted,
         canSubmit: options.canSubmit
       });
     });
@@ -375,6 +376,17 @@
               : envelope.message || 'Submission recorded.',
             'success'
           );
+          if (typeof options.onSubmitted === 'function') {
+            try {
+              options.onSubmitted({
+                recorded: envelope.recorded === true,
+                duplicate: envelope.duplicate === true,
+                envelope: envelope
+              });
+            } catch (callbackErr) {
+              console.error('[Week2Submit] onSubmitted callback failed', callbackErr);
+            }
+          }
           return;
         }
 
