@@ -67,9 +67,9 @@
       number: 5,
       title: 'TryHackMe: Vulnerabilities 101',
       description:
-        'Complete the TryHackMe room, then reflect on one vulnerability and how it could apply to Northbank.',
-      type: 'Directed study / reflection',
-      estimatedMinutes: 45,
+        'Complete the TryHackMe Vulnerabilities 101 room in class, then reflect on one vulnerability and how it could apply to Northbank.',
+      type: 'In-class practical / reflection',
+      estimatedMinutes: 35,
       session: 1,
       total: 2,
       path: 'vulnerabilities101/',
