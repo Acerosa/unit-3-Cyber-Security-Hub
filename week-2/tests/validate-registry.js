@@ -81,8 +81,11 @@
       }
       if (routing && routing.getSubmissionService) {
         var service = routing.getSubmissionService(item.id);
-        if (service !== routing.SUBMISSION_SERVICE.COLLECTOR_V3) {
-          fail('routing-' + item.id, 'Expected collector-v3 got ' + service);
+        var expected =
+          routing.SUBMISSION_SERVICE.WEEK2_API ||
+          routing.SUBMISSION_SERVICE.COLLECTOR_V3;
+        if (service !== expected) {
+          fail('routing-' + item.id, 'Expected ' + expected + ' got ' + service);
         } else {
           pass('routing-' + item.id);
         }
