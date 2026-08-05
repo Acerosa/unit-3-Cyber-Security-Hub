@@ -57,10 +57,13 @@ Unit 3 Cyber Security Hub
 │   ├── OCR-Style Question Practice      (Active)
 │   ├── Peer Marking and Answer Improvement (Active)
 │   └── Directed Independent Study       (Coming soon)
+├── Week 2
+│   ├── Week 2 Overview
+│   ├── Session 1 activities (Active) — see docs/week-2.md
+│   └── Session 2 activities (Active) — see docs/week-2.md
 ├── Resources
 └── Help
 ```
-
 There is no top-level Activities page. Week activities live inside each week area.
 
 ## 6. Why activities are organised within each week
@@ -286,6 +289,14 @@ Still marked Coming soon on the Week 1 page:
 
 - Directed Independent Study
 
+## 8a. Week 2: Threats and Vulnerabilities
+
+Route: `week-2/`
+
+Week 2 is implemented as a separate weekly area covering LO2 threats and vulnerabilities. Full activity IDs, totals, local-storage keys, editing guidance and the manual test checklist are in [`docs/week-2.md`](docs/week-2.md).
+
+Week 2 formative activities use local editable data under `week-2/data/` and submit through Collector v3 (`js/submissions.js`) with registry metadata in `js/course-context.js`. Week 1 Activity API activities are unchanged.
+
 ## 9. File structure
 
 ```text
@@ -310,28 +321,26 @@ Still marked Coming soon on the Week 1 page:
     activity-state.js
     activity-renderer.js
     activity-engine.js
+    week2-progress.js
+    week2-submit.js
+    week2-quiz.js
   /activities
     activity.html
-  /assets
-    /images
-    /icons
-  /resources
-    index.html
-  /help
-    index.html
   /week-1
     index.html
-    /glossary
-      index.html   (redirect to Activity API route)
-    /retrieval-quiz
-      index.html   (redirect to Activity API route)
+  /week-2
+    index.html
+    /css
+    /data
+    /js
+    /tests
+    (activity folders)
   /docs
+    week-2.md
+    activity-api-engine.md
     /apps-script
       /collector-v2
-        Code.gs
-        README.md
 ```
-
 No frameworks, npm packages, build tools or server-side code.
 
 ## 10. Local testing
@@ -347,6 +356,8 @@ No frameworks, npm packages, build tools or server-side code.
 
    - `http://localhost:8080/`
    - `http://localhost:8080/week-1/`
+   - `http://localhost:8080/week-2/`
+   - `http://localhost:8080/week-2/tests/`
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-BASELINE`
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-CIA`
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-INCIDENTS`
@@ -379,6 +390,7 @@ Main navigation on every page:
 
 - Home
 - Week 1
+- Week 2
 - Resources
 - Help
 
