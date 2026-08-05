@@ -37,6 +37,9 @@ function setupWeek2Workbook() {
   formatWeek2ResultsSheet_(spreadsheet.getSheetByName(CONFIG.weekResultsSheetName));
   formatErrorsSheet_(spreadsheet.getSheetByName(CONFIG.errorsSheetName));
 
+  ensureWeek2ActivityCatalogueSheet_({ messages: messages });
+  messages.push('Week 2 Activity Catalogue is ready for seedAllWeek2ActivityData().');
+
   messages.push('Week 2 workbook setup complete.');
   Logger.log(messages.join('\n'));
   return { ok: true, messages: messages };
