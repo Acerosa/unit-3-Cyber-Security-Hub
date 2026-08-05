@@ -44,7 +44,20 @@
     'U3-W01-GLOSSARY': SUBMISSION_SERVICE.ACTIVITY_API,
     'U3-W01-RETRIEVAL': SUBMISSION_SERVICE.ACTIVITY_API,
     'U3-W01-OCR-PRACTICE': SUBMISSION_SERVICE.ACTIVITY_API,
-    'U3-W01-PEER-IMPROVEMENT': SUBMISSION_SERVICE.ACTIVITY_API
+    'U3-W01-PEER-IMPROVEMENT': SUBMISSION_SERVICE.ACTIVITY_API,
+
+    // Week 2 local activities submit through Collector v3 (same spreadsheet workflow).
+    'week2-session1-retrieval': SUBMISSION_SERVICE.COLLECTOR_V3,
+    'week2-threat-vulnerability-learning': SUBMISSION_SERVICE.COLLECTOR_V3,
+    'week2-malware-symptoms': SUBMISSION_SERVICE.COLLECTOR_V3,
+    'week2-threat-vulnerability-sort': SUBMISSION_SERVICE.COLLECTOR_V3,
+    'week2-vulnerabilities101-reflection': SUBMISSION_SERVICE.COLLECTOR_V3,
+    'week2-session2-retrieval': SUBMISSION_SERVICE.COLLECTOR_V3,
+    'week2-northbank-vulnerability-analysis': SUBMISSION_SERVICE.COLLECTOR_V3,
+    'week2-six-mark-response-guide': SUBMISSION_SERVICE.COLLECTOR_V3,
+    'week2-ocr-question-practice': SUBMISSION_SERVICE.COLLECTOR_V3,
+    'week2-peer-marking-answer-improvement': SUBMISSION_SERVICE.COLLECTOR_V3,
+    'week2-northbank-vulnerability-register': SUBMISSION_SERVICE.COLLECTOR_V3
   });
 
   function getSubmissionService(activityId) {

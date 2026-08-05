@@ -1,0 +1,211 @@
+/* Week 2 accent and activity helpers — extends shared hub styles */
+
+:root {
+  --w2-accent: #0a5f6d;
+  --w2-accent-soft: #e6f3f5;
+}
+
+.week-2-page .page-header {
+  border-left: 4px solid var(--w2-accent);
+  padding-left: 1rem;
+}
+
+.w2-completion-banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: baseline;
+  margin: 0 0 1rem;
+}
+
+.w2-completion-banner strong {
+  color: var(--color-navy);
+}
+
+.hub-card .activity-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+.hub-card .activity-meta li {
+  margin: 0;
+}
+
+.hub-card .activity-score {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+}
+
+.status-label-progress {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.status-label-complete {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.status-label-idle {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+}
+
+.w2-options {
+  border: 0;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.w2-option {
+  display: block;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.w2-option:hover,
+.w2-option:focus-within {
+  border-color: var(--w2-accent);
+  background: var(--w2-accent-soft);
+}
+
+.w2-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.w2-scenario,
+.w2-callout {
+  padding: 0.85rem 1rem;
+  border-left: 3px solid var(--w2-accent);
+  background: var(--w2-accent-soft);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.w2-formula {
+  font-weight: 600;
+  text-align: center;
+  padding: 0.85rem;
+  background: var(--color-navy);
+  color: #fff;
+  border-radius: var(--radius);
+}
+
+.w2-review-item {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.w2-review-item h4 {
+  margin: 0 0 0.4rem;
+}
+
+.w2-sort-board {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 48rem) {
+  .w2-sort-board {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.w2-sort-column {
+  min-height: 8rem;
+  padding: 0.75rem;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  background: #f8fafb;
+}
+
+.w2-sort-column h3 {
+  margin: 0 0 0.65rem;
+  font-size: 1rem;
+}
+
+.w2-sort-card {
+  margin: 0 0 0.55rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.w2-sort-card:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.w2-register-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.w2-register-table th,
+.w2-register-table td {
+  border: 1px solid var(--color-border);
+  padding: 0.45rem;
+  vertical-align: top;
+  text-align: left;
+}
+
+.w2-register-table input,
+.w2-register-table select,
+.w2-register-table textarea {
+  width: 100%;
+  min-width: 0;
+}
+
+.w2-two-col {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 48rem) {
+  .w2-two-col {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.w2-timer-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+}
+
+@media print {
+  .site-header,
+  .site-nav,
+  .nav-toggle,
+  .breadcrumbs,
+  .w2-actions,
+  .skip-link,
+  #w2-submit-host {
+    display: none !important;
+  }
+
+  .w2-register-table {
+    font-size: 0.85rem;
+  }
+}
