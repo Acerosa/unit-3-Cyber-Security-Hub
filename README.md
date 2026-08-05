@@ -14,7 +14,7 @@ This repository is the central learner-facing website for Unit 3. It will eventu
 - directed independent study
 - formative result collection
 
-This foundation release provides the hub shell, Week 1 overview, the Baseline Knowledge Check, CIA Triad Learning, the interactive Cyber Security Glossary, Session 2 Retrieval Quiz, and the migrated Northbank Incident Classification activity.
+This foundation release provides the hub shell, Week 1 overview, the Baseline Knowledge Check, CIA Triad Learning, Incident Classification, the interactive Cyber Security Glossary, Session 2 Retrieval Quiz, and the OCR Command-Word Guide.
 
 ## 2. Source repository
 
@@ -130,11 +130,31 @@ Submission notes:
 
 ### Incident Classification
 
-Route: `week-1/incident-classification/`
+Route: `activities/activity.html?activityId=U3-W01-INCIDENTS`
 
 Published path (after Pages deployment):
 
-`https://acerosa.github.io/unit-3-Cyber-Security-Hub/week-1/incident-classification/`
+`https://acerosa.github.io/unit-3-Cyber-Security-Hub/activities/activity.html?activityId=U3-W01-INCIDENTS`
+
+Purpose: analyse realistic Northbank security incidents, choose the incident type and affected CIA aim, and supply short evidence for each classification.
+
+It uses the generic Activity API engine. Content and marking come from the private Activity API. Browser code does not contain the scenario bank or answer key.
+
+Expected API structure:
+
+- five sections (intro, three assessment packs of four, reflection)
+- twelve `classification` questions
+- maximum score 12
+- optional partner details (`allowsPartner: true`)
+
+Submission notes:
+
+- Activity ID: `U3-W01-INCIDENTS`
+- Submits through the Activity API only (`markSection` and `submitAttempt`)
+- Structured response value: `{ incidentType, ciaAim, evidence }`
+- Current Hub configuration keeps `submissionMode: 'TEST'` and `allowLiveSubmissions: false`
+- Does not use Collector v3
+- See `docs/activity-api-engine.md`
 
 ### Cyber Security Glossary
 
@@ -223,11 +243,6 @@ It uses the Activity API only. See `docs/activity-api-engine.md`.
       questions.js
       quiz.js
       activity.css
-    /incident-classification
-      index.html
-      app.js
-      scenarios.js
-      activity.css
   /docs
     /apps-script
       /collector-v2
@@ -252,13 +267,13 @@ No frameworks, npm packages, build tools or server-side code.
    - `http://localhost:8080/week-1/`
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-BASELINE`
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-CIA`
+   - `http://localhost:8080/activities/activity.html?activityId=U3-W01-INCIDENTS`
    - `http://localhost:8080/week-1/glossary/`
    - `http://localhost:8080/week-1/retrieval-quiz/`
-   - `http://localhost:8080/week-1/incident-classification/`
    - `http://localhost:8080/resources/`
    - `http://localhost:8080/help/`
 
-4. Confirm CSS/JS load, navigation works, the Baseline Activity API activity loads ten questions without hard-coded answers, the glossary shows searchable terms, and the classifier shows 12 cards.
+4. Confirm CSS/JS load, navigation works, the Baseline, CIA and Incident Classification Activity API routes load without hard-coded answers, and the glossary shows searchable terms.
 5. Refresh nested URLs directly to confirm GitHub Pages-style deep links work.
 
 ## 11. GitHub Pages deployment
@@ -389,8 +404,6 @@ The glossary submits Collector schema 3.0 via `js/submissions.js`:
 
 `unit3-glossary-attempt-id` in `sessionStorage` only.
 
-This key is separate from the classifier key `northbank-card-sort-attempt-id`.
-
 ### Glossary testing checklist
 
 - All terms load; search and category filters update the term count
@@ -401,33 +414,24 @@ This key is separate from the classifier key `northbank-card-sort-attempt-id`.
 - Start new attempt clears quiz state and the glossary Attempt ID
 - Submission validation blocks incomplete forms
 - Retries reuse the same glossary Attempt ID
-- Incident Classification still loads and submits independently
 
 ### Privacy limitations
 
 Do not collect email addresses, dates of birth, home addresses or other sensitive personal information. The glossary is formative only and is not a secure examination system.
 
-## 14. Classifier route
+## 14. Incident Classification route
 
 ```text
-/week-1/incident-classification/
+/activities/activity.html?activityId=U3-W01-INCIDENTS
 ```
 
 Breadcrumb:
 
 Home > Week 1 > Incident Classification
 
-Activity heading retained:
-
-**Northbank Cyber Incident Classification**
-
-Subtitle retained:
-
-**Classify each incident and identify the affected CIA security aim.**
-
 ## 15. Collector v3 learner submissions
 
-All five Week 1 activities submit **schema version 3.0** to the existing Apps Script web app URL configured in:
+Glossary and Retrieval submit **schema version 3.0** to the existing Apps Script web app URL configured in:
 
 `js/submissions.js` as `Unit3Submissions.COLLECTOR_URL`
 
@@ -465,12 +469,12 @@ Learners cannot edit these values.
 | --- | --- | --- | --- |
 | Baseline Knowledge Check (Activity API) | `U3-W01-BASELINE` | 10 | BAS-Q01 to BAS-Q10 |
 | CIA Triad Learning (Activity API) | `U3-W01-CIA` | 15 | CIA-Q01 to CIA-Q12 |
-| Incident Classification | `U3-W01-INCIDENTS` | 12 | 1 to 12 |
+| Incident Classification (Activity API) | `U3-W01-INCIDENTS` | 12 | INC-Q01 to INC-Q12 |
 | Cyber Security Glossary | `U3-W01-GLOSSARY` | 12 | 1 to 12 |
 | Session 2 Retrieval Quiz | `U3-W01-RETRIEVAL` | 15 | 1 to 10 |
 | OCR Command-Word Guide (Activity API pilot) | `U3-W01-COMMAND-WORDS` | 12 | Q001 to Q006 |
 
-Collector v3 continues to serve Incidents, Glossary and Retrieval. Baseline, CIA and the Command-Word Guide submit only through the Activity API (`docs/activity-api-engine.md`).
+Collector v3 continues to serve Glossary and Retrieval. Baseline, CIA, Incident Classification and the Command-Word Guide submit only through the Activity API (`docs/activity-api-engine.md`).
 
 ### Class-group configuration
 
@@ -608,13 +612,13 @@ On the week page:
 Before release, confirm:
 
 - [ ] Source repository is unchanged
-- [ ] All 12 scenarios are present
-- [ ] Scoring and CIA multi-select behaviour still work
-- [ ] Attempt ID create / retry / reset behaviour still works
-- [ ] Apps Script `/exec` URL is unchanged
+- [ ] Incident Classification opens via the Activity API engine route
+- [ ] Activity API health reports `UNIT3-ACTIVITY-API-V1.3` with `resultsConnected: true`
+- [ ] Twelve classification questions load from `getActivity` with no answer leak
+- [ ] `markSection` and TEST `submitAttempt` succeed for `U3-W01-INCIDENTS`
 - [ ] Nested relative paths load after refresh
 - [ ] No spreadsheet IDs or secrets were committed
-- [ ] Hub Home, Week 1, Resources, Help and classifier pages load
+- [ ] Hub Home, Week 1, Resources, Help and Activity API routes load
 
 ## 24. Preservation of the source repository
 

@@ -53,7 +53,9 @@
       information: 'Information',
       checklist: 'Checklist',
       definition: 'Definition',
-      'worked-example': 'Worked example'
+      'worked-example': 'Worked example',
+      'model-answer': 'Model answer',
+      tip: 'Tip'
     }[block.blockType];
     if (typeLabel) {
       article.appendChild(
@@ -66,19 +68,291 @@
     return article;
   }
 
+  function findItemResult(markResult, questionId) {
+    if (!markResult || !markResult.results) return null;
+    for (var i = 0; i < markResult.results.length; i += 1) {
+      if (markResult.results[i].questionId === questionId) {
+        return markResult.results[i];
+      }
+    }
+    return null;
+  }
+
+  function appendQuestionFeedback(fieldset, itemResult) {
+    if (!itemResult) return;
+    var feedback = el('div', {
+      className: 'ae-question-feedback',
+      role: 'region',
+      'aria-label': 'Feedback for ' + (itemResult.questionId || 'question')
+    });
+    feedback.appendChild(
+      el('p', {
+        textContent:
+          itemResult.status === 'correct' ? 'Correct' : 'Requires review'
+      })
+    );
+    if (itemResult.feedback) {
+      feedback.appendChild(el('p', { textContent: itemResult.feedback }));
+    }
+    if (itemResult.explanation) {
+      feedback.appendChild(el('p', { textContent: itemResult.explanation }));
+    }
+    if (itemResult.correctValue != null && itemResult.correctValue !== '') {
+      var correctText =
+        typeof itemResult.correctValue === 'object'
+          ? [
+              itemResult.correctValue.incidentType
+                ? 'Incident type: ' + itemResult.correctValue.incidentType
+                : '',
+              itemResult.correctValue.ciaAim
+                ? 'CIA aim: ' + itemResult.correctValue.ciaAim
+                : '',
+              itemResult.correctValue.evidence
+                ? 'Evidence: ' + itemResult.correctValue.evidence
+                : ''
+            ]
+              .filter(Boolean)
+              .join(' · ')
+          : String(itemResult.correctValue);
+      if (correctText) {
+        feedback.appendChild(
+          el('p', { textContent: 'Correct response: ' + correctText })
+        );
+      }
+    }
+    fieldset.appendChild(feedback);
+  }
+
+  function splitClassificationOptions(options) {
+    var incident = [];
+    var cia = [];
+    var other = [];
+    sortByDisplayOrder(options).forEach(function (option) {
+      var id = String(option.optionId || '');
+      if (id.indexOf('CIA-') === 0) {
+        cia.push(option);
+      } else if (id.indexOf('INCIDENT-') === 0) {
+        incident.push(option);
+      } else {
+        other.push(option);
+      }
+    });
+    return { incident: incident, cia: cia, other: other };
+  }
+
+  function renderOptionRadios(questionId, groupName, options, selectedId, itemResult, onPick) {
+    var list = el('ul', { className: 'ae-choice-list' });
+    options.forEach(function (option) {
+      var inputId = questionId + '-' + option.optionId;
+      var input = el('input', {
+        type: 'radio',
+        name: groupName,
+        id: inputId,
+        value: option.optionId
+      });
+      if (selectedId === option.optionId) input.checked = true;
+      input.addEventListener('change', function () {
+        onPick(option.optionId);
+      });
+
+      var labelClass = 'ae-choice';
+      if (itemResult) {
+        var correct = itemResult.correctValue;
+        var correctId =
+          typeof correct === 'object' && correct
+            ? groupName.indexOf('-incident') !== -1
+              ? correct.incidentType
+              : correct.ciaAim
+            : correct;
+        if (correctId && option.optionId === correctId) {
+          labelClass += ' is-correct-option';
+        } else if (selectedId === option.optionId && itemResult.status !== 'correct') {
+          labelClass += ' is-incorrect-selected';
+        }
+      }
+
+      list.appendChild(
+        el('li', null, [
+          el('label', { className: labelClass, htmlFor: inputId }, [
+            input,
+            el('span', { textContent: option.text || option.optionId })
+          ])
+        ])
+      );
+    });
+    return list;
+  }
+
+  function renderClassificationQuestion(question, state, itemResult, handlers, fieldset) {
+    var qid = question.questionId;
+    var current = state.responses[qid] || {};
+    if (typeof current !== 'object' || current === null) {
+      current = {};
+    }
+    var groups = splitClassificationOptions(question.options || []);
+
+    var evidenceId = qid + '-evidence';
+    var minChars = question.minimumCharacters != null ? question.minimumCharacters : 1;
+    var maxChars = question.maximumCharacters != null ? question.maximumCharacters : 300;
+
+    function readLiveValue() {
+      var incidentInput = fieldset.querySelector(
+        'input[name="question-' + qid + '-incident"]:checked'
+      );
+      var ciaInput = fieldset.querySelector(
+        'input[name="question-' + qid + '-cia"]:checked'
+      );
+      var evidenceNode = document.getElementById(evidenceId);
+      return {
+        incidentType: incidentInput ? incidentInput.value : current.incidentType || '',
+        ciaAim: ciaInput ? ciaInput.value : current.ciaAim || '',
+        evidence: evidenceNode ? evidenceNode.value : current.evidence || ''
+      };
+    }
+
+    function emit(opts) {
+      if (handlers && handlers.onAnswer) {
+        handlers.onAnswer(qid, readLiveValue(), opts || {});
+      }
+    }
+
+    if (groups.incident.length) {
+      fieldset.appendChild(
+        el('p', {
+          className: 'ae-classification-label',
+          id: qid + '-incident-label',
+          textContent: 'Incident type'
+        })
+      );
+      var incidentList = renderOptionRadios(
+        qid,
+        'question-' + qid + '-incident',
+        groups.incident,
+        current.incidentType || '',
+        itemResult,
+        function () {
+          emit({});
+        }
+      );
+      incidentList.setAttribute('aria-labelledby', qid + '-incident-label');
+      fieldset.appendChild(incidentList);
+    }
+
+    if (groups.cia.length) {
+      fieldset.appendChild(
+        el('p', {
+          className: 'ae-classification-label',
+          id: qid + '-cia-label',
+          textContent: 'Affected CIA aim'
+        })
+      );
+      var ciaList = renderOptionRadios(
+        qid,
+        'question-' + qid + '-cia',
+        groups.cia,
+        current.ciaAim || '',
+        itemResult,
+        function () {
+          emit({});
+        }
+      );
+      ciaList.setAttribute('aria-labelledby', qid + '-cia-label');
+      fieldset.appendChild(ciaList);
+    }
+
+    fieldset.appendChild(
+      el('label', {
+        className: 'ae-classification-label',
+        htmlFor: evidenceId,
+        textContent: 'Evidence from the scenario'
+      })
+    );
+    var textarea = el('textarea', {
+      id: evidenceId,
+      className: 'ae-evidence-input',
+      name: 'evidence-' + qid,
+      rows: '3',
+      maxlength: String(maxChars),
+      'aria-describedby': qid + '-evidence-hint'
+    });
+    textarea.value = current.evidence || '';
+    textarea.addEventListener('input', function () {
+      emit({ deferRender: true });
+    });
+    textarea.addEventListener('blur', function () {
+      emit({});
+    });
+    fieldset.appendChild(textarea);
+    fieldset.appendChild(
+      el('p', {
+        id: qid + '-evidence-hint',
+        className: 'ae-evidence-hint',
+        textContent:
+          'Enter at least ' +
+          minChars +
+          ' characters (maximum ' +
+          maxChars +
+          ').'
+      })
+    );
+
+    appendQuestionFeedback(fieldset, itemResult);
+    return fieldset;
+  }
+
+  function renderSingleChoiceQuestion(question, state, itemResult, handlers, fieldset) {
+    var qid = question.questionId;
+    var selected = state.responses[qid] || '';
+    var list = el('ul', { className: 'ae-choice-list' });
+    sortByDisplayOrder(question.options).forEach(function (option) {
+      var inputId = qid + '-' + option.optionId;
+      var input = el('input', {
+        type: 'radio',
+        name: 'question-' + qid,
+        id: inputId,
+        value: option.optionId
+      });
+      if (selected === option.optionId) input.checked = true;
+      input.addEventListener('change', function () {
+        if (handlers && handlers.onAnswer) {
+          handlers.onAnswer(qid, option.optionId);
+        }
+      });
+
+      var labelClass = 'ae-choice';
+      if (itemResult) {
+        if (itemResult.correctValue && option.optionId === itemResult.correctValue) {
+          labelClass += ' is-correct-option';
+        } else if (
+          selected === option.optionId &&
+          itemResult.status !== 'correct'
+        ) {
+          labelClass += ' is-incorrect-selected';
+        }
+      }
+
+      list.appendChild(
+        el('li', null, [
+          el('label', { className: labelClass, htmlFor: inputId }, [
+            input,
+            el('span', {
+              className: 'ae-option-id',
+              textContent: option.optionId
+            }),
+            el('span', { textContent: option.text || '' })
+          ])
+        ])
+      );
+    });
+    fieldset.appendChild(list);
+    appendQuestionFeedback(fieldset, itemResult);
+    return fieldset;
+  }
+
   function renderQuestion(question, state, markResult, handlers) {
     ensureEl();
     var qid = question.questionId;
-    var selected = state.responses[qid] || '';
-    var itemResult = null;
-    if (markResult && markResult.results) {
-      for (var i = 0; i < markResult.results.length; i += 1) {
-        if (markResult.results[i].questionId === qid) {
-          itemResult = markResult.results[i];
-          break;
-        }
-      }
-    }
+    var itemResult = findItemResult(markResult, qid);
 
     var fieldset = el('fieldset', {
       className:
@@ -111,89 +385,22 @@
       );
     }
 
-    if (question.questionType !== 'single-choice') {
-      fieldset.appendChild(
-        el('p', {
-          className: 'message message-error',
-          textContent:
-            'This question type (' +
-            (question.questionType || 'unknown') +
-            ') is not supported in this version of the activity engine.'
-        })
-      );
-      return fieldset;
+    if (question.questionType === 'single-choice') {
+      return renderSingleChoiceQuestion(question, state, itemResult, handlers, fieldset);
+    }
+    if (question.questionType === 'classification') {
+      return renderClassificationQuestion(question, state, itemResult, handlers, fieldset);
     }
 
-    var list = el('ul', { className: 'ae-choice-list' });
-    sortByDisplayOrder(question.options).forEach(function (option) {
-      var inputId = qid + '-' + option.optionId;
-      var input = el('input', {
-        type: 'radio',
-        name: 'question-' + qid,
-        id: inputId,
-        value: option.optionId
-      });
-      if (selected === option.optionId) input.checked = true;
-      input.addEventListener('change', function () {
-        if (handlers && handlers.onAnswer) {
-          handlers.onAnswer(qid, option.optionId);
-        }
-      });
-
-      var labelClass = 'ae-choice';
-      if (itemResult) {
-        if (itemResult.correctValue && option.optionId === itemResult.correctValue) {
-          labelClass += ' is-correct-option';
-        } else if (
-          selected === option.optionId &&
-          itemResult.status !== 'correct'
-        ) {
-          labelClass += ' is-incorrect-selected';
-        }
-      }
-
-      var label = el('label', { className: labelClass, htmlFor: inputId }, [
-        input,
-        el('span', {
-          className: 'ae-option-id',
-          textContent: option.optionId
-        }),
-        el('span', { textContent: option.text || '' })
-      ]);
-      list.appendChild(el('li', null, [label]));
-    });
-    fieldset.appendChild(list);
-
-    if (itemResult) {
-      var feedback = el('div', {
-        className: 'ae-question-feedback',
-        role: 'region',
-        'aria-label': 'Feedback for ' + qid
-      });
-      feedback.appendChild(
-        el('p', {
-          textContent:
-            itemResult.status === 'correct'
-              ? 'Correct'
-              : 'Requires review'
-        })
-      );
-      if (itemResult.feedback) {
-        feedback.appendChild(el('p', { textContent: itemResult.feedback }));
-      }
-      if (itemResult.explanation) {
-        feedback.appendChild(el('p', { textContent: itemResult.explanation }));
-      }
-      if (itemResult.correctValue) {
-        feedback.appendChild(
-          el('p', {
-            textContent: 'Correct option: ' + itemResult.correctValue
-          })
-        );
-      }
-      fieldset.appendChild(feedback);
-    }
-
+    fieldset.appendChild(
+      el('p', {
+        className: 'message message-error',
+        textContent:
+          'This question type (' +
+          (question.questionType || 'unknown') +
+          ') is not supported in this version of the activity engine.'
+      })
+    );
     return fieldset;
   }
 
