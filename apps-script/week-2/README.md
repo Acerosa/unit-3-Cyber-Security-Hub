@@ -173,7 +173,13 @@ Do **not** run `clasp push --force` unless the remote project has been backed up
 
 ## Frontend components expected
 
-Current Week 2 hub pages still render from local `week-2/data/*.js` banks and Collector v3.
+Current Week 2 hub pages still render from local `week-2/data/*.js` banks and submit JSON results to `week2ApiBaseUrl` in `js/activity-engine-config.js`.
+
+One-shot remote bootstrap (locks after first success):
+
+```text
+GET /exec?action=bootstrapSetup&confirm=Unit3-Week2-Bootstrap-Once&requestId=setup-1
+```
 
 When moving a page onto the Activity API engine, use the `componentId` values above.
 

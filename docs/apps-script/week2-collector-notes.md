@@ -16,9 +16,11 @@ Do not modify the Week 1 Activity API project when changing Week 2 collection.
 
 ## Current frontend routing
 
-Week 2 formative activities currently still submit Collector schema 3.0 payloads through the existing Collector `/exec` URL in `js/submissions.js`.
+Week 2 formative activities submit JSON results to the Week 2 Apps Script `/exec` URL configured as `week2ApiBaseUrl` in `js/activity-engine-config.js`.
 
-Point the frontend at the Week 2 API `/exec` URL only after that web app has been deployed and smoke-tested.
+Routing uses `SUBMISSION_SERVICE.WEEK2_API` for all `week2-*` activity IDs.
+
+Collector schema 3.0 helpers remain in `js/submissions.js` for legacy callers only.
 
 ## Allowed totals
 

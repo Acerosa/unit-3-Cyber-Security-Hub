@@ -1,6 +1,6 @@
 /**
- * Shared Week 2 Collector v3 submission helper.
- * Reuses Unit3LearnerDetails and Unit3Submissions; does not duplicate API clients.
+ * Shared Week 2 submission helper.
+ * Posts JSON results to the Week 2 Apps Script /exec URL.
  */
 
 (function (global) {
@@ -15,7 +15,8 @@
       learner: global.Unit3LearnerDetails,
       submissions: global.Unit3Submissions,
       progress: global.Unit3Week2Progress,
-      utils: global.Unit3ActivityUtils
+      utils: global.Unit3ActivityUtils,
+      config: global.Unit3ActivityEngineConfig
     };
   }
 
@@ -25,6 +26,52 @@
       return null;
     }
     return modules.course.getActivity(activityId);
+  }
+
+  function getWeek2ApiUrl() {
+    var modules = getModules();
+    if (modules.config && typeof modules.config.getWeek2ApiBaseUrl === 'function') {
+      return modules.config.getWeek2ApiBaseUrl();
+    }
+    var cfg = modules.config && modules.config.ACTIVITY_ENGINE_CONFIG;
+    return (cfg && cfg.week2ApiBaseUrl) || '';
+  }
+
+  function attemptNumberKey(storageKey) {
+    return storageKey + '-attempt-number';
+  }
+
+  function getAttemptNumber(storageKey) {
+    try {
+      var raw = sessionStorage.getItem(attemptNumberKey(storageKey));
+      var parsed = parseInt(raw, 10);
+      return Number.isInteger(parsed) && parsed >= 1 ? parsed : 1;
+    } catch (err) {
+      return 1;
+    }
+  }
+
+  function setAttemptNumber(storageKey, value) {
+    try {
+      sessionStorage.setItem(attemptNumberKey(storageKey), String(value));
+    } catch (err) {
+      /* sessionStorage may be unavailable */
+    }
+  }
+
+  function beginNextAttemptNumber(storageKey) {
+    var next = getAttemptNumber(storageKey) + 1;
+    setAttemptNumber(storageKey, next);
+    return next;
+  }
+
+  function sessionNumberFromActivity(activity) {
+    if (!activity) return null;
+    if (activity.sessionNumber === 1 || activity.sessionNumber === 2) {
+      return activity.sessionNumber;
+    }
+    var match = String(activity.sessionName || '').match(/(\d+)/);
+    return match ? parseInt(match[1], 10) : null;
   }
 
   function renderSubmitPanel(options) {
@@ -79,11 +126,19 @@
       showPartner: Boolean(activity && activity.allowsPartner)
     });
 
+    if (activity && activity.attemptStorageKey) {
+      setAttemptNumber(
+        activity.attemptStorageKey,
+        getAttemptNumber(activity.attemptStorageKey)
+      );
+    }
+
     submitBtn.addEventListener('click', function () {
       if (awaitNewAttempt) {
-        var activity = resolveActivity(options.activityId);
-        if (activity && modules.submissions) {
-          modules.submissions.startNewAttempt(activity.attemptStorageKey);
+        var current = resolveActivity(options.activityId);
+        if (current && modules.submissions) {
+          modules.submissions.startNewAttempt(current.attemptStorageKey);
+          beginNextAttemptNumber(current.attemptStorageKey);
         }
         awaitNewAttempt = false;
         submitBtn.textContent = 'Submit formative result';
@@ -127,6 +182,61 @@
     p.className = 'message message-' + (type || 'info');
     p.textContent = message;
     host.appendChild(p);
+  }
+
+  function buildWeek2Payload(activity, learner, options, attemptId, attemptNumber) {
+    return {
+      learnerName: [learner.firstName, learner.surname].filter(Boolean).join(' '),
+      learnerId: learner.studentId || '',
+      groupName: learner.classGroup || '',
+      classGroup: learner.classGroup || '',
+      firstName: learner.firstName || '',
+      surname: learner.surname || '',
+      studentId: learner.studentId || '',
+      weekNumber: activity.weekNumber || 2,
+      sessionNumber: sessionNumberFromActivity(activity),
+      sessionName: activity.sessionName || '',
+      activityId: activity.activityId,
+      activityVersion: activity.activityVersion || '1.0',
+      score: options.score,
+      total: options.total,
+      maximumScore: options.total,
+      attemptNumber: attemptNumber,
+      attemptId: attemptId,
+      completedAt: new Date().toISOString(),
+      recordType: 'LIVE',
+      questionsForReview: options.questionsForReview || '',
+      mostDifficultItem: options.mostDifficultItem || '',
+      reflection: options.reflection || '',
+      completionTimeSeconds: options.completionTimeSeconds || 60,
+      sourcePage: global.location ? global.location.href : ''
+    };
+  }
+
+  function postWeek2Submission(payload) {
+    var url = getWeek2ApiUrl();
+    if (!url || !/\/exec\/?$/.test(url)) {
+      return Promise.reject(new Error('Week 2 API URL is not configured.'));
+    }
+
+    return fetch(url, {
+      method: 'POST',
+      redirect: 'follow',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(payload)
+    }).then(function (response) {
+      return response.text().then(function (text) {
+        var envelope;
+        try {
+          envelope = JSON.parse(text);
+        } catch (err) {
+          throw new Error('The Week 2 API returned an unexpected response.');
+        }
+        return { response: response, envelope: envelope };
+      });
+    });
   }
 
   function submitResult(options) {
@@ -184,6 +294,7 @@
     }
 
     var attemptId = modules.submissions.getOrCreateAttemptId(activity.attemptStorageKey);
+    var attemptNumber = getAttemptNumber(activity.attemptStorageKey);
     var score = Number(options.score);
     var total = Number(options.total != null ? options.total : activity.maximumScore);
 
@@ -215,70 +326,90 @@
     }
     setMessage('w2-submit-status', 'Submitting your formative result…', 'info');
 
-    var result = modules.submissions.submitSchema3({
-      courseContext: modules.course.COURSE_CONTEXT,
-      activity: activity,
-      learner: validation.learner,
-      attemptId: attemptId,
-      recordType: 'LIVE',
-      score: score,
-      maximumScore: total,
-      questionsForReview: options.questionsForReview || '',
-      mostDifficultItem: options.mostDifficultItem || '',
-      reflection: options.reflection || '',
-      completionTimeSeconds: options.completionTimeSeconds || 60,
-      sourcePage: global.location ? global.location.href : ''
-    });
-
-    if (!result.started) {
-      submitting = false;
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent = 'Submit formative result';
-      }
-      var detail =
-        result.errors && result.errors.length
-          ? result.errors.join(' ')
-          : 'The submission could not be started.';
-      console.error('[Week2Submit] Submission failed to start', result.errors);
-      setMessage(
-        'w2-submit-status',
-        'Your result was not saved. ' + detail + ' You can try again.',
-        'error'
-      );
-      return;
-    }
-
-    modules.submissions.markAttemptCompleted(activity.attemptStorageKey);
-    if (modules.progress && modules.progress.markSubmitted) {
-      modules.progress.markSubmitted(options.activityId);
-    }
-    if (modules.learner.renderSubmissionSummary) {
-      modules.learner.renderSubmissionSummary('w2-submission-summary', {
-        firstName: validation.learner.firstName,
-        surname: validation.learner.surname,
-        studentId: validation.learner.studentId,
-        classGroup: validation.learner.classGroup,
-        activityName: activity.activityName,
+    var payload = buildWeek2Payload(
+      activity,
+      validation.learner,
+      {
         score: score,
-        maximumScore: total,
-        partnerStudentId: validation.learner.partnerStudentId,
-        partnerFirstName: validation.learner.partnerFirstName,
-        partnerSurname: validation.learner.partnerSurname
-      });
-    }
-
-    submitting = false;
-    awaitNewAttempt = true;
-    if (btn) {
-      btn.disabled = false;
-      btn.textContent = 'Start another attempt';
-    }
-    setMessage(
-      'w2-submit-status',
-      'A results confirmation page should open in a new tab. Check that page to confirm your result was received.',
-      'success'
+        total: total,
+        questionsForReview: options.questionsForReview || '',
+        mostDifficultItem: options.mostDifficultItem || '',
+        reflection: options.reflection || '',
+        completionTimeSeconds: options.completionTimeSeconds || 60
+      },
+      attemptId,
+      attemptNumber
     );
+
+    postWeek2Submission(payload)
+      .then(function (result) {
+        var envelope = result.envelope || {};
+        if (envelope.ok === true && (envelope.recorded === true || envelope.duplicate === true)) {
+          modules.submissions.markAttemptCompleted(activity.attemptStorageKey);
+          if (modules.progress && modules.progress.markSubmitted) {
+            modules.progress.markSubmitted(options.activityId);
+          }
+          if (modules.learner.renderSubmissionSummary) {
+            modules.learner.renderSubmissionSummary('w2-submission-summary', {
+              firstName: validation.learner.firstName,
+              surname: validation.learner.surname,
+              studentId: validation.learner.studentId,
+              classGroup: validation.learner.classGroup,
+              activityName: activity.activityName,
+              score: score,
+              maximumScore: total,
+              partnerStudentId: validation.learner.partnerStudentId,
+              partnerFirstName: validation.learner.partnerFirstName,
+              partnerSurname: validation.learner.partnerSurname
+            });
+          }
+          awaitNewAttempt = true;
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Start another attempt';
+          }
+          setMessage(
+            'w2-submit-status',
+            envelope.duplicate
+              ? 'This submission was already recorded.'
+              : envelope.message || 'Submission recorded.',
+            'success'
+          );
+          return;
+        }
+
+        var detail = envelope.message || 'Submission not recorded.';
+        if (envelope.errors && envelope.errors.length) {
+          detail =
+            envelope.errors
+              .map(function (item) {
+                return item.message || item.code;
+              })
+              .filter(Boolean)
+              .join(' ') || detail;
+        }
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Submit formative result';
+        }
+        setMessage('w2-submit-status', 'Your result was not saved. ' + detail, 'error');
+      })
+      .catch(function (err) {
+        console.error('[Week2Submit] Submission failed', err);
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Submit formative result';
+        }
+        setMessage(
+          'w2-submit-status',
+          'Your result was not saved. ' +
+            ((err && err.message) || 'Check your connection and try again.'),
+          'error'
+        );
+      })
+      .then(function () {
+        submitting = false;
+      });
   }
 
   global.Unit3Week2Submit = {

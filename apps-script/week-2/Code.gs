@@ -91,3 +91,35 @@ function getWeek2SubmissionStatus() {
   Logger.log(JSON.stringify(status));
   return status;
 }
+
+/**
+ * One-shot deployment bootstrap: workbook setup, data tests, catalogue seed,
+ * then open Week 2 submissions.
+ *
+ * @return {Object}
+ */
+function runWeek2DeploymentBootstrap() {
+  var setup = setupWeek2Workbook();
+  var dataTests = runAllWeek2ActivityDataTests();
+  var seed = seedAllWeek2ActivityData();
+  openWeek2Submissions();
+  var apiTests;
+  try {
+    apiTests = runAllWeek2SelfTests();
+  } catch (err) {
+    // Spreadsheet tab checks may fail before setup; re-run after setup above.
+    apiTests = runAllWeek2SelfTests();
+  }
+
+  var summary = {
+    setupOk: !!(setup && setup.ok),
+    dataTests: dataTests,
+    seedInserted: (seed && seed.inserted) || [],
+    seedUpdated: (seed && seed.updated) || [],
+    seedFailed: (seed && seed.failed) || [],
+    apiTests: apiTests,
+    acceptingSubmissions: areWeek2SubmissionsOpen_()
+  };
+  Logger.log(JSON.stringify(summary, null, 2));
+  return summary;
+}

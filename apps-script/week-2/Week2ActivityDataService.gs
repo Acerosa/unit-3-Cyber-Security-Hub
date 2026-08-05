@@ -77,6 +77,10 @@ var Week2ActivityDataService = (function () {
       return okEnvelope_(requestId, 'getActivity', buildPublicActivityPayload_(pack));
     }
 
+    if (action === 'bootstrapSetup') {
+      return bootstrapSetup_(requestId, params);
+    }
+
     return errorEnvelope_(
       requestId,
       action,
@@ -101,6 +105,9 @@ var Week2ActivityDataService = (function () {
 
     if (action === 'markSection') {
       return markSection_(requestId, body);
+    }
+    if (action === 'submitAttempt') {
+      return submitAttempt_(requestId, body);
     }
 
     return null;
@@ -187,8 +194,7 @@ var Week2ActivityDataService = (function () {
         maximumScore: pack.meta.maximumScore,
         allowsPartner: pack.meta.allowsPartner === true,
         introduction: pack.meta.introduction || '',
-        completionMessage: pack.meta.completionMessage || '',
-        componentId: pack.meta.componentId || ''
+        completionMessage: pack.meta.completionMessage || ''
       },
       sections: (pack.sections || []).map(function (section) {
         return {
@@ -227,7 +233,6 @@ var Week2ActivityDataService = (function () {
       maximumCharacters: question.maximumCharacters || 0,
       minimumSelections: question.minimumSelections || 0,
       maximumSelections: question.maximumSelections || 0,
-      commandWord: question.commandWord || '',
       options: (question.options || []).map(function (option) {
         return {
           optionId: option.optionId,
@@ -242,6 +247,7 @@ var Week2ActivityDataService = (function () {
     var activityId = String(body.activityId || '');
     var sectionId = String(body.sectionId || '');
     var activityVersion = String(body.activityVersion || '');
+    var attemptId = String(body.attemptId || '');
     var pack = getPackByActivityId_(activityId);
 
     if (!pack) {
@@ -251,7 +257,7 @@ var Week2ActivityDataService = (function () {
       return errorEnvelope_(
         requestId,
         'markSection',
-        'VERSION_NOT_ACCEPTED',
+        'VERSION_MISMATCH',
         'Activity version is not accepted.'
       );
     }
@@ -269,9 +275,28 @@ var Week2ActivityDataService = (function () {
       }
     });
 
+    var missing = [];
+    (section.questions || []).forEach(function (question) {
+      if (question.required === false) {
+        return;
+      }
+      if (!hasAnswer_(question, responseMap[question.questionId])) {
+        missing.push(question.questionId);
+      }
+    });
+    if (missing.length) {
+      return errorEnvelope_(
+        requestId,
+        'markSection',
+        'RESPONSE_REQUIRED',
+        'A required question has not been answered.'
+      );
+    }
+
     var results = [];
     var score = 0;
     var maximumScore = 0;
+    var questionsForReview = [];
 
     (section.questions || []).forEach(function (question) {
       var marks = Number(question.marks) || 0;
@@ -280,14 +305,20 @@ var Week2ActivityDataService = (function () {
       var value = responseMap[question.questionId];
       var item = markQuestion_(question, value, assessment);
       score += item.marksAwarded || 0;
+      if (item.status === 'incorrect' || item.status === 'requires-review') {
+        questionsForReview.push(question.questionId);
+      }
       results.push(item);
     });
 
     return okEnvelope_(requestId, 'markSection', {
       activityId: activityId,
+      activityVersion: pack.meta.activityVersion,
+      attemptId: attemptId,
       sectionId: sectionId,
       score: score,
       maximumScore: maximumScore,
+      questionsForReview: questionsForReview,
       results: results
     });
   }
@@ -296,6 +327,7 @@ var Week2ActivityDataService = (function () {
     var marks = Number(question.marks) || 0;
     var autoMark = assessment.autoMark === true;
     var scoringMode = assessment.scoringMode || (autoMark ? 'objective' : 'completion');
+    var selectedValue = normaliseSelectedValue_(value);
 
     if (scoringMode === 'manual') {
       return {
@@ -303,51 +335,279 @@ var Week2ActivityDataService = (function () {
         status: hasText_(value) ? 'completed' : 'requires-review',
         marksAwarded: 0,
         maximumMarks: marks,
+        selectedValue: selectedValue,
+        correctValue: '',
         feedback: 'This response has been recorded for tutor or peer review.',
-        explanation: assessment.explanation || '',
-        correctValue: ''
+        explanation: assessment.explanation || ''
       };
     }
 
     if (!autoMark || scoringMode === 'completion') {
-      var completed = hasText_(value) || value === 'YES' || value === true;
+      var completed = hasAnswer_(question, value);
       return {
         questionId: question.questionId,
         status: completed ? 'completed' : 'requires-review',
         marksAwarded: completed ? marks : 0,
         maximumMarks: marks,
+        selectedValue: selectedValue,
+        correctValue: '',
         feedback: completed
           ? 'Response recorded.'
           : 'A response is required for this item.',
-        explanation: assessment.explanation || '',
-        correctValue: ''
+        explanation: assessment.explanation || ''
       };
     }
 
     var correctOptionId = assessment.correctOptionId;
-    var given = value == null ? '' : String(value);
+    var given = selectedValue == null ? '' : String(selectedValue);
     var isCorrect = given !== '' && given === correctOptionId;
     return {
       questionId: question.questionId,
       status: isCorrect ? 'correct' : 'incorrect',
       marksAwarded: isCorrect ? marks : 0,
       maximumMarks: marks,
+      selectedValue: given,
+      correctValue: correctOptionId || '',
       feedback: isCorrect
-        ? 'Correct.'
-        : assessment.misconceptionFeedback || 'Review the explanation and try again next time.',
-      explanation: assessment.explanation || '',
-      correctValue: revealOptionText_(question, correctOptionId)
+        ? assessment.feedbackCorrect || 'Correct.'
+        : assessment.misconceptionFeedback ||
+          assessment.feedbackIncorrect ||
+          'Review the explanation and try again next time.',
+      explanation: assessment.explanation || ''
     };
   }
 
-  function revealOptionText_(question, optionId) {
-    var options = question.options || [];
-    for (var i = 0; i < options.length; i++) {
-      if (options[i].optionId === optionId) {
-        return options[i].text;
+  /**
+   * Activity API submitAttempt — records a completed attempt into the shared sheets.
+   * Response shape matches the Week 1 engine expectations.
+   */
+  function submitAttempt_(requestId, body) {
+    if (!areWeek2SubmissionsOpen_()) {
+      return errorEnvelope_(
+        requestId,
+        'submitAttempt',
+        'SUBMISSIONS_CLOSED',
+        'Week 2 submissions are currently closed.'
+      );
+    }
+
+    var activityId = String(body.activityId || '');
+    var pack = getPackByActivityId_(activityId);
+    if (!pack) {
+      return errorEnvelope_(
+        requestId,
+        'submitAttempt',
+        'UNKNOWN_ACTIVITY',
+        'Activity ID is not recognised for Week 2.'
+      );
+    }
+
+    var activityVersion = String(body.activityVersion || '');
+    if (activityVersion && activityVersion !== pack.meta.activityVersion) {
+      return errorEnvelope_(
+        requestId,
+        'submitAttempt',
+        'VERSION_MISMATCH',
+        'Activity version is not accepted.'
+      );
+    }
+
+    var learner = body.learner || {};
+    var score = toNumberOrNull_(body.score);
+    if (score === null && Array.isArray(body.sectionScores)) {
+      score = body.sectionScores.reduce(function (sum, item) {
+        return sum + (Number(item && item.score) || 0);
+      }, 0);
+    }
+    if (score === null && body.totalScore != null) {
+      score = toNumberOrNull_(body.totalScore);
+    }
+
+    var submission = {
+      learnerName: joinName_(learner.firstName, learner.surname) || trimString_(body.learnerName),
+      learnerId: trimString_(learner.studentId || body.learnerId),
+      groupName: trimString_(learner.classGroup || body.groupName || body.classGroup),
+      weekNumber: CONFIG.weekNumber,
+      sessionNumber: pack.meta.sessionNumber,
+      activityId: activityId,
+      activityVersion: pack.meta.activityVersion,
+      score: score,
+      total: pack.meta.maximumScore,
+      attemptNumber: toIntegerOrNull_(body.attemptNumber) || 1,
+      completedAt: trimString_(body.completedAt || ''),
+      serverTimestamp: null,
+      submissionKey: '',
+      status: 'PENDING',
+      recordType: String(body.recordType || 'LIVE'),
+      attemptId: String(body.attemptId || '')
+    };
+
+    var validation = SubmissionValidator.validate(submission);
+    if (!validation.valid) {
+      try {
+        appendRejectedSubmission_(submission, validation.errors, JSON.stringify(body));
+      } catch (logErr) {
+        Logger.log('submitAttempt rejection log failed: ' + logErr);
+      }
+      return errorEnvelope_(
+        requestId,
+        'submitAttempt',
+        validation.errors[0] ? validation.errors[0].code : 'INVALID_LEARNER',
+        validation.errors[0] ? validation.errors[0].message : 'Submission not recorded.'
+      );
+    }
+
+    var lock = LockService.getScriptLock();
+    var lockAcquired = false;
+    try {
+      lockAcquired = lock.tryLock(30000);
+      if (!lockAcquired) {
+        return errorEnvelope_(requestId, 'submitAttempt', 'SERVER_ERROR', 'Could not acquire lock.');
+      }
+
+      var duplicate = DuplicateChecker.check(submission);
+      submission.submissionKey = duplicate.submissionKey;
+      if (duplicate.isDuplicate) {
+        return okEnvelope_(requestId, 'submitAttempt', {
+          recorded: false,
+          duplicate: true,
+          recordType: submission.recordType,
+          activityId: activityId,
+          attemptId: submission.attemptId,
+          attemptNumber: submission.attemptNumber,
+          score: submission.score,
+          maximumScore: submission.total,
+          percentage: calculatePercentageSafe_(submission.score, submission.total)
+        });
+      }
+
+      submission.serverTimestamp = new Date();
+      submission.status = 'RECORDED';
+      appendSubmission_(submission);
+      appendWeek2Result_(submission);
+
+      return okEnvelope_(requestId, 'submitAttempt', {
+        recorded: true,
+        duplicate: false,
+        recordType: submission.recordType,
+        activityId: activityId,
+        attemptId: submission.attemptId,
+        attemptNumber: submission.attemptNumber,
+        score: submission.score,
+        maximumScore: submission.total,
+        percentage: calculatePercentageSafe_(submission.score, submission.total)
+      });
+    } catch (err) {
+      Logger.log('submitAttempt error: ' + err);
+      return errorEnvelope_(
+        requestId,
+        'submitAttempt',
+        'RESULTS_UNAVAILABLE',
+        'Results could not be saved.'
+      );
+    } finally {
+      if (lockAcquired) {
+        lock.releaseLock();
       }
     }
-    return optionId || '';
+  }
+
+  function bootstrapSetup_(requestId, params) {
+    var props = PropertiesService.getScriptProperties();
+    if (props.getProperty('WEEK2_BOOTSTRAP_DONE') === 'true') {
+      return errorEnvelope_(
+        requestId,
+        'bootstrapSetup',
+        'BOOTSTRAP_DONE',
+        'Week 2 bootstrap has already been completed.'
+      );
+    }
+    if (String(params.confirm || '') !== 'Unit3-Week2-Bootstrap-Once') {
+      return errorEnvelope_(
+        requestId,
+        'bootstrapSetup',
+        'BOOTSTRAP_FORBIDDEN',
+        'Bootstrap confirmation is missing or incorrect.'
+      );
+    }
+
+    try {
+      var summary = runWeek2DeploymentBootstrap();
+      props.setProperty('WEEK2_BOOTSTRAP_DONE', 'true');
+      return okEnvelope_(requestId, 'bootstrapSetup', summary);
+    } catch (err) {
+      Logger.log('bootstrapSetup failed: ' + err);
+      return errorEnvelope_(
+        requestId,
+        'bootstrapSetup',
+        'BOOTSTRAP_FAILED',
+        'Bootstrap failed. Check the Apps Script logs.'
+      );
+    }
+  }
+
+  function hasAnswer_(question, value) {
+    if (question.questionType === 'classification') {
+      return !!(
+        value &&
+        typeof value === 'object' &&
+        value.incidentType &&
+        value.ciaAim &&
+        String(value.evidence || '').trim()
+      );
+    }
+    if (question.questionType === 'single-choice' || question.questionType === 'self-assessment') {
+      return value != null && String(value).trim() !== '';
+    }
+    return hasText_(value);
+  }
+
+  function normaliseSelectedValue_(value) {
+    if (value == null) {
+      return '';
+    }
+    if (typeof value === 'object') {
+      return value;
+    }
+    return String(value);
+  }
+
+  function joinName_(firstName, surname) {
+    return [trimString_(firstName), trimString_(surname)]
+      .filter(function (part) {
+        return part !== '';
+      })
+      .join(' ');
+  }
+
+  function trimString_(value) {
+    if (value === undefined || value === null) {
+      return '';
+    }
+    return String(value).replace(/\s+/g, ' ').trim();
+  }
+
+  function toNumberOrNull_(value) {
+    if (value === undefined || value === null || value === '') {
+      return null;
+    }
+    var parsed = Number(value);
+    return isFinite(parsed) ? parsed : null;
+  }
+
+  function toIntegerOrNull_(value) {
+    var parsed = toNumberOrNull_(value);
+    if (parsed === null || Math.floor(parsed) !== parsed) {
+      return null;
+    }
+    return parsed;
+  }
+
+  function calculatePercentageSafe_(score, total) {
+    if (typeof score !== 'number' || typeof total !== 'number' || total <= 0) {
+      return null;
+    }
+    return Math.round((score / total) * 1000) / 10;
   }
 
   function findSection_(pack, sectionId) {
