@@ -117,9 +117,20 @@ var ResponseFactory = (function () {
     });
   }
 
+  /**
+   * Week 1–compatible Activity API envelope for content and marking routes.
+   *
+   * @param {Object} payload
+   * @return {GoogleAppsScript.Content.TextOutput}
+   */
+  function apiEnvelope(payload) {
+    return json(payload);
+  }
+
   return {
     json: json,
     health: health,
+    apiEnvelope: apiEnvelope,
     recorded: recorded,
     duplicate: duplicate,
     rejected: rejected,

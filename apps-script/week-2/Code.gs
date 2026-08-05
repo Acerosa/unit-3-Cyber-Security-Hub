@@ -5,27 +5,41 @@
  */
 
 /**
- * Health-check endpoint for the Week 2 web app.
+ * Health-check and activity-content endpoint for the Week 2 web app.
+ *
+ * Unsupported content actions fall back to the original health payload so
+ * simple uptime checks keep working.
  *
  * @param {Object} e
  * @return {GoogleAppsScript.Content.TextOutput}
  */
 function doGet(e) {
-  return ResponseFactory.health({
-    service: 'Unit 3 Cyber Security Week 2 API',
-    week: 2,
-    status: 'ok',
-    acceptingSubmissions: areWeek2SubmissionsOpen_()
-  });
+  var params = (e && e.parameter) || {};
+  var action = String(params.action || '');
+
+  if (!action) {
+    return ResponseFactory.health({
+      service: 'Unit 3 Cyber Security Week 2 API',
+      week: 2,
+      status: 'ok',
+      acceptingSubmissions: areWeek2SubmissionsOpen_()
+    });
+  }
+
+  return Week2ActivityDataService.handleGet(e);
 }
 
 /**
- * Submission endpoint for the Week 2 web app.
+ * Submission and Activity API marking endpoint.
  *
  * @param {Object} e
  * @return {GoogleAppsScript.Content.TextOutput}
  */
 function doPost(e) {
+  var routed = Week2ActivityDataService.handlePost(e);
+  if (routed) {
+    return routed;
+  }
   return SubmissionService.handle(e);
 }
 
