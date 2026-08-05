@@ -1,0 +1,8 @@
+{
+  "scriptId": "PASTE_WEEK3_SCRIPT_ID",
+  "rootDir": "apps-script/week-3",
+  "scriptExtensions": [".js", ".gs"],
+  "htmlExtensions": [".html"],
+  "jsonExtensions": [".json"],
+  "skipSubdirectories": false
+}
