@@ -53,32 +53,20 @@ function seedWeek3Session1Retrieval() {
   return seedWeek3ActivityById_('week3-session1-retrieval');
 }
 
-function seedWeek3ThreatVulnerabilityLearning() {
-  return seedWeek3ActivityById_('week3-threat-vulnerability-learning');
+function seedWeek3AttackerTypesLearning() {
+  return seedWeek3ActivityById_('week3-attacker-types-learning');
 }
 
-function seedWeek3MalwareSymptoms() {
-  return seedWeek3ActivityById_('week3-malware-symptoms');
+function seedWeek3AttackerCaseMatching() {
+  return seedWeek3ActivityById_('week3-attacker-case-matching');
 }
 
-function seedWeek3ThreatVulnerabilitySort() {
-  return seedWeek3ActivityById_('week3-threat-vulnerability-sort');
-}
-
-function seedWeek3Vulnerabilities101Reflection() {
-  return seedWeek3ActivityById_('week3-vulnerabilities101-reflection');
+function seedWeek3JustifiedIdentification() {
+  return seedWeek3ActivityById_('week3-justified-identification');
 }
 
 function seedWeek3Session2Retrieval() {
   return seedWeek3ActivityById_('week3-session2-retrieval');
-}
-
-function seedWeek3NorthbankAnalysis() {
-  return seedWeek3ActivityById_('week3-northbank-vulnerability-analysis');
-}
-
-function seedWeek3SixMarkGuide() {
-  return seedWeek3ActivityById_('week3-six-mark-response-guide');
 }
 
 function seedWeek3OcrPractice() {
@@ -86,11 +74,7 @@ function seedWeek3OcrPractice() {
 }
 
 function seedWeek3PeerMarking() {
-  return seedWeek3ActivityById_('week3-peer-marking-answer-improvement');
-}
-
-function seedWeek3VulnerabilityRegister() {
-  return seedWeek3ActivityById_('week3-northbank-vulnerability-register');
+  return seedWeek3ActivityById_('week3-peer-marking');
 }
 
 /**

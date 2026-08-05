@@ -56,7 +56,7 @@ function testWeek3TotalsAndVersions_() {
     assertActivityData_(pack.meta.maximumScore === manifest.maximumScore, activityId + ' pack total mismatch');
     assertActivityData_(registry.total === manifest.maximumScore, activityId + ' registry total mismatch');
     assertActivityData_(registry.version === manifest.activityVersion, activityId + ' registry version mismatch');
-    assertActivityData_(manifest.weekNumber === 2, activityId + ' week must be 2');
+    assertActivityData_(manifest.weekNumber === 3, activityId + ' week must be 3');
     assertActivityData_(
       manifest.sessionNumber === 1 || manifest.sessionNumber === 2,
       activityId + ' session must be 1 or 2'

@@ -38,9 +38,18 @@ function runAllWeek3SelfTests() {
   return summary;
 }
 
+/**
+ * Preferred alias used in Week 3 documentation.
+ *
+ * @return {string}
+ */
+function runWeek3SelfTest() {
+  return runAllWeek3SelfTests();
+}
+
 function runWeek3ActivityRegistrySelfTest() {
   var ids = getWeek3ActivityIds_();
-  assert_(ids.length === 11, 'Expected 11 Week 3 activities, found ' + ids.length);
+  assert_(ids.length === 7, 'Expected 7 Week 3 activities, found ' + ids.length);
 
   var unique = {};
   ids.forEach(function (id) {
@@ -49,7 +58,7 @@ function runWeek3ActivityRegistrySelfTest() {
 
     var activity = getWeek3Activity_(id);
     assert_(!!activity, 'Missing activity record for ' + id);
-    assert_(activity.week === 2, id + ' must belong to week 3');
+    assert_(activity.week === 3, id + ' must belong to week 3');
     assert_(activity.session === 1 || activity.session === 2, id + ' session must be 1 or 2');
     assert_(activity.enabled === true, id + ' should be enabled');
   });
