@@ -83,4 +83,17 @@
   }
 
   ready(initMobileNav);
+
+  // Soft academic-integrity guidance on pages that use shared navigation.
+  (function loadAcademicIntegrity() {
+    var current = document.currentScript;
+    if (!current || !current.src) return;
+    var src = current.src.replace(/navigation\.js(?:\?.*)?$/i, 'academic-integrity.js');
+    if (src === current.src) return;
+    if (document.querySelector('script[src="' + src + '"]')) return;
+    var script = document.createElement('script');
+    script.src = src;
+    script.defer = true;
+    (document.head || document.documentElement).appendChild(script);
+  })();
 })();

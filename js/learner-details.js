@@ -162,7 +162,8 @@
       id: 'learner-details-form',
       className: 'learner-details-form',
       novalidate: true,
-      'aria-labelledby': 'learner-details-heading'
+      'aria-labelledby': 'learner-details-heading',
+      'data-academic-integrity': 'exclude'
     });
 
     form.appendChild(el('h3', { id: 'learner-details-heading', textContent: 'Your details' }));
