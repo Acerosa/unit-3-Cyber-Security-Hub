@@ -5,6 +5,11 @@
   var TOTAL = 2;
   var DRAFT_KEY = 'vulnerabilities101';
   var progress = window.Unit3Week2Progress;
+  var thm = window.Unit3Week2TryHackMe;
+  var resource =
+    thm && thm.getResourceByActivityId
+      ? thm.getResourceByActivityId(ACTIVITY_ID)
+      : null;
   var startedAt = Date.now();
   var submitShown = false;
 
@@ -19,8 +24,16 @@
     if (draft && typeof draft === 'object') {
       reflections.vulnerability =
         typeof draft.vulnerability === 'string' ? draft.vulnerability : '';
-      reflections.northbank = typeof draft.northbank === 'string' ? draft.northbank : '';
+      reflections.northbank =
+        typeof draft.northbank === 'string' ? draft.northbank : '';
     }
+  }
+
+  if (thm && resource) {
+    thm.trackResourceProgress(resource.resourceId, {
+      instructionsViewed: true,
+      statusLabel: 'Instructions viewed'
+    });
   }
 
   function trim(value) {
@@ -63,6 +76,20 @@
     return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
   }
 
+  function updateAppStateLabel() {
+    var host = document.getElementById('w2-v101-app-state');
+    if (!host || !thm || !resource) return;
+    var state = thm.getResourceProgress(resource.resourceId) || {};
+    var parts = [];
+    if (state.instructionsViewed) parts.push('Instructions viewed');
+    if (state.roomOpened) parts.push('Room opened');
+    if (state.notesStarted) parts.push('Notes started');
+    if (computeScore() === TOTAL) parts.push('Reflection complete');
+    if (state.submissionRecorded) parts.push('Submission recorded');
+    parts.push('TryHackMe completion checked by tutor');
+    host.textContent = 'App state: ' + parts.join(' · ');
+  }
+
   function updateStatus(host) {
     var status = host.querySelector('#w2-reflection-status');
     if (!status) return;
@@ -78,6 +105,7 @@
       TOTAL +
       ' reflections completed. Draft saved in this browser.';
     status.appendChild(p);
+    updateAppStateLabel();
   }
 
   function maybeComplete() {
@@ -87,6 +115,12 @@
     }
     if (progress) {
       progress.markCompleted(ACTIVITY_ID, score, TOTAL);
+    }
+    if (thm && resource) {
+      thm.trackResourceProgress(resource.resourceId, {
+        reflectionComplete: true,
+        statusLabel: 'Reflection complete'
+      });
     }
     if (!submitShown && window.Unit3Week2Submit) {
       submitShown = true;
@@ -102,9 +136,82 @@
         getCompletionTimeSeconds: getCompletionTimeSeconds,
         canSubmit: function () {
           return computeScore() === TOTAL;
+        },
+        onSubmitted: function () {
+          if (thm && resource) {
+            thm.trackResourceProgress(resource.resourceId, {
+              submissionRecorded: true,
+              statusLabel: 'Submission recorded'
+            });
+            updateAppStateLabel();
+          }
         }
       });
     }
+  }
+
+  function renderGuidance() {
+    if (!thm || !resource) return;
+
+    var purpose = document.getElementById('w2-v101-purpose');
+    if (purpose) purpose.textContent = resource.purpose;
+
+    var meta = document.getElementById('w2-v101-meta');
+    if (meta) {
+      meta.textContent = '';
+      [
+        'Delivery: ' + resource.deliveryLabel,
+        resource.timeLabel,
+        'OCR: ' + resource.ocrFocus,
+        'Access: ' + thm.availabilityLabel(resource.availabilityStatus),
+        'Scored activity ID: ' + ACTIVITY_ID + ' (total ' + TOTAL + ')'
+      ].forEach(function (text) {
+        var li = document.createElement('li');
+        li.textContent = text;
+        meta.appendChild(li);
+      });
+    }
+
+    var accessHost = document.getElementById('w2-v101-access-host');
+    if (accessHost) thm.renderAccessNotice(accessHost);
+
+    var central = document.getElementById('w2-v101-central-model');
+    var data = window.Unit3Week2TryHackMeData;
+    if (central && data) {
+      central.textContent = data.centralModel;
+    }
+
+    thm.renderPreparationChecklist('w2-v101-checklist-host', resource.resourceId);
+    thm.renderSafetyBanner(
+      document.getElementById('w2-v101-safety-host'),
+      resource.safetyNotices
+    );
+
+    var whileList = document.getElementById('w2-v101-while-list');
+    if (whileList && resource.whileCompleting) {
+      whileList.textContent = '';
+      resource.whileCompleting.forEach(function (item) {
+        var li = document.createElement('li');
+        li.textContent = item;
+        whileList.appendChild(li);
+      });
+    }
+
+    var ocr = document.getElementById('w2-v101-ocr-guidance');
+    if (ocr && resource.ocrGuidance) {
+      ocr.innerHTML = '<strong>OCR guidance:</strong> ' + resource.ocrGuidance;
+    }
+
+    var actionsHost = document.getElementById('w2-v101-actions-host');
+    if (actionsHost) {
+      actionsHost.textContent = '';
+      thm.renderResourceActions(actionsHost, resource, { pathBase: '../' });
+    }
+
+    thm.renderHowToUse('w2-thm-guide-host');
+    thm.renderTroubleshooting('w2-thm-troubleshooting-host');
+    thm.renderLessonNotes('w2-v101-notes-host', resource);
+    updateAppStateLabel();
   }
 
   function render() {
@@ -118,8 +225,14 @@
 
     var heading = document.createElement('h2');
     heading.id = 'reflection-heading';
-    heading.textContent = 'Reflection';
+    heading.textContent = 'Scored reflection (2 marks)';
     panel.appendChild(heading);
+
+    var note = document.createElement('p');
+    note.className = 'panel-note';
+    note.textContent =
+      'These two prompts are the registered scored activity. Lesson notes above do not change the total of 2.';
+    panel.appendChild(note);
 
     var status = document.createElement('div');
     status.id = 'w2-reflection-status';
@@ -146,7 +259,7 @@
       textarea.id = id;
       textarea.rows = 5;
       textarea.value = reflections[key];
-      textarea.setAttribute('aria-describedby', hint ? id + '-hint' : undefined);
+      if (hint) textarea.setAttribute('aria-describedby', id + '-hint');
       textarea.addEventListener('input', function () {
         reflections[key] = textarea.value;
         saveDraft();
@@ -165,7 +278,7 @@
       'reflection-vulnerability',
       'Reflection 1: Describe one vulnerability you explored in the TryHackMe room.',
       'vulnerability',
-      'Name the vulnerability type, how it could be exploited, and which CIA aim(s) may be affected.'
+      'Name the vulnerability type, how it could be exploited, and which CIA aim(s) may be affected. Do not paste TryHackMe answer strings or flags.'
     );
 
     addField(
@@ -215,5 +328,17 @@
     }
   }
 
+  renderGuidance();
   render();
+
+  document.addEventListener(
+    'input',
+    function (event) {
+      if (!event.target || !event.target.closest || !event.target.closest('#w2-v101-notes-host')) {
+        return;
+      }
+      updateAppStateLabel();
+    },
+    true
+  );
 })();

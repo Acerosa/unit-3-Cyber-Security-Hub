@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Complete the TryHackMe Vulnerabilities 101 room and reflect on findings for Northbank.">
+  <meta name="description" content="Complete the TryHackMe Vulnerabilities 101 room in class and reflect on findings for Northbank.">
   <title>TryHackMe: Vulnerabilities 101 | Week 2</title>
   <link rel="stylesheet" href="../../css/main.css">
   <link rel="stylesheet" href="../../css/activity.css">
@@ -40,39 +40,62 @@
   </nav>
 
   <header class="page-header activity-shell">
-    <h1>5. TryHackMe: Vulnerabilities 101</h1>
-    <p class="page-subtitle">Practical exploration of vulnerabilities, then reflection for Northbank.</p>
+    <h1>5. TryHackMe Practical: Vulnerabilities 101</h1>
+    <p class="page-subtitle">In-class practical exploration of vulnerabilities, then a two-point reflection for Northbank.</p>
   </header>
 
   <main id="main-content" class="site-main" tabindex="-1">
     <section class="panel" aria-labelledby="purpose-heading">
       <h2 id="purpose-heading">Purpose</h2>
-      <p>
-        This directed-study activity links theory to practice. You will explore how vulnerabilities
-        are discovered and scored in industry tools, then relate one finding to Northbank.
-      </p>
+      <p id="w2-v101-purpose"></p>
+      <ul class="activity-meta" id="w2-v101-meta"></ul>
+      <div id="w2-v101-access-host"></div>
     </section>
 
-    <section class="panel" aria-labelledby="instructions-heading">
-      <h2 id="instructions-heading">Instructions</h2>
-      <ol class="section-list">
-        <li>
-          Open the TryHackMe room:
-          <a href="https://tryhackme.com/room/vulnerabilities101" target="_blank" rel="noopener noreferrer">Vulnerabilities 101 on TryHackMe</a>
-          (opens in a new tab).
-        </li>
-        <li>Work through the tasks with your tutor’s guidance. You need a TryHackMe account.</li>
-        <li>Complete both reflection fields below. Your work auto-saves in this browser.</li>
-        <li>Mark complete and submit your formative result when both reflections are filled in.</li>
-      </ol>
-      <p class="w2-callout">
-        <strong>Industry context:</strong> Severity scoring (for example CVSS) helps organisations
-        prioritise patches. Higher scores indicate greater potential impact — but context matters
-        for Northbank patient data and critical services.
+    <section class="panel" aria-labelledby="before-heading">
+      <h2 id="before-heading">Before opening the room</h2>
+      <p>
+        Before starting, make sure you can explain the difference between a threat and a vulnerability.
       </p>
+      <p class="w2-formula" id="w2-v101-central-model" role="note"></p>
+    </section>
+
+    <div id="w2-v101-checklist-host"></div>
+    <div id="w2-v101-safety-host"></div>
+
+    <section class="panel" aria-labelledby="while-heading">
+      <h2 id="while-heading">While completing the room</h2>
+      <p>Pay particular attention to:</p>
+      <ul class="section-list" id="w2-v101-while-list"></ul>
+      <p class="w2-callout" id="w2-v101-ocr-guidance"></p>
+    </section>
+
+    <section class="panel" aria-labelledby="open-room-heading">
+      <h2 id="open-room-heading">Open the TryHackMe room</h2>
       <p class="panel-note">
-        <strong>OCR focus:</strong> Name the vulnerability clearly, explain how a threat could
-        exploit it, and link to confidentiality, integrity or availability where relevant.
+        Opening the room does not mark this activity complete. Keep this Week 2 page open so you can return for notes and reflection.
+      </p>
+      <div id="w2-v101-actions-host"></div>
+      <p class="panel-note" id="w2-v101-app-state" aria-live="polite"></p>
+    </section>
+
+    <div id="w2-thm-guide-host"></div>
+    <div id="w2-thm-troubleshooting-host"></div>
+
+    <div id="w2-v101-notes-host"></div>
+
+    <section class="panel" aria-labelledby="completion-heading">
+      <h2 id="completion-heading">Completion requirements</h2>
+      <ol class="section-list">
+        <li>Complete the required TryHackMe tasks for Vulnerabilities 101.</li>
+        <li>Return to this Week 2 application.</li>
+        <li>Complete both reflection prompts below.</li>
+        <li>Submit the existing two-point reflection activity.</li>
+        <li>Check that the submission response confirms it was recorded.</li>
+      </ol>
+      <p class="panel-note">
+        App states used here: Room opened · Reflection complete · Submission recorded · TryHackMe completion checked by tutor.
+        Opening the TryHackMe link alone is not completion.
       </p>
     </section>
 
@@ -89,12 +112,16 @@
   </footer>
 
   <script src="../../js/navigation.js"></script>
+  <script src="../../js/session-disclosure.js"></script>
   <script src="../../js/activity-utils.js"></script>
   <script src="../../js/course-context.js"></script>
+  <script src="../../js/activity-engine-config.js"></script>
   <script src="../../js/learner-details.js"></script>
   <script src="../../js/submissions.js"></script>
   <script src="../../js/week2-progress.js"></script>
   <script src="../../js/week2-submit.js"></script>
+  <script src="../data/tryhackme-resources.js"></script>
+  <script src="../../js/week2-tryhackme.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -433,3 +433,139 @@
     font-size: 0.85rem;
   }
 }
+
+/* TryHackMe practical learning */
+
+.w2-thm-section {
+  border-top: 3px solid var(--w2-accent);
+}
+
+.w2-thm-platform {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--w2-accent);
+}
+
+.w2-thm-card .status-label {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.w2-thm-access-notice {
+  margin: 0 0 1rem;
+}
+
+.w2-thm-safety {
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 2px solid var(--color-warning);
+  border-left-width: 6px;
+  background: var(--color-warning-bg);
+  border-radius: var(--radius);
+}
+
+.w2-thm-safety h3 {
+  margin: 0 0 0.5rem;
+  color: var(--color-navy);
+}
+
+.w2-thm-safety p {
+  margin: 0 0 0.5rem;
+}
+
+.w2-thm-safety p:last-child {
+  margin-bottom: 0;
+}
+
+.w2-thm-checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.w2-thm-checklist li {
+  margin: 0 0 0.55rem;
+}
+
+.w2-thm-checklist label {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.w2-thm-checklist input {
+  margin-top: 0.25rem;
+}
+
+.w2-thm-steps li {
+  margin-bottom: 0.85rem;
+}
+
+.w2-thm-steps p {
+  margin: 0.35rem 0 0;
+}
+
+.w2-thm-trouble-item {
+  margin: 0 0 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.w2-thm-trouble-item:last-child {
+  border-bottom: 0;
+}
+
+.w2-thm-trouble-item h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.w2-thm-table-wrap {
+  overflow-x: auto;
+  margin: 0 0 1rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.w2-thm-table {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+}
+
+.w2-thm-table th,
+.w2-thm-table td {
+  border: 1px solid var(--color-border);
+  padding: 0.45rem;
+  vertical-align: top;
+  text-align: left;
+}
+
+.w2-thm-table input {
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+  padding: 0.4rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.w2-thm-progress-label {
+  margin-top: 0.65rem;
+}
+
+.w2-thm-external-link .w2-external-icon {
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .w2-thm-section *,
+  .w2-thm-section *::before,
+  .w2-thm-section *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

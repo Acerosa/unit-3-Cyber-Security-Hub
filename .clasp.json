@@ -1,0 +1,44 @@
+{
+  "scriptId": "1e_-4rL0vR9F48RheFE5EQO6OTZRVdP1958s_Jl90gD8HK5QB2jmxvIeP",
+  "rootDir": "apps-script/week-2",
+  "scriptExtensions": [
+    ".js",
+    ".gs"
+  ],
+  "htmlExtensions": [
+    ".html"
+  ],
+  "jsonExtensions": [
+    ".json"
+  ],
+  "filePushOrder": [
+    "appsscript.json",
+    "Config.gs",
+    "Week2ActivityManifest.gs",
+    "Week2Activities.gs",
+    "Week2Session1RetrievalData.gs",
+    "Week2ThreatVulnerabilityLearningData.gs",
+    "Week2MalwareSymptomsData.gs",
+    "Week2ThreatVulnerabilitySortData.gs",
+    "Week2Vulnerabilities101Data.gs",
+    "Week2Session2RetrievalData.gs",
+    "Week2NorthbankAnalysisData.gs",
+    "Week2SixMarkGuideData.gs",
+    "Week2OcrPracticeData.gs",
+    "Week2PeerMarkingData.gs",
+    "Week2VulnerabilityRegisterData.gs",
+    "Week2ActivityDataService.gs",
+    "RequestParser.gs",
+    "SubmissionValidator.gs",
+    "DuplicateChecker.gs",
+    "SheetRepository.gs",
+    "ResponseFactory.gs",
+    "SubmissionService.gs",
+    "SetupWorkbook.gs",
+    "Week2ActivitySeed.gs",
+    "Week2Tests.gs",
+    "Week2ActivityDataTests.gs",
+    "Code.gs"
+  ],
+  "skipSubdirectories": false
+}

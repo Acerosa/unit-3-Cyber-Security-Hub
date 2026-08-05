@@ -107,4 +107,8 @@
   renderCompletion();
   renderSession(1, 'w2-session-1-cards');
   renderSession(2, 'w2-session-2-cards');
+
+  if (window.Unit3Week2TryHackMe && window.Unit3Week2TryHackMe.renderLandingSection) {
+    window.Unit3Week2TryHackMe.renderLandingSection();
+  }
 })();
