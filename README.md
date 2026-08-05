@@ -311,6 +311,7 @@ Week 2 formative activities use local editable data under `week-2/data/` and sub
     activity-engine.css
   /js
     navigation.js
+    academic-integrity.js
     session-disclosure.js
     activity-utils.js
     course-context.js
@@ -598,6 +599,7 @@ Submission uses a dynamically created HTML form (`POST`, `target="_blank"`). HTT
 
 - `js/course-context.js`: fixed course context and activity registry
 - `js/learner-details.js`: course details display, learner form, validation and submission summary
+- `js/academic-integrity.js`: soft “write in your own words” guidance on learning response fields (loaded from `navigation.js`; paste is not blocked; learner-details forms are excluded)
 - `js/submissions.js`: schema 3.0 payload builder, Attempt ID lifecycle and collector POST helper
 
 ## 18. Privacy limitations

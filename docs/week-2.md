@@ -75,6 +75,17 @@ Week 1 progress and Activity API session keys are not overwritten.
 - Do not download or run suspicious/malicious files on college or personal computers.
 - Do not store TryHackMe answer strings, flags or walkthrough answers in the Unit 3 application.
 
+### Academic integrity (site-wide soft controls)
+
+Shared helper: `js/academic-integrity.js` (loaded from `js/navigation.js` on hub pages).
+
+- Shows a “Write in your own words” notice on pages with learning response fields.
+- Adds field reminders under learning textareas.
+- Announces a polite reminder if a learner pastes into a learning field (**paste is not blocked**).
+- **Excluded:** learner details forms (`#learner-details-form` / `data-academic-integrity="exclude"`), partner fields, and other opted-out controls.
+- Tutors should still review responses for pasted flags or walkthrough answers.
+- Opt out on a page with `data-academic-integrity="off"` on `<body>` if needed (for example staff test pages).
+
 ### Availability and fallback
 
 Configurable in `week-2/data/tryhackme-resources.js` per room:

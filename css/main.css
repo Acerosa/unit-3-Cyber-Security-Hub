@@ -326,6 +326,28 @@ body {
   font-size: 0.95rem;
 }
 
+.ai-integrity-notice {
+  border-left: 4px solid var(--color-navy);
+  background: var(--color-info-bg, #eef4f8);
+}
+
+.ai-integrity-notice__heading {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+}
+
+.ai-integrity-notice p {
+  margin: 0 0 0.65rem;
+}
+
+.ai-integrity-notice p:last-child {
+  margin-bottom: 0;
+}
+
+.ai-integrity-field-hint {
+  margin: 0.35rem 0 0.85rem;
+}
+
 .card-grid {
   display: grid;
   gap: 1rem;
