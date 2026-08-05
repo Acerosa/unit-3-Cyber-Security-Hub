@@ -134,9 +134,18 @@
         feedback.textContent = '';
         var msg = document.createElement('p');
         msg.className = 'message message-' + (correct ? 'success' : 'error');
+        var wrongText = q.explanation || '';
+        if (
+          !correct &&
+          q.reversedIndex != null &&
+          chosen === q.reversedIndex &&
+          q.reversedExplanation
+        ) {
+          wrongText = q.reversedExplanation;
+        }
         msg.textContent = correct
           ? 'Correct. ' + (q.explanation || '')
-          : 'Not quite. ' + (q.explanation || '');
+          : 'Not quite. ' + wrongText;
         feedback.appendChild(msg);
         checkBtn.hidden = true;
         nextBtn.hidden = false;
