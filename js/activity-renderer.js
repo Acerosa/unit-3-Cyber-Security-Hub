@@ -55,7 +55,8 @@
       definition: 'Definition',
       'worked-example': 'Worked example',
       'model-answer': 'Model answer',
-      tip: 'Tip'
+      tip: 'Tip',
+      warning: 'Warning'
     }[block.blockType];
     if (typeLabel) {
       article.appendChild(
@@ -90,7 +91,9 @@
         ? 'Correct'
         : itemResult.status === 'partial'
           ? 'Partial credit'
-          : 'Requires review';
+          : itemResult.status === 'completed'
+            ? 'Completed'
+            : 'Requires review';
     var awarded =
       itemResult.marksAwarded != null
         ? itemResult.marksAwarded
@@ -107,12 +110,15 @@
               ? question.marks
               : question.maximumMarks
             : null;
+    var marksSuffix =
+      awarded != null && available != null
+        ? itemResult.status === 'completed'
+          ? ' · Response recorded'
+          : ' · ' + awarded + ' / ' + available
+        : '';
     feedback.appendChild(
       el('p', {
-        textContent:
-          awarded != null && available != null
-            ? statusLabel + ' · ' + awarded + ' / ' + available
-            : statusLabel
+        textContent: statusLabel + marksSuffix
       })
     );
     if (itemResult.feedback) {
@@ -337,18 +343,16 @@
     var countId = qid + '-response-count';
     var forceMultiline = options.forceMultiline === true;
     var useTextarea = forceMultiline || maxChars > 120;
-    var labelClass = forceMultiline
-      ? 'ae-extended-response-label'
-      : 'ae-short-response-label';
-    var inputClass = forceMultiline
-      ? 'ae-extended-response-input ae-extended-response-textarea'
-      : 'ae-short-response-input' + (useTextarea ? ' ae-short-response-textarea' : '');
-    var hintClass = forceMultiline
-      ? 'ae-extended-response-hint'
-      : 'ae-short-response-hint';
-    var countClass = forceMultiline
-      ? 'ae-extended-response-count'
-      : 'ae-short-response-count';
+    var classPrefix =
+      options.classPrefix ||
+      (forceMultiline ? 'ae-extended-response' : 'ae-short-response');
+    var labelClass = classPrefix + '-label';
+    var inputClass =
+      classPrefix +
+      '-input' +
+      (useTextarea ? ' ' + classPrefix + '-textarea' : '');
+    var hintClass = classPrefix + '-hint';
+    var countClass = classPrefix + '-count';
 
     function emit(opts) {
       var node = document.getElementById(inputId);
@@ -438,8 +442,63 @@
       itemResult,
       handlers,
       fieldset,
-      { forceMultiline: true }
+      { forceMultiline: true, classPrefix: 'ae-extended-response' }
     );
+  }
+
+  function renderReflectionQuestion(question, state, itemResult, handlers, fieldset) {
+    return renderTextResponseQuestion(
+      question,
+      state,
+      itemResult,
+      handlers,
+      fieldset,
+      { forceMultiline: true, classPrefix: 'ae-reflection' }
+    );
+  }
+
+  function renderSelfAssessmentQuestion(question, state, itemResult, handlers, fieldset) {
+    var qid = question.questionId;
+    var selected = state.responses[qid] || '';
+    var list = el('ul', {
+      className: 'ae-choice-list ae-self-assessment-list',
+      role: 'presentation'
+    });
+    sortByDisplayOrder(question.options || []).forEach(function (option) {
+      var inputId = qid + '-' + option.optionId;
+      var input = el('input', {
+        type: 'radio',
+        name: 'question-' + qid,
+        id: inputId,
+        value: option.optionId
+      });
+      if (selected === option.optionId) input.checked = true;
+      input.addEventListener('change', function () {
+        if (handlers && handlers.onAnswer) {
+          handlers.onAnswer(qid, option.optionId);
+        }
+      });
+
+      var labelClass = 'ae-choice ae-self-assessment-choice';
+      if (itemResult && selected === option.optionId) {
+        labelClass +=
+          itemResult.status === 'completed' || itemResult.status === 'correct'
+            ? ' is-recorded-option'
+            : ' is-incorrect-selected';
+      }
+
+      list.appendChild(
+        el('li', null, [
+          el('label', { className: labelClass, htmlFor: inputId }, [
+            input,
+            el('span', { textContent: option.text || '' })
+          ])
+        ])
+      );
+    });
+    fieldset.appendChild(list);
+    appendQuestionFeedback(fieldset, itemResult, question);
+    return fieldset;
   }
 
   function normalisedDisplayLength(value) {
@@ -497,15 +556,21 @@
     return fieldset;
   }
 
-  function renderQuestion(question, state, markResult, handlers) {
+  function renderQuestion(question, state, markResult, handlers, options) {
     ensureEl();
+    options = options || {};
     var qid = question.questionId;
     var itemResult = findItemResult(markResult, qid);
+    var completionActivity = options.isCompletionActivity === true;
+    var completionQuestion =
+      question.questionType === 'reflection' ||
+      question.questionType === 'self-assessment';
 
     var statusClass = '';
     if (itemResult) {
       if (itemResult.status === 'correct') statusClass = ' is-correct';
       else if (itemResult.status === 'partial') statusClass = ' is-partial';
+      else if (itemResult.status === 'completed') statusClass = ' is-completed';
       else statusClass = ' is-incorrect';
     }
 
@@ -515,12 +580,15 @@
     });
 
     var marks = question.marks || question.maximumMarks || 1;
-    var promptText =
-      (question.prompt || 'Question') +
-      ' (' +
-      marks +
-      (marks === 1 ? ' mark' : ' marks') +
-      ')';
+    var markLabel =
+      completionActivity || completionQuestion
+        ? marks === 1
+          ? ' completion point'
+          : ' completion points'
+        : marks === 1
+          ? ' mark'
+          : ' marks';
+    var promptText = (question.prompt || 'Question') + ' (' + marks + markLabel + ')';
     // Wrap the prompt so long legends stay inside the bordered panel.
     var legend = el('legend', { className: 'ae-question-legend' });
     legend.appendChild(
@@ -556,6 +624,18 @@
         fieldset
       );
     }
+    if (question.questionType === 'self-assessment') {
+      return renderSelfAssessmentQuestion(
+        question,
+        state,
+        itemResult,
+        handlers,
+        fieldset
+      );
+    }
+    if (question.questionType === 'reflection') {
+      return renderReflectionQuestion(question, state, itemResult, handlers, fieldset);
+    }
 
     fieldset.appendChild(
       el('p', {
@@ -576,6 +656,7 @@
     var isAssessment = section.sectionType === 'assessment';
     var markResult = state.markedSections[sectionId] || null;
     var openByDefault = options.open === true;
+    var isCompletionActivity = options.isCompletionActivity === true;
 
     var details = el('details', {
       className:
@@ -603,14 +684,21 @@
         (markResult.maximumScore != null
           ? markResult.maximumScore
           : markResult.maximumMarks);
-      metaBits.push(
-        markResult
-          ? 'Checked: ' +
-              (markedScore != null ? markedScore : '?') +
-              ' / ' +
-              (markedMax != null ? markedMax : '?')
-          : 'Not checked yet'
-      );
+      if (markResult) {
+        metaBits.push(
+          isCompletionActivity
+            ? (markedScore != null ? markedScore : '?') +
+                ' of ' +
+                (markedMax != null ? markedMax : '?') +
+                ' steps completed'
+            : 'Checked: ' +
+                (markedScore != null ? markedScore : '?') +
+                ' / ' +
+                (markedMax != null ? markedMax : '?')
+        );
+      } else {
+        metaBits.push(isCompletionActivity ? 'Not completed yet' : 'Not checked yet');
+      }
     }
     text.appendChild(
       el('span', {
@@ -632,7 +720,9 @@
     var questions = sortByDisplayOrder(section.questions);
     questions.forEach(function (question) {
       content.appendChild(
-        renderQuestion(question, state, markResult, handlers)
+        renderQuestion(question, state, markResult, handlers, {
+          isCompletionActivity: isCompletionActivity
+        })
       );
     });
 
@@ -641,7 +731,9 @@
       var checkBtn = el('button', {
         type: 'button',
         className: 'btn btn-primary',
-        textContent: 'Check this section'
+        textContent: isCompletionActivity
+          ? 'Record this section'
+          : 'Check this section'
       });
       checkBtn.addEventListener('click', function () {
         if (handlers && handlers.onMarkSection) {
@@ -669,11 +761,15 @@
         content.appendChild(
           el('p', {
             className: 'ae-section-score',
-            textContent:
-              'Section score: ' +
-              (sectionScore != null ? sectionScore : '0') +
-              ' / ' +
-              (sectionMax != null ? sectionMax : '?')
+            textContent: isCompletionActivity
+              ? (sectionScore != null ? sectionScore : '0') +
+                ' of ' +
+                (sectionMax != null ? sectionMax : '?') +
+                ' steps completed'
+              : 'Section score: ' +
+                (sectionScore != null ? sectionScore : '0') +
+                ' / ' +
+                (sectionMax != null ? sectionMax : '?')
           })
         );
       }
@@ -691,12 +787,19 @@
       list.appendChild(el('dt', { textContent: label }));
       list.appendChild(el('dd', { textContent: value }));
     }
+    var completionActivity =
+      String(activity.activityType || '')
+        .replace(/^\s+|\s+$/g, '')
+        .toLowerCase() === 'reflection';
     row('Activity', activity.activityName || '');
     row('Week', 'Week ' + (activity.weekNumber || ''));
     row('Session', activity.sessionName || '');
     row('Type', activity.activityType || '');
     row('Version', activity.activityVersion || '');
-    row('Maximum score', String(activity.maximumScore || ''));
+    row(
+      completionActivity ? 'Maximum completion points' : 'Maximum score',
+      String(activity.maximumScore || '')
+    );
     row('Submission mode', recordType === 'LIVE' ? 'LIVE' : 'TEST');
     host.appendChild(list);
     if (recordType !== 'LIVE') {
@@ -711,14 +814,24 @@
     }
   }
 
-  function renderProgress(host, completed, total) {
+  function renderProgress(host, completed, total, options) {
     ensureEl();
+    options = options || {};
     host.textContent = '';
     host.appendChild(
       el('p', {
         className: 'progress-text',
-        textContent:
-          'Assessment progress: ' + completed + ' of ' + total + ' sections checked'
+        textContent: options.isCompletionActivity
+          ? 'Completion progress: ' +
+            completed +
+            ' of ' +
+            total +
+            ' sections completed'
+          : 'Assessment progress: ' +
+            completed +
+            ' of ' +
+            total +
+            ' sections checked'
       })
     );
   }

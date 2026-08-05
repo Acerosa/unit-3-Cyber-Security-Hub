@@ -125,7 +125,18 @@
 
   function isTextResponseType(questionType) {
     return (
-      questionType === 'short-response' || questionType === 'extended-response'
+      questionType === 'short-response' ||
+      questionType === 'extended-response' ||
+      questionType === 'reflection'
+    );
+  }
+
+  function isCompletionActivity(activity) {
+    return (
+      activity &&
+      String(activity.activityType || '')
+        .replace(/^\s+|\s+$/g, '')
+        .toLowerCase() === 'reflection'
     );
   }
 
@@ -210,7 +221,12 @@
     renderer.renderProgress(
       document.getElementById('ae-progress'),
       completedAssessmentCount(),
-      assessmentSections().length
+      assessmentSections().length,
+      {
+        isCompletionActivity: isCompletionActivity(
+          activityData && activityData.activity
+        )
+      }
     );
   }
 
@@ -258,6 +274,8 @@
       intro.hidden = !activity.introduction;
     }
 
+    var completionActivity = isCompletionActivity(activity);
+
     renderer.renderMetadata(
       document.getElementById('ae-metadata'),
       activity,
@@ -280,7 +298,10 @@
             onAnswer: handleAnswer,
             onMarkSection: handleMarkSection
           },
-          { open: shouldOpen }
+          {
+            open: shouldOpen,
+            isCompletionActivity: completionActivity
+          }
         )
       );
     });
@@ -375,7 +396,9 @@
         stateApi.setMarkedSection(state, sectionId, data);
         setStatusMessage(
           'section-status-' + sectionId,
-          'Section checked. Review the feedback below.',
+          isCompletionActivity(activityData && activityData.activity)
+            ? 'Section recorded. Review the confirmation below.'
+            : 'Section checked. Review the feedback below.',
           'success'
         );
         renderActivity();
@@ -400,16 +423,28 @@
       p.textContent = text;
       host.appendChild(p);
     }
+    var completionActivity = isCompletionActivity(
+      activityData && activityData.activity
+    );
     line(data.recorded ? 'Result recorded.' : 'Result was not recorded.');
     if (data.duplicate) line('This was recognised as a duplicate retry of the same attempt.');
     line('Record type: ' + (data.recordType || configModule.resolveRecordType()));
-    line(
-      'Score: ' +
+    if (completionActivity) {
+      line(
         (data.score != null ? data.score : '-') +
-        ' / ' +
-        (data.maximumScore != null ? data.maximumScore : '-')
-    );
-    if (data.percentage != null) line('Percentage: ' + data.percentage + '%');
+          ' of ' +
+          (data.maximumScore != null ? data.maximumScore : '-') +
+          ' total steps completed'
+      );
+    } else {
+      line(
+        'Score: ' +
+          (data.score != null ? data.score : '-') +
+          ' / ' +
+          (data.maximumScore != null ? data.maximumScore : '-')
+      );
+      if (data.percentage != null) line('Percentage: ' + data.percentage + '%');
+    }
     if (data.attemptNumber != null) {
       line('Attempt number: ' + data.attemptNumber);
     } else if ((data.recordType || '') === 'TEST') {

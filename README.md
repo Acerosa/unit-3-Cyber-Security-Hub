@@ -55,6 +55,7 @@ Unit 3 Cyber Security Hub
 │   ├── Session 2 Retrieval Quiz         (Active)
 │   ├── OCR Command-Word Guide           (Active)
 │   ├── OCR-Style Question Practice      (Active)
+│   ├── Peer Marking and Answer Improvement (Active)
 │   └── Directed Independent Study       (Coming soon)
 ├── Resources
 └── Help
@@ -251,6 +252,34 @@ Submission notes:
 - Does not use Collector v3
 - See `docs/activity-api-engine.md`
 
+### Peer Marking and Answer Improvement
+
+Route: `activities/activity.html?activityId=U3-W01-PEER-IMPROVEMENT`
+
+Published path (after Pages deployment):
+
+`https://acerosa.github.io/unit-3-Cyber-Security-Hub/activities/activity.html?activityId=U3-W01-PEER-IMPROVEMENT`
+
+Purpose: review an OCR-style response using the mark scheme, give specific feedback, improve the answer and set a personal examination target.
+
+It uses the generic Activity API engine with self-assessment and reflection questions. Results are completion points for the review steps, not examination marks. Content and completion validation come from the private Activity API.
+
+Expected API structure:
+
+- seven sections
+- four assessment sections (completion points 3, 2, 1 and 1)
+- one self-assessment and six reflection questions
+- maximum completion points 7
+- partner optional (self-marking or peer review)
+
+Submission notes:
+
+- Activity ID: `U3-W01-PEER-IMPROVEMENT`
+- Submits through the Activity API only (`markSection` and `submitAttempt`)
+- Current Hub configuration keeps `submissionMode: 'TEST'` and `allowLiveSubmissions: false`
+- Does not use Collector v3
+- See `docs/activity-api-engine.md`
+
 ## 8. Planned Week 1 activities
 
 Still marked Coming soon on the Week 1 page:
@@ -325,6 +354,7 @@ No frameworks, npm packages, build tools or server-side code.
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-RETRIEVAL`
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-COMMAND-WORDS`
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-OCR-PRACTICE`
+   - `http://localhost:8080/activities/activity.html?activityId=U3-W01-PEER-IMPROVEMENT`
    - `http://localhost:8080/week-1/glossary/` (redirect)
    - `http://localhost:8080/week-1/retrieval-quiz/` (redirect)
    - `http://localhost:8080/resources/`
@@ -468,6 +498,7 @@ Learners cannot edit these values.
 | Session 2 Retrieval Quiz (Activity API) | `U3-W01-RETRIEVAL` | 15 | RET-Q01 to RET-Q10 |
 | OCR Command-Word Guide (Activity API) | `U3-W01-COMMAND-WORDS` | 12 | Q001 to Q006 |
 | OCR-Style Question Practice (Activity API) | `U3-W01-OCR-PRACTICE` | 20 | OCR-Q01 to OCR-Q05 |
+| Peer Marking and Answer Improvement (Activity API) | `U3-W01-PEER-IMPROVEMENT` | 7 (completion points) | PM-Q01 to PM-Q07 |
 
 All current Week 1 formative activities submit only through the Activity API (`docs/activity-api-engine.md`). `js/submissions.js` remains available for Collector v3 compatibility if needed.
 

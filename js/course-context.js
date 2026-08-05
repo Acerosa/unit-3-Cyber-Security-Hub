@@ -110,6 +110,19 @@
       itemMaximum: 11,
       allowsPartner: false,
       attemptStorageKey: 'unit3-activity-api-state:U3-W01-OCR-PRACTICE'
+    }),
+    'U3-W01-PEER-IMPROVEMENT': Object.freeze({
+      activityId: 'U3-W01-PEER-IMPROVEMENT',
+      activityName: 'Peer Marking and Answer Improvement',
+      weekNumber: 1,
+      sessionName: 'Session 2',
+      activityType: 'Reflection',
+      activityVersion: '1.0',
+      maximumScore: 7,
+      itemMinimum: 1,
+      itemMaximum: 7,
+      allowsPartner: true,
+      attemptStorageKey: 'unit3-activity-api-state:U3-W01-PEER-IMPROVEMENT'
     })
   });
 
