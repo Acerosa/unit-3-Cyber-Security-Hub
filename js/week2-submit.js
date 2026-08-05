@@ -7,6 +7,7 @@
   'use strict';
 
   var submitting = false;
+  var awaitNewAttempt = false;
 
   function getModules() {
     return {
@@ -32,6 +33,7 @@
     var host = document.getElementById(hostId);
     if (!host || !modules.learner) return;
 
+    awaitNewAttempt = false;
     host.hidden = false;
     host.textContent = '';
 
@@ -78,6 +80,20 @@
     });
 
     submitBtn.addEventListener('click', function () {
+      if (awaitNewAttempt) {
+        var activity = resolveActivity(options.activityId);
+        if (activity && modules.submissions) {
+          modules.submissions.startNewAttempt(activity.attemptStorageKey);
+        }
+        awaitNewAttempt = false;
+        submitBtn.textContent = 'Submit formative result';
+        setMessage(
+          'w2-submit-status',
+          'New attempt ready. Submit again when you are ready.',
+          'info'
+        );
+        return;
+      }
       submitResult({
         activityId: options.activityId,
         score: options.getScore(),
@@ -253,18 +269,10 @@
     }
 
     submitting = false;
+    awaitNewAttempt = true;
     if (btn) {
       btn.disabled = false;
-      btn.textContent = 'Submit again (new attempt)';
-      btn.addEventListener(
-        'click',
-        function onNew() {
-          modules.submissions.startNewAttempt(activity.attemptStorageKey);
-          btn.textContent = 'Submit formative result';
-          btn.removeEventListener('click', onNew);
-        },
-        { once: true }
-      );
+      btn.textContent = 'Start another attempt';
     }
     setMessage(
       'w2-submit-status',
