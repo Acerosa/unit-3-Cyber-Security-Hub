@@ -176,10 +176,40 @@
 }
 
 .ae-short-response-hint,
-.ae-short-response-count {
+.ae-short-response-count,
+.ae-extended-response-hint,
+.ae-extended-response-count {
   margin: 0.4rem 0 0;
   color: var(--color-muted);
   font-size: 0.9rem;
+}
+
+.ae-extended-response-label {
+  display: block;
+  margin: 0.35rem 0 0.45rem;
+  font-weight: 700;
+  color: var(--color-navy-mid);
+}
+
+.ae-extended-response-input {
+  display: block;
+  width: 100%;
+  font: inherit;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.35rem;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.ae-extended-response-textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.ae-extended-response-input:focus {
+  outline: 3px solid var(--color-focus, #1d4f91);
+  outline-offset: 2px;
 }
 
 .ae-choice-list {

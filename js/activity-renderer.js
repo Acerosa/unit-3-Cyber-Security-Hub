@@ -324,7 +324,8 @@
     return fieldset;
   }
 
-  function renderShortResponseQuestion(question, state, itemResult, handlers, fieldset) {
+  function renderTextResponseQuestion(question, state, itemResult, handlers, fieldset, options) {
+    options = options || {};
     var qid = question.questionId;
     var current = String(state.responses[qid] || '');
     var minChars =
@@ -334,7 +335,20 @@
     var inputId = 'response-' + qid;
     var hintId = qid + '-response-hint';
     var countId = qid + '-response-count';
-    var useTextarea = maxChars > 120;
+    var forceMultiline = options.forceMultiline === true;
+    var useTextarea = forceMultiline || maxChars > 120;
+    var labelClass = forceMultiline
+      ? 'ae-extended-response-label'
+      : 'ae-short-response-label';
+    var inputClass = forceMultiline
+      ? 'ae-extended-response-input ae-extended-response-textarea'
+      : 'ae-short-response-input' + (useTextarea ? ' ae-short-response-textarea' : '');
+    var hintClass = forceMultiline
+      ? 'ae-extended-response-hint'
+      : 'ae-short-response-hint';
+    var countClass = forceMultiline
+      ? 'ae-extended-response-count'
+      : 'ae-short-response-count';
 
     function emit(opts) {
       var node = document.getElementById(inputId);
@@ -344,13 +358,14 @@
       }
       var countNode = document.getElementById(countId);
       if (countNode) {
-        countNode.textContent = normalisedDisplayLength(value) + ' / ' + maxChars + ' characters';
+        countNode.textContent =
+          normalisedDisplayLength(value) + ' / ' + maxChars + ' characters';
       }
     }
 
     fieldset.appendChild(
       el('label', {
-        className: 'ae-short-response-label',
+        className: labelClass,
         htmlFor: inputId,
         textContent: 'Your response'
       })
@@ -359,16 +374,16 @@
     var control = useTextarea
       ? el('textarea', {
           id: inputId,
-          className: 'ae-short-response-input ae-short-response-textarea',
+          className: inputClass,
           name: 'response-' + qid,
-          rows: maxChars > 400 ? '6' : '3',
+          rows: forceMultiline ? (maxChars > 1200 ? '8' : '5') : maxChars > 400 ? '6' : '3',
           maxlength: String(maxChars),
           'aria-describedby': hintId + ' ' + countId
         })
       : el('input', {
           type: 'text',
           id: inputId,
-          className: 'ae-short-response-input',
+          className: inputClass,
           name: 'response-' + qid,
           maxlength: String(maxChars),
           'aria-describedby': hintId + ' ' + countId
@@ -384,7 +399,7 @@
     fieldset.appendChild(
       el('p', {
         id: hintId,
-        className: 'ae-short-response-hint',
+        className: hintClass,
         textContent:
           'Enter at least ' +
           minChars +
@@ -396,13 +411,35 @@
     fieldset.appendChild(
       el('p', {
         id: countId,
-        className: 'ae-short-response-count',
+        className: countClass,
         textContent: normalisedDisplayLength(current) + ' / ' + maxChars + ' characters'
       })
     );
 
     appendQuestionFeedback(fieldset, itemResult, question);
     return fieldset;
+  }
+
+  function renderShortResponseQuestion(question, state, itemResult, handlers, fieldset) {
+    return renderTextResponseQuestion(
+      question,
+      state,
+      itemResult,
+      handlers,
+      fieldset,
+      { forceMultiline: false }
+    );
+  }
+
+  function renderExtendedResponseQuestion(question, state, itemResult, handlers, fieldset) {
+    return renderTextResponseQuestion(
+      question,
+      state,
+      itemResult,
+      handlers,
+      fieldset,
+      { forceMultiline: true }
+    );
   }
 
   function normalisedDisplayLength(value) {
@@ -509,6 +546,15 @@
     }
     if (question.questionType === 'short-response') {
       return renderShortResponseQuestion(question, state, itemResult, handlers, fieldset);
+    }
+    if (question.questionType === 'extended-response') {
+      return renderExtendedResponseQuestion(
+        question,
+        state,
+        itemResult,
+        handlers,
+        fieldset
+      );
     }
 
     fieldset.appendChild(

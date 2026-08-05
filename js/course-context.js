@@ -84,6 +84,32 @@
       itemMaximum: 12,
       allowsPartner: false,
       attemptStorageKey: 'unit3-activity-api-state:U3-W01-RETRIEVAL'
+    }),
+    'U3-W01-COMMAND-WORDS': Object.freeze({
+      activityId: 'U3-W01-COMMAND-WORDS',
+      activityName: 'OCR Command-Word Guide',
+      weekNumber: 1,
+      sessionName: 'Session 2',
+      activityType: 'Exam skills',
+      activityVersion: '1.0',
+      maximumScore: 12,
+      itemMinimum: 1,
+      itemMaximum: 6,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-activity-api-state:U3-W01-COMMAND-WORDS'
+    }),
+    'U3-W01-OCR-PRACTICE': Object.freeze({
+      activityId: 'U3-W01-OCR-PRACTICE',
+      activityName: 'OCR-Style Question Practice',
+      weekNumber: 1,
+      sessionName: 'Session 2',
+      activityType: 'Exam skills',
+      activityVersion: '1.0',
+      maximumScore: 20,
+      itemMinimum: 1,
+      itemMaximum: 11,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-activity-api-state:U3-W01-OCR-PRACTICE'
     })
   });
 
