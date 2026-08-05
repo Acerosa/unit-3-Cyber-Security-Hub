@@ -53,8 +53,8 @@ Unit 3 Cyber Security Hub
 │   ├── Incident Classification          (Active)
 │   ├── Cyber Security Glossary          (Active)
 │   ├── Session 2 Retrieval Quiz         (Active)
-│   ├── OCR Command-Word Guide           (Active API pilot)
-│   ├── OCR-Style Question Practice      (Coming soon)
+│   ├── OCR Command-Word Guide           (Active)
+│   ├── OCR-Style Question Practice      (Active)
 │   └── Directed Independent Study       (Coming soon)
 ├── Resources
 └── Help
@@ -216,18 +216,46 @@ Submission notes:
 
 Compatibility: `week-1/retrieval-quiz/` is a lightweight redirect to the Activity API route.
 
+### OCR Command-Word Guide
+
+Route: `activities/activity.html?activityId=U3-W01-COMMAND-WORDS`
+
+It uses the generic Activity API engine only. See `docs/activity-api-engine.md`.
+
+### OCR-Style Question Practice
+
+Route: `activities/activity.html?activityId=U3-W01-OCR-PRACTICE`
+
+Published path (after Pages deployment):
+
+`https://acerosa.github.io/unit-3-Cyber-Security-Hub/activities/activity.html?activityId=U3-W01-OCR-PRACTICE`
+
+Purpose: practise identifying, describing and explaining cyber security concepts using OCR-style questions and realistic Northbank scenarios.
+
+It uses the generic Activity API engine with short-response and extended-response questions. Content and marking come from the private Activity API. Browser code does not contain model answers or accepted phrases.
+
+Expected API structure:
+
+- seven sections
+- eleven response rows (source questions 1 to 5)
+- five assessment sections (maximum scores 3, 4, 6, 3 and 4)
+- seven short-response and four extended-response questions
+- maximum score 20
+- partner not allowed
+
+Submission notes:
+
+- Activity ID: `U3-W01-OCR-PRACTICE`
+- Submits through the Activity API only (`markSection` and `submitAttempt`)
+- Current Hub configuration keeps `submissionMode: 'TEST'` and `allowLiveSubmissions: false`
+- Does not use Collector v3
+- See `docs/activity-api-engine.md`
+
 ## 8. Planned Week 1 activities
 
 Still marked Coming soon on the Week 1 page:
 
-- OCR-Style Question Practice
 - Directed Independent Study
-
-The OCR Command-Word Guide is an Active API pilot at:
-
-`activities/activity.html?activityId=U3-W01-COMMAND-WORDS`
-
-It uses the Activity API only. See `docs/activity-api-engine.md`.
 
 ## 9. File structure
 
@@ -295,6 +323,8 @@ No frameworks, npm packages, build tools or server-side code.
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-INCIDENTS`
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-GLOSSARY`
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-RETRIEVAL`
+   - `http://localhost:8080/activities/activity.html?activityId=U3-W01-COMMAND-WORDS`
+   - `http://localhost:8080/activities/activity.html?activityId=U3-W01-OCR-PRACTICE`
    - `http://localhost:8080/week-1/glossary/` (redirect)
    - `http://localhost:8080/week-1/retrieval-quiz/` (redirect)
    - `http://localhost:8080/resources/`
@@ -436,7 +466,8 @@ Learners cannot edit these values.
 | Incident Classification (Activity API) | `U3-W01-INCIDENTS` | 12 | INC-Q01 to INC-Q12 |
 | Cyber Security Glossary (Activity API) | `U3-W01-GLOSSARY` | 12 | GLO-Q01 to GLO-Q12 |
 | Session 2 Retrieval Quiz (Activity API) | `U3-W01-RETRIEVAL` | 15 | RET-Q01 to RET-Q10 |
-| OCR Command-Word Guide (Activity API pilot) | `U3-W01-COMMAND-WORDS` | 12 | Q001 to Q006 |
+| OCR Command-Word Guide (Activity API) | `U3-W01-COMMAND-WORDS` | 12 | Q001 to Q006 |
+| OCR-Style Question Practice (Activity API) | `U3-W01-OCR-PRACTICE` | 20 | OCR-Q01 to OCR-Q05 |
 
 All current Week 1 formative activities submit only through the Activity API (`docs/activity-api-engine.md`). `js/submissions.js` remains available for Collector v3 compatibility if needed.
 

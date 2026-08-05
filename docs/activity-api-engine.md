@@ -12,6 +12,7 @@ Generic learner activity engine for API-driven activities.
 | `U3-W01-GLOSSARY` | Activity API only | `js/activity-api.js` |
 | `U3-W01-RETRIEVAL` | Activity API only | `js/activity-api.js` |
 | `U3-W01-COMMAND-WORDS` | Activity API only | `js/activity-api.js` |
+| `U3-W01-OCR-PRACTICE` | Activity API only | `js/activity-api.js` |
 
 All current Week 1 formative activities use the generic Activity API engine only.
 Former Collector-based activity pages have been removed or reduced to lightweight redirects.
@@ -31,6 +32,7 @@ activities/activity.html?activityId=U3-W01-CIA
 activities/activity.html?activityId=U3-W01-INCIDENTS
 activities/activity.html?activityId=U3-W01-GLOSSARY
 activities/activity.html?activityId=U3-W01-RETRIEVAL
+activities/activity.html?activityId=U3-W01-OCR-PRACTICE
 ```
 
 The query-string `activityId` takes priority over the HTML fallback.
@@ -65,7 +67,7 @@ LIVE is sent only when both `submissionMode: 'LIVE'` and `allowLiveSubmissions: 
 
 ## Test checklist
 
-1. Health validation succeeds (`UNIT3-ACTIVITY-API-V1.4`, `resultsConnected: true`).
+1. Health validation succeeds (`UNIT3-ACTIVITY-API-V1.5`, `resultsConnected: true`).
 2. Activity loads from `getActivity`.
 3. Eight sections render.
 4. Six single-choice questions render.

@@ -123,6 +123,12 @@
       .replace(/\s+/g, ' ');
   }
 
+  function isTextResponseType(questionType) {
+    return (
+      questionType === 'short-response' || questionType === 'extended-response'
+    );
+  }
+
   function isMissingResponse(question, value) {
     if (question.required === false) return false;
     if (question.questionType === 'classification') {
@@ -136,7 +142,7 @@
         evidence.length < minChars
       );
     }
-    if (question.questionType === 'short-response') {
+    if (isTextResponseType(question.questionType)) {
       var text = normalisedText(value);
       var minLen =
         question.minimumCharacters != null ? Number(question.minimumCharacters) : 1;
@@ -146,7 +152,7 @@
   }
 
   function isOverMaxResponse(question, value) {
-    if (!question || question.questionType !== 'short-response') return false;
+    if (!question || !isTextResponseType(question.questionType)) return false;
     if (question.maximumCharacters == null) return false;
     return normalisedText(value).length > Number(question.maximumCharacters);
   }
@@ -159,7 +165,7 @@
         evidence: normalisedText(value && value.evidence)
       };
     }
-    if (question && question.questionType === 'short-response') {
+    if (question && isTextResponseType(question.questionType)) {
       return normalisedText(value);
     }
     return value == null ? '' : String(value);
