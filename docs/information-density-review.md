@@ -62,10 +62,10 @@ Most interactive activities already limit what learners see at once (one questio
 
 ### Cyber Security Glossary
 
-- Concern: Browse mode is manageable (28 collapsed terms, search and filters). Knowledge check rendered all 12 questions at once.
-- Decision: Staged flow for the knowledge check only.
-- Pattern: One question at a time with Previous / Next, progress text, and Check answers when complete. After checking, feedback for all questions remains available.
-- Change made: Yes.
+- Concern: Former Collector page mixed searchable browse, flashcards and a 12-question check.
+- Decision: Activity now uses the generic Activity API engine route.
+- Pattern: API-driven learning and assessment sections with progressive disclosure in the generic engine.
+- Change made: Yes (Collector Glossary page removed; old URL redirects; API route is the sole Glossary entry).
 
 ### Session 2 Retrieval Quiz
 

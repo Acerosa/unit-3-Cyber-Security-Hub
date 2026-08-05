@@ -9,11 +9,11 @@ Generic learner activity engine for API-driven activities.
 | `U3-W01-BASELINE` | Activity API only | `js/activity-api.js` |
 | `U3-W01-CIA` | Activity API only | `js/activity-api.js` |
 | `U3-W01-INCIDENTS` | Activity API only | `js/activity-api.js` |
-| `U3-W01-GLOSSARY` | Collector v3 | `js/submissions.js` |
+| `U3-W01-GLOSSARY` | Activity API only | `js/activity-api.js` |
 | `U3-W01-RETRIEVAL` | Collector v3 | `js/submissions.js` |
 | `U3-W01-COMMAND-WORDS` | Activity API only | `js/activity-api.js` |
 
-Baseline Knowledge Check, CIA Triad Learning and Incident Classification use the generic Activity API engine only.
+Baseline Knowledge Check, CIA Triad Learning, Incident Classification and Cyber Security Glossary use the generic Activity API engine only.
 The former Collector-based pages for those activities have been removed.
 
 Routing is defined in `js/activity-engine-config.js` as `SUBMISSION_ROUTING`.
@@ -29,6 +29,7 @@ activities/activity.html?activityId=U3-W01-COMMAND-WORDS
 activities/activity.html?activityId=U3-W01-BASELINE
 activities/activity.html?activityId=U3-W01-CIA
 activities/activity.html?activityId=U3-W01-INCIDENTS
+activities/activity.html?activityId=U3-W01-GLOSSARY
 ```
 
 The query-string `activityId` takes priority over the HTML fallback.

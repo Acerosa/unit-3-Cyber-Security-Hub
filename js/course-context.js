@@ -70,7 +70,7 @@
       itemMinimum: 1,
       itemMaximum: 12,
       allowsPartner: false,
-      attemptStorageKey: 'unit3-glossary-attempt-id'
+      attemptStorageKey: 'unit3-activity-api-state:U3-W01-GLOSSARY'
     }),
     'U3-W01-RETRIEVAL': Object.freeze({
       activityId: 'U3-W01-RETRIEVAL',

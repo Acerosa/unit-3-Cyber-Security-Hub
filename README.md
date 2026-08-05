@@ -158,13 +158,33 @@ Submission notes:
 
 ### Cyber Security Glossary
 
-Route: `week-1/glossary/`
+Route: `activities/activity.html?activityId=U3-W01-GLOSSARY`
 
 Published path (after Pages deployment):
 
-`https://acerosa.github.io/unit-3-Cyber-Security-Hub/week-1/glossary/`
+`https://acerosa.github.io/unit-3-Cyber-Security-Hub/activities/activity.html?activityId=U3-W01-GLOSSARY`
 
-Purpose: help learners learn Week 1 terminology, search and filter terms, practise with flashcards, complete a 12-question knowledge check, reflect on one term, and submit a formative result to the existing Google Sheets collector.
+Purpose: build understanding of essential cyber security terms using clear definitions and realistic Northbank examples, then complete three terminology checks.
+
+It uses the generic Activity API engine. Content and marking come from the private Activity API. Browser code does not contain the glossary bank or answer key.
+
+Expected API structure:
+
+- eight sections
+- twelve single-choice questions
+- three assessment sections (maximum scores 3, 6 and 3)
+- maximum score 12
+- partner not allowed
+
+Submission notes:
+
+- Activity ID: `U3-W01-GLOSSARY`
+- Submits through the Activity API only (`markSection` and `submitAttempt`)
+- Current Hub configuration keeps `submissionMode: 'TEST'` and `allowLiveSubmissions: false`
+- Does not use Collector v3
+- See `docs/activity-api-engine.md`
+
+Compatibility: `week-1/glossary/` is a lightweight redirect to the Activity API route.
 
 ### Session 2 Retrieval Quiz
 
@@ -234,10 +254,7 @@ It uses the Activity API only. See `docs/activity-api-engine.md`.
   /week-1
     index.html
     /glossary
-      index.html
-      terms.js
-      glossary.js
-      activity.css
+      index.html   (redirect to Activity API route)
     /retrieval-quiz
       index.html
       questions.js
@@ -268,12 +285,13 @@ No frameworks, npm packages, build tools or server-side code.
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-BASELINE`
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-CIA`
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-INCIDENTS`
-   - `http://localhost:8080/week-1/glossary/`
+   - `http://localhost:8080/activities/activity.html?activityId=U3-W01-GLOSSARY`
+   - `http://localhost:8080/week-1/glossary/` (redirect)
    - `http://localhost:8080/week-1/retrieval-quiz/`
    - `http://localhost:8080/resources/`
    - `http://localhost:8080/help/`
 
-4. Confirm CSS/JS load, navigation works, the Baseline, CIA and Incident Classification Activity API routes load without hard-coded answers, and the glossary shows searchable terms.
+4. Confirm CSS/JS load, navigation works, and the Baseline, CIA, Incident Classification and Glossary Activity API routes load without hard-coded answers.
 5. Refresh nested URLs directly to confirm GitHub Pages-style deep links work.
 
 ## 11. GitHub Pages deployment
@@ -329,91 +347,28 @@ Cognitive-load decisions for the wider hub are recorded in `docs/information-den
 Route:
 
 ```text
-/week-1/glossary/
+/activities/activity.html?activityId=U3-W01-GLOSSARY
 ```
 
 Breadcrumb: Home > Week 1 > Cyber Security Glossary
 
-### Term-data structure
+Compatibility redirect:
 
-Edit `week-1/glossary/terms.js`. Each term object uses:
-
-```javascript
-{
-  id: "confidentiality",
-  term: "Confidentiality",
-  category: "Core cyber security",
-  definition: "...",
-  northbankExample: "...",
-  relatedTerms: ["Authorised", "Information disclosure"]
-}
+```text
+/week-1/glossary/ → Activity API route
 ```
-
-Categories currently used:
-
-- Core cyber security
-- Incident classifications
-- Information and impact
-- Threats and protection
-- Examination language
-
-### How to add or edit a term
-
-1. Open `week-1/glossary/terms.js`.
-2. Add or edit an object in `GLOSSARY_TERMS`.
-3. Keep `id` values unique and URL-safe.
-4. Keep category names aligned with `GLOSSARY_CATEGORIES`.
-5. Refresh the glossary page and confirm search, filters and flashcards include the term.
-
-### Knowledge-check structure
-
-`week-1/glossary/glossary.js` contains a fixed set of **12** questions covering:
-
-1. cyber security
-2. CIA triad
-3. confidentiality
-4. integrity
-5. availability
-6. unauthorised access
-7. information disclosure
-8. modification of data
-9. inaccessible data
-10. destruction
-11. theft
-12. authentication / multi-factor authentication
-
-Question order does not change between submission and review. Self-rated flashcards do not affect the knowledge-check score.
-
-### Glossary submission mapping
-
-The glossary submits Collector schema 3.0 via `js/submissions.js`:
-
-| Field | Glossary use |
-| --- | --- |
-| `activityId` | `U3-W01-GLOSSARY` |
-| `attemptId` | Glossary Attempt ID (`unit3-glossary-attempt-id`) |
-| `studentId` / `firstName` / `surname` / `classGroup` | Learner identity |
-| `score` / `maximumScore` | Knowledge-check score out of 12 |
-| `questionsForReview` | Incorrect question numbers 1 to 12 |
-| `mostDifficultItem` | Hardest question 1 to 12 |
-| `reflection` | Glossary reflection |
-| `completionTimeSeconds` | Seconds from starting the check to checking answers |
-| `sourcePage` | Current glossary page URL |
-
-### Glossary Attempt ID storage key
-
-`unit3-glossary-attempt-id` in `sessionStorage` only.
 
 ### Glossary testing checklist
 
-- All terms load; search and category filters update the term count
-- Expandable term cards work with keyboard controls
-- Flashcards reveal, navigate, shuffle, mark understood/review and reset
-- Knowledge check requires all 12 answers before checking
-- Scoring, percentage and incorrect question numbers are correct
-- Start new attempt clears quiz state and the glossary Attempt ID
-- Submission validation blocks incomplete forms
-- Retries reuse the same glossary Attempt ID
+- Opens via `activities/activity.html?activityId=U3-W01-GLOSSARY`
+- Health and `getActivity` succeed for `U3-W01-GLOSSARY`
+- Eight sections and twelve single-choice questions render from the API
+- No correct answers appear before section marking
+- Assessment sections mark out of 3, 6 and 3
+- Final `submitAttempt` uses `recordType: TEST` while LIVE remains disabled
+- The page does not load `js/submissions.js` or call Collector v3
+- Refresh restores Attempt ID and selected responses from sessionStorage
+- `week-1/glossary/` only redirects to the Activity API route
 
 ### Privacy limitations
 
@@ -470,11 +425,11 @@ Learners cannot edit these values.
 | Baseline Knowledge Check (Activity API) | `U3-W01-BASELINE` | 10 | BAS-Q01 to BAS-Q10 |
 | CIA Triad Learning (Activity API) | `U3-W01-CIA` | 15 | CIA-Q01 to CIA-Q12 |
 | Incident Classification (Activity API) | `U3-W01-INCIDENTS` | 12 | INC-Q01 to INC-Q12 |
-| Cyber Security Glossary | `U3-W01-GLOSSARY` | 12 | 1 to 12 |
+| Cyber Security Glossary (Activity API) | `U3-W01-GLOSSARY` | 12 | GLO-Q01 to GLO-Q12 |
 | Session 2 Retrieval Quiz | `U3-W01-RETRIEVAL` | 15 | 1 to 10 |
 | OCR Command-Word Guide (Activity API pilot) | `U3-W01-COMMAND-WORDS` | 12 | Q001 to Q006 |
 
-Collector v3 continues to serve Glossary and Retrieval. Baseline, CIA, Incident Classification and the Command-Word Guide submit only through the Activity API (`docs/activity-api-engine.md`).
+Collector v3 continues to serve Retrieval. Baseline, CIA, Incident Classification, Glossary and the Command-Word Guide submit only through the Activity API (`docs/activity-api-engine.md`).
 
 ### Class-group configuration
 
