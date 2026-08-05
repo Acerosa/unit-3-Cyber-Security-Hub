@@ -57,10 +57,13 @@ Unit 3 Cyber Security Hub
 │   ├── OCR-Style Question Practice      (Active)
 │   ├── Peer Marking and Answer Improvement (Active)
 │   └── Directed Independent Study       (Coming soon)
+├── Week 2
+│   ├── Week 2 Overview
+│   ├── Session 1 activities (Active) — see docs/week-2.md
+│   └── Session 2 activities (Active) — see docs/week-2.md
 ├── Resources
 └── Help
 ```
-
 There is no top-level Activities page. Week activities live inside each week area.
 
 ## 6. Why activities are organised within each week
