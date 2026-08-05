@@ -1,0 +1,16 @@
+{
+  "scriptId": "1e_-4rL0vR9F48RheFE5EQO6OTZRVdP1958s_Jl90gD8HK5QB2jmxvIeP",
+  "rootDir": "apps-script/week-2",
+  "scriptExtensions": [
+    ".js",
+    ".gs"
+  ],
+  "htmlExtensions": [
+    ".html"
+  ],
+  "jsonExtensions": [
+    ".json"
+  ],
+  "filePushOrder": [],
+  "skipSubdirectories": false
+}
