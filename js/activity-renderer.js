@@ -78,17 +78,41 @@
     return null;
   }
 
-  function appendQuestionFeedback(fieldset, itemResult) {
+  function appendQuestionFeedback(fieldset, itemResult, question) {
     if (!itemResult) return;
     var feedback = el('div', {
       className: 'ae-question-feedback',
       role: 'region',
       'aria-label': 'Feedback for ' + (itemResult.questionId || 'question')
     });
+    var statusLabel =
+      itemResult.status === 'correct'
+        ? 'Correct'
+        : itemResult.status === 'partial'
+          ? 'Partial credit'
+          : 'Requires review';
+    var awarded =
+      itemResult.marksAwarded != null
+        ? itemResult.marksAwarded
+        : itemResult.marks != null
+          ? itemResult.marks
+          : null;
+    var available =
+      itemResult.maximumMarks != null
+        ? itemResult.maximumMarks
+        : itemResult.marksAvailable != null
+          ? itemResult.marksAvailable
+          : question && (question.marks != null || question.maximumMarks != null)
+            ? question.marks != null
+              ? question.marks
+              : question.maximumMarks
+            : null;
     feedback.appendChild(
       el('p', {
         textContent:
-          itemResult.status === 'correct' ? 'Correct' : 'Requires review'
+          awarded != null && available != null
+            ? statusLabel + ' · ' + awarded + ' / ' + available
+            : statusLabel
       })
     );
     if (itemResult.feedback) {
@@ -296,8 +320,95 @@
       })
     );
 
-    appendQuestionFeedback(fieldset, itemResult);
+    appendQuestionFeedback(fieldset, itemResult, question);
     return fieldset;
+  }
+
+  function renderShortResponseQuestion(question, state, itemResult, handlers, fieldset) {
+    var qid = question.questionId;
+    var current = String(state.responses[qid] || '');
+    var minChars =
+      question.minimumCharacters != null ? Number(question.minimumCharacters) : 1;
+    var maxChars =
+      question.maximumCharacters != null ? Number(question.maximumCharacters) : 500;
+    var inputId = 'response-' + qid;
+    var hintId = qid + '-response-hint';
+    var countId = qid + '-response-count';
+    var useTextarea = maxChars > 120;
+
+    function emit(opts) {
+      var node = document.getElementById(inputId);
+      var value = node ? node.value : current;
+      if (handlers && handlers.onAnswer) {
+        handlers.onAnswer(qid, value, opts || {});
+      }
+      var countNode = document.getElementById(countId);
+      if (countNode) {
+        countNode.textContent = normalisedDisplayLength(value) + ' / ' + maxChars + ' characters';
+      }
+    }
+
+    fieldset.appendChild(
+      el('label', {
+        className: 'ae-short-response-label',
+        htmlFor: inputId,
+        textContent: 'Your response'
+      })
+    );
+
+    var control = useTextarea
+      ? el('textarea', {
+          id: inputId,
+          className: 'ae-short-response-input ae-short-response-textarea',
+          name: 'response-' + qid,
+          rows: maxChars > 400 ? '6' : '3',
+          maxlength: String(maxChars),
+          'aria-describedby': hintId + ' ' + countId
+        })
+      : el('input', {
+          type: 'text',
+          id: inputId,
+          className: 'ae-short-response-input',
+          name: 'response-' + qid,
+          maxlength: String(maxChars),
+          'aria-describedby': hintId + ' ' + countId
+        });
+    control.value = current;
+    control.addEventListener('input', function () {
+      emit({ deferRender: true });
+    });
+    control.addEventListener('blur', function () {
+      emit({});
+    });
+    fieldset.appendChild(control);
+    fieldset.appendChild(
+      el('p', {
+        id: hintId,
+        className: 'ae-short-response-hint',
+        textContent:
+          'Enter at least ' +
+          minChars +
+          ' characters (maximum ' +
+          maxChars +
+          ').'
+      })
+    );
+    fieldset.appendChild(
+      el('p', {
+        id: countId,
+        className: 'ae-short-response-count',
+        textContent: normalisedDisplayLength(current) + ' / ' + maxChars + ' characters'
+      })
+    );
+
+    appendQuestionFeedback(fieldset, itemResult, question);
+    return fieldset;
+  }
+
+  function normalisedDisplayLength(value) {
+    return String(value == null ? '' : value)
+      .replace(/^\s+|\s+$/g, '')
+      .replace(/\s+/g, ' ').length;
   }
 
   function renderSingleChoiceQuestion(question, state, itemResult, handlers, fieldset) {
@@ -345,7 +456,7 @@
       );
     });
     fieldset.appendChild(list);
-    appendQuestionFeedback(fieldset, itemResult);
+    appendQuestionFeedback(fieldset, itemResult, question);
     return fieldset;
   }
 
@@ -354,22 +465,21 @@
     var qid = question.questionId;
     var itemResult = findItemResult(markResult, qid);
 
+    var statusClass = '';
+    if (itemResult) {
+      if (itemResult.status === 'correct') statusClass = ' is-correct';
+      else if (itemResult.status === 'partial') statusClass = ' is-partial';
+      else statusClass = ' is-incorrect';
+    }
+
     var fieldset = el('fieldset', {
-      className:
-        'ae-question' +
-        (itemResult
-          ? itemResult.status === 'correct'
-            ? ' is-correct'
-            : ' is-incorrect'
-          : ''),
+      className: 'ae-question' + statusClass,
       id: 'question-' + qid
     });
 
     var marks = question.marks || question.maximumMarks || 1;
     var promptText =
-      qid +
-      '. ' +
-      (question.prompt || '') +
+      (question.prompt || 'Question') +
       ' (' +
       marks +
       (marks === 1 ? ' mark' : ' marks') +
@@ -396,6 +506,9 @@
     }
     if (question.questionType === 'classification') {
       return renderClassificationQuestion(question, state, itemResult, handlers, fieldset);
+    }
+    if (question.questionType === 'short-response') {
+      return renderShortResponseQuestion(question, state, itemResult, handlers, fieldset);
     }
 
     fieldset.appendChild(

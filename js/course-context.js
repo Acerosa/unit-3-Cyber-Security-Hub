@@ -81,9 +81,9 @@
       activityVersion: '1.0',
       maximumScore: 15,
       itemMinimum: 1,
-      itemMaximum: 10,
+      itemMaximum: 12,
       allowsPartner: false,
-      attemptStorageKey: 'unit3-session2-retrieval-attempt-id'
+      attemptStorageKey: 'unit3-activity-api-state:U3-W01-RETRIEVAL'
     })
   });
 

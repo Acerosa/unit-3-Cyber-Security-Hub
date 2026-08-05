@@ -117,13 +117,17 @@
     return null;
   }
 
+  function normalisedText(value) {
+    return String(value == null ? '' : value)
+      .replace(/^\s+|\s+$/g, '')
+      .replace(/\s+/g, ' ');
+  }
+
   function isMissingResponse(question, value) {
     if (question.required === false) return false;
     if (question.questionType === 'classification') {
       if (!value || typeof value !== 'object') return true;
-      var evidence = String(value.evidence || '')
-        .replace(/^\s+|\s+$/g, '')
-        .replace(/\s+/g, ' ');
+      var evidence = normalisedText(value.evidence);
       var minChars =
         question.minimumCharacters != null ? Number(question.minimumCharacters) : 1;
       return (
@@ -132,7 +136,19 @@
         evidence.length < minChars
       );
     }
+    if (question.questionType === 'short-response') {
+      var text = normalisedText(value);
+      var minLen =
+        question.minimumCharacters != null ? Number(question.minimumCharacters) : 1;
+      return text.length < minLen;
+    }
     return value === undefined || value === null || value === '';
+  }
+
+  function isOverMaxResponse(question, value) {
+    if (!question || question.questionType !== 'short-response') return false;
+    if (question.maximumCharacters == null) return false;
+    return normalisedText(value).length > Number(question.maximumCharacters);
   }
 
   function normalizeResponseValue(question, value) {
@@ -140,10 +156,11 @@
       return {
         incidentType: String((value && value.incidentType) || ''),
         ciaAim: String((value && value.ciaAim) || ''),
-        evidence: String((value && value.evidence) || '')
-          .replace(/^\s+|\s+$/g, '')
-          .replace(/\s+/g, ' ')
+        evidence: normalisedText(value && value.evidence)
       };
+    }
+    if (question && question.questionType === 'short-response') {
+      return normalisedText(value);
     }
     return value == null ? '' : String(value);
   }
@@ -151,10 +168,13 @@
   function collectSectionResponses(section) {
     var responses = [];
     var missing = [];
+    var tooLong = [];
     (section.questions || []).forEach(function (question) {
       var value = state.responses[question.questionId];
       if (isMissingResponse(question, value)) {
         missing.push(question.questionId);
+      } else if (isOverMaxResponse(question, value)) {
+        tooLong.push(question.questionId);
       } else if (value !== undefined && value !== null && value !== '') {
         responses.push({
           questionId: question.questionId,
@@ -162,7 +182,7 @@
         });
       }
     });
-    return { responses: responses, missing: missing };
+    return { responses: responses, missing: missing, tooLong: tooLong };
   }
 
   function collectAllResponses() {
@@ -300,15 +320,32 @@
     if (collected.missing.length) {
       setStatusMessage(
         'section-status-' + sectionId,
-        'Answer every required question before checking. Missing: ' +
+        'Complete every required response before checking. Incomplete: ' +
           collected.missing.join(', ') +
           '.',
         'error'
       );
-      var first = document.getElementById('question-' + collected.missing[0]);
-      if (first) {
-        var control = first.querySelector('input, textarea, select');
-        if (control) control.focus();
+      var firstMissing = document.getElementById(
+        'question-' + collected.missing[0]
+      );
+      if (firstMissing) {
+        var missingControl = firstMissing.querySelector('input, textarea, select');
+        if (missingControl) missingControl.focus();
+      }
+      return;
+    }
+    if (collected.tooLong && collected.tooLong.length) {
+      setStatusMessage(
+        'section-status-' + sectionId,
+        'Shorten the responses that exceed the maximum length: ' +
+          collected.tooLong.join(', ') +
+          '.',
+        'error'
+      );
+      var firstLong = document.getElementById('question-' + collected.tooLong[0]);
+      if (firstLong) {
+        var longControl = firstLong.querySelector('input, textarea, select');
+        if (longControl) longControl.focus();
       }
       return;
     }

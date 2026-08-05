@@ -188,22 +188,33 @@ Compatibility: `week-1/glossary/` is a lightweight redirect to the Activity API 
 
 ### Session 2 Retrieval Quiz
 
-Route: `week-1/retrieval-quiz/`
+Route: `activities/activity.html?activityId=U3-W01-RETRIEVAL`
 
 Published path (after Pages deployment):
 
-`https://acerosa.github.io/unit-3-Cyber-Security-Hub/week-1/retrieval-quiz/`
+`https://acerosa.github.io/unit-3-Cyber-Security-Hub/activities/activity.html?activityId=U3-W01-RETRIEVAL`
 
-Purpose: a 10-minute, 15-mark formative retrieval starter for Session 2. It checks recall of the CIA triad, the six Week 1 incident types, the difference between confidentiality and integrity, and selecting exact evidence from a scenario.
+Purpose: recall the key ideas from Session 1 and practise explaining cyber security concepts using precise terminology.
 
-- Timing: 10 minutes (timer starts on Start quiz)
-- Total marks: 15
-- Numbered questions: 10 (including 2(a), 2(b), 2(c))
-- Response sections: 12
-- Question 9 written response is self-marked using two teacher marking points
-- Attempt ID key: `unit3-session2-retrieval-attempt-id`
+It uses the generic Activity API engine with short-response questions. Content and marking come from the private Activity API. Browser code does not contain model answers or accepted phrases.
+
+Expected API structure:
+
+- six sections
+- twelve short-response items (source questions 1 to 10, with 2(a)–2(c) as separate rows)
+- four assessment sections (maximum scores 3, 3, 6 and 3)
+- maximum score 15
+- partner not allowed
+
+Submission notes:
+
 - Activity ID: `U3-W01-RETRIEVAL`
-- Submits Collector schema 3.0 with `maximumScore` 15 and review items numbered 1 to 10
+- Submits through the Activity API only (`markSection` and `submitAttempt`)
+- Current Hub configuration keeps `submissionMode: 'TEST'` and `allowLiveSubmissions: false`
+- Does not use Collector v3
+- See `docs/activity-api-engine.md`
+
+Compatibility: `week-1/retrieval-quiz/` is a lightweight redirect to the Activity API route.
 
 ## 8. Planned Week 1 activities
 
@@ -256,10 +267,7 @@ It uses the Activity API only. See `docs/activity-api-engine.md`.
     /glossary
       index.html   (redirect to Activity API route)
     /retrieval-quiz
-      index.html
-      questions.js
-      quiz.js
-      activity.css
+      index.html   (redirect to Activity API route)
   /docs
     /apps-script
       /collector-v2
@@ -286,12 +294,13 @@ No frameworks, npm packages, build tools or server-side code.
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-CIA`
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-INCIDENTS`
    - `http://localhost:8080/activities/activity.html?activityId=U3-W01-GLOSSARY`
+   - `http://localhost:8080/activities/activity.html?activityId=U3-W01-RETRIEVAL`
    - `http://localhost:8080/week-1/glossary/` (redirect)
-   - `http://localhost:8080/week-1/retrieval-quiz/`
+   - `http://localhost:8080/week-1/retrieval-quiz/` (redirect)
    - `http://localhost:8080/resources/`
    - `http://localhost:8080/help/`
 
-4. Confirm CSS/JS load, navigation works, and the Baseline, CIA, Incident Classification and Glossary Activity API routes load without hard-coded answers.
+4. Confirm CSS/JS load, navigation works, and the Activity API Week 1 routes load without hard-coded answers or model responses.
 5. Refresh nested URLs directly to confirm GitHub Pages-style deep links work.
 
 ## 11. GitHub Pages deployment
@@ -386,7 +395,7 @@ Home > Week 1 > Incident Classification
 
 ## 15. Collector v3 learner submissions
 
-Glossary and Retrieval submit **schema version 3.0** to the existing Apps Script web app URL configured in:
+Week 1 formative activities now submit through the Activity API. The Collector v3 helper remains in:
 
 `js/submissions.js` as `Unit3Submissions.COLLECTOR_URL`
 
@@ -426,10 +435,10 @@ Learners cannot edit these values.
 | CIA Triad Learning (Activity API) | `U3-W01-CIA` | 15 | CIA-Q01 to CIA-Q12 |
 | Incident Classification (Activity API) | `U3-W01-INCIDENTS` | 12 | INC-Q01 to INC-Q12 |
 | Cyber Security Glossary (Activity API) | `U3-W01-GLOSSARY` | 12 | GLO-Q01 to GLO-Q12 |
-| Session 2 Retrieval Quiz | `U3-W01-RETRIEVAL` | 15 | 1 to 10 |
+| Session 2 Retrieval Quiz (Activity API) | `U3-W01-RETRIEVAL` | 15 | RET-Q01 to RET-Q10 |
 | OCR Command-Word Guide (Activity API pilot) | `U3-W01-COMMAND-WORDS` | 12 | Q001 to Q006 |
 
-Collector v3 continues to serve Retrieval. Baseline, CIA, Incident Classification, Glossary and the Command-Word Guide submit only through the Activity API (`docs/activity-api-engine.md`).
+All current Week 1 formative activities submit only through the Activity API (`docs/activity-api-engine.md`). `js/submissions.js` remains available for Collector v3 compatibility if needed.
 
 ### Class-group configuration
 

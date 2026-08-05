@@ -69,9 +69,10 @@ Most interactive activities already limit what learners see at once (one questio
 
 ### Session 2 Retrieval Quiz
 
-- Concern: Start form density only; quiz already one section at a time.
-- Decision: Minor simplification via shared course-details disclosure.
-- Change made: Yes (shared).
+- Concern: Former Collector page mixed timer, multi-select controls and self-marking.
+- Decision: Activity now uses the generic Activity API engine route.
+- Pattern: API-driven short-response sections with progressive disclosure in the generic engine.
+- Change made: Yes (Collector Retrieval Quiz page removed; old URL redirects; API route is the sole Retrieval entry).
 
 ### Resources
 
