@@ -57,7 +57,7 @@
       itemMinimum: 1,
       itemMaximum: 12,
       allowsPartner: true,
-      attemptStorageKey: 'northbank-card-sort-attempt-id'
+      attemptStorageKey: 'unit3-activity-api-state:U3-W01-INCIDENTS'
     }),
     'U3-W01-GLOSSARY': Object.freeze({
       activityId: 'U3-W01-GLOSSARY',

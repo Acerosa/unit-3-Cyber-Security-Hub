@@ -106,17 +106,59 @@
     return null;
   }
 
+  function questionById(questionId) {
+    var sections = (activityData && activityData.sections) || [];
+    for (var i = 0; i < sections.length; i += 1) {
+      var questions = sections[i].questions || [];
+      for (var j = 0; j < questions.length; j += 1) {
+        if (questions[j].questionId === questionId) return questions[j];
+      }
+    }
+    return null;
+  }
+
+  function isMissingResponse(question, value) {
+    if (question.required === false) return false;
+    if (question.questionType === 'classification') {
+      if (!value || typeof value !== 'object') return true;
+      var evidence = String(value.evidence || '')
+        .replace(/^\s+|\s+$/g, '')
+        .replace(/\s+/g, ' ');
+      var minChars =
+        question.minimumCharacters != null ? Number(question.minimumCharacters) : 1;
+      return (
+        !value.incidentType ||
+        !value.ciaAim ||
+        evidence.length < minChars
+      );
+    }
+    return value === undefined || value === null || value === '';
+  }
+
+  function normalizeResponseValue(question, value) {
+    if (question && question.questionType === 'classification') {
+      return {
+        incidentType: String((value && value.incidentType) || ''),
+        ciaAim: String((value && value.ciaAim) || ''),
+        evidence: String((value && value.evidence) || '')
+          .replace(/^\s+|\s+$/g, '')
+          .replace(/\s+/g, ' ')
+      };
+    }
+    return value == null ? '' : String(value);
+  }
+
   function collectSectionResponses(section) {
     var responses = [];
     var missing = [];
     (section.questions || []).forEach(function (question) {
       var value = state.responses[question.questionId];
-      if (question.required !== false && (value === undefined || value === null || value === '')) {
+      if (isMissingResponse(question, value)) {
         missing.push(question.questionId);
-      } else if (value) {
+      } else if (value !== undefined && value !== null && value !== '') {
         responses.push({
           questionId: question.questionId,
-          value: String(value)
+          value: normalizeResponseValue(question, value)
         });
       }
     });
@@ -126,12 +168,14 @@
   function collectAllResponses() {
     var responses = [];
     Object.keys(state.responses || {}).forEach(function (questionId) {
-      if (state.responses[questionId]) {
-        responses.push({
-          questionId: questionId,
-          value: String(state.responses[questionId])
-        });
-      }
+      var question = questionById(questionId);
+      var value = state.responses[questionId];
+      if (!question || isMissingResponse(question, value)) return;
+      if (value === undefined || value === null || value === '') return;
+      responses.push({
+        questionId: questionId,
+        value: normalizeResponseValue(question, value)
+      });
     });
     return responses;
   }
@@ -223,18 +267,29 @@
     }
   }
 
-  function handleAnswer(questionId, value) {
-    stateApi.setResponse(state, questionId, value);
+  function handleAnswer(questionId, value, opts) {
+    opts = opts || {};
+    var question = questionById(questionId);
+    stateApi.setResponse(
+      state,
+      questionId,
+      normalizeResponseValue(question, value)
+    );
     Object.keys(state.markedSections || {}).forEach(function (sectionId) {
       var section = sectionById(sectionId);
       if (!section) return;
-      var ownsQuestion = (section.questions || []).some(function (question) {
-        return question.questionId === questionId;
+      var ownsQuestion = (section.questions || []).some(function (q) {
+        return q.questionId === questionId;
       });
       if (ownsQuestion) {
         stateApi.invalidateSection(state, sectionId);
       }
     });
+    if (opts.deferRender) {
+      updateProgress();
+      updateFinalFormVisibility();
+      return;
+    }
     renderActivity();
   }
 
@@ -252,7 +307,7 @@
       );
       var first = document.getElementById('question-' + collected.missing[0]);
       if (first) {
-        var control = first.querySelector('input');
+        var control = first.querySelector('input, textarea, select');
         if (control) control.focus();
       }
       return;
@@ -361,6 +416,14 @@
     );
 
     var learner = validation.learner;
+    var partner = null;
+    if (learner.isPaired) {
+      partner = {
+        studentId: learner.partnerStudentId,
+        firstName: learner.partnerFirstName,
+        surname: learner.partnerSurname
+      };
+    }
     var payload = {
       requestId: api.createRequestId(),
       recordType: configModule.resolveRecordType(),
@@ -373,7 +436,7 @@
         surname: learner.surname,
         classGroup: learner.classGroup
       },
-      partner: null,
+      partner: partner,
       responses: collectAllResponses(),
       reflection: reflection,
       mostDifficultItem: mostDifficult,

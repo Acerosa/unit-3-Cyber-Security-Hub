@@ -55,10 +55,10 @@ Most interactive activities already limit what learners see at once (one questio
 
 ### Incident Classification
 
-- Concern: Instructions, learner form, progress and card chrome appear together before the first card.
-- Decision: Disclosure for instructions.
-- Pattern: Instructions in a native disclosure, collapsed by default. Short “Before you begin” learner panel stays visible. One-card presentation unchanged.
-- Change made: Yes.
+- Concern: Former Collector page packed instructions, learner form and card chrome before the first classification.
+- Decision: Activity now uses the generic Activity API engine route.
+- Pattern: API-driven classification sections with progressive disclosure in the generic engine.
+- Change made: Yes (Collector Incident Classification page removed; API route is the sole Incidents entry).
 
 ### Cyber Security Glossary
 
