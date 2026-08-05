@@ -5,8 +5,11 @@
 A standalone Week 2 Apps Script API lives in `apps-script/week-2/`.
 
 - Opens the shared Unit 3 spreadsheet with `SpreadsheetApp.openById(CONFIG.spreadsheetId)`
-- Validates Week 2 activity IDs, versions and totals from `Week2Activities.gs`
+- Serves Week 2 activity content using the Week 1 Activity API contract (`manifest`, `getActivity`, `markSection`)
+- Stores complete educational packs in `Week2*Data.gs` files
+- Validates Week 2 activity IDs, versions and totals from `Week2ActivityManifest.gs` / `Week2Activities.gs`
 - Writes to `All Submissions`, `Week 2 Results`, and `Errors and Rejections`
+- Seeds catalogue metadata with `seedAllWeek2ActivityData()`
 - Deploy and operate using `apps-script/week-2/README.md`
 
 Do not modify the Week 1 Activity API project when changing Week 2 collection.

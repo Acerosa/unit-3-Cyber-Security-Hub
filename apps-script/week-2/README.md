@@ -1,17 +1,31 @@
 # Unit 3 Cyber Security — Week 2 Apps Script API
 
-Standalone Google Apps Script web app that records **Week 2: Threats and Vulnerabilities** formative activity results into the shared Unit 3 Google Spreadsheet.
+Standalone Google Apps Script web app for **Week 2: Threats and Vulnerabilities**.
+
+It provides:
+
+- Week 2 activity content using the Week 1 Activity API contract (`getActivity`, `manifest`, `markSection`)
+- Submission recording into the shared Unit 3 Google Spreadsheet
+- Validation, duplicate protection and JSON responses
 
 This project is separate from the Week 1 Activity API. Do not modify the Week 1 Apps Script project when working here.
 
-## Purpose
+## Architecture (aligned with Week 1)
 
-- Accept Week 2 activity submissions through a single `doPost()` endpoint
-- Provide a `doGet()` health check
-- Validate activity IDs, versions, totals, scores and learner details
-- Protect against duplicate submissions from double-clicks or retries
-- Write accepted results to **All Submissions** and **Week 2 Results**
-- Record rejected payloads in **Errors and Rejections**
+Week 1 stores educational activity data in Apps Script and serves it through:
+
+```text
+GET /exec?action=health
+GET /exec?action=getActivity&activityId=...
+POST /exec  { "action": "markSection", ... }
+```
+
+Week 2 follows the same pattern:
+
+- Content packs live in `.gs` data files (not guessed spreadsheet question rows)
+- `Week2ActivityDataService.gs` builds the public learner payload
+- Correct answers, mark schemes and tutor notes stay in `assessment` / `tutorData`
+- Catalogue metadata can be seeded into the shared spreadsheet for tutor visibility
 
 ## Spreadsheet configuration
 
@@ -21,47 +35,122 @@ Configure the spreadsheet ID only in `Config.gs`:
 spreadsheetId: "1Q85_zt8cSrqpzSMNPuhvHXfa767QEhXSPnQznvSZe08"
 ```
 
-The API opens the workbook with:
-
-```javascript
-SpreadsheetApp.openById(CONFIG.spreadsheetId)
-```
-
-Do not use `SpreadsheetApp.getActiveSpreadsheet()` in this standalone project.
-
-Do not put the spreadsheet ID in frontend code.
+Open with `SpreadsheetApp.openById(CONFIG.spreadsheetId)` only.
 
 ## Worksheet tabs
 
 | Tab | Role |
 | --- | --- |
-| `All Submissions` | Canonical log of accepted Week 2 submissions |
-| `Week 2 Results` | Week 2–focused results view |
-| `Errors and Rejections` | Parse/validation/server rejections |
+| `All Submissions` | Accepted submission log |
+| `Week 2 Results` | Week 2 results view |
+| `Errors and Rejections` | Rejected payloads |
+| `Week 2 Activity Catalogue` | Seeded activity metadata (not learner answers) |
 
-Existing Week 1 tabs are left untouched. Setup creates missing Week 2-related tabs only.
+## Complete Week 2 activity inventory
 
-## Activity IDs and totals
+| Activity ID | Type | Version | Total | Component ID | Data file |
+| --- | --- | --- | --- | --- | --- |
+| `week2-session1-retrieval` | Retrieval quiz | 1.0 | 10 | `quiz` | `Week2Session1RetrievalData.gs` |
+| `week2-threat-vulnerability-learning` | Guided learning | 1.0 | 6 | `guided-learning` | `Week2ThreatVulnerabilityLearningData.gs` |
+| `week2-malware-symptoms` | Knowledge check | 1.0 | 10 | `matching` | `Week2MalwareSymptomsData.gs` |
+| `week2-threat-vulnerability-sort` | Practical classification | 1.0 | 12 | `classification` | `Week2ThreatVulnerabilitySortData.gs` |
+| `week2-vulnerabilities101-reflection` | Reflection | 1.0 | 2 | `external-room-reflection` | `Week2Vulnerabilities101Data.gs` |
+| `week2-session2-retrieval` | Retrieval quiz | 1.0 | 10 | `quiz` | `Week2Session2RetrievalData.gs` |
+| `week2-northbank-vulnerability-analysis` | Scenario analysis | 1.0 | 5 | `scenario-analysis` | `Week2NorthbankAnalysisData.gs` |
+| `week2-six-mark-response-guide` | Exam skills | 1.0 | 3 | `exam-guide` | `Week2SixMarkGuideData.gs` |
+| `week2-ocr-question-practice` | Exam skills | 1.0 | 20 | `ocr-question-practice` | `Week2OcrPracticeData.gs` |
+| `week2-peer-marking-answer-improvement` | Reflection | 1.0 | 6 | `peer-marking` | `Week2PeerMarkingData.gs` |
+| `week2-northbank-vulnerability-register` | Scenario analysis | 1.0 | 5 | `structured-register` | `Week2VulnerabilityRegisterData.gs` |
 
-| Activity ID | Session | Total |
+Single source of truth for IDs, versions, totals, types and enabled flags:
+
+- `Week2ActivityManifest.gs`
+- Derived registry helpers in `Week2Activities.gs`
+
+## Data-file locations
+
+```text
+apps-script/week-2/
+  Week2ActivityManifest.gs
+  Week2*Data.gs
+  Week2ActivityDataService.gs
+  Week2ActivitySeed.gs
+  Week2ActivityDataTests.gs
+```
+
+## Public / revealed / tutor-only data
+
+| Layer | Included | Exposed to learners |
 | --- | --- | --- |
-| `week2-session1-retrieval` | 1 | 10 |
-| `week2-threat-vulnerability-learning` | 1 | 6 |
-| `week2-malware-symptoms` | 1 | 10 |
-| `week2-threat-vulnerability-sort` | 1 | 12 |
-| `week2-vulnerabilities101-reflection` | 1 | 2 |
-| `week2-session2-retrieval` | 2 | 10 |
-| `week2-northbank-vulnerability-analysis` | 2 | 5 |
-| `week2-six-mark-response-guide` | 2 | 3 |
-| `week2-ocr-question-practice` | 2 | 20 |
-| `week2-peer-marking-answer-improvement` | 2 | 6 |
-| `week2-northbank-vulnerability-register` | 2 | 5 |
+| Public `getActivity` | Activity metadata, learning blocks, question prompts/options | Yes |
+| Revealed after `markSection` | Status, marks awarded, feedback, explanation, correct option text for objective items | Yes, after check |
+| Tutor-only | `tutorData`, full mark schemes before peer stage, indicative prose answers, spreadsheet IDs | No |
 
-All registered activities use `activityVersion: "1.0"`.
+## Activity content API
+
+```text
+GET  ?action=health
+GET  ?action=manifest
+GET  ?action=getActivity&activityId=week2-session1-retrieval
+POST { "action": "markSection", "activityId": "...", "sectionId": "...", "responses": [...] }
+```
+
+A bare `GET` with no `action` still returns the original simple health payload.
+
+`submitAttempt` remains available through the existing Week 2 submission service path when the POST body is a results payload rather than an Activity API marking request.
+
+## Seed functions
+
+Content itself is code-hosted. Seeds upsert catalogue rows only:
+
+- `seedAllWeek2ActivityData()` / `seedWeek2Activities()`
+- `seedWeek2Session1Retrieval()`
+- `seedWeek2ThreatVulnerabilityLearning()`
+- `seedWeek2MalwareSymptoms()`
+- `seedWeek2ThreatVulnerabilitySort()`
+- `seedWeek2Vulnerabilities101Reflection()`
+- `seedWeek2Session2Retrieval()`
+- `seedWeek2NorthbankAnalysis()`
+- `seedWeek2SixMarkGuide()`
+- `seedWeek2OcrPractice()`
+- `seedWeek2PeerMarking()`
+- `seedWeek2VulnerabilityRegister()`
+
+Seeds are idempotent: matching Activity IDs are updated, not duplicated. Week 1 tabs/rows are not cleared.
+
+Accepted activity types (exact strings):
+
+```text
+Retrieval quiz
+Guided learning
+Knowledge check
+Practical classification
+Reflection
+Scenario analysis
+Exam skills
+```
+
+## How to update content safely
+
+| Change | What to edit | Then run |
+| --- | --- | --- |
+| Question wording / options | Relevant `Week2*Data.gs` pack | `runAllWeek2ActivityDataTests()` then `clasp push` |
+| Correct answer | `assessment.correctOptionId` in the same pack | tests + push |
+| Total / version | `Week2ActivityManifest.gs` **and** pack `meta.maximumScore` / marks sum | tests + `seedAllWeek2ActivityData()` |
+| Re-seed catalogue only | no content edit required | `seedAllWeek2ActivityData()` |
+
+Never change a total in only one of: manifest, pack marks, submission registry, or frontend registry.
+
+## Testing
+
+```text
+runAllWeek2ActivityDataTests()
+runAllWeek2SelfTests()
+```
+
+Activity-data tests check IDs, versions, totals, unique question IDs, option integrity, explanations, manual OCR item, peer checklist, register slots and public-payload sanitisation.
 
 ## Local clasp workflow
-
-From the repository root:
 
 ```bash
 clasp pull
@@ -70,48 +159,61 @@ git status
 clasp push
 ```
 
-Project mapping is defined in the repository-root `.clasp.json` (`rootDir`: `apps-script/week-2`).
-
 Do **not** run `clasp push --force` unless the remote project has been backed up and there is a documented reason.
 
-## Setup instructions
+## Setup sequence
 
-1. Open the Apps Script project in the browser (clasp open or the script editor URL).
-2. Authorise the script when prompted (Sheets access).
-3. Run `setupWeek2Workbook()` once.
-4. Run `runAllWeek2SelfTests()`.
-5. Run `openWeek2Submissions()` when learners may submit.
-6. Deploy as a web app (see below).
+1. `setupWeek2Workbook()`
+2. `runAllWeek2ActivityDataTests()`
+3. `runAllWeek2SelfTests()`
+4. `seedAllWeek2ActivityData()`
+5. `openWeek2Submissions()`
+6. Deploy web app (manual)
+7. Controlled test submission
 
-To repair missing tabs/headers later without clearing results, run `repairWeek2Workbook()`.
+## Frontend components expected
+
+Current Week 2 hub pages still render from local `week-2/data/*.js` banks and Collector v3.
+
+When moving a page onto the Activity API engine, use the `componentId` values above.
+
+| Component ID | Notes |
+| --- | --- |
+| `quiz` | Activity API `single-choice` sections |
+| `guided-learning` | Content blocks + knowledge check |
+| `matching` | Malware reference + MCQ |
+| `classification` | Threat/vulnerability cards as single-choice |
+| `external-room-reflection` | TryHackMe reflections |
+| `scenario-analysis` | Preferred multi-field UI; API pack also provides extended-response completion items |
+| `exam-guide` | Six-mark teaching + 3-mark check |
+| `ocr-question-practice` | Mixed objective + manual prose |
+| `peer-marking` | Checklist + improvement reflections |
+| `structured-register` | Preferred register UI; API pack provides five structured entry slots |
+
+## Week 7 reuse of the vulnerability register
+
+Register entries already reserve:
+
+`likelihood`, `impact`, `riskScore`, `mitigation`, `priority`, `reviewDate`
+
+Do not collapse register rows into one prose blob if Week 7 risk scoring will extend them.
 
 ## Opening and closing submissions
 
 | Function | Effect |
 | --- | --- |
-| `openWeek2Submissions()` | Sets Script Property `WEEK2_ACCEPTING_SUBMISSIONS` to `"true"` |
-| `closeWeek2Submissions()` | Sets the property to `"false"` |
-| `getWeek2SubmissionStatus()` | Logs/returns the current status |
-| `areWeek2SubmissionsOpen_()` | Returns true only when the stored value is exactly `"true"` |
+| `openWeek2Submissions()` | Script property `WEEK2_ACCEPTING_SUBMISSIONS = "true"` |
+| `closeWeek2Submissions()` | `"false"` |
+| `getWeek2SubmissionStatus()` | Current status |
+| `areWeek2SubmissionsOpen_()` | True only when value is exactly `"true"` |
 
-## Test instructions
+## Example content request
 
-In the Apps Script editor:
+```text
+GET /exec?action=getActivity&apiVersion=1.0&requestId=demo&activityId=week2-threat-vulnerability-sort
+```
 
-1. Select `runAllWeek2SelfTests`
-2. Run
-3. Confirm the execution log shows all tests passed
-
-Ordinary self-tests do **not** write fake learner submissions.
-
-Optional integration write/cleanup (labelled test data only):
-
-1. Run `runWeek2WriteCleanupIntegrationTest`
-2. Confirm the temporary TEST DATA row is removed afterwards
-
-## Example request
-
-`POST` JSON body:
+## Example submission request
 
 ```json
 {
@@ -129,111 +231,34 @@ Optional integration write/cleanup (labelled test data only):
 }
 ```
 
-Collector schema 3.0 aliases are also accepted and normalised:
-
-- `firstName` + `surname` → `learnerName`
-- `studentId` → `learnerId`
-- `classGroup` → `groupName`
-- `maximumScore` → `total`
-- `sessionName` (for example `Session 1`) → `sessionNumber`
-
-## Example responses
-
-Success:
-
-```json
-{
-  "ok": true,
-  "recorded": true,
-  "duplicate": false,
-  "message": "Submission recorded.",
-  "activityId": "week2-threat-vulnerability-sort",
-  "score": 10,
-  "total": 12
-}
-```
-
-Duplicate:
-
-```json
-{
-  "ok": true,
-  "recorded": false,
-  "duplicate": true,
-  "message": "This submission has already been recorded."
-}
-```
-
-Rejected:
-
-```json
-{
-  "ok": false,
-  "recorded": false,
-  "duplicate": false,
-  "message": "Submission not recorded.",
-  "errors": [
-    {
-      "code": "TOTAL_MISMATCH",
-      "field": "total",
-      "message": "Submitted total does not match the configured activity."
-    }
-  ]
-}
-```
-
-Health check (`GET`):
-
-```json
-{
-  "ok": true,
-  "service": "Unit 3 Cyber Security Week 2 API",
-  "week": 2,
-  "status": "ok",
-  "acceptingSubmissions": true
-}
-```
-
 ## Deployment instructions
 
-Do not create a deployment from Cursor automatically. In the Apps Script UI:
-
 1. Run `setupWeek2Workbook()`.
-2. Run `runAllWeek2SelfTests()`.
-3. Run `openWeek2Submissions()`.
-4. From the repo root: `clasp push`.
-5. In Apps Script: **Deploy → New deployment**.
-6. Type: **Web app**.
-7. Description: e.g. `Week 2 API v1`.
-8. Execute as: **Me** (project owner).
-9. Who has access: choose the college-appropriate setting (often anyone in the organisation, or anyone with the link for learner devices).
-10. Deploy and copy the `/exec` URL.
-11. Add that URL to the Week 2 frontend configuration when you are ready to switch from the current Collector endpoint.
-12. Submit one controlled test.
-13. Confirm the row appears in both **All Submissions** and **Week 2 Results**.
-
-After later code changes, create a **new version** and update the existing web app deployment so learners are not left on an old `/exec` revision.
-
-## Frontend note
-
-The current hub Week 2 pages still post Collector schema 3.0 form data to the existing Collector `/exec` URL in `js/submissions.js`. This Week 2 API is the dedicated Apps Script project for JSON (and alias-compatible) Week 2 collection into the shared spreadsheet. Point the frontend at this `/exec` URL only after deployment and a controlled test.
+2. Run `runAllWeek2ActivityDataTests()` and `runAllWeek2SelfTests()`.
+3. Run `seedAllWeek2ActivityData()`.
+4. Run `openWeek2Submissions()`.
+5. `clasp push`
+6. Deploy as a web app (execute as Me; choose access setting).
+7. Copy `/exec` URL into the Week 2 frontend when ready to switch.
+8. Controlled test; confirm **All Submissions** and **Week 2 Results**.
 
 ## Troubleshooting
 
 | Symptom | Likely cause | What to do |
 | --- | --- | --- |
-| Spreadsheet cannot be opened | Wrong ID or no access for the script owner | Check `Config.gs`, share the Sheet with the owner account |
-| Missing worksheet | Setup not run | Run `setupWeek2Workbook()` or `repairWeek2Workbook()` |
-| Activity version rejected | Client sent a version other than `1.0` | Align frontend `activityVersion` with the registry |
-| Total mismatch | Client total does not match registry | Use the totals table above; never trust a client-invented total |
-| Submissions closed | Script property is not `"true"` | Run `openWeek2Submissions()` |
-| Duplicate submission | Same learner/group/activity/version/attempt already stored | Use a new `attemptNumber` for a genuine retry |
-| Web app still running an older version | Deployment not updated after `clasp push` | Deploy a new version / update the web app deployment |
+| Spreadsheet cannot be opened | Wrong ID / sharing | Check `Config.gs` and Sheet sharing |
+| Missing worksheet | Setup not run | `setupWeek2Workbook()` |
+| Activity version rejected | Client version drift | Keep `1.0` everywhere |
+| Total mismatch | Marks/manifest/frontend disagree | Update all four places together |
+| Submissions closed | Property not `"true"` | `openWeek2Submissions()` |
+| Duplicate submission | Same submission key | New `attemptNumber` for a real retry |
+| Older web app version | Deployment not updated | New version / update deployment |
+| Seed fails on activity type | Exact type string mismatch | Use accepted list above |
 
 ## Security notes
 
 - Do not commit Google passwords or OAuth tokens
 - Do not expose the spreadsheet ID in frontend code
-- Do not accept arbitrary worksheet names or activity IDs from clients
-- Do not return stack traces or spreadsheet IDs in API responses
-- Do not store unnecessary full written reflections in the errors tab
+- Do not send tutor-only mark schemes in `getActivity`
+- Do not auto-mark the six-mark OCR prose item
+- Do not treat peer-checklist points as verified examination scores
