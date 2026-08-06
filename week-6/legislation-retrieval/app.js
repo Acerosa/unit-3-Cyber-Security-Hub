@@ -1,0 +1,40 @@
+(function () {
+  'use strict';
+
+  var data = window.Week6LegislationRetrieval;
+  if (!data || !window.Unit3Week6Quiz) return;
+
+  window.Unit3Week6Quiz.createQuiz({
+    activityId: data.activityId,
+    questions: data.questions.slice(),
+    hostId: 'w6-activity-host',
+    onComplete: function (result) {
+      window.Unit3Week6Submit.renderSubmitPanel({
+        activityId: data.activityId,
+        hostId: 'w6-submit-host',
+        getScore: function () {
+          return result.score;
+        },
+        getTotal: function () {
+          return result.total;
+        },
+        getQuestionsForReview: function () {
+          return result.incorrectIndexes;
+        },
+        getCompletionTimeSeconds: function () {
+          return result.completionTimeSeconds;
+        },
+        canSubmit: function () {
+          return true;
+        }
+      });
+    },
+    onRetry: function () {
+      var submit = document.getElementById('w6-submit-host');
+      if (submit) {
+        submit.hidden = true;
+        submit.textContent = '';
+      }
+    }
+  });
+})();

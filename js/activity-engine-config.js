@@ -15,7 +15,8 @@
     WEEK2_API: 'week2-api',
     WEEK3_API: 'week3-api',
     WEEK4_API: 'week4-api',
-    WEEK5_API: 'week5-api'
+    WEEK5_API: 'week5-api',
+    WEEK6_API: 'week6-api'
   });
 
   var ACTIVITY_ENGINE_CONFIG = Object.freeze({
@@ -27,8 +28,10 @@
       'https://script.google.com/macros/s/AKfycbzWuaLiIzLmqBFXD1EeIht17a8dmeAPrcmLXUugtu9eYFsnyLPJl7zrS-FDnMUuAStt/exec',
     week4ApiBaseUrl:
       'https://script.google.com/macros/s/AKfycbzS3PKvfOcSV-1iDnzjLFXj4R1djZKk91igbcQM6jQ134zZvp37GO-cCC44KB-wPBgL/exec',
-    // Week 5 Apps Script /exec URL — leave empty until the Week 5 API task configures it.
+    // Week 5 Apps Script /exec URL - leave empty until the Week 5 API task configures it.
     week5ApiBaseUrl: '',
+    // Week 6 Apps Script /exec URL - leave empty until the Week 6 API task configures it.
+    week6ApiBaseUrl: '',
     apiVersion: '1.0',
     submissionMode: 'TEST',
     allowLiveSubmissions: false,
@@ -103,7 +106,27 @@
     'week5-stakeholder-grid': SUBMISSION_SERVICE.WEEK5_API,
     'week5-impact-analysis': SUBMISSION_SERVICE.WEEK5_API,
     'week5-ocr-question-practice': SUBMISSION_SERVICE.WEEK5_API,
-    'week5-answer-improvement': SUBMISSION_SERVICE.WEEK5_API
+    'week5-answer-improvement': SUBMISSION_SERVICE.WEEK5_API,
+
+    // Week 6 local activities submit through the Week 6 Apps Script API (URL deferred).
+    'week6-lo2-diagnostic': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-ethical-learning': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-ethical-classification': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-legislation-learning': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-legislation-matching': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-operational-considerations': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-government-initiatives': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-ncsc-guidance': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-exercise-decision-record': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-session1-review': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-legislation-retrieval': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-employee-monitoring': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-stakeholder-debate': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-discuss-learning': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-discuss-planner': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-ocr-question-practice': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-answer-improvement': SUBMISSION_SERVICE.WEEK6_API,
+    'week6-revision-organiser': SUBMISSION_SERVICE.WEEK6_API
   });
 
   function getSubmissionService(activityId) {
@@ -134,6 +157,10 @@
     return getSubmissionService(activityId) === SUBMISSION_SERVICE.WEEK5_API;
   }
 
+  function usesWeek6Api(activityId) {
+    return getSubmissionService(activityId) === SUBMISSION_SERVICE.WEEK6_API;
+  }
+
   function getWeek2ApiBaseUrl() {
     return ACTIVITY_ENGINE_CONFIG.week2ApiBaseUrl || '';
   }
@@ -148,6 +175,10 @@
 
   function getWeek5ApiBaseUrl() {
     return ACTIVITY_ENGINE_CONFIG.week5ApiBaseUrl || '';
+  }
+
+  function getWeek6ApiBaseUrl() {
+    return ACTIVITY_ENGINE_CONFIG.week6ApiBaseUrl || '';
   }
 
   function resolveRecordType() {
@@ -175,10 +206,12 @@
     usesWeek3Api: usesWeek3Api,
     usesWeek4Api: usesWeek4Api,
     usesWeek5Api: usesWeek5Api,
+    usesWeek6Api: usesWeek6Api,
     getWeek2ApiBaseUrl: getWeek2ApiBaseUrl,
     getWeek3ApiBaseUrl: getWeek3ApiBaseUrl,
     getWeek4ApiBaseUrl: getWeek4ApiBaseUrl,
     getWeek5ApiBaseUrl: getWeek5ApiBaseUrl,
+    getWeek6ApiBaseUrl: getWeek6ApiBaseUrl,
     resolveRecordType: resolveRecordType,
     isLiveSubmissionEnabled: isLiveSubmissionEnabled
   };

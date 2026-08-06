@@ -1,0 +1,455 @@
+/**
+ * Shared Week 6 submission helper.
+ * Posts JSON results to the Week 6 Apps Script /exec URL.
+ */
+
+(function (global) {
+  'use strict';
+
+  var submitting = false;
+  var awaitNewAttempt = false;
+
+  function getModules() {
+    return {
+      course: global.Unit3CourseContext,
+      learner: global.Unit3LearnerDetails,
+      submissions: global.Unit3Submissions,
+      progress: global.Unit3Week6Progress,
+      utils: global.Unit3ActivityUtils,
+      config: global.Unit3ActivityEngineConfig
+    };
+  }
+
+  function resolveActivity(activityId) {
+    var modules = getModules();
+    if (!modules.course || !modules.course.getActivity) {
+      return null;
+    }
+    return modules.course.getActivity(activityId);
+  }
+
+  function getWeek6ApiUrl() {
+    var modules = getModules();
+    if (modules.config && typeof modules.config.getWeek6ApiBaseUrl === 'function') {
+      return modules.config.getWeek6ApiBaseUrl();
+    }
+    var cfg = modules.config && modules.config.ACTIVITY_ENGINE_CONFIG;
+    return (cfg && cfg.week6ApiBaseUrl) || '';
+  }
+
+  function isWeek6ApiConfigured() {
+    var url = getWeek6ApiUrl();
+    return Boolean(url && /\/exec\/?$/.test(url));
+  }
+
+  function attemptNumberKey(storageKey) {
+    return storageKey + '-attempt-number';
+  }
+
+  function getAttemptNumber(storageKey) {
+    try {
+      var raw = sessionStorage.getItem(attemptNumberKey(storageKey));
+      var parsed = parseInt(raw, 10);
+      return Number.isInteger(parsed) && parsed >= 1 ? parsed : 1;
+    } catch (err) {
+      return 1;
+    }
+  }
+
+  function setAttemptNumber(storageKey, value) {
+    try {
+      sessionStorage.setItem(attemptNumberKey(storageKey), String(value));
+    } catch (err) {
+      /* sessionStorage may be unavailable */
+    }
+  }
+
+  function beginNextAttemptNumber(storageKey) {
+    var next = getAttemptNumber(storageKey) + 1;
+    setAttemptNumber(storageKey, next);
+    return next;
+  }
+
+  function sessionNumberFromActivity(activity) {
+    if (!activity) return null;
+    if (activity.sessionNumber === 1 || activity.sessionNumber === 2) {
+      return activity.sessionNumber;
+    }
+    var match = String(activity.sessionName || '').match(/(\d+)/);
+    return match ? parseInt(match[1], 10) : null;
+  }
+
+  function renderSubmitPanel(options) {
+    var modules = getModules();
+    var hostId = options.hostId || 'w6-submit-host';
+    var host = document.getElementById(hostId);
+    if (!host || !modules.learner) return;
+
+    awaitNewAttempt = false;
+    host.hidden = false;
+    host.textContent = '';
+
+    var courseHost = document.createElement('div');
+    courseHost.id = 'w6-course-details';
+    host.appendChild(courseHost);
+
+    var formHost = document.createElement('div');
+    formHost.id = 'w6-learner-form';
+    host.appendChild(formHost);
+
+    var errors = document.createElement('div');
+    errors.id = 'w6-submit-errors';
+    errors.className = 'status-messages';
+    errors.setAttribute('aria-live', 'assertive');
+    errors.setAttribute('aria-atomic', 'true');
+    host.appendChild(errors);
+
+    var status = document.createElement('div');
+    status.id = 'w6-submit-status';
+    status.className = 'status-messages';
+    status.setAttribute('aria-live', 'polite');
+    status.setAttribute('aria-atomic', 'true');
+    host.appendChild(status);
+
+    var actions = document.createElement('div');
+    actions.className = 'ae-submit-actions';
+    var submitBtn = document.createElement('button');
+    submitBtn.type = 'button';
+    submitBtn.id = 'w6-btn-submit';
+    submitBtn.className = 'btn btn-primary';
+    submitBtn.textContent = 'Submit formative result';
+    actions.appendChild(submitBtn);
+    host.appendChild(actions);
+
+    var summary = document.createElement('div');
+    summary.id = 'w6-submission-summary';
+    host.appendChild(summary);
+
+    var activity = resolveActivity(options.activityId);
+    modules.learner.renderCourseDetails('w6-course-details', activity);
+    modules.learner.renderLearnerForm('w6-learner-form', {
+      showPartner: Boolean(activity && activity.allowsPartner)
+    });
+
+    if (activity && activity.attemptStorageKey) {
+      setAttemptNumber(
+        activity.attemptStorageKey,
+        getAttemptNumber(activity.attemptStorageKey)
+      );
+    }
+
+    if (!isWeek6ApiConfigured()) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Remote recording not available yet';
+      setMessage(
+        'w6-submit-status',
+        'Your work has been assessed and saved in this browser only. The Week 6 Apps Script collector is not configured yet, so formative results are not recorded remotely.',
+        'info'
+      );
+    }
+
+    submitBtn.addEventListener('click', function () {
+      if (!isWeek6ApiConfigured()) {
+        setMessage(
+          'w6-submit-status',
+          'Remote recording is not available yet. Your local progress remains saved in this browser.',
+          'warning'
+        );
+        return;
+      }
+      if (awaitNewAttempt) {
+        var current = resolveActivity(options.activityId);
+        if (current && modules.submissions) {
+          modules.submissions.startNewAttempt(current.attemptStorageKey);
+          beginNextAttemptNumber(current.attemptStorageKey);
+        }
+        awaitNewAttempt = false;
+        submitBtn.textContent = 'Submit formative result';
+        setMessage(
+          'w6-submit-status',
+          'New attempt ready. Submit again when you are ready.',
+          'info'
+        );
+        return;
+      }
+      submitResult({
+        activityId: options.activityId,
+        score: options.getScore(),
+        total: options.getTotal(),
+        questionsForReview: options.getQuestionsForReview
+          ? options.getQuestionsForReview()
+          : '',
+        mostDifficultItem: options.getMostDifficultItem
+          ? options.getMostDifficultItem()
+          : '',
+        reflection: options.getReflection ? options.getReflection() : '',
+        completionTimeSeconds: options.getCompletionTimeSeconds
+          ? options.getCompletionTimeSeconds()
+          : 60,
+        onSubmitted: options.onSubmitted,
+        canSubmit: options.canSubmit
+      });
+    });
+  }
+
+  function setMessage(containerId, message, type) {
+    var modules = getModules();
+    if (modules.utils && modules.utils.setStatusMessage) {
+      modules.utils.setStatusMessage(containerId, message, type);
+      return;
+    }
+    var host = document.getElementById(containerId);
+    if (!host) return;
+    host.textContent = '';
+    if (!message) return;
+    var p = document.createElement('p');
+    p.className = 'message message-' + (type || 'info');
+    p.textContent = message;
+    host.appendChild(p);
+  }
+
+  function buildWeek6Payload(activity, learner, options, attemptId, attemptNumber) {
+    return {
+      learnerName: [learner.firstName, learner.surname].filter(Boolean).join(' '),
+      learnerId: learner.studentId || '',
+      groupName: learner.classGroup || '',
+      classGroup: learner.classGroup || '',
+      firstName: learner.firstName || '',
+      surname: learner.surname || '',
+      studentId: learner.studentId || '',
+      weekNumber: activity.weekNumber || 6,
+      sessionNumber: sessionNumberFromActivity(activity),
+      sessionName: activity.sessionName || '',
+      activityId: activity.activityId,
+      activityVersion: activity.activityVersion || '1.0',
+      score: options.score,
+      total: options.total,
+      maximumScore: options.total,
+      attemptNumber: attemptNumber,
+      attemptId: attemptId,
+      completedAt: new Date().toISOString(),
+      recordType: 'LIVE',
+      questionsForReview: options.questionsForReview || '',
+      mostDifficultItem: options.mostDifficultItem || '',
+      reflection: options.reflection || '',
+      completionTimeSeconds: options.completionTimeSeconds || 60,
+      sourcePage: global.location ? global.location.href : ''
+    };
+  }
+
+  function postWeek6Submission(payload) {
+    var url = getWeek6ApiUrl();
+    if (!url || !/\/exec\/?$/.test(url)) {
+      return Promise.reject(new Error('Week 6 API URL is not configured.'));
+    }
+
+    return fetch(url, {
+      method: 'POST',
+      redirect: 'follow',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(payload)
+    }).then(function (response) {
+      return response.text().then(function (text) {
+        var envelope;
+        try {
+          envelope = JSON.parse(text);
+        } catch (err) {
+          throw new Error('The Week 6 API returned an unexpected response.');
+        }
+        return { response: response, envelope: envelope };
+      });
+    });
+  }
+
+  function submitResult(options) {
+    var modules = getModules();
+    if (submitting) {
+      setMessage('w6-submit-status', 'Submission already in progress. Please wait.', 'warning');
+      return;
+    }
+
+    if (options.canSubmit && !options.canSubmit()) {
+      setMessage(
+        'w6-submit-status',
+        'Complete the activity before submitting your result.',
+        'warning'
+      );
+      return;
+    }
+
+    if (!modules.learner || !modules.submissions || !modules.course) {
+      setMessage(
+        'w6-submit-status',
+        'Submission tools could not load. Refresh the page and try again.',
+        'error'
+      );
+      return;
+    }
+
+    var activity = resolveActivity(options.activityId);
+    if (!activity) {
+      setMessage(
+        'w6-submit-status',
+        'This activity is not registered. Contact your tutor.',
+        'error'
+      );
+      console.error('[Week6Submit] Missing registry entry for', options.activityId);
+      return;
+    }
+
+    var validation = modules.learner.validateLearnerDetails({
+      showPartner: Boolean(activity.allowsPartner)
+    });
+    modules.learner.showValidationSummary('w6-submit-errors', validation);
+    if (!validation.valid) {
+      setMessage('w6-submit-status', 'Check your details and try again.', 'warning');
+      return;
+    }
+
+    if (modules.submissions.isAttemptCompleted(activity.attemptStorageKey)) {
+      setMessage(
+        'w6-submit-status',
+        'This attempt has already been submitted. Start another attempt if your tutor asks you to retry.',
+        'warning'
+      );
+      return;
+    }
+
+    var attemptId = modules.submissions.getOrCreateAttemptId(activity.attemptStorageKey);
+    var attemptNumber = getAttemptNumber(activity.attemptStorageKey);
+    var score = Number(options.score);
+    var total = Number(options.total != null ? options.total : activity.maximumScore);
+
+    if (!Number.isInteger(score) || score < 0 || score > total) {
+      setMessage(
+        'w6-submit-status',
+        'The score could not be submitted because it is outside the allowed range.',
+        'error'
+      );
+      console.error('[Week6Submit] Invalid score', score, total);
+      return;
+    }
+
+    if (total !== activity.maximumScore) {
+      setMessage(
+        'w6-submit-status',
+        'The activity total does not match the registered maximum. Contact your tutor.',
+        'error'
+      );
+      console.error('[Week6Submit] Total mismatch', total, activity.maximumScore);
+      return;
+    }
+
+    submitting = true;
+    var btn = document.getElementById('w6-btn-submit');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+    }
+    setMessage('w6-submit-status', 'Submitting your formative result…', 'info');
+
+    var payload = buildWeek6Payload(
+      activity,
+      validation.learner,
+      {
+        score: score,
+        total: total,
+        questionsForReview: options.questionsForReview || '',
+        mostDifficultItem: options.mostDifficultItem || '',
+        reflection: options.reflection || '',
+        completionTimeSeconds: options.completionTimeSeconds || 60
+      },
+      attemptId,
+      attemptNumber
+    );
+
+    postWeek6Submission(payload)
+      .then(function (result) {
+        var envelope = result.envelope || {};
+        if (envelope.ok === true && (envelope.recorded === true || envelope.duplicate === true)) {
+          modules.submissions.markAttemptCompleted(activity.attemptStorageKey);
+          if (modules.progress && modules.progress.markSubmitted) {
+            modules.progress.markSubmitted(options.activityId);
+          }
+          if (modules.learner.renderSubmissionSummary) {
+            modules.learner.renderSubmissionSummary('w6-submission-summary', {
+              firstName: validation.learner.firstName,
+              surname: validation.learner.surname,
+              studentId: validation.learner.studentId,
+              classGroup: validation.learner.classGroup,
+              activityName: activity.activityName,
+              score: score,
+              maximumScore: total,
+              partnerStudentId: validation.learner.partnerStudentId,
+              partnerFirstName: validation.learner.partnerFirstName,
+              partnerSurname: validation.learner.partnerSurname
+            });
+          }
+          awaitNewAttempt = true;
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Start another attempt';
+          }
+          setMessage(
+            'w6-submit-status',
+            envelope.duplicate
+              ? 'This submission was already recorded.'
+              : envelope.message || 'Submission recorded.',
+            'success'
+          );
+          if (typeof options.onSubmitted === 'function') {
+            try {
+              options.onSubmitted({
+                recorded: envelope.recorded === true,
+                duplicate: envelope.duplicate === true,
+                envelope: envelope
+              });
+            } catch (callbackErr) {
+              console.error('[Week6Submit] onSubmitted callback failed', callbackErr);
+            }
+          }
+          return;
+        }
+
+        var detail = envelope.message || 'Submission not recorded.';
+        if (envelope.errors && envelope.errors.length) {
+          detail =
+            envelope.errors
+              .map(function (item) {
+                return item.message || item.code;
+              })
+              .filter(Boolean)
+              .join(' ') || detail;
+        }
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Submit formative result';
+        }
+        setMessage('w6-submit-status', 'Your result was not saved. ' + detail, 'error');
+      })
+      .catch(function (err) {
+        console.error('[Week6Submit] Submission failed', err);
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Submit formative result';
+        }
+        setMessage(
+          'w6-submit-status',
+          'Your result was not saved. ' +
+            ((err && err.message) || 'Check your connection and try again.'),
+          'error'
+        );
+      })
+      .then(function () {
+        submitting = false;
+      });
+  }
+
+  global.Unit3Week6Submit = {
+    renderSubmitPanel: renderSubmitPanel,
+    submitResult: submitResult,
+    isWeek6ApiConfigured: isWeek6ApiConfigured
+  };
+})(window);
