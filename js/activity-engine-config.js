@@ -14,7 +14,8 @@
     ACTIVITY_API: 'activity-api',
     WEEK2_API: 'week2-api',
     WEEK3_API: 'week3-api',
-    WEEK4_API: 'week4-api'
+    WEEK4_API: 'week4-api',
+    WEEK5_API: 'week5-api'
   });
 
   var ACTIVITY_ENGINE_CONFIG = Object.freeze({
@@ -24,8 +25,10 @@
       'https://script.google.com/macros/s/AKfycbzwsxquK34pzICjP0prAL9RBLmi_Bo8qgntJcYCn7QXSxEFQeK5mRbK5QnsUy2Bi3U9pA/exec',
     week3ApiBaseUrl:
       'https://script.google.com/macros/s/AKfycbzWuaLiIzLmqBFXD1EeIht17a8dmeAPrcmLXUugtu9eYFsnyLPJl7zrS-FDnMUuAStt/exec',
-    /* Week 4 Apps Script /exec URL is set by the later backend task. Leave empty until deployed. */
-    week4ApiBaseUrl: '',
+    week4ApiBaseUrl:
+      'https://script.google.com/macros/s/AKfycbzS3PKvfOcSV-1iDnzjLFXj4R1djZKk91igbcQM6jQ134zZvp37GO-cCC44KB-wPBgL/exec',
+    // Week 5 Apps Script /exec URL — leave empty until the Week 5 API task configures it.
+    week5ApiBaseUrl: '',
     apiVersion: '1.0',
     submissionMode: 'TEST',
     allowLiveSubmissions: false,
@@ -88,7 +91,19 @@
     'week4-analyse-practice': SUBMISSION_SERVICE.WEEK4_API,
     'week4-ocr-question-practice': SUBMISSION_SERVICE.WEEK4_API,
     'week4-answer-improvement': SUBMISSION_SERVICE.WEEK4_API,
-    'week4-ethical-review': SUBMISSION_SERVICE.WEEK4_API
+    'week4-ethical-review': SUBMISSION_SERVICE.WEEK4_API,
+
+    // Week 5 local activities submit through the Week 5 Apps Script API (URL deferred).
+    'week5-session1-retrieval': SUBMISSION_SERVICE.WEEK5_API,
+    'week5-impacts-learning': SUBMISSION_SERVICE.WEEK5_API,
+    'week5-impact-classification': SUBMISSION_SERVICE.WEEK5_API,
+    'week5-ransomware-companion': SUBMISSION_SERVICE.WEEK5_API,
+    'week5-exercise-debrief': SUBMISSION_SERVICE.WEEK5_API,
+    'week5-session2-retrieval': SUBMISSION_SERVICE.WEEK5_API,
+    'week5-stakeholder-grid': SUBMISSION_SERVICE.WEEK5_API,
+    'week5-impact-analysis': SUBMISSION_SERVICE.WEEK5_API,
+    'week5-ocr-question-practice': SUBMISSION_SERVICE.WEEK5_API,
+    'week5-answer-improvement': SUBMISSION_SERVICE.WEEK5_API
   });
 
   function getSubmissionService(activityId) {
@@ -115,6 +130,10 @@
     return getSubmissionService(activityId) === SUBMISSION_SERVICE.WEEK4_API;
   }
 
+  function usesWeek5Api(activityId) {
+    return getSubmissionService(activityId) === SUBMISSION_SERVICE.WEEK5_API;
+  }
+
   function getWeek2ApiBaseUrl() {
     return ACTIVITY_ENGINE_CONFIG.week2ApiBaseUrl || '';
   }
@@ -125,6 +144,10 @@
 
   function getWeek4ApiBaseUrl() {
     return ACTIVITY_ENGINE_CONFIG.week4ApiBaseUrl || '';
+  }
+
+  function getWeek5ApiBaseUrl() {
+    return ACTIVITY_ENGINE_CONFIG.week5ApiBaseUrl || '';
   }
 
   function resolveRecordType() {
@@ -151,9 +174,11 @@
     usesWeek2Api: usesWeek2Api,
     usesWeek3Api: usesWeek3Api,
     usesWeek4Api: usesWeek4Api,
+    usesWeek5Api: usesWeek5Api,
     getWeek2ApiBaseUrl: getWeek2ApiBaseUrl,
     getWeek3ApiBaseUrl: getWeek3ApiBaseUrl,
     getWeek4ApiBaseUrl: getWeek4ApiBaseUrl,
+    getWeek5ApiBaseUrl: getWeek5ApiBaseUrl,
     resolveRecordType: resolveRecordType,
     isLiveSubmissionEnabled: isLiveSubmissionEnabled
   };
