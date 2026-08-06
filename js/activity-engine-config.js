@@ -24,8 +24,8 @@
       'https://script.google.com/macros/s/AKfycbzwsxquK34pzICjP0prAL9RBLmi_Bo8qgntJcYCn7QXSxEFQeK5mRbK5QnsUy2Bi3U9pA/exec',
     week3ApiBaseUrl:
       'https://script.google.com/macros/s/AKfycbzWuaLiIzLmqBFXD1EeIht17a8dmeAPrcmLXUugtu9eYFsnyLPJl7zrS-FDnMUuAStt/exec',
-    /* Week 4 Apps Script /exec URL is set by the later backend task. Leave empty until deployed. */
-    week4ApiBaseUrl: '',
+    week4ApiBaseUrl:
+      'https://script.google.com/macros/s/AKfycbzS3PKvfOcSV-1iDnzjLFXj4R1djZKk91igbcQM6jQ134zZvp37GO-cCC44KB-wPBgL/exec',
     apiVersion: '1.0',
     submissionMode: 'TEST',
     allowLiveSubmissions: false,
