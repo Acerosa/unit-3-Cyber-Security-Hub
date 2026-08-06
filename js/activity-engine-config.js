@@ -16,7 +16,8 @@
     WEEK3_API: 'week3-api',
     WEEK4_API: 'week4-api',
     WEEK5_API: 'week5-api',
-    WEEK6_API: 'week6-api'
+    WEEK6_API: 'week6-api',
+    WEEK7_API: 'week7-api'
   });
 
   var ACTIVITY_ENGINE_CONFIG = Object.freeze({
@@ -32,6 +33,8 @@
     week5ApiBaseUrl: '',
     // Week 6 Apps Script /exec URL - leave empty until the Week 6 API task configures it.
     week6ApiBaseUrl: '',
+    // Week 7 Apps Script /exec URL - leave empty until the Week 7 API task configures it.
+    week7ApiBaseUrl: '',
     apiVersion: '1.0',
     submissionMode: 'TEST',
     allowLiveSubmissions: false,
@@ -126,7 +129,21 @@
     'week6-discuss-planner': SUBMISSION_SERVICE.WEEK6_API,
     'week6-ocr-question-practice': SUBMISSION_SERVICE.WEEK6_API,
     'week6-answer-improvement': SUBMISSION_SERVICE.WEEK6_API,
-    'week6-revision-organiser': SUBMISSION_SERVICE.WEEK6_API
+    'week6-revision-organiser': SUBMISSION_SERVICE.WEEK6_API,
+
+    // Week 7 local activities submit through the Week 7 Apps Script API (URL deferred).
+    'week7-session1-retrieval': SUBMISSION_SERVICE.WEEK7_API,
+    'week7-risk-management-learning': SUBMISSION_SERVICE.WEEK7_API,
+    'week7-northbank-risk-register': SUBMISSION_SERVICE.WEEK7_API,
+    'week7-testing-methods': SUBMISSION_SERVICE.WEEK7_API,
+    'week7-sandbox-observation': SUBMISSION_SERVICE.WEEK7_API,
+    'week7-detection-prevention': SUBMISSION_SERVICE.WEEK7_API,
+    'week7-heightened-threat': SUBMISSION_SERVICE.WEEK7_API,
+    'week7-session2-retrieval': SUBMISSION_SERVICE.WEEK7_API,
+    'week7-testing-matching': SUBMISSION_SERVICE.WEEK7_API,
+    'week7-recommendation-practice': SUBMISSION_SERVICE.WEEK7_API,
+    'week7-ocr-question-practice': SUBMISSION_SERVICE.WEEK7_API,
+    'week7-answer-improvement': SUBMISSION_SERVICE.WEEK7_API
   });
 
   function getSubmissionService(activityId) {
@@ -161,6 +178,10 @@
     return getSubmissionService(activityId) === SUBMISSION_SERVICE.WEEK6_API;
   }
 
+  function usesWeek7Api(activityId) {
+    return getSubmissionService(activityId) === SUBMISSION_SERVICE.WEEK7_API;
+  }
+
   function getWeek2ApiBaseUrl() {
     return ACTIVITY_ENGINE_CONFIG.week2ApiBaseUrl || '';
   }
@@ -179,6 +200,10 @@
 
   function getWeek6ApiBaseUrl() {
     return ACTIVITY_ENGINE_CONFIG.week6ApiBaseUrl || '';
+  }
+
+  function getWeek7ApiBaseUrl() {
+    return ACTIVITY_ENGINE_CONFIG.week7ApiBaseUrl || '';
   }
 
   function resolveRecordType() {
@@ -207,11 +232,13 @@
     usesWeek4Api: usesWeek4Api,
     usesWeek5Api: usesWeek5Api,
     usesWeek6Api: usesWeek6Api,
+    usesWeek7Api: usesWeek7Api,
     getWeek2ApiBaseUrl: getWeek2ApiBaseUrl,
     getWeek3ApiBaseUrl: getWeek3ApiBaseUrl,
     getWeek4ApiBaseUrl: getWeek4ApiBaseUrl,
     getWeek5ApiBaseUrl: getWeek5ApiBaseUrl,
     getWeek6ApiBaseUrl: getWeek6ApiBaseUrl,
+    getWeek7ApiBaseUrl: getWeek7ApiBaseUrl,
     resolveRecordType: resolveRecordType,
     isLiveSubmissionEnabled: isLiveSubmissionEnabled
   };
