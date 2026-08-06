@@ -168,8 +168,9 @@ function testWeek5OcrManualItem_() {
 
   var blob = JSON.stringify(pack);
   assertActivityData_(
-    blob.toLowerCase().indexOf('official ocr') === -1,
-    'OCR pack must not claim official OCR examination questions'
+    blob.toLowerCase().indexOf('not official ocr') !== -1 ||
+      blob.toLowerCase().indexOf('not an official ocr') !== -1,
+    'OCR pack must explicitly say questions are not official OCR items'
   );
   assertActivityData_(
     blob.indexOf('OCR-style') !== -1 || blob.indexOf('OCR-style practice') !== -1 || blob.indexOf('practice') !== -1,
