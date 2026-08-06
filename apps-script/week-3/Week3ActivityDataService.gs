@@ -113,7 +113,7 @@ var Week3ActivityDataService = (function () {
         contentSchemaVersion: CONTENT_SCHEMA_VERSION,
         resultsSchemaVersion: '3.0',
         apiEnabled: true,
-        week: 2,
+        week: 3,
         service: 'Unit 3 Cyber Security Week 3 API',
         status: 'ok',
         acceptingSubmissions: areWeek3SubmissionsOpen_(),
@@ -151,7 +151,7 @@ var Week3ActivityDataService = (function () {
     });
     return {
       contentSchemaVersion: CONTENT_SCHEMA_VERSION,
-      weekNumber: 2,
+      weekNumber: 3,
       activities: activities
     };
   }

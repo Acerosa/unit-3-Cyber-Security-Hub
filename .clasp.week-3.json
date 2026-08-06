@@ -1,0 +1,40 @@
+{
+  "scriptId": "1D_EtgBeEcmtTqyJIhDLt2E5fxfUZEpuIkQJhkCjOiGXAeADm2aYPhVyH",
+  "rootDir": "apps-script/week-3",
+  "scriptExtensions": [
+    ".js",
+    ".gs"
+  ],
+  "htmlExtensions": [
+    ".html"
+  ],
+  "jsonExtensions": [
+    ".json"
+  ],
+  "filePushOrder": [
+    "appsscript.json",
+    "Config.gs",
+    "Week3ActivityManifest.gs",
+    "Week3Activities.gs",
+    "Week3Session1RetrievalData.gs",
+    "Week3AttackerTypesLearningData.gs",
+    "Week3AttackerCaseMatchingData.gs",
+    "Week3JustifiedIdentificationData.gs",
+    "Week3Session2RetrievalData.gs",
+    "Week3OcrPracticeData.gs",
+    "Week3PeerMarkingData.gs",
+    "Week3ActivityDataService.gs",
+    "RequestParser.gs",
+    "SubmissionValidator.gs",
+    "DuplicateChecker.gs",
+    "SheetRepository.gs",
+    "ResponseFactory.gs",
+    "SubmissionService.gs",
+    "SetupWorkbook.gs",
+    "Week3ActivitySeed.gs",
+    "Week3Tests.gs",
+    "Week3ActivityDataTests.gs",
+    "Code.gs"
+  ],
+  "skipSubdirectories": false
+}

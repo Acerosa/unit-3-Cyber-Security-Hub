@@ -44,18 +44,31 @@ Non-scored guidance:
 - Apps Script: `apps-script/week-3/`
 - Manifest source of truth: `Week3ActivityManifest.gs`
 
-`week3ApiBaseUrl` starts empty until the Week 3 Apps Script web app is deployed. Update the URL in `activity-engine-config.js` after deployment.
+`week3ApiBaseUrl` is set in `js/activity-engine-config.js` to the Week 3 `/exec` deployment. If health returns Access denied, re-authorise the web app in the Apps Script UI (Execute as: Me; Who has access: Anyone), then bootstrap.
 
 ## Google Apps Script setup
 
-1. Create a **new** Apps Script project for Week 3 (do not modify Week 1 or Week 2 projects).
-2. Point clasp at `apps-script/week-3` (see `clasp.week-3.json.example`).
-3. Confirm `Config.gs` uses the shared Unit 3 spreadsheet ID.
-4. Run `setupWeek3Workbook()` to create Week 3 tabs.
-5. Run `seedAllWeek3ActivityData()`.
-6. Run `openWeek3Submissions()`.
-7. Deploy as web app (`ANYONE_ANONYMOUS` execute access, same pattern as Week 2).
-8. Paste the `/exec` URL into `week3ApiBaseUrl`.
+Project: **Unit 3 Cyber Security - Week 3 API**  
+Script ID: `1D_EtgBeEcmtTqyJIhDLt2E5fxfUZEpuIkQJhkCjOiGXAeADm2aYPhVyH`  
+Editor: https://script.google.com/d/1D_EtgBeEcmtTqyJIhDLt2E5fxfUZEpuIkQJhkCjOiGXAeADm2aYPhVyH/edit  
+Clasp mapping: `.clasp.week-3.json` (root `.clasp.json` remains Week 2)
+
+1. Confirm `Config.gs` uses the shared Unit 3 spreadsheet ID (not exposed to the browser).
+2. In the Apps Script editor, run `checkWeek3Config` once and accept spreadsheet permissions.
+3. Deploy → New deployment → Web app (Execute as: Me; Who has access: Anyone). Prefer a UI deployment so anonymous `/exec` works — same step used for Week 2.
+4. Paste the production `/exec` URL into `js/activity-engine-config.js` → `week3ApiBaseUrl`.
+5. Bootstrap once:
+
+```text
+GET /exec?action=bootstrapSetup&confirm=Unit3-Week3-Bootstrap-Once
+```
+
+This runs `setupWeek3Workbook()`, data tests, `seedWeek3Activities()`, `openWeek3Submissions()`, and `runWeek3SelfTest()`.
+
+6. Confirm `GET /exec?action=health` returns JSON with `"week": 3` and `acceptingSubmissions: true`.
+7. Submit a TEST formative result from Session 1 Retrieval and confirm a row in `Week 3 Results` with version `1.0`.
+
+Do **not** replace Week 1 or Week 2 web app deployments.
 
 ## Testing
 

@@ -21,8 +21,8 @@
       'https://script.google.com/macros/s/AKfycbxXc8_4w2693bv7vyPmxrKFKb_EUGIiiZBefVMyLLPxHJfigxNb2GhhT11gTSNx2GpL/exec',
     week2ApiBaseUrl:
       'https://script.google.com/macros/s/AKfycbzwsxquK34pzICjP0prAL9RBLmi_Bo8qgntJcYCn7QXSxEFQeK5mRbK5QnsUy2Bi3U9pA/exec',
-    // Set after clasp deploy of apps-script/week-3 (see docs/week-3.md).
-    week3ApiBaseUrl: '',
+    week3ApiBaseUrl:
+      'https://script.google.com/macros/s/AKfycbzWuaLiIzLmqBFXD1EeIht17a8dmeAPrcmLXUugtu9eYFsnyLPJl7zrS-FDnMUuAStt/exec',
     apiVersion: '1.0',
     submissionMode: 'TEST',
     allowLiveSubmissions: false,
