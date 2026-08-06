@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 6 registry tests</title>
+  <link rel="stylesheet" href="../../css/main.css">
+</head>
+<body>
+  <main class="site-main" id="main-content">
+    <h1>Week 6 registry tests</h1>
+    <div id="results" class="panel" aria-live="polite"></div>
+    <p><a href="../">Back to Week 6</a></p>
+  </main>
+  <script src="../../js/course-context.js"></script>
+  <script src="../../js/activity-engine-config.js"></script>
+  <script src="../../js/week5-progress.js"></script>
+  <script src="../../js/week6-progress.js"></script>
+  <script src="../data/lo2-diagnostic.js"></script>
+  <script src="../data/ethical-learning.js"></script>
+  <script src="../data/ethical-classification.js"></script>
+  <script src="../data/legislation-learning.js"></script>
+  <script src="../data/legislation-matching.js"></script>
+  <script src="../data/operational-considerations.js"></script>
+  <script src="../data/government-initiatives.js"></script>
+  <script src="../data/ncsc-guidance.js"></script>
+  <script src="../data/exercise-decision-record.js"></script>
+  <script src="../data/session1-review.js"></script>
+  <script src="../data/legislation-retrieval.js"></script>
+  <script src="../data/employee-monitoring.js"></script>
+  <script src="../data/stakeholder-debate.js"></script>
+  <script src="../data/discuss-learning.js"></script>
+  <script src="../data/discuss-planner.js"></script>
+  <script src="../data/ocr-practice.js"></script>
+  <script src="../data/answer-improvement.js"></script>
+  <script src="../data/revision-organiser.js"></script>
+  <script src="../data/directed-study.js"></script>
+  <script src="../data/support-challenge.js"></script>
+  <script src="validate-registry.js"></script>
+  <script>
+    (function () {
+      var host = document.getElementById('results');
+      var results = window.Unit3Week6Tests.runWeek6RegistryTests();
+      var failed = results.filter(function (r) { return !r.ok; });
+      var heading = document.createElement('p');
+      heading.textContent =
+        failed.length === 0
+          ? 'All ' + results.length + ' checks passed.'
+          : failed.length + ' of ' + results.length + ' checks failed.';
+      host.appendChild(heading);
+      var list = document.createElement('ul');
+      results.forEach(function (r) {
+        var li = document.createElement('li');
+        li.textContent = (r.ok ? 'PASS' : 'FAIL') + ': ' + r.name + (r.detail ? ' - ' + r.detail : '');
+        list.appendChild(li);
+      });
+      host.appendChild(list);
+      if (failed.length) {
+        console.error('Week 6 registry failures', failed);
+      } else {
+        console.log('Week 6 registry checks passed', results.length);
+      }
+    })();
+  </script>
+</body>
+</html>
