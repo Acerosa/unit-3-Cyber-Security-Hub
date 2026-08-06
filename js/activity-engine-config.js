@@ -27,8 +27,9 @@
       'https://script.google.com/macros/s/AKfycbzWuaLiIzLmqBFXD1EeIht17a8dmeAPrcmLXUugtu9eYFsnyLPJl7zrS-FDnMUuAStt/exec',
     week4ApiBaseUrl:
       'https://script.google.com/macros/s/AKfycbzS3PKvfOcSV-1iDnzjLFXj4R1djZKk91igbcQM6jQ134zZvp37GO-cCC44KB-wPBgL/exec',
-    // Week 5 Apps Script /exec URL — leave empty until the Week 5 API task configures it.
-    week5ApiBaseUrl: '',
+    // Week 5 Apps Script /exec URL.
+    week5ApiBaseUrl:
+      'https://script.google.com/macros/s/AKfycbxHrV2qIqhHqmWiCxoGn9WdQlL6a3YcnUUM7rC6Tz8QS_utstkJZjllENHyX77UqI6V/exec',
     apiVersion: '1.0',
     submissionMode: 'TEST',
     allowLiveSubmissions: false,

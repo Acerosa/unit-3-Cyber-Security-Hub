@@ -462,8 +462,11 @@ var Week5ActivityDataService = (function () {
     }
 
     var submission = {
-      learnerName: joinName_(learner.firstName, learner.surname) || trimString_(body.learnerName),
-      learnerId: trimString_(learner.studentId || body.learnerId),
+      learnerName:
+        joinName_(learner.firstName, learner.surname) ||
+        joinName_(body.firstName, body.surname) ||
+        trimString_(body.learnerName),
+      learnerId: trimString_(learner.studentId || body.studentId || body.learnerId),
       groupName: trimString_(learner.classGroup || body.groupName || body.classGroup),
       weekNumber: CONFIG.weekNumber,
       sessionNumber: pack.meta.sessionNumber,
