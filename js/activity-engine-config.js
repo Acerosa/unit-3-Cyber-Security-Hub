@@ -13,7 +13,8 @@
     COLLECTOR_V3: 'collector-v3',
     ACTIVITY_API: 'activity-api',
     WEEK2_API: 'week2-api',
-    WEEK3_API: 'week3-api'
+    WEEK3_API: 'week3-api',
+    WEEK4_API: 'week4-api'
   });
 
   var ACTIVITY_ENGINE_CONFIG = Object.freeze({
@@ -23,6 +24,8 @@
       'https://script.google.com/macros/s/AKfycbzwsxquK34pzICjP0prAL9RBLmi_Bo8qgntJcYCn7QXSxEFQeK5mRbK5QnsUy2Bi3U9pA/exec',
     week3ApiBaseUrl:
       'https://script.google.com/macros/s/AKfycbzWuaLiIzLmqBFXD1EeIht17a8dmeAPrcmLXUugtu9eYFsnyLPJl7zrS-FDnMUuAStt/exec',
+    /* Week 4 Apps Script /exec URL is set by the later backend task. Leave empty until deployed. */
+    week4ApiBaseUrl: '',
     apiVersion: '1.0',
     submissionMode: 'TEST',
     allowLiveSubmissions: false,
@@ -73,7 +76,19 @@
     'week3-justified-identification': SUBMISSION_SERVICE.WEEK3_API,
     'week3-session2-retrieval': SUBMISSION_SERVICE.WEEK3_API,
     'week3-ocr-question-practice': SUBMISSION_SERVICE.WEEK3_API,
-    'week3-peer-marking': SUBMISSION_SERVICE.WEEK3_API
+    'week3-peer-marking': SUBMISSION_SERVICE.WEEK3_API,
+
+    // Week 4 local activities submit through the Week 4 Apps Script API (URL deferred).
+    'week4-session1-retrieval': SUBMISSION_SERVICE.WEEK4_API,
+    'week4-motivations-learning': SUBMISSION_SERVICE.WEEK4_API,
+    'week4-targets-methods': SUBMISSION_SERVICE.WEEK4_API,
+    'week4-northbank-exposure': SUBMISSION_SERVICE.WEEK4_API,
+    'week4-session2-retrieval': SUBMISSION_SERVICE.WEEK4_API,
+    'week4-mtm-mapping': SUBMISSION_SERVICE.WEEK4_API,
+    'week4-analyse-practice': SUBMISSION_SERVICE.WEEK4_API,
+    'week4-ocr-question-practice': SUBMISSION_SERVICE.WEEK4_API,
+    'week4-answer-improvement': SUBMISSION_SERVICE.WEEK4_API,
+    'week4-ethical-review': SUBMISSION_SERVICE.WEEK4_API
   });
 
   function getSubmissionService(activityId) {
@@ -96,12 +111,20 @@
     return getSubmissionService(activityId) === SUBMISSION_SERVICE.WEEK3_API;
   }
 
+  function usesWeek4Api(activityId) {
+    return getSubmissionService(activityId) === SUBMISSION_SERVICE.WEEK4_API;
+  }
+
   function getWeek2ApiBaseUrl() {
     return ACTIVITY_ENGINE_CONFIG.week2ApiBaseUrl || '';
   }
 
   function getWeek3ApiBaseUrl() {
     return ACTIVITY_ENGINE_CONFIG.week3ApiBaseUrl || '';
+  }
+
+  function getWeek4ApiBaseUrl() {
+    return ACTIVITY_ENGINE_CONFIG.week4ApiBaseUrl || '';
   }
 
   function resolveRecordType() {
@@ -127,8 +150,10 @@
     usesCollectorV3: usesCollectorV3,
     usesWeek2Api: usesWeek2Api,
     usesWeek3Api: usesWeek3Api,
+    usesWeek4Api: usesWeek4Api,
     getWeek2ApiBaseUrl: getWeek2ApiBaseUrl,
     getWeek3ApiBaseUrl: getWeek3ApiBaseUrl,
+    getWeek4ApiBaseUrl: getWeek4ApiBaseUrl,
     resolveRecordType: resolveRecordType,
     isLiveSubmissionEnabled: isLiveSubmissionEnabled
   };

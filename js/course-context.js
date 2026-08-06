@@ -360,6 +360,138 @@
       itemMaximum: 6,
       allowsPartner: true,
       attemptStorageKey: 'unit3-week3-attempt:week3-peer-marking'
+    }),
+
+    /* Week 4 — Motivations and Targets */
+    'week4-session1-retrieval': Object.freeze({
+      activityId: 'week4-session1-retrieval',
+      activityName: 'Session 1 Retrieval and Homework Harvest',
+      weekNumber: 4,
+      sessionName: 'Session 1',
+      activityType: 'Retrieval quiz',
+      activityVersion: '1.0',
+      maximumScore: 10,
+      itemMinimum: 1,
+      itemMaximum: 10,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week4-attempt:week4-session1-retrieval'
+    }),
+    'week4-motivations-learning': Object.freeze({
+      activityId: 'week4-motivations-learning',
+      activityName: 'Motivations for Attack',
+      weekNumber: 4,
+      sessionName: 'Session 1',
+      activityType: 'Guided learning',
+      activityVersion: '1.0',
+      maximumScore: 8,
+      itemMinimum: 1,
+      itemMaximum: 8,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week4-attempt:week4-motivations-learning'
+    }),
+    'week4-targets-methods': Object.freeze({
+      activityId: 'week4-targets-methods',
+      activityName: 'Targets and Methods',
+      weekNumber: 4,
+      sessionName: 'Session 1',
+      activityType: 'Classification',
+      activityVersion: '1.0',
+      maximumScore: 8,
+      itemMinimum: 1,
+      itemMaximum: 8,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week4-attempt:week4-targets-methods'
+    }),
+    'week4-northbank-exposure': Object.freeze({
+      activityId: 'week4-northbank-exposure',
+      activityName: 'Northbank Passive-Exposure Reflection',
+      weekNumber: 4,
+      sessionName: 'Session 1',
+      activityType: 'Reflection',
+      activityVersion: '1.0',
+      maximumScore: 3,
+      itemMinimum: 1,
+      itemMaximum: 3,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week4-attempt:week4-northbank-exposure'
+    }),
+    'week4-session2-retrieval': Object.freeze({
+      activityId: 'week4-session2-retrieval',
+      activityName: 'Session 2 Retrieval Quiz',
+      weekNumber: 4,
+      sessionName: 'Session 2',
+      activityType: 'Retrieval quiz',
+      activityVersion: '1.0',
+      maximumScore: 12,
+      itemMinimum: 1,
+      itemMaximum: 12,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week4-attempt:week4-session2-retrieval'
+    }),
+    'week4-mtm-mapping': Object.freeze({
+      activityId: 'week4-mtm-mapping',
+      activityName: 'Motivation, Target and Method Mapping',
+      weekNumber: 4,
+      sessionName: 'Session 2',
+      activityType: 'Scenario mapping',
+      activityVersion: '1.0',
+      maximumScore: 8,
+      itemMinimum: 1,
+      itemMaximum: 8,
+      allowsPartner: true,
+      attemptStorageKey: 'unit3-week4-attempt:week4-mtm-mapping'
+    }),
+    'week4-analyse-practice': Object.freeze({
+      activityId: 'week4-analyse-practice',
+      activityName: 'From Describe to Analyse',
+      weekNumber: 4,
+      sessionName: 'Session 2',
+      activityType: 'Exam skills',
+      activityVersion: '1.0',
+      maximumScore: 6,
+      itemMinimum: 1,
+      itemMaximum: 6,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week4-attempt:week4-analyse-practice'
+    }),
+    'week4-ocr-question-practice': Object.freeze({
+      activityId: 'week4-ocr-question-practice',
+      activityName: 'OCR-Style Question Practice',
+      weekNumber: 4,
+      sessionName: 'Session 2',
+      activityType: 'Exam skills',
+      activityVersion: '1.0',
+      maximumScore: 20,
+      itemMinimum: 1,
+      itemMaximum: 20,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week4-attempt:week4-ocr-question-practice'
+    }),
+    'week4-answer-improvement': Object.freeze({
+      activityId: 'week4-answer-improvement',
+      activityName: 'Marking and Answer Improvement',
+      weekNumber: 4,
+      sessionName: 'Session 2',
+      activityType: 'Self marking',
+      activityVersion: '1.0',
+      maximumScore: 6,
+      itemMinimum: 1,
+      itemMaximum: 6,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week4-attempt:week4-answer-improvement'
+    }),
+    'week4-ethical-review': Object.freeze({
+      activityId: 'week4-ethical-review',
+      activityName: 'Ethical Review Discussion',
+      weekNumber: 4,
+      sessionName: 'Session 2',
+      activityType: 'Discussion',
+      activityVersion: '1.0',
+      maximumScore: 2,
+      itemMinimum: 1,
+      itemMaximum: 2,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week4-attempt:week4-ethical-review'
     })
   });
 
