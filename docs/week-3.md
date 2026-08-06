@@ -44,7 +44,7 @@ Non-scored guidance:
 - Apps Script: `apps-script/week-3/`
 - Manifest source of truth: `Week3ActivityManifest.gs`
 
-`week3ApiBaseUrl` starts empty until the Week 3 Apps Script web app is deployed. Update the URL in `activity-engine-config.js` after deployment.
+`week3ApiBaseUrl` is set in `js/activity-engine-config.js` to the Week 3 `/exec` deployment. If health returns Access denied, re-authorise the web app in the Apps Script UI (Execute as: Me; Who has access: Anyone), then bootstrap.
 
 ## Google Apps Script setup
 
