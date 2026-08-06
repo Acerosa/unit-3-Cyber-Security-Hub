@@ -19,3 +19,6 @@ desktop.ini
 .env
 .env.*
 local.config.js
+
+# Local clasp switching files
+.clasp.week-*.active.json
