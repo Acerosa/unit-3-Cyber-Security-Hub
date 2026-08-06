@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Week 7 overview for OCR Level 3 IT Unit 3 Cyber Security: risk management, testing and monitoring.">
+  <title>Week 7: Risk Management, Testing and Monitoring</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/activity.css">
+  <link rel="stylesheet" href="css/week7.css">
+</head>
+<body class="week-7-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <header class="site-header" role="banner">
+    <div class="header-bar">
+      <a class="site-brand" href="../index.html">
+        <p class="brand-title">Unit 3 Cyber Security Hub</p>
+        <p class="brand-tagline">OCR Level 3 IT</p>
+      </a>
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-controls="site-navigation" aria-expanded="false" aria-label="Open main menu">Menu</button>
+      <nav class="site-nav" id="site-navigation" aria-label="Main">
+        <ul class="nav-list">
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../week-1/">Week 1</a></li>
+          <li><a href="../week-2/">Week 2</a></li>
+          <li><a href="../week-3/">Week 3</a></li>
+          <li><a href="../week-4/">Week 4</a></li>
+          <li><a href="../week-5/">Week 5</a></li>
+          <li><a href="../week-6/">Week 6</a></li>
+          <li><a href="./" aria-current="page">Week 7</a></li>
+          <li><a href="../resources/">Resources</a></li>
+          <li><a href="../help/">Help</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li><a href="../index.html">Home</a><span class="breadcrumb-sep" aria-hidden="true"> &gt; </span></li>
+      <li><span aria-current="page">Week 7: Risk Management, Testing and Monitoring</span></li>
+    </ol>
+  </nav>
+  <header class="page-header">
+    <p class="panel-note">
+      <span class="status-label status-label-active" role="status">LO3</span>
+      <span class="status-label status-label-idle" role="status">Teaching content 3.1</span>
+      <span class="status-label status-label-idle" role="status">Teaching content 3.2</span>
+    </p>
+    <h1>Week 7: Risk Management, Testing and Monitoring</h1>
+    <p class="page-subtitle">LO3 - Understand measures used to protect against cyber security incidents. OCR specification sections 3.1 Cyber security risk management and 3.2 Testing and monitoring measures.</p>
+  </header>
+  <main id="main-content" class="site-main" tabindex="-1">
+    <section class="panel" aria-labelledby="w7-outcomes-heading">
+      <h2 id="w7-outcomes-heading">Weekly learning outcomes</h2>
+      <ul class="section-list">
+        <li>Explain the stages of cyber security risk management, including asset identification and risk analysis.</li>
+        <li>Apply cost-and-benefit reasoning when deciding how to mitigate a risk.</li>
+        <li>Describe vulnerability-testing methods, including penetration testing, fuzzing, security functionality testing and sandboxing.</li>
+        <li>Compare intrusion detection and intrusion prevention systems.</li>
+        <li>Justify the use of testing and monitoring measures in a specific organisational context.</li>
+      </ul>
+      <div class="w7-def-grid" role="list">
+        <article class="w7-def-card" role="listitem"><h3>Asset</h3><p>Something valuable that needs protection.</p></article>
+        <article class="w7-def-card" role="listitem"><h3>Threat</h3><p>Something capable of causing harm.</p></article>
+        <article class="w7-def-card" role="listitem"><h3>Vulnerability</h3><p>A weakness that can be exploited.</p></article>
+        <article class="w7-def-card" role="listitem"><h3>Risk</h3><p>The combination of the likelihood and impact of harm.</p></article>
+      </div>
+      <p class="w7-formula" role="note">Risk is not another word for threat. Threat, vulnerability and risk must stay separate terms.</p>
+    </section>
+    <section class="panel" aria-labelledby="w7-northbank-heading">
+      <h2 id="w7-northbank-heading">Connection to previous Northbank work</h2>
+      <p>This week you convert the Week 2 Northbank vulnerability register into a risk register. You do not start the asset list again. You will also reuse cost, operational and stakeholder thinking from Week 6 and the NCSC Exercise in a Box classroom pattern from Weeks 5 and 6.</p>
+    </section>
+    <section class="panel" aria-labelledby="w7-exam-heading">
+      <h2 id="w7-exam-heading">Examination focus</h2>
+      <ul class="section-list">
+        <li>Use risk, threat and vulnerability as separate terms.</li>
+        <li>Tie recommendations to features of the organisation described.</li>
+        <li>Justify why a measure is suitable and how effectiveness would be judged.</li>
+        <li>Include cost-and-benefit reasoning and recognise that accepting a risk can be legitimate.</li>
+        <li>Compare a chosen measure with a less appropriate alternative.</li>
+      </ul>
+    </section>
+    <section class="panel" aria-labelledby="w7-sessions-heading">
+      <h2 id="w7-sessions-heading">Session summaries</h2>
+      <ul class="section-list">
+        <li><strong>Session 1:</strong> Prior-learning retrieval, risk-management learning, Northbank risk register, testing methods, sandbox observation, detection and prevention, then the Heightened cyber threat decision log.</li>
+        <li><strong>Session 2:</strong> Retrieval quiz, testing and monitoring matching, justified recommendation practice, OCR-style questions and answer improvement.</li>
+      </ul>
+    </section>
+    <section class="panel" aria-labelledby="w7-progress-heading">
+      <h2 id="w7-progress-heading">Your Week 7 progress</h2>
+      <div id="w7-completion" class="w7-completion-banner" aria-live="polite"></div>
+      <p class="panel-note">Progress is stored in this browser only and is separate from Weeks 1 to 6. Opening a page does not complete an activity.</p>
+    </section>
+    <details class="session-disclosure panel" id="session-1" open>
+      <summary class="session-disclosure__summary">
+        <span class="session-disclosure__text">
+          <h2 id="session-1-heading" class="session-disclosure__heading">Session 1: Risk management, testing and monitoring</h2>
+          <span class="session-disclosure__meta">7 scored activities</span>
+          <span class="visually-hidden">. Show or hide Session 1 activities</span>
+        </span>
+        <span class="session-disclosure__icon" aria-hidden="true"></span>
+      </summary>
+      <div class="session-disclosure__content">
+        <p class="panel-note">Convert the vulnerability register into a risk register, learn testing methods, compare detection and prevention, then support the facilitated NCSC exercise.</p>
+        <div class="card-grid" id="w7-session-1-cards" data-session="1"></div>
+      </div>
+    </details>
+    <section class="panel w7-platform-section" aria-labelledby="w7-ncsc-heading">
+      <h2 id="w7-ncsc-heading">NCSC Exercise in a Box (facilitated)</h2>
+      <p class="panel-note">Opening the NCSC site does not complete a scored Week 7 activity. Completion requires decision-log entries linked to the risk register during the facilitated session.</p>
+      <div class="card-grid" id="w7-ncsc-cards"></div>
+    </section>
+    <details class="session-disclosure panel" id="session-2">
+      <summary class="session-disclosure__summary">
+        <span class="session-disclosure__text">
+          <h2 id="session-2-heading" class="session-disclosure__heading">Session 2: Retrieval, matching and examination practice</h2>
+          <span class="session-disclosure__meta">5 scored activities</span>
+          <span class="visually-hidden">. Show or hide Session 2 activities</span>
+        </span>
+        <span class="session-disclosure__icon" aria-hidden="true"></span>
+      </summary>
+      <div class="session-disclosure__content">
+        <p class="panel-note">Retrieve key distinctions, match measures to situations, practise justified recommendations and complete OCR-style questions.</p>
+        <div class="card-grid" id="w7-session-2-cards" data-session="2"></div>
+      </div>
+    </details>
+    <details class="session-disclosure panel" id="directed-study">
+      <summary class="session-disclosure__summary">
+        <span class="session-disclosure__text">
+          <h2 class="session-disclosure__heading">Directed independent study</h2>
+          <span class="session-disclosure__meta">About 1 hour 45 minutes · Cisco · OpenVAS · Intro to Logs · Product research</span>
+          <span class="visually-hidden">. Show or hide directed study</span>
+        </span>
+        <span class="session-disclosure__icon" aria-hidden="true"></span>
+      </summary>
+      <div class="session-disclosure__content">
+        <p class="panel-note">Unscored guidance. Product research summaries will be used during Week 8 retrieval.</p>
+        <p><a class="btn btn-secondary" href="directed-study/">Open directed independent study</a></p>
+      </div>
+    </details>
+    <details class="session-disclosure panel" id="support-challenge">
+      <summary class="session-disclosure__summary">
+        <span class="session-disclosure__text">
+          <h2 class="session-disclosure__heading">Support and challenge</h2>
+          <span class="session-disclosure__meta">Sentence starters · Scoring prompts · Optional challenge</span>
+          <span class="visually-hidden">. Show or hide support and challenge</span>
+        </span>
+        <span class="session-disclosure__icon" aria-hidden="true"></span>
+      </summary>
+      <div class="session-disclosure__content">
+        <p class="panel-note">Support is optional. Confident learners should attempt the main tasks independently first.</p>
+        <p><a class="btn btn-secondary" href="support-challenge/">Open support and challenge</a></p>
+      </div>
+    </details>
+    <section class="panel" aria-labelledby="w7-related-heading">
+      <h2 id="w7-related-heading">Related weeks</h2>
+      <ul class="section-list">
+        <li><a href="../week-2/">Week 2</a> - Northbank vulnerability register</li>
+        <li><a href="../week-5/">Week 5</a> - Impacts and Exercise in a Box companion pattern</li>
+        <li><a href="../week-6/">Week 6</a> - Cost, operational and stakeholder considerations</li>
+      </ul>
+    </section>
+  </main>
+  <footer class="site-footer" role="contentinfo">
+    <p>Unit 3 Cyber Security Hub - Week 7 formative learning resources</p>
+  </footer>
+  <script src="../js/navigation.js"></script>
+  <script src="../js/session-disclosure.js"></script>
+  <script src="../js/week7-progress.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
