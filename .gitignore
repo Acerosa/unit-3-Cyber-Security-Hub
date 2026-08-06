@@ -22,3 +22,5 @@ local.config.js
 
 # Local clasp switching files
 .clasp.week-*.active.json
+.clasp.week-6.json
+.clasp.bak-before-week6*
