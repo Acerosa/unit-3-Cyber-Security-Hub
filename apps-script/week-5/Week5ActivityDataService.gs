@@ -586,15 +586,28 @@ var Week5ActivityDataService = (function () {
 
   function hasAnswer_(question, value) {
     if (question.questionType === 'classification') {
-      return !!(
-        value &&
-        typeof value === 'object' &&
-        value.incidentType &&
-        value.ciaAim &&
-        String(value.evidence || '').trim()
-      );
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        // Week 4 CIA-style classification object
+        if (value.incidentType && value.ciaAim && String(value.evidence || '').trim()) {
+          return true;
+        }
+        // Week 5 impact-category classification object
+        if (value.optionId || value.category || value.value) {
+          return true;
+        }
+      }
+      if (Array.isArray(value)) {
+        return value.length > 0;
+      }
+      return value != null && String(value).trim() !== '';
     }
     if (question.questionType === 'single-choice' || question.questionType === 'self-assessment') {
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        return !!(value.optionId || value.category || value.value);
+      }
+      if (Array.isArray(value)) {
+        return value.length > 0;
+      }
       return value != null && String(value).trim() !== '';
     }
     return hasText_(value);
