@@ -1,0 +1,282 @@
+(function () {
+  'use strict';
+
+  var data = window.Week4AnalysePractice;
+  var progress = window.Unit3Week4Progress;
+  if (!data) return;
+
+  var ACTIVITY_ID = data.activityId;
+  var DRAFT_KEY = 'analyse-practice';
+  var host = document.getElementById('w4-activity-host');
+  var startedAt = Date.now();
+  var state = {
+    template: 'frame',
+    motivation: '',
+    target: '',
+    method: '',
+    plan: '',
+    checklist: {}
+  };
+
+  if (progress) {
+    progress.markStarted(ACTIVITY_ID);
+    var draft = progress.getDraft(DRAFT_KEY);
+    if (draft && draft.activityVersion === data.activityVersion) {
+      state = Object.assign(state, draft.state || {});
+    }
+  }
+
+  function save() {
+    if (progress) {
+      progress.setDraft(DRAFT_KEY, {
+        activityVersion: data.activityVersion,
+        state: state,
+        savedAt: new Date().toISOString()
+      });
+    }
+  }
+
+  function computeScore() {
+    var marks = 0;
+    if (String(state.motivation || '').trim()) marks += 1;
+    if (String(state.target || '').trim()) marks += 1;
+    if (String(state.method || '').trim()) marks += 1;
+    if (String(state.plan || '').trim().length >= 40) marks += 1;
+    var checked = Object.keys(state.checklist).filter(function (key) {
+      return state.checklist[key];
+    }).length;
+    if (checked >= 3) marks += 1;
+    var plan = String(state.plan || '').toLowerCase();
+    var hasConnective = data.connectives.some(function (word) {
+      return plan.indexOf(word) !== -1;
+    });
+    if (hasConnective && plan.length >= 40) marks += 1;
+    return Math.min(data.total, marks);
+  }
+
+  function validate() {
+    var messages = [];
+    if (!String(state.motivation || '').trim()) {
+      messages.push('Identify a plausible motivation before submitting.');
+    }
+    if (!String(state.target || '').trim()) {
+      messages.push('Identify the relevant target before submitting.');
+    }
+    if (!String(state.method || '').trim()) {
+      messages.push('Identify an appropriate method before submitting.');
+    }
+    if (String(state.plan || '').trim().length < 40) {
+      messages.push('Complete the final connection in the analysis plan before submitting.');
+    }
+    return messages;
+  }
+
+  function render() {
+    if (!host) return;
+    host.textContent = '';
+    var panel = document.createElement('section');
+    panel.className = 'panel';
+    panel.innerHTML =
+      '<h2>From describe to analyse</h2>' +
+      '<div class="w4-two-col">' +
+      '<article class="w4-def-card"><h3>Describe</h3><p>' +
+      data.commandWords.describe +
+      '</p></article>' +
+      '<article class="w4-def-card"><h3>Analyse</h3><p>' +
+      data.commandWords.analyse +
+      '</p></article>' +
+      '</div>' +
+      '<p class="panel-note">Analytical connectives: ' +
+      data.connectives.join('; ') +
+      '. ' +
+      data.connectiveWarning +
+      '</p>';
+
+    var weak = document.createElement('blockquote');
+    weak.className = 'w4-scenario w4-weak-response';
+    weak.innerHTML =
+      '<strong>' +
+      data.weakResponse.label +
+      ':</strong> ' +
+      data.weakResponse.text +
+      '<br><em class="w4-annotation">' +
+      data.weakResponse.problem +
+      '</em>';
+    panel.appendChild(weak);
+
+    var improved = document.createElement('blockquote');
+    improved.className = 'w4-scenario w4-improved-response';
+    improved.innerHTML =
+      '<strong>' +
+      data.improvedResponse.label +
+      ':</strong> ' +
+      data.improvedResponse.text +
+      '<ul class="section-list">' +
+      data.improvedResponse.annotations
+        .map(function (item) {
+          return '<li>' + item + '</li>';
+        })
+        .join('') +
+      '</ul>';
+    panel.appendChild(improved);
+
+    var planBox = document.createElement('section');
+    planBox.className = 'w4-review-item';
+    planBox.innerHTML =
+      '<h3>Planning task</h3>' +
+      '<p><strong>' +
+      data.planningQuestion +
+      '</strong></p>' +
+      '<p class="panel-note">' +
+      data.planningGuidance +
+      '</p>';
+
+    var templates = document.createElement('fieldset');
+    templates.className = 'w4-options';
+    var legend = document.createElement('legend');
+    legend.textContent = 'Choose a planning template';
+    templates.appendChild(legend);
+    data.planningTemplates.forEach(function (item) {
+      var id = 'template-' + item.id;
+      var label = document.createElement('label');
+      label.className = 'w4-option';
+      label.setAttribute('for', id);
+      var input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'template';
+      input.id = id;
+      input.value = item.id;
+      if (state.template === item.id) input.checked = true;
+      input.addEventListener('change', function () {
+        state.template = item.id;
+        save();
+        render();
+      });
+      label.appendChild(input);
+      label.appendChild(document.createTextNode(' ' + item.label));
+      templates.appendChild(label);
+    });
+    planBox.appendChild(templates);
+
+    if (state.template === 'frame') {
+      var frame = document.createElement('p');
+      frame.className = 'w4-callout';
+      frame.textContent = data.writingFrame.join(' ');
+      planBox.appendChild(frame);
+    } else if (state.template === 'table') {
+      var tableNote = document.createElement('p');
+      tableNote.className = 'panel-note';
+      tableNote.textContent =
+        'Use the fields below as table rows: motivation, target, method, then a connection cell.';
+      planBox.appendChild(tableNote);
+    } else {
+      var mind = document.createElement('p');
+      mind.className = 'panel-note';
+      mind.textContent =
+        'Use the plan box for mind-map style notes: centre the organisation case, then branch motivation, target, method and connections.';
+      planBox.appendChild(mind);
+    }
+
+    function simpleField(id, labelText, key) {
+      var wrap = document.createElement('div');
+      wrap.className = 'w4-reflection-field';
+      var label = document.createElement('label');
+      label.setAttribute('for', id);
+      label.textContent = labelText;
+      wrap.appendChild(label);
+      var input = document.createElement(key === 'plan' ? 'textarea' : 'input');
+      if (key !== 'plan') input.type = 'text';
+      else input.rows = 8;
+      input.id = id;
+      input.value = state[key] || '';
+      input.addEventListener('input', function () {
+        state[key] = input.value;
+        save();
+      });
+      wrap.appendChild(input);
+      planBox.appendChild(wrap);
+    }
+
+    simpleField('analyse-motivation', 'Plausible motivation (why)', 'motivation');
+    simpleField('analyse-target', 'Relevant target (what)', 'target');
+    simpleField('analyse-method', 'Appropriate method (how)', 'method');
+    simpleField('analyse-plan', 'Analysis plan / response draft', 'plan');
+
+    data.checklist.forEach(function (item, index) {
+      var label = document.createElement('label');
+      label.className = 'w4-checkbox-label';
+      var input = document.createElement('input');
+      input.type = 'checkbox';
+      input.checked = !!state.checklist['c' + index];
+      input.addEventListener('change', function () {
+        state.checklist['c' + index] = input.checked;
+        save();
+      });
+      label.appendChild(input);
+      label.appendChild(document.createTextNode(' ' + item));
+      planBox.appendChild(label);
+    });
+
+    panel.appendChild(planBox);
+
+    var feedback = document.createElement('div');
+    feedback.id = 'w4-analyse-feedback';
+    feedback.className = 'status-messages';
+    feedback.setAttribute('aria-live', 'assertive');
+    panel.appendChild(feedback);
+
+    var actions = document.createElement('div');
+    actions.className = 'w4-actions';
+    var printBtn = document.createElement('button');
+    printBtn.type = 'button';
+    printBtn.className = 'btn btn-secondary';
+    printBtn.textContent = 'Print planning page';
+    printBtn.addEventListener('click', function () {
+      window.print();
+    });
+    actions.appendChild(printBtn);
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn btn-primary';
+    btn.textContent = 'Mark planning complete';
+    btn.addEventListener('click', function () {
+      var errors = validate();
+      feedback.textContent = '';
+      if (errors.length) {
+        errors.forEach(function (message) {
+          var p = document.createElement('p');
+          p.className = 'message message-warning';
+          p.textContent = message;
+          feedback.appendChild(p);
+        });
+        return;
+      }
+      var marks = computeScore();
+      if (progress) progress.markCompleted(ACTIVITY_ID, marks, data.total);
+      var ok = document.createElement('p');
+      ok.className = 'message message-success';
+      ok.textContent =
+        'Planning complete. Local checklist score: ' + marks + ' / ' + data.total + '.';
+      feedback.appendChild(ok);
+      window.Unit3Week4Submit.renderSubmitPanel({
+        activityId: ACTIVITY_ID,
+        hostId: 'w4-submit-host',
+        getScore: computeScore,
+        getTotal: function () {
+          return data.total;
+        },
+        getCompletionTimeSeconds: function () {
+          return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+        },
+        canSubmit: function () {
+          return validate().length === 0;
+        }
+      });
+    });
+    actions.appendChild(btn);
+    panel.appendChild(actions);
+    host.appendChild(panel);
+  }
+
+  render();
+})();

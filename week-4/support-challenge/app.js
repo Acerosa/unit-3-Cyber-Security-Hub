@@ -1,0 +1,93 @@
+(function () {
+  'use strict';
+
+  var data = window.Week4SupportChallenge;
+  var host = document.getElementById('w4-activity-host');
+  if (!data || !host) return;
+
+  var key = 'unit3-week4-challenge-notes';
+  var values = {};
+  try {
+    values = JSON.parse(localStorage.getItem(key) || '{}') || {};
+  } catch (err) {
+    values = {};
+  }
+
+  host.textContent = '';
+  var panel = document.createElement('section');
+  panel.className = 'panel';
+  panel.innerHTML = '<h2>' + data.title + '</h2>';
+
+  function addSupportBlock(block) {
+    var section = document.createElement('section');
+    section.className = 'w4-review-item';
+    section.innerHTML = '<h3>' + block.title + '</h3>';
+    if (block.points) {
+      var list = document.createElement('ul');
+      list.className = 'section-list';
+      block.points.forEach(function (item) {
+        var li = document.createElement('li');
+        li.textContent = item;
+        list.appendChild(li);
+      });
+      section.appendChild(list);
+    }
+    if (block.frame) {
+      var frame = document.createElement('p');
+      frame.className = 'w4-callout';
+      frame.textContent = block.frame.join(' ');
+      section.appendChild(frame);
+    }
+    if (block.note) {
+      var note = document.createElement('p');
+      note.className = 'panel-note';
+      note.textContent = block.note;
+      section.appendChild(note);
+    }
+    panel.appendChild(section);
+  }
+
+  addSupportBlock(data.mappingSupport);
+  addSupportBlock(data.writingSupport);
+  addSupportBlock(data.practicalSupport);
+  addSupportBlock(data.readability);
+
+  var formats = document.createElement('section');
+  formats.className = 'w4-review-item';
+  formats.innerHTML =
+    '<h3>Multiple ways to respond</h3><ul class="section-list">' +
+    data.responseFormats
+      .map(function (item) {
+        return '<li>' + item + '</li>';
+      })
+      .join('') +
+    '</ul>';
+  panel.appendChild(formats);
+
+  var challenges = document.createElement('section');
+  challenges.innerHTML = '<h3>Challenge activities</h3>';
+  data.challenges.forEach(function (challenge) {
+    var block = document.createElement('article');
+    block.className = 'w4-review-item';
+    block.innerHTML = '<h4>' + challenge.title + '</h4><p>' + challenge.prompt + '</p>';
+    var wrap = document.createElement('div');
+    wrap.className = 'w4-reflection-field';
+    var label = document.createElement('label');
+    label.setAttribute('for', challenge.id);
+    label.textContent = 'Local notes (optional)';
+    wrap.appendChild(label);
+    var area = document.createElement('textarea');
+    area.id = challenge.id;
+    area.rows = 5;
+    area.value = values[challenge.id] || '';
+    area.addEventListener('input', function () {
+      values[challenge.id] = area.value;
+      localStorage.setItem(key, JSON.stringify(values));
+    });
+    wrap.appendChild(area);
+    block.appendChild(wrap);
+    challenges.appendChild(block);
+  });
+  panel.appendChild(challenges);
+  host.appendChild(panel);
+})();

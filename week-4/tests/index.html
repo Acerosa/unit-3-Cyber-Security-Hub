@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 4 registry tests</title>
+  <link rel="stylesheet" href="../../css/main.css">
+</head>
+<body>
+  <main class="site-main" id="main-content">
+    <h1>Week 4 registry tests</h1>
+    <div id="results" class="panel" aria-live="polite"></div>
+    <p><a href="../">Back to Week 4</a></p>
+  </main>
+  <script src="../../js/course-context.js"></script>
+  <script src="../../js/activity-engine-config.js"></script>
+  <script src="../../js/week3-progress.js"></script>
+  <script src="../../js/week4-progress.js"></script>
+  <script src="../data/motivations.js"></script>
+  <script src="../data/targets-methods.js"></script>
+  <script src="../data/mtm-mapping.js"></script>
+  <script src="../data/analyse-practice.js"></script>
+  <script src="../data/ocr-practice.js"></script>
+  <script src="../data/tryhackme-resources.js"></script>
+  <script src="../data/directed-study.js"></script>
+  <script src="../data/support-challenge.js"></script>
+  <script src="../data/answer-improvement.js"></script>
+  <script src="validate-registry.js"></script>
+  <script>
+    (function () {
+      var host = document.getElementById('results');
+      var results = window.Unit3Week4Tests.runWeek4RegistryTests();
+      var failed = results.filter(function (r) { return !r.ok; });
+      var heading = document.createElement('p');
+      heading.textContent =
+        failed.length === 0
+          ? 'All ' + results.length + ' checks passed.'
+          : failed.length + ' of ' + results.length + ' checks failed.';
+      host.appendChild(heading);
+      var list = document.createElement('ul');
+      results.forEach(function (r) {
+        var li = document.createElement('li');
+        li.textContent = (r.ok ? 'PASS' : 'FAIL') + ': ' + r.name + (r.detail ? ' — ' + r.detail : '');
+        list.appendChild(li);
+      });
+      host.appendChild(list);
+    })();
+  </script>
+</body>
+</html>
