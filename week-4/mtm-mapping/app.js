@@ -8,7 +8,7 @@
   var ACTIVITY_ID = data.activityId;
   var DRAFT_KEY = 'mtm-mapping';
   var host = document.getElementById('w4-activity-host');
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var responses = {};
   var presentationFormat = data.presentationOptions[0];
 
@@ -365,10 +365,74 @@
           return data.total;
         },
         getCompletionTimeSeconds: function () {
-          return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+          return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
         },
         getReflection: function () {
           return 'Presentation format: ' + presentationFormat;
+        },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var scenarioOrder = [
+            'map-espionage',
+            'map-hacktivism',
+            'map-ransomware',
+            'map-defacement'
+          ];
+          var out = [];
+          scenarioOrder.forEach(function (scenarioId, index) {
+            var n = index + 1;
+            var row = responses[scenarioId] || {};
+            var motPayload = {
+              motivation: row.motivation || '',
+              evidence: row.evidence || '',
+              connection: row.connection || '',
+              alternative: row.alternative || '',
+              alternativeWhy: row.alternativeWhy || ''
+            };
+            var tgtPayload = {
+              target: row.target || '',
+              method: row.method || '',
+              evidence: row.evidence || '',
+              connection: row.connection || ''
+            };
+            var complete = scenarioComplete(scenarioId);
+            if (evidence && evidence.structured) {
+              out.push(
+                evidence.structured('MAP' + n + 'MOT', motPayload, {
+                  correct: complete,
+                  score: complete ? 1 : 0
+                })
+              );
+              out.push(
+                evidence.structured('MAP' + n + 'TGT', tgtPayload, {
+                  correct: complete,
+                  score: complete ? 1 : 0
+                })
+              );
+            } else {
+              out.push({
+                questionId: 'MAP' + n + 'MOT',
+                response: motPayload,
+                responseType: 'structured',
+                correct: complete,
+                score: complete ? 1 : 0
+              });
+              out.push({
+                questionId: 'MAP' + n + 'TGT',
+                response: tgtPayload,
+                responseType: 'structured',
+                correct: complete,
+                score: complete ? 1 : 0
+              });
+            }
+          });
+          return out;
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
         },
         canSubmit: function () {
           return validate().length === 0;

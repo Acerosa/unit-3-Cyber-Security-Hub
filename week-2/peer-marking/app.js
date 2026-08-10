@@ -8,7 +8,7 @@
     return;
   }
 
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var phase = 'read-answer';
   var markSchemeRevealed = false;
   var checklistState = {};
@@ -453,7 +453,45 @@
         );
       },
       getCompletionTimeSeconds: function () {
-        return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+        return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
+      },
+      getResponses: function () {
+        var evidence = window.Unit3SupabaseEvidence;
+        var lastIndex = data.checklist.length - 1;
+        return data.checklist.map(function (item, index) {
+          var qid = String(item.id || '').toUpperCase();
+          var checked = Boolean(checklistState[item.id]);
+          var payload = {
+            checked: checked,
+            label: item.label || '',
+            description: item.description || ''
+          };
+          if (index === lastIndex) {
+            payload.awardedMarks = awardedMarks;
+            payload.strength = strength;
+            payload.improvement = improvement;
+            payload.improvedAnswer = improvedAnswer;
+          }
+          if (evidence && evidence.structured) {
+            return evidence.structured(qid, payload, {
+              correct: checked,
+              score: checked ? 1 : 0
+            });
+          }
+          return {
+            questionId: qid,
+            response: payload,
+            responseType: 'structured',
+            correct: checked,
+            score: checked ? 1 : 0
+          };
+        });
+      },
+      getStartedAt: function () {
+        return new Date(startedAt).toISOString();
+      },
+      getCompletedAt: function () {
+        return new Date().toISOString();
       },
       canSubmit: function () {
         return canProceedToSubmit();

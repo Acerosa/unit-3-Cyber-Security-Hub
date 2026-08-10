@@ -10,7 +10,7 @@
   var host = document.getElementById('w3-justified-host');
   var answers = {};
   var checks = {};
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var submittedLocal = false;
 
   if (progress) {
@@ -172,10 +172,41 @@
           return data.total;
         },
         getCompletionTimeSeconds: function () {
-          return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+          return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
         },
         getReflection: function () {
           return 'Justified identification self-guided score ' + autoScore() + '/' + data.total;
+        },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          return data.scenarios.map(function (scenario) {
+            var qid = String(scenario.id || '').toUpperCase();
+            var text = answers[scenario.id] || '';
+            var payload = {
+              text: text,
+              checks: checks[scenario.id] || {}
+            };
+            var filled = text.trim().length > 0;
+            if (evidence && evidence.structured) {
+              return evidence.structured(qid, payload, {
+                correct: filled,
+                score: filled ? 1 : 0
+              });
+            }
+            return {
+              questionId: qid,
+              response: payload,
+              responseType: 'structured',
+              correct: filled,
+              score: filled ? 1 : 0
+            };
+          });
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
         },
         canSubmit: function () {
           return true;

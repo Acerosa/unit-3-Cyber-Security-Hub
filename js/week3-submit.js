@@ -16,8 +16,60 @@
       submissions: global.Unit3Submissions,
       progress: global.Unit3Week3Progress,
       utils: global.Unit3ActivityUtils,
-      config: global.Unit3ActivityEngineConfig
+      config: global.Unit3ActivityEngineConfig,
+      backendMode: global.Unit3BackendMode,
+      adapter: global.Unit3SupabaseAdapter,
+      runner: global.Unit3SupabaseSubmitRunner
     };
+  }
+
+  function isSupabaseMode() {
+    var modules = getModules();
+    return Boolean(
+      modules.backendMode &&
+        typeof modules.backendMode.isSupabase === 'function' &&
+        modules.backendMode.isSupabase()
+    );
+  }
+
+  function submitResultViaSupabase(options) {
+    var modules = getModules();
+    if (!modules.runner || typeof modules.runner.submit !== 'function') {
+      setMessage(
+        'w3-submit-status',
+        'The learner service is not available on this device. Contact your tutor.',
+        'error'
+      );
+      return;
+    }
+    submitting = true;
+    modules.runner
+      .submit({
+        activityId: options.activityId,
+        getResponses: options.getResponses,
+        getStartedAt: options.startedAt
+          ? function () { return options.startedAt; }
+          : null,
+        getCompletedAt: options.completedAt
+          ? function () { return options.completedAt; }
+          : null,
+        progress: modules.progress,
+        statusHostId: 'w3-submit-status',
+        summaryHostId: 'w3-submission-summary',
+        buttonId: 'w3-btn-submit',
+        submitLabel: 'Submit formative result',
+        onSubmitted: function (info) {
+          awaitNewAttempt = true;
+          if (typeof options.onSubmitted === 'function') {
+            options.onSubmitted(info);
+          }
+        },
+        onError: options.onError
+      })
+      .catch(function () { /* runner already surfaced the message */ })
+      .then(function () {
+        submitting = false;
+      });
   }
 
   function resolveActivity(activityId) {
@@ -90,6 +142,9 @@
 
     var formHost = document.createElement('div');
     formHost.id = 'w3-learner-form';
+    if (isSupabaseMode()) {
+      formHost.hidden = true;
+    }
     host.appendChild(formHost);
 
     var errors = document.createElement('div');
@@ -122,9 +177,11 @@
 
     var activity = resolveActivity(options.activityId);
     modules.learner.renderCourseDetails('w3-course-details', activity);
-    modules.learner.renderLearnerForm('w3-learner-form', {
-      showPartner: Boolean(activity && activity.allowsPartner)
-    });
+    if (!isSupabaseMode()) {
+      modules.learner.renderLearnerForm('w3-learner-form', {
+        showPartner: Boolean(activity && activity.allowsPartner)
+      });
+    }
 
     if (activity && activity.attemptStorageKey) {
       setAttemptNumber(
@@ -139,6 +196,9 @@
         if (current && modules.submissions) {
           modules.submissions.startNewAttempt(current.attemptStorageKey);
           beginNextAttemptNumber(current.attemptStorageKey);
+        }
+        if (current && modules.adapter && modules.adapter.beginNewClientAttempt) {
+          modules.adapter.beginNewClientAttempt(current.activityId);
         }
         awaitNewAttempt = false;
         submitBtn.textContent = 'Submit formative result';
@@ -163,7 +223,11 @@
         completionTimeSeconds: options.getCompletionTimeSeconds
           ? options.getCompletionTimeSeconds()
           : 60,
+        getResponses: options.getResponses,
+        startedAt: options.getStartedAt ? options.getStartedAt() : null,
+        completedAt: options.getCompletedAt ? options.getCompletedAt() : null,
         onSubmitted: options.onSubmitted,
+        onError: options.onError,
         canSubmit: options.canSubmit
       });
     });
@@ -253,6 +317,11 @@
         'Complete the activity before submitting your result.',
         'warning'
       );
+      return;
+    }
+
+    if (isSupabaseMode()) {
+      submitResultViaSupabase(options);
       return;
     }
 

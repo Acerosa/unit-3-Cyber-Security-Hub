@@ -8,7 +8,7 @@
   var ACTIVITY_ID = data.activityId;
   var DRAFT_KEY = 'answer-improvement';
   var host = document.getElementById('w5-activity-host');
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var state = {
     criteria: {},
     missingSafety: '',
@@ -222,7 +222,47 @@
           return data.total;
         },
         getCompletionTimeSeconds: function () {
-          return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+          return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
+        },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          // m1..m6 criteria → AI1..AI6; fold writing fields into AI6 extras.
+          var scheme = data.markSchemePoints || [];
+          return scheme.map(function (criterion, index) {
+            var qid = 'AI' + (index + 1);
+            var checked = Boolean(state.criteria[criterion.id]);
+            var payload = {
+              criterionId: criterion.id,
+              label: criterion.label,
+              checked: checked
+            };
+            if (index === scheme.length - 1) {
+              payload.missingSafety = state.missingSafety;
+              payload.stakeholder = state.stakeholder;
+              payload.evidence = state.evidence;
+              payload.timescale = state.timescale;
+              payload.improved = state.improved;
+            }
+            if (evidence && evidence.structured) {
+              return evidence.structured(qid, payload, {
+                correct: checked,
+                score: checked ? 1 : 0
+              });
+            }
+            return {
+              questionId: qid,
+              response: payload,
+              responseType: 'structured',
+              correct: checked,
+              score: checked ? 1 : 0
+            };
+          });
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
         },
         canSubmit: function () {
           return true;

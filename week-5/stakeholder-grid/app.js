@@ -8,7 +8,7 @@
   var ACTIVITY_ID = data.activityId;
   var DRAFT_KEY = 'stakeholder-grid';
   var host = document.getElementById('w5-activity-host');
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var rows = {};
   var reflection = { overlooked: '', hardest: '', compare: '' };
 
@@ -291,7 +291,65 @@
           return JSON.stringify(reflection);
         },
         getCompletionTimeSeconds: function () {
-          return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+          return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
+        },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var out = [];
+          data.stakeholders.forEach(function (stakeholder, index) {
+            var qid = 'SG' + (index + 1);
+            var row = Object.assign(
+              { stakeholderId: stakeholder.id, label: stakeholder.label },
+              rows[stakeholder.id] || {}
+            );
+            if (evidence && evidence.structured) {
+              out.push(
+                evidence.structured(qid, row, {
+                  correct: Boolean(String(row.loss || '').trim()),
+                  score: 1
+                })
+              );
+            } else {
+              out.push({
+                questionId: qid,
+                response: row,
+                responseType: 'structured',
+                correct: true,
+                score: 1
+              });
+            }
+          });
+          // Catalogue: SG8/SG9/SG10 are the three reflection prompts.
+          var reflections = [
+            { id: 'SG8', value: reflection.overlooked },
+            { id: 'SG9', value: reflection.hardest },
+            { id: 'SG10', value: reflection.compare }
+          ];
+          reflections.forEach(function (item) {
+            if (evidence && evidence.freeText) {
+              out.push(
+                evidence.freeText(item.id, item.value || '', {
+                  correct: String(item.value || '').trim().length > 0,
+                  score: 1
+                })
+              );
+            } else {
+              out.push({
+                questionId: item.id,
+                response: item.value || '',
+                responseType: 'text',
+                correct: true,
+                score: 1
+              });
+            }
+          });
+          return out;
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
         },
         canSubmit: function () {
           return true;

@@ -16,7 +16,7 @@
     improvement: '',
     rewrite: ''
   };
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
 
   if (progress) {
     progress.markStarted(ACTIVITY_ID);
@@ -180,7 +180,7 @@
           return data.total;
         },
         getCompletionTimeSeconds: function () {
-          return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+          return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
         },
         getReflection: function () {
           return (
@@ -188,6 +188,40 @@
             state.sampleId +
             '; strength/improvement/rewrite completed.'
           );
+        },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var payload = {
+            sampleId: state.sampleId,
+            criteria: state.criteria,
+            awarded: state.awarded,
+            strength: state.strength,
+            improvement: state.improvement,
+            rewrite: state.rewrite
+          };
+          if (evidence && evidence.structured) {
+            return [
+              evidence.structured('PEER1', payload, {
+                correct: computeScore() >= 3,
+                score: computeScore()
+              })
+            ];
+          }
+          return [
+            {
+              questionId: 'PEER1',
+              response: payload,
+              responseType: 'structured',
+              correct: computeScore() >= 3,
+              score: computeScore()
+            }
+          ];
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
         },
         canSubmit: function () {
           return computeScore() >= 3;

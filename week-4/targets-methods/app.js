@@ -10,7 +10,7 @@
   var selectedId = null;
   var finished = false;
   var score = 0;
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var completionTimeSeconds = 60;
 
   cards.forEach(function (card) {
@@ -64,7 +64,7 @@
     }
     score = computeScore();
     finished = true;
-    completionTimeSeconds = Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+    completionTimeSeconds = Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
     if (progress) progress.markCompleted(data.activityId, score, data.total);
     render();
     window.Unit3Week4Submit.renderSubmitPanel({
@@ -79,6 +79,37 @@
       getQuestionsForReview: incorrectIndexes,
       getCompletionTimeSeconds: function () {
         return completionTimeSeconds;
+      },
+      getResponses: function () {
+        var evidence = window.Unit3SupabaseEvidence;
+        return cards.map(function (card) {
+          var qid = String(card.id || '').toUpperCase();
+          var category = placements[card.id];
+          var correct = category === card.correctCategory;
+          if (evidence && evidence.classification) {
+            return evidence.classification(qid, category, {
+              correct: correct,
+              score: correct ? 1 : 0,
+              payload: {
+                statement: card.statement,
+                correctCategory: card.correctCategory
+              }
+            });
+          }
+          return {
+            questionId: qid,
+            response: { category: category, statement: card.statement },
+            responseType: 'classification',
+            correct: correct,
+            score: correct ? 1 : 0
+          };
+        });
+      },
+      getStartedAt: function () {
+        return new Date(startedAt).toISOString();
+      },
+      getCompletedAt: function () {
+        return new Date().toISOString();
       },
       canSubmit: function () {
         return finished;

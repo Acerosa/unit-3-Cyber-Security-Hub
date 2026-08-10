@@ -10,7 +10,7 @@
   var host = document.getElementById('w3-case-host');
   var responses = {};
   var reviewed = false;
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
 
   if (progress) {
     progress.markStarted(ACTIVITY_ID);
@@ -205,10 +205,37 @@
               return data.total;
             },
             getCompletionTimeSeconds: function () {
-              return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+              return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
             },
             getReflection: function () {
               return 'Case matching score ' + score() + '/' + data.total;
+            },
+            getResponses: function () {
+              var evidence = window.Unit3SupabaseEvidence;
+              return data.cases.map(function (item) {
+                var qid = String(item.id || '').toUpperCase();
+                var answer = responses[item.id] || {};
+                var correct = answer.bestAnswer === item.bestAnswer;
+                if (evidence && evidence.structured) {
+                  return evidence.structured(qid, answer, {
+                    correct: correct,
+                    score: correct ? 1 : 0
+                  });
+                }
+                return {
+                  questionId: qid,
+                  response: answer,
+                  responseType: 'structured',
+                  correct: correct,
+                  score: correct ? 1 : 0
+                };
+              });
+            },
+            getStartedAt: function () {
+              return new Date(startedAt).toISOString();
+            },
+            getCompletedAt: function () {
+              return new Date().toISOString();
             },
             canSubmit: function () {
               return true;

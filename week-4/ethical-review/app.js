@@ -8,7 +8,7 @@
   var ACTIVITY_ID = data.activityId;
   var DRAFT_KEY = 'ethical-review';
   var host = document.getElementById('w4-activity-host');
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var state = { position: '', reason: '', legalNote: '' };
 
   if (progress) {
@@ -147,10 +147,49 @@
           return data.total;
         },
         getCompletionTimeSeconds: function () {
-          return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+          return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
         },
         getReflection: function () {
           return state.position + ' | ' + state.reason;
+        },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var eth1 = { position: state.position, reason: state.reason };
+          var eth2 = { legalNote: state.legalNote };
+          if (evidence && evidence.structured) {
+            return [
+              evidence.structured('ETH1', eth1, {
+                correct: computeScore() > 0,
+                score: computeScore() > 0 ? 1 : 0
+              }),
+              evidence.structured('ETH2', eth2, {
+                correct: String(state.legalNote || '').trim().length > 0,
+                score: String(state.legalNote || '').trim().length > 0 ? 1 : 0
+              })
+            ];
+          }
+          return [
+            {
+              questionId: 'ETH1',
+              response: eth1,
+              responseType: 'structured',
+              correct: true,
+              score: 1
+            },
+            {
+              questionId: 'ETH2',
+              response: eth2,
+              responseType: 'structured',
+              correct: true,
+              score: 1
+            }
+          ];
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
         },
         canSubmit: function () {
           return validate().length === 0;

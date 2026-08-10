@@ -8,7 +8,7 @@
   var ACTIVITY_ID = data.activityId;
   var DRAFT_KEY = 'impact-classification';
   var host = document.getElementById('w5-activity-host');
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var responses = {};
   var reviewed = false;
 
@@ -193,7 +193,41 @@
             return data.total;
           },
           getCompletionTimeSeconds: function () {
-            return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+            return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
+          },
+          getResponses: function () {
+            var evidence = window.Unit3SupabaseEvidence;
+            return data.items.map(function (item) {
+              var qid = String(item.id || '').toUpperCase();
+              var row = responses[item.id] || {};
+              var correct = itemScore(item) > 0;
+              if (evidence && evidence.classification) {
+                return evidence.classification(qid, row.category || '', {
+                  correct: correct,
+                  score: correct ? 1 : 0,
+                  payload: {
+                    reason: row.reason || '',
+                    statement: item.statement
+                  }
+                });
+              }
+              return {
+                questionId: qid,
+                response: {
+                  category: row.category || '',
+                  reason: row.reason || ''
+                },
+                responseType: 'classification',
+                correct: correct,
+                score: correct ? 1 : 0
+              };
+            });
+          },
+          getStartedAt: function () {
+            return new Date(startedAt).toISOString();
+          },
+          getCompletedAt: function () {
+            return new Date().toISOString();
           },
           canSubmit: function () {
             return true;

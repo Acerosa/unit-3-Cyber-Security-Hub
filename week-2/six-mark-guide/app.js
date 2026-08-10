@@ -1,6 +1,8 @@
 (function () {
   'use strict';
 
+  var startedAt = new Date().toISOString();
+
   var data = window.Week2SixMarkGuide;
   var progress = window.Unit3Week2Progress;
 
@@ -205,6 +207,25 @@
         getCompletionTimeSeconds: function () {
           return result.completionTimeSeconds;
         },
+
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          if (evidence && evidence.fromQuizResult) {
+            return evidence.fromQuizResult(result, data.questions);
+          }
+          return (result.answers || []).map(function (answer, index) {
+            var question = (data.questions)[index] || {};
+            return {
+              questionId: question.id || answer.questionId,
+              response: { chosenIndex: answer.chosenIndex },
+              correct: Boolean(answer.correct),
+              score: answer.correct ? 1 : 0,
+              responseType: 'single-choice'
+            };
+          });
+        },
+        getStartedAt: function () { return startedAt; },
+        getCompletedAt: function () { return new Date().toISOString(); },
         canSubmit: function () {
           return true;
         }

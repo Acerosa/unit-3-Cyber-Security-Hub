@@ -11,7 +11,7 @@
   var answers = {};
   var checked = false;
   var score = 0;
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var completionTimeSeconds = 60;
 
   data.scenarios.forEach(function (scenario) {
@@ -292,7 +292,7 @@
       checkBtn.addEventListener('click', function () {
         score = computeScore();
         checked = true;
-        completionTimeSeconds = Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+        completionTimeSeconds = Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
         if (progress) {
           progress.markCompleted(data.activityId, score, data.total);
         }
@@ -310,6 +310,33 @@
           },
           getCompletionTimeSeconds: function () {
             return completionTimeSeconds;
+          },
+          getResponses: function () {
+            var evidence = window.Unit3SupabaseEvidence;
+            return data.scenarios.map(function (scenario) {
+              var qid = String(scenario.id || '').toUpperCase();
+              var response = answers[scenario.id] || {};
+              var correct = scenarioCorrect(scenario, response);
+              if (evidence && evidence.structured) {
+                return evidence.structured(qid, response, {
+                  correct: correct,
+                  score: correct ? 1 : 0
+                });
+              }
+              return {
+                questionId: qid,
+                response: response,
+                responseType: 'structured',
+                correct: correct,
+                score: correct ? 1 : 0
+              };
+            });
+          },
+          getStartedAt: function () {
+            return new Date(startedAt).toISOString();
+          },
+          getCompletedAt: function () {
+            return new Date().toISOString();
           },
           canSubmit: function () {
             return checked;
