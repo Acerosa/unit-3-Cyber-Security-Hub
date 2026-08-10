@@ -1,0 +1,158 @@
+/*
+ * Unit 3 Supabase Auth widget styles.
+ *
+ * Deliberately minimal so the widget slots into every activity page
+ * without disturbing existing layouts. Uses tokens already applied
+ * via css/main.css for form fields, buttons and status messages.
+ */
+
+.unit3-auth-widget {
+  margin: 1rem 0 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: inherit;
+}
+
+.unit3-auth-widget__heading {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.unit3-auth-widget__note {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+.unit3-auth-widget__form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem 1rem;
+  align-items: end;
+}
+
+.unit3-auth-widget__form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.unit3-auth-widget__form input {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  font: inherit;
+  background: #fff;
+}
+
+.unit3-auth-widget__form input:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.unit3-auth-widget__actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.unit3-auth-widget__signed-in {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.unit3-auth-widget__error {
+  margin: 0;
+  color: #b91c1c;
+  font-size: 0.95rem;
+}
+
+@media (min-width: 720px) {
+  .unit3-auth-widget__form {
+    grid-template-columns: 1fr 1fr auto;
+  }
+}
+
+/* Dedicated account page */
+.unit3-account__status {
+  margin-top: 0.75rem;
+}
+
+.unit3-account__checklist {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.unit3-account__checklist .is-ok {
+  color: #166534;
+}
+
+.unit3-account__checklist .is-blocked {
+  color: #9a3412;
+}
+
+.unit3-account__tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.unit3-account__tab {
+  font: inherit;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.unit3-account__tab.is-active,
+.unit3-account__tab[aria-selected="true"] {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.unit3-account__form {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 28rem;
+}
+
+.unit3-account__form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.unit3-account__form input {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  font: inherit;
+  background: #fff;
+}
+
+.unit3-account__form input:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.unit3-account__note {
+  margin: 0 0 0.75rem;
+  color: #334155;
+}
+
+.unit3-account__error {
+  margin: 0;
+  color: #b91c1c;
+}
+
+.unit3-account__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}

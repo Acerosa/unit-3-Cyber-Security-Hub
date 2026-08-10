@@ -16,8 +16,60 @@
       submissions: global.Unit3Submissions,
       progress: global.Unit3Week5Progress,
       utils: global.Unit3ActivityUtils,
-      config: global.Unit3ActivityEngineConfig
+      config: global.Unit3ActivityEngineConfig,
+      backendMode: global.Unit3BackendMode,
+      adapter: global.Unit3SupabaseAdapter,
+      runner: global.Unit3SupabaseSubmitRunner
     };
+  }
+
+  function isSupabaseMode() {
+    var modules = getModules();
+    return Boolean(
+      modules.backendMode &&
+        typeof modules.backendMode.isSupabase === 'function' &&
+        modules.backendMode.isSupabase()
+    );
+  }
+
+  function submitResultViaSupabase(options) {
+    var modules = getModules();
+    if (!modules.runner || typeof modules.runner.submit !== 'function') {
+      setMessage(
+        'w5-submit-status',
+        'The learner service is not available on this device. Contact your tutor.',
+        'error'
+      );
+      return;
+    }
+    submitting = true;
+    modules.runner
+      .submit({
+        activityId: options.activityId,
+        getResponses: options.getResponses,
+        getStartedAt: options.startedAt
+          ? function () { return options.startedAt; }
+          : null,
+        getCompletedAt: options.completedAt
+          ? function () { return options.completedAt; }
+          : null,
+        progress: modules.progress,
+        statusHostId: 'w5-submit-status',
+        summaryHostId: 'w5-submission-summary',
+        buttonId: 'w5-btn-submit',
+        submitLabel: 'Submit formative result',
+        onSubmitted: function (info) {
+          awaitNewAttempt = true;
+          if (typeof options.onSubmitted === 'function') {
+            options.onSubmitted(info);
+          }
+        },
+        onError: options.onError
+      })
+      .catch(function () { /* runner already surfaced the message */ })
+      .then(function () {
+        submitting = false;
+      });
   }
 
   function resolveActivity(activityId) {
@@ -35,11 +87,6 @@
     }
     var cfg = modules.config && modules.config.ACTIVITY_ENGINE_CONFIG;
     return (cfg && cfg.week5ApiBaseUrl) || '';
-  }
-
-  function isWeek5ApiConfigured() {
-    var url = getWeek5ApiUrl();
-    return Boolean(url && /\/exec\/?$/.test(url));
   }
 
   function attemptNumberKey(storageKey) {
@@ -95,6 +142,9 @@
 
     var formHost = document.createElement('div');
     formHost.id = 'w5-learner-form';
+    if (isSupabaseMode()) {
+      formHost.hidden = true;
+    }
     host.appendChild(formHost);
 
     var errors = document.createElement('div');
@@ -127,9 +177,11 @@
 
     var activity = resolveActivity(options.activityId);
     modules.learner.renderCourseDetails('w5-course-details', activity);
-    modules.learner.renderLearnerForm('w5-learner-form', {
-      showPartner: Boolean(activity && activity.allowsPartner)
-    });
+    if (!isSupabaseMode()) {
+      modules.learner.renderLearnerForm('w5-learner-form', {
+        showPartner: Boolean(activity && activity.allowsPartner)
+      });
+    }
 
     if (activity && activity.attemptStorageKey) {
       setAttemptNumber(
@@ -138,30 +190,15 @@
       );
     }
 
-    if (!isWeek5ApiConfigured()) {
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Remote recording not available yet';
-      setMessage(
-        'w5-submit-status',
-        'Your work has been assessed and saved in this browser only. The Week 5 Apps Script collector is not configured yet, so formative results are not recorded remotely.',
-        'info'
-      );
-    }
-
     submitBtn.addEventListener('click', function () {
-      if (!isWeek5ApiConfigured()) {
-        setMessage(
-          'w5-submit-status',
-          'Remote recording is not available yet. Your local progress remains saved in this browser.',
-          'warning'
-        );
-        return;
-      }
       if (awaitNewAttempt) {
         var current = resolveActivity(options.activityId);
         if (current && modules.submissions) {
           modules.submissions.startNewAttempt(current.attemptStorageKey);
           beginNextAttemptNumber(current.attemptStorageKey);
+        }
+        if (current && modules.adapter && modules.adapter.beginNewClientAttempt) {
+          modules.adapter.beginNewClientAttempt(current.activityId);
         }
         awaitNewAttempt = false;
         submitBtn.textContent = 'Submit formative result';
@@ -186,7 +223,11 @@
         completionTimeSeconds: options.getCompletionTimeSeconds
           ? options.getCompletionTimeSeconds()
           : 60,
+        getResponses: options.getResponses,
+        startedAt: options.getStartedAt ? options.getStartedAt() : null,
+        completedAt: options.getCompletedAt ? options.getCompletedAt() : null,
         onSubmitted: options.onSubmitted,
+        onError: options.onError,
         canSubmit: options.canSubmit
       });
     });
@@ -217,7 +258,7 @@
       firstName: learner.firstName || '',
       surname: learner.surname || '',
       studentId: learner.studentId || '',
-      weekNumber: activity.weekNumber || 5,
+      weekNumber: activity.weekNumber || 3,
       sessionNumber: sessionNumberFromActivity(activity),
       sessionName: activity.sessionName || '',
       activityId: activity.activityId,
@@ -276,6 +317,11 @@
         'Complete the activity before submitting your result.',
         'warning'
       );
+      return;
+    }
+
+    if (isSupabaseMode()) {
+      submitResultViaSupabase(options);
       return;
     }
 
@@ -449,7 +495,6 @@
 
   global.Unit3Week5Submit = {
     renderSubmitPanel: renderSubmitPanel,
-    submitResult: submitResult,
-    isWeek5ApiConfigured: isWeek5ApiConfigured
+    submitResult: submitResult
   };
 })(window);

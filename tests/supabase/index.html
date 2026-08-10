@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unit 3 Supabase migration tests</title>
+  <link rel="stylesheet" href="../../css/main.css">
+</head>
+<body>
+  <main class="site-main" id="main-content">
+    <h1>Unit 3 Supabase migration tests</h1>
+    <p>Static developer checks for the shared Supabase modules. No network calls are made. Load this page from the repository root via <code>python3 -m http.server</code>.</p>
+    <div id="results" class="panel" aria-live="polite"></div>
+    <p><a href="../../index.html">Back to hub home</a></p>
+  </main>
+  <script src="../../js/config/supabase-config.js"></script>
+  <script src="../../js/core/backend-mode.js"></script>
+  <script src="../../js/core/activity-key-map.js"></script>
+  <script src="../../js/core/question-key-aliases.js"></script>
+  <script src="../../js/core/supabase-client.js"></script>
+  <script src="../../js/core/supabase-auth.js"></script>
+  <script src="../../js/core/supabase-learning-api.js"></script>
+  <script src="../../js/core/supabase-submission-adapter.js"></script>
+  <script src="../../js/core/supabase-evidence.js"></script>
+  <script src="../../js/core/unit3-supabase-submit-runner.js"></script>
+  <script src="validate-supabase-modules.js"></script>
+  <script>
+    (function () {
+      var host = document.getElementById("results");
+      var results = window.Unit3SupabaseTests.runSupabaseModuleTests();
+      var failed = results.filter(function (r) { return !r.ok; });
+      var heading = document.createElement("p");
+      heading.textContent = failed.length === 0
+        ? "All " + results.length + " Supabase migration checks passed."
+        : failed.length + " of " + results.length + " Supabase migration checks failed.";
+      host.appendChild(heading);
+      var list = document.createElement("ul");
+      results.forEach(function (r) {
+        var li = document.createElement("li");
+        li.textContent = (r.ok ? "PASS" : "FAIL") + ": " + r.name + (r.detail ? " — " + r.detail : "");
+        list.appendChild(li);
+      });
+      host.appendChild(list);
+    })();
+  </script>
+</body>
+</html>

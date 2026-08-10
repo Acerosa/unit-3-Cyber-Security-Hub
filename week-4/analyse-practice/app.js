@@ -8,7 +8,7 @@
   var ACTIVITY_ID = data.activityId;
   var DRAFT_KEY = 'analyse-practice';
   var host = document.getElementById('w4-activity-host');
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var state = {
     template: 'frame',
     motivation: '',
@@ -266,7 +266,57 @@
           return data.total;
         },
         getCompletionTimeSeconds: function () {
-          return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+          return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
+        },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var pairs = [
+            { id: 'AN1', value: state.template },
+            { id: 'AN2', value: state.motivation },
+            { id: 'AN3', value: state.target },
+            { id: 'AN4', value: state.method },
+            { id: 'AN5', value: state.plan },
+            { id: 'AN6', value: state.checklist, structured: true }
+          ];
+          return pairs.map(function (pair) {
+            if (pair.structured) {
+              if (evidence && evidence.structured) {
+                return evidence.structured(pair.id, pair.value || {}, {
+                  correct: Object.keys(pair.value || {}).some(function (k) {
+                    return pair.value[k];
+                  }),
+                  score: 1
+                });
+              }
+              return {
+                questionId: pair.id,
+                response: pair.value || {},
+                responseType: 'structured',
+                correct: true,
+                score: 1
+              };
+            }
+            var filled = String(pair.value || '').trim().length > 0;
+            if (evidence && evidence.freeText) {
+              return evidence.freeText(pair.id, pair.value || '', {
+                correct: filled,
+                score: filled ? 1 : 0
+              });
+            }
+            return {
+              questionId: pair.id,
+              response: pair.value || '',
+              responseType: 'text',
+              correct: filled,
+              score: filled ? 1 : 0
+            };
+          });
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
         },
         canSubmit: function () {
           return validate().length === 0;

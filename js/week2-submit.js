@@ -16,8 +16,20 @@
       submissions: global.Unit3Submissions,
       progress: global.Unit3Week2Progress,
       utils: global.Unit3ActivityUtils,
-      config: global.Unit3ActivityEngineConfig
+      config: global.Unit3ActivityEngineConfig,
+      backendMode: global.Unit3BackendMode,
+      adapter: global.Unit3SupabaseAdapter,
+      learningApi: global.SupabaseLearningApi
     };
+  }
+
+  function isSupabaseMode() {
+    var modules = getModules();
+    return Boolean(
+      modules.backendMode &&
+        typeof modules.backendMode.isSupabase === "function" &&
+        modules.backendMode.isSupabase()
+    );
   }
 
   function resolveActivity(activityId) {
@@ -90,6 +102,13 @@
 
     var formHost = document.createElement('div');
     formHost.id = 'w2-learner-form';
+    // When Supabase is the transport, the browser must not collect a
+    // learner-owned Student ID / names / class group. Identity is derived
+    // server-side from Supabase Auth. The form remains rendered only for
+    // Apps Script rollback mode.
+    if (isSupabaseMode()) {
+      formHost.hidden = true;
+    }
     host.appendChild(formHost);
 
     var errors = document.createElement('div');
@@ -122,9 +141,11 @@
 
     var activity = resolveActivity(options.activityId);
     modules.learner.renderCourseDetails('w2-course-details', activity);
-    modules.learner.renderLearnerForm('w2-learner-form', {
-      showPartner: Boolean(activity && activity.allowsPartner)
-    });
+    if (!isSupabaseMode()) {
+      modules.learner.renderLearnerForm('w2-learner-form', {
+        showPartner: Boolean(activity && activity.allowsPartner)
+      });
+    }
 
     if (activity && activity.attemptStorageKey) {
       setAttemptNumber(
@@ -139,6 +160,9 @@
         if (current && modules.submissions) {
           modules.submissions.startNewAttempt(current.attemptStorageKey);
           beginNextAttemptNumber(current.attemptStorageKey);
+        }
+        if (current && modules.adapter && modules.adapter.beginNewClientAttempt) {
+          modules.adapter.beginNewClientAttempt(current.activityId);
         }
         awaitNewAttempt = false;
         submitBtn.textContent = 'Submit formative result';
@@ -163,7 +187,11 @@
         completionTimeSeconds: options.getCompletionTimeSeconds
           ? options.getCompletionTimeSeconds()
           : 60,
+        getResponses: options.getResponses,
+        startedAt: options.getStartedAt ? options.getStartedAt() : null,
+        completedAt: options.getCompletedAt ? options.getCompletedAt() : null,
         onSubmitted: options.onSubmitted,
+        onError: options.onError,
         canSubmit: options.canSubmit
       });
     });
@@ -240,6 +268,47 @@
     });
   }
 
+  function submitResultViaSupabase(options) {
+    var modules = getModules();
+    var runner = global.Unit3SupabaseSubmitRunner;
+    if (!runner || typeof runner.submit !== 'function') {
+      setMessage(
+        'w2-submit-status',
+        'The learner service is not available on this device. Contact your tutor.',
+        'error'
+      );
+      return;
+    }
+    submitting = true;
+    runner
+      .submit({
+        activityId: options.activityId,
+        getResponses: options.getResponses,
+        getStartedAt: options.startedAt
+          ? function () { return options.startedAt; }
+          : null,
+        getCompletedAt: options.completedAt
+          ? function () { return options.completedAt; }
+          : null,
+        progress: modules.progress,
+        statusHostId: 'w2-submit-status',
+        summaryHostId: 'w2-submission-summary',
+        buttonId: 'w2-btn-submit',
+        submitLabel: 'Submit formative result',
+        onSubmitted: function (info) {
+          awaitNewAttempt = true;
+          if (typeof options.onSubmitted === 'function') {
+            options.onSubmitted(info);
+          }
+        },
+        onError: options.onError
+      })
+      .catch(function () { /* runner already surfaced the message */ })
+      .then(function () {
+        submitting = false;
+      });
+  }
+
   function submitResult(options) {
     var modules = getModules();
     if (submitting) {
@@ -253,6 +322,11 @@
         'Complete the activity before submitting your result.',
         'warning'
       );
+      return;
+    }
+
+    if (isSupabaseMode()) {
+      submitResultViaSupabase(options);
       return;
     }
 

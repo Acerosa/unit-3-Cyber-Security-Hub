@@ -10,7 +10,7 @@
     thm && thm.getResourceByActivityId
       ? thm.getResourceByActivityId(ACTIVITY_ID)
       : null;
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var submitShown = false;
 
   var reflections = {
@@ -73,7 +73,7 @@
   }
 
   function getCompletionTimeSeconds() {
-    return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+    return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
   }
 
   function updateAppStateLabel() {
@@ -134,6 +134,35 @@
         },
         getReflection: getReflectionSummary,
         getCompletionTimeSeconds: getCompletionTimeSeconds,
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var pairs = [
+            { id: 'W2V101-Q01', value: reflections.vulnerability },
+            { id: 'W2V101-Q02', value: reflections.northbank }
+          ];
+          return pairs.map(function (pair) {
+            var filled = Boolean(trim(pair.value));
+            if (evidence && evidence.freeText) {
+              return evidence.freeText(pair.id, pair.value, {
+                correct: filled,
+                score: filled ? 1 : 0
+              });
+            }
+            return {
+              questionId: pair.id,
+              response: pair.value || '',
+              responseType: 'text',
+              correct: filled,
+              score: filled ? 1 : 0
+            };
+          });
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
+        },
         canSubmit: function () {
           return computeScore() === TOTAL;
         },

@@ -9,7 +9,7 @@
   var mode = 'overview';
   var lossIndex = 0;
   var host = document.getElementById('w5-activity-host');
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var checkAnswers = {};
 
   if (progress) progress.markStarted(ACTIVITY_ID);
@@ -251,15 +251,35 @@
           getCompletionTimeSeconds: function () {
             return (
               result.completionTimeSeconds ||
-              Math.max(1, Math.round((Date.now() - startedAt) / 1000))
+              Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000))
             );
           },
-          canSubmit: function () {
+
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          if (evidence && evidence.fromQuizResult) {
+            return evidence.fromQuizResult(result, data.knowledgeCheck);
+          }
+          return (result.answers || []).map(function (answer, index) {
+            var question = (data.knowledgeCheck)[index] || {};
+            return {
+              questionId: question.id || answer.questionId,
+              response: { chosenIndex: answer.chosenIndex },
+              correct: Boolean(answer.correct),
+              score: answer.correct ? 1 : 0,
+              responseType: 'single-choice'
+            };
+          });
+        },
+        getStartedAt: function () { return startedAt; },
+        getCompletedAt: function () { return new Date().toISOString(); },
+        canSubmit: function () {
             return true;
           }
         });
       },
       onRetry: function () {
+      startedAt = new Date().toISOString();
         var submit = document.getElementById('w5-submit-host');
         if (submit) {
           submit.hidden = true;

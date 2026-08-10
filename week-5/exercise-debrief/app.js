@@ -8,7 +8,7 @@
   var ACTIVITY_ID = data.activityId;
   var DRAFT_KEY = 'exercise-debrief';
   var host = document.getElementById('w5-activity-host');
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var answers = {};
 
   data.prompts.forEach(function (prompt) {
@@ -161,7 +161,57 @@
           return JSON.stringify(answers);
         },
         getCompletionTimeSeconds: function () {
-          return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+          return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
+        },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var map = [
+            { id: 'DB1', key: 'impactReduced' },
+            { id: 'DB2', key: 'stakeholderBenefit' },
+            { id: 'DB3', key: 'timescale' },
+            { id: 'DB4', key: 'negativeEffect' }
+          ];
+          return map.map(function (item) {
+            var value = answers[item.key] || '';
+            if (item.id === 'DB4' && answers.globalLink) {
+              value = {
+                negativeEffect: answers.negativeEffect || '',
+                globalLink: answers.globalLink || ''
+              };
+              if (evidence && evidence.structured) {
+                return evidence.structured(item.id, value, {
+                  correct: String(answers.negativeEffect || '').trim().length >= 20,
+                  score: 1
+                });
+              }
+              return {
+                questionId: item.id,
+                response: value,
+                responseType: 'structured',
+                correct: true,
+                score: 1
+              };
+            }
+            if (evidence && evidence.freeText) {
+              return evidence.freeText(item.id, value, {
+                correct: String(value || '').trim().length >= 20,
+                score: 1
+              });
+            }
+            return {
+              questionId: item.id,
+              response: value,
+              responseType: 'text',
+              correct: true,
+              score: 1
+            };
+          });
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
         },
         canSubmit: function () {
           return true;

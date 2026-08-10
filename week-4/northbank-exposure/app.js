@@ -8,7 +8,7 @@
   var ACTIVITY_ID = data.activityId;
   var DRAFT_KEY = 'northbank-exposure';
   var host = document.getElementById('w4-activity-host');
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var state = {
     exposures: {
       'exposure-1': { item: '', motivation: '', whyAttractive: '' },
@@ -195,10 +195,38 @@
           return data.total;
         },
         getCompletionTimeSeconds: function () {
-          return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+          return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
         },
         getReflection: function () {
           return data.conclusion;
+        },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          return data.prompts.map(function (prompt, index) {
+            var qid = 'NB' + (index + 1);
+            var row = state.exposures[prompt.id] || {};
+            var complete =
+              filled(row.item) && filled(row.motivation) && filled(row.whyAttractive);
+            if (evidence && evidence.structured) {
+              return evidence.structured(qid, row, {
+                correct: complete,
+                score: complete ? 1 : 0
+              });
+            }
+            return {
+              questionId: qid,
+              response: row,
+              responseType: 'structured',
+              correct: complete,
+              score: complete ? 1 : 0
+            };
+          });
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
         },
         canSubmit: function () {
           return validate().length === 0;

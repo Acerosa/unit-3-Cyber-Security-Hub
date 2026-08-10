@@ -8,7 +8,7 @@
   var ACTIVITY_ID = data.activityId;
   var DRAFT_KEY = 'ransomware-companion';
   var host = document.getElementById('w5-activity-host');
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var state = {
     selectedRole: '',
     roleDecision: '',
@@ -313,7 +313,56 @@
           });
         },
         getCompletionTimeSeconds: function () {
-          return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+          return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
+        },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var pairs = [
+            { id: 'RC1', value: state.selectedRole, type: 'text' },
+            { id: 'RC2', value: state.roleDecision, type: 'text' },
+            { id: 'RC3', value: state.decisions, type: 'structured' },
+            {
+              id: 'RC4',
+              value: { facilitatedConfirmed: Boolean(state.facilitatedConfirmed) },
+              type: 'structured'
+            }
+          ];
+          return pairs.map(function (pair) {
+            if (pair.type === 'structured') {
+              if (evidence && evidence.structured) {
+                return evidence.structured(pair.id, pair.value, {
+                  correct: true,
+                  score: 1
+                });
+              }
+              return {
+                questionId: pair.id,
+                response: pair.value,
+                responseType: 'structured',
+                correct: true,
+                score: 1
+              };
+            }
+            if (evidence && evidence.freeText) {
+              return evidence.freeText(pair.id, pair.value || '', {
+                correct: Boolean(String(pair.value || '').trim()),
+                score: 1
+              });
+            }
+            return {
+              questionId: pair.id,
+              response: pair.value || '',
+              responseType: 'text',
+              correct: true,
+              score: 1
+            };
+          });
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
         },
         canSubmit: function () {
           return true;

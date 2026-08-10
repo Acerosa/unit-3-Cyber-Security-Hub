@@ -11,7 +11,7 @@
   var answers = {};
   var selfMarks = {};
   var review = false;
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
 
   if (progress) {
     progress.markStarted(ACTIVITY_ID);
@@ -180,7 +180,54 @@
             return data.total;
           },
           getCompletionTimeSeconds: function () {
-            return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+            return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
+          },
+          getResponses: function () {
+            var evidence = window.Unit3SupabaseEvidence;
+            return data.questions.map(function (q) {
+              var qid = String(q.id || '').toUpperCase();
+              var answer = answers[q.id];
+              var marks = Number(selfMarks[q.id]);
+              var score = Number.isFinite(marks)
+                ? Math.max(0, Math.min(q.marks, marks))
+                : 0;
+              if (q.responseType === 'mcq') {
+                var payload = { selectedOptionId: answer || null };
+                if (evidence && evidence.structured) {
+                  return evidence.structured(qid, payload, {
+                    responseType: 'single-choice',
+                    correct: answer === q.correctOptionId,
+                    score: score
+                  });
+                }
+                return {
+                  questionId: qid,
+                  response: payload,
+                  responseType: 'single-choice',
+                  correct: answer === q.correctOptionId,
+                  score: score
+                };
+              }
+              if (evidence && evidence.freeText) {
+                return evidence.freeText(qid, answer || '', {
+                  correct: score > 0,
+                  score: score
+                });
+              }
+              return {
+                questionId: qid,
+                response: answer || '',
+                responseType: 'text',
+                correct: score > 0,
+                score: score
+              };
+            });
+          },
+          getStartedAt: function () {
+            return new Date(startedAt).toISOString();
+          },
+          getCompletedAt: function () {
+            return new Date().toISOString();
           },
           canSubmit: function () {
             return true;

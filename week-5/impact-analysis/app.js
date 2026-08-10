@@ -8,7 +8,7 @@
   var ACTIVITY_ID = data.activityId;
   var DRAFT_KEY = 'impact-analysis';
   var host = document.getElementById('w5-activity-host');
-  var startedAt = Date.now();
+  var startedAt = new Date().toISOString();
   var state = {
     annotations: {},
     immediate: '',
@@ -230,7 +230,45 @@
           return data.total;
         },
         getCompletionTimeSeconds: function () {
-          return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+          return Math.max(1, Math.round((Date.now() - Date.parse(startedAt)) / 1000));
+        },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var annotations =
+            (data.strongResponse && data.strongResponse.creditAnnotations) || [];
+          return annotations.map(function (item, index) {
+            var qid = 'IA' + (index + 1);
+            var checked = Boolean(state.annotations[item.id]);
+            var payload = {
+              annotationId: item.id,
+              label: item.label,
+              checked: checked
+            };
+            if (index === annotations.length - 1) {
+              payload.immediate = state.immediate;
+              payload.sixMonths = state.sixMonths;
+              payload.improvement = state.improvement;
+            }
+            if (evidence && evidence.structured) {
+              return evidence.structured(qid, payload, {
+                correct: checked,
+                score: checked ? 1 : 0
+              });
+            }
+            return {
+              questionId: qid,
+              response: payload,
+              responseType: 'structured',
+              correct: checked,
+              score: checked ? 1 : 0
+            };
+          });
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
         },
         canSubmit: function () {
           return true;
