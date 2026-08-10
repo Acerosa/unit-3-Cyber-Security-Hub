@@ -364,6 +364,71 @@
     });
   }
 
+  /**
+   * Create an Auth account with email/password. Returns either a session
+   * (when email confirmation is disabled) or { session: null, user, needsConfirmation }.
+   * This does not create learning.students or enrolments — those remain
+   * server-side provisioning steps.
+   */
+  function signUpWithPassword(email, password) {
+    var valid =
+      typeof email === "string" &&
+      email.trim() &&
+      typeof password === "string" &&
+      password.length >= 8;
+    if (!valid) {
+      return Promise.reject(
+        new SupabaseClientError("INVALID_AUTH_CREDENTIALS")
+      );
+    }
+    var activeClient = client();
+    if (activeClient) {
+      return activeClient.auth
+        .signUp({ email: email.trim(), password: password })
+        .then(function (result) {
+          if (result.error) {
+            throw new SupabaseClientError(
+              result.error.code || "REGISTRATION_FAILED",
+              result.error.message
+            );
+          }
+          var session = normaliseHostedSession(
+            result.data && result.data.session
+          );
+          return {
+            session: session,
+            user: (result.data && result.data.user) || null,
+            needsConfirmation: !session
+          };
+        });
+    }
+    return fetchJson("/auth/v1/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email.trim(), password: password })
+    }).then(function (payload) {
+      if (payload && payload.access_token) {
+        return fallbackSaveSession({
+          accessToken: payload.access_token || "",
+          refreshToken: payload.refresh_token || "",
+          expiresAt: Number(payload.expires_at),
+          userId: (payload.user && payload.user.id) || ""
+        }).then(function (session) {
+          return {
+            session: session,
+            user: payload.user || null,
+            needsConfirmation: false
+          };
+        });
+      }
+      return {
+        session: null,
+        user: (payload && payload.user) || null,
+        needsConfirmation: true
+      };
+    });
+  }
+
   function signOut() {
     var activeClient = client();
     if (activeClient) {
@@ -430,6 +495,7 @@
     },
     clearSession: clearSession,
     signInWithPassword: signInWithPassword,
+    signUpWithPassword: signUpWithPassword,
     signOut: signOut,
     onAuthStateChange: onAuthStateChange,
     request: authenticatedRequest,

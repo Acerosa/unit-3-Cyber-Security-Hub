@@ -179,9 +179,10 @@
     if (auth && typeof auth.getLearnerContext === "function") {
       context = auth.getLearnerContext();
     }
+    var unlinked = state.status === "signed-in-unlinked";
     var displayName =
       (context && (context.displayName || context.firstName)) ||
-      "Signed-in learner";
+      (unlinked ? "Signed in (profile not linked)" : "Signed-in learner");
     var groupCode = (context && context.groupCode) || "";
     var block = el("div", { className: "unit3-auth-widget__signed-in" }, [
       el("h2", {
@@ -194,6 +195,20 @@
             textContent: "Group: " + groupCode
           })
         : null,
+      unlinked
+        ? el("p", {
+            className: "unit3-auth-widget__error",
+            role: "status",
+            textContent:
+              "Your account is signed in, but it is not linked to a learner profile yet. Ask your tutor to complete linking before you submit work."
+          })
+        : null,
+      el("p", { className: "unit3-auth-widget__note" }, [
+        el("a", {
+          href: resolveAccountHref(),
+          textContent: "Manage account"
+        })
+      ]),
       el("button", {
         type: "button",
         className: "btn btn-secondary",
@@ -207,6 +222,21 @@
       button.addEventListener("click", function () {
         if (window.SupabaseAuth) window.SupabaseAuth.signOut();
       });
+    }
+  }
+
+  function resolveAccountHref() {
+    try {
+      var path = window.location && window.location.pathname
+        ? window.location.pathname
+        : "";
+      var depth = (path.match(/\//g) || []).length;
+      // week-N/activity/ pages sit two levels below root
+      if (/\/week-\d+\//i.test(path)) return "../../account/";
+      if (/\/(help|resources|account|tests)\//i.test(path)) return "../account/";
+      return "account/";
+    } catch (error) {
+      return "account/";
     }
   }
 
@@ -232,7 +262,7 @@
     }
     var host = ensureHost();
     lastState = state;
-    if (state.status === "authenticated") {
+    if (state.status === "authenticated" || state.status === "signed-in-unlinked") {
       renderSignedIn(host, state);
       return;
     }

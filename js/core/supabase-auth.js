@@ -26,10 +26,47 @@
     this.code = code || "AUTHENTICATION_FAILED";
     this.message =
       message || "Your Supabase sign-in could not be completed.";
+    this.learnerMessage = learnerMessageFor(this.code, this.message);
   }
 
   AuthError.prototype = Object.create(Error.prototype);
   AuthError.prototype.constructor = AuthError;
+
+  function learnerMessageFor(code, fallback) {
+    var messages = {
+      AUTHENTICATION_FAILED:
+        "Sign-in failed. Check your email and password and try again.",
+      INVALID_AUTH_CREDENTIALS:
+        "Enter a valid email address and password.",
+      REGISTRATION_FAILED:
+        "Registration could not be completed. Try a different email or try again later.",
+      EMAIL_EXISTS:
+        "An account with this email already exists. Sign in instead.",
+      WEAK_PASSWORD:
+        "Choose a password with at least 8 characters.",
+      STUDENT_IDENTITY_NOT_FOUND:
+        "You are signed in, but your learner profile is not linked yet. Ask your tutor to link your account before submitting work.",
+      CONFIRMATION_REQUIRED:
+        "Check your email to confirm the account, then sign in.",
+      NETWORK_ERROR:
+        "The learner service could not be reached. Check your connection and try again."
+    };
+    return messages[code] || fallback || messages.AUTHENTICATION_FAILED;
+  }
+
+  function toAuthError(error) {
+    if (error && error.name === "SupabaseAuthError") return error;
+    var code =
+      (error && error.code) ||
+      (error && error.status === 0 ? "NETWORK_ERROR" : "AUTHENTICATION_FAILED");
+    var message = (error && error.message) || "";
+    if (/already registered|already been registered|User already registered/i.test(message)) {
+      code = "EMAIL_EXISTS";
+    } else if (/password/i.test(message) && /weak|least|characters/i.test(message)) {
+      code = "WEAK_PASSWORD";
+    }
+    return new AuthError(code, message);
+  }
 
   function notify() {
     var snapshot = getState();
@@ -158,22 +195,43 @@
     state.session = session;
     state.error = null;
     notify();
-    return Promise.all([getProfile(), getEnrolments()])
+    return Promise.all([
+      getProfile().catch(function (error) {
+        if (error && error.code === "STUDENT_IDENTITY_NOT_FOUND") {
+          return null;
+        }
+        throw error;
+      }),
+      getEnrolments().catch(function () {
+        return [];
+      })
+    ])
       .then(function (values) {
+        var profile = values[0];
+        var enrolments = values[1] || [];
+        state.profile = profile;
+        state.enrolments = enrolments;
+        if (!profile) {
+          state.status = "signed-in-unlinked";
+          state.error = new AuthError(
+            "STUDENT_IDENTITY_NOT_FOUND",
+            "Your learner profile is not available."
+          );
+          notify();
+          return null;
+        }
         state.status = "authenticated";
-        state.profile = values[0];
-        state.enrolments = values[1];
         state.error = null;
         notify();
-        return contextFrom(values[0], values[1]);
+        return contextFrom(profile, enrolments);
       })
       .catch(function (error) {
         state.status = "error";
         state.profile = null;
         state.enrolments = [];
-        state.error = error;
+        state.error = toAuthError(error);
         notify();
-        throw error;
+        throw state.error;
       });
   }
 
@@ -218,15 +276,64 @@
       .signInWithPassword(email, password)
       .then(function (session) {
         return loadContext(session).then(function () {
-          return state.profile;
+          return getState();
         });
       })
       .catch(function (error) {
+        var mapped = toAuthError(error);
         state.status = "error";
-        state.error = error;
+        state.error = mapped;
         notify();
         client.clearSession();
-        throw error;
+        throw mapped;
+      });
+  }
+
+  function signUpWithPassword(email, password) {
+    state.status = "loading";
+    state.error = null;
+    notify();
+    if (!client || typeof client.signUpWithPassword !== "function") {
+      var missing = new AuthError(
+        "CONFIGURATION_ERROR",
+        "Registration is not available on this device."
+      );
+      state.status = "error";
+      state.error = missing;
+      notify();
+      return Promise.reject(missing);
+    }
+    return client
+      .signUpWithPassword(email, password)
+      .then(function (result) {
+        if (result && result.session) {
+          return loadContext(result.session).then(function () {
+            return {
+              state: getState(),
+              needsConfirmation: false
+            };
+          });
+        }
+        state.status = "signed-out";
+        state.session = null;
+        state.profile = null;
+        state.enrolments = [];
+        state.error = new AuthError(
+          "CONFIRMATION_REQUIRED",
+          "Check your email to confirm the account, then sign in."
+        );
+        notify();
+        return {
+          state: getState(),
+          needsConfirmation: true
+        };
+      })
+      .catch(function (error) {
+        var mapped = toAuthError(error);
+        state.status = "error";
+        state.error = mapped;
+        notify();
+        throw mapped;
       });
   }
 
@@ -236,7 +343,11 @@
         return state.profile;
       })
       .catch(function (error) {
-        if (error && error.code === "AUTHENTICATION_REQUIRED") {
+        if (
+          error &&
+          (error.code === "AUTHENTICATION_REQUIRED" ||
+            error.code === "STUDENT_IDENTITY_NOT_FOUND")
+        ) {
           return null;
         }
         throw error;
@@ -266,6 +377,7 @@
   window.SupabaseAuth = Object.freeze({
     initialise: initialise,
     signInWithPassword: signInWithPassword,
+    signUpWithPassword: signUpWithPassword,
     restoreProfile: restoreProfile,
     getProfile: getProfile,
     getEnrolments: getEnrolments,
@@ -284,6 +396,13 @@
     },
     isAuthenticated: function () {
       return state.status === "authenticated";
+    },
+    isSignedIn: function () {
+      return (
+        state.status === "authenticated" ||
+        state.status === "signed-in-unlinked" ||
+        Boolean(state.session)
+      );
     },
     Error: AuthError
   });

@@ -485,6 +485,31 @@
       );
     }
 
+    if (client) {
+      assertEquals(
+        results,
+        "client-exposes-sign-up",
+        typeof client.signUpWithPassword,
+        "function"
+      );
+    }
+
+    var auth = global.SupabaseAuth;
+    if (auth) {
+      assertEquals(
+        results,
+        "auth-exposes-sign-up",
+        typeof auth.signUpWithPassword,
+        "function"
+      );
+      assertEquals(
+        results,
+        "auth-exposes-is-signed-in",
+        typeof auth.isSignedIn,
+        "function"
+      );
+    }
+
     // Question-key aliases and Week 1 force override
     var aliases = global.Unit3QuestionKeyAliases;
     assertTruthy(results, "question-key-aliases-present", aliases);

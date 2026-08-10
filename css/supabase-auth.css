@@ -76,3 +76,83 @@
     grid-template-columns: 1fr 1fr auto;
   }
 }
+
+/* Dedicated account page */
+.unit3-account__status {
+  margin-top: 0.75rem;
+}
+
+.unit3-account__checklist {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.unit3-account__checklist .is-ok {
+  color: #166534;
+}
+
+.unit3-account__checklist .is-blocked {
+  color: #9a3412;
+}
+
+.unit3-account__tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.unit3-account__tab {
+  font: inherit;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.unit3-account__tab.is-active,
+.unit3-account__tab[aria-selected="true"] {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.unit3-account__form {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 28rem;
+}
+
+.unit3-account__form .field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.unit3-account__form input {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  font: inherit;
+  background: #fff;
+}
+
+.unit3-account__form input:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.unit3-account__note {
+  margin: 0 0 0.75rem;
+  color: #334155;
+}
+
+.unit3-account__error {
+  margin: 0;
+  color: #b91c1c;
+}
+
+.unit3-account__actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
