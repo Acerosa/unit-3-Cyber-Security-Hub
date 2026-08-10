@@ -27,6 +27,39 @@
   color: #334155;
 }
 
+.unit3-auth-widget__tabs {
+  display: inline-flex;
+  margin: 0 0 1rem;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+.unit3-auth-widget__tab {
+  appearance: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: #475569;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+}
+
+.unit3-auth-widget__tab:hover,
+.unit3-auth-widget__tab:focus-visible {
+  color: #0f766e;
+}
+
+.unit3-auth-widget__tab:focus-visible {
+  outline: 2px solid #0f766e;
+  outline-offset: 2px;
+}
+
+.unit3-auth-widget__tab.is-active {
+  border-bottom-color: #0f766e;
+  color: #0f172a;
+}
+
 .unit3-auth-widget__form {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
