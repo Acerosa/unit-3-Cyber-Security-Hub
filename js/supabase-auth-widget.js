@@ -72,7 +72,7 @@
     var note = el("p", {
       className: "unit3-auth-widget__note",
       textContent:
-        "Your Supabase learner account is required to submit results. Sign in with your college email address."
+      "Sign in with your college email address to save your progress and submit your work."
     });
     host.appendChild(note);
 
