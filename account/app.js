@@ -202,8 +202,6 @@
 
   function boot() {
     if (!window.SupabaseAuth) {
-      $("account-status").textContent =
-        "The learner service is not available on this device.";
       return;
     }
     bindTabs();
