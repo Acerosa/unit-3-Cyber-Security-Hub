@@ -164,7 +164,9 @@
         completedAt: options.getCompletedAt
           ? options.getCompletedAt()
           : new Date().toISOString(),
-        sourcePage: window.location ? window.location.href : null
+        sourcePage: window.location
+          ? window.location.pathname + window.location.search
+          : null
       })
       .then(function (submission) {
         inFlight = false;

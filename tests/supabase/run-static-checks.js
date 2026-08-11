@@ -217,6 +217,15 @@ if (existsAt("js/core/supabase-submission-adapter.js")) {
   );
 }
 
+if (existsAt("js/core/unit3-supabase-submit-runner.js")) {
+  const runner = read("js/core/unit3-supabase-submit-runner.js");
+  record(
+    "submit-runner-sends-site-relative-source-page",
+    /window\.location\.pathname\s*\+\s*window\.location\.search/.test(runner) &&
+      !/sourcePage:\s*window\.location\s*\?\s*window\.location\.href/.test(runner)
+  );
+}
+
 if (existsAt("account/index.html") && existsAt("account/app.js")) {
   const accountHtml = read("account/index.html");
   const accountApp = read("account/app.js");
