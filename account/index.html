@@ -83,25 +83,51 @@
       </div>
 
       <div id="panel-register" class="unit3-account__panel" role="tabpanel" aria-labelledby="tab-register" hidden>
-        <p class="unit3-account__note">
-          Create an account to save your progress and submit your work.
-        </p>
+        <h3>Create learner account</h3>
+        <p id="register-step" class="unit3-account__step" role="status" aria-live="polite">Step 1 of 2 — Account details</p>
         <form id="register-form" class="unit3-account__form" novalidate>
-          <div class="field">
-            <label for="register-email">Email</label>
-            <input type="email" id="register-email" name="email" autocomplete="email" required aria-required="true">
-          </div>
-          <div class="field">
-            <label for="register-password">Password</label>
-            <input type="password" id="register-password" name="password" autocomplete="new-password" required aria-required="true" minlength="8">
-          </div>
-          <div class="field">
-            <label for="register-password-confirm">Confirm password</label>
-            <input type="password" id="register-password-confirm" name="passwordConfirm" autocomplete="new-password" required aria-required="true" minlength="8">
-          </div>
+          <fieldset id="register-profile-fields" class="unit3-account__fieldset">
+            <legend>Personal details</legend>
+            <div class="field">
+              <label for="register-first-name">First name</label>
+              <input type="text" id="register-first-name" name="firstName" autocomplete="given-name" required aria-required="true" maxlength="100">
+            </div>
+            <div class="field">
+              <label for="register-surname">Surname</label>
+              <input type="text" id="register-surname" name="surname" autocomplete="family-name" required aria-required="true" maxlength="100">
+            </div>
+            <div class="field">
+              <label for="register-student-number">Student ID</label>
+              <input type="text" id="register-student-number" name="studentNumber" inputmode="text" autocomplete="off" required aria-required="true" maxlength="100">
+            </div>
+          </fieldset>
+          <fieldset id="register-account-fields" class="unit3-account__fieldset">
+            <legend>Account details</legend>
+            <div class="field">
+              <label for="register-email">College email address</label>
+              <input type="email" id="register-email" name="email" autocomplete="email" required aria-required="true">
+            </div>
+            <div class="field">
+              <label for="register-password">Password</label>
+              <input type="password" id="register-password" name="password" autocomplete="new-password" required aria-required="true" minlength="8">
+            </div>
+            <div class="field">
+              <label for="register-password-confirm">Confirm password</label>
+              <input type="password" id="register-password-confirm" name="passwordConfirm" autocomplete="new-password" required aria-required="true" minlength="8">
+            </div>
+          </fieldset>
+          <fieldset id="register-option-fields" class="unit3-account__fieldset" hidden>
+            <legend>Course details</legend>
+            <div class="field">
+              <label for="register-option">Year / Group</label>
+              <select id="register-option" name="registrationOption" required aria-required="true" disabled>
+                <option value="">Loading available choices…</option>
+              </select>
+            </div>
+          </fieldset>
           <p id="register-error" class="unit3-account__error" role="alert" aria-live="assertive"></p>
           <div class="unit3-account__actions">
-            <button type="submit" class="btn btn-primary" id="register-submit">Create account</button>
+            <button type="submit" class="btn btn-primary" id="register-submit">Continue</button>
           </div>
         </form>
       </div>
@@ -119,6 +145,9 @@
   <script src="../js/core/backend-mode.js"></script>
   <script src="../js/core/supabase-client.js"></script>
   <script src="../js/core/supabase-auth.js"></script>
+  <script src="../js/core/supabase-learning-api.js"></script>
+  <script src="../js/core/supabase-onboarding.js"></script>
+  <script src="../js/learner-session-summary.js"></script>
   <script src="../js/navigation.js"></script>
   <script src="app.js"></script>
 </body>

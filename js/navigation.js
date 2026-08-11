@@ -96,4 +96,24 @@
     script.defer = true;
     (document.head || document.documentElement).appendChild(script);
   })();
+
+  // Load the shared learner identity summary after each page's own scripts
+  // have settled. The component reuses existing Supabase modules when present
+  // and loads the browser-safe Auth stack on pages that do not include it.
+  (function loadLearnerSessionSummary() {
+    var current = document.currentScript;
+    if (!current || !current.src) return;
+    var src = current.src.replace(
+      /navigation\.js(?:\?.*)?$/i,
+      'learner-session-summary.js'
+    );
+    if (src === current.src) return;
+    window.addEventListener('load', function () {
+      if (window.Unit3LearnerSessionSummary) return;
+      if (document.querySelector('script[src="' + src + '"]')) return;
+      var script = document.createElement('script');
+      script.src = src;
+      (document.head || document.documentElement).appendChild(script);
+    }, { once: true });
+  })();
 })();

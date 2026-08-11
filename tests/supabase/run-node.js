@@ -81,6 +81,7 @@ const modules = [
   "js/core/supabase-client.js",
   "js/core/supabase-auth.js",
   "js/core/supabase-learning-api.js",
+  "js/core/supabase-onboarding.js",
   "js/core/supabase-submission-adapter.js",
   "js/core/supabase-evidence.js",
   "js/core/unit3-supabase-submit-runner.js",

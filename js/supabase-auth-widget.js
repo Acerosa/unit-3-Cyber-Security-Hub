@@ -141,30 +141,52 @@
     form.setAttribute("aria-labelledby", "unit3-auth-signin-tab");
     host.appendChild(form);
 
-    var registerForm = form.cloneNode(true);
-    registerForm.id = "unit3-auth-register-form";
-    registerForm.setAttribute("aria-labelledby", "unit3-auth-register-tab");
-    registerForm.hidden = true;
-    registerForm.querySelector("#unit3-auth-password").setAttribute("autocomplete", "new-password");
-    registerForm.querySelector("button[type=submit]").textContent = "Create account";
-    var confirmField = el("div", { className: "field" }, [
-      el("label", { htmlFor: "unit3-auth-password-confirm", textContent: "Confirm password" }),
-      el("input", { type: "password", id: "unit3-auth-password-confirm", name: "passwordConfirm", autocomplete: "new-password", required: true, "aria-required": "true" })
+    var registerPanel = el("div", {
+      className: "unit3-auth-widget__register",
+      role: "tabpanel",
+      "aria-labelledby": "unit3-auth-register-tab"
+    }, [
+      el("h3", {
+        className: "unit3-auth-widget__heading",
+        textContent: "Create learner account"
+      }),
+      el("p", {
+        className: "unit3-auth-widget__note",
+        textContent:
+          "Enter your learner and account details in the secure registration form."
+      }),
+      el("a", {
+        className: "btn btn-primary",
+        href: resolveAccountHref(),
+        textContent: "Open registration form"
+      })
     ]);
-    registerForm.insertBefore(confirmField, registerForm.querySelector(".unit3-auth-widget__error"));
-    registerForm.querySelector(".unit3-auth-widget__error").textContent = "";
-    host.appendChild(registerForm);
+    registerPanel.hidden = true;
+    host.appendChild(registerPanel);
 
     function setTab(register) {
       form.hidden = register;
-      registerForm.hidden = !register;
+      registerPanel.hidden = !register;
       tabs.querySelector("#unit3-auth-signin-tab").classList.toggle("is-active", !register);
       tabs.querySelector("#unit3-auth-register-tab").classList.toggle("is-active", register);
       tabs.querySelector("#unit3-auth-signin-tab").setAttribute("aria-selected", String(!register));
       tabs.querySelector("#unit3-auth-register-tab").setAttribute("aria-selected", String(register));
+      tabs.querySelector("#unit3-auth-signin-tab").tabIndex = register ? -1 : 0;
+      tabs.querySelector("#unit3-auth-register-tab").tabIndex = register ? 0 : -1;
     }
     tabs.querySelector("#unit3-auth-signin-tab").addEventListener("click", function () { setTab(false); });
     tabs.querySelector("#unit3-auth-register-tab").addEventListener("click", function () { setTab(true); });
+    Array.from(tabs.querySelectorAll('[role="tab"]')).forEach(function (tab, index, allTabs) {
+      tab.addEventListener("keydown", function (event) {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        var next = event.key === "ArrowRight"
+          ? (index + 1) % allTabs.length
+          : (index + allTabs.length - 1) % allTabs.length;
+        allTabs[next].click();
+        allTabs[next].focus();
+      });
+    });
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
@@ -203,28 +225,6 @@
       });
     });
 
-    registerForm.addEventListener("submit", function (event) {
-      event.preventDefault();
-      var error = registerForm.querySelector(".unit3-auth-widget__error");
-      var email = registerForm.querySelector("#unit3-auth-email").value.trim();
-      var password = registerForm.querySelector("#unit3-auth-password").value;
-      var confirm = registerForm.querySelector("#unit3-auth-password-confirm").value;
-      error.textContent = "";
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { error.textContent = "Enter a valid college email address."; return; }
-      if (password.length < 8) { error.textContent = "Choose a password with at least 8 characters."; return; }
-      if (password !== confirm) { error.textContent = "The passwords do not match."; return; }
-      var auth = window.SupabaseAuth;
-      if (!auth || typeof auth.signUpWithPassword !== "function") { error.textContent = "The learner service is not available on this device."; return; }
-      var button = registerForm.querySelector("button[type=submit]");
-      button.disabled = true; button.textContent = "Creating account…";
-      auth.signUpWithPassword(email, password).then(function (profile) {
-        if (profile) return;
-        error.setAttribute("role", "status");
-        error.textContent = "Account created. Check your email to confirm your account before signing in.";
-      }).catch(function (err) {
-        error.textContent = (err && err.learnerMessage) || "Registration could not be completed. Try again.";
-      }).then(function () { button.disabled = false; button.textContent = "Create account"; });
-    });
   }
 
   function renderSignedIn(host, state) {
@@ -255,8 +255,16 @@
             className: "unit3-auth-widget__error",
             role: "status",
             textContent:
-              "Your account is signed in, but it is not linked to a learner profile yet. Ask your tutor to complete linking before you submit work."
+              "Finish setting up your learner details before submitting work."
           })
+        : null,
+      unlinked
+        ? el("p", { className: "unit3-auth-widget__note" }, [
+            el("a", {
+              href: resolveAccountHref(),
+              textContent: "Complete learner registration"
+            })
+          ])
         : null,
       el("p", { className: "unit3-auth-widget__note" }, [
         el("a", {

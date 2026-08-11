@@ -45,7 +45,7 @@
       WEAK_PASSWORD:
         "Choose a password with at least 8 characters.",
       STUDENT_IDENTITY_NOT_FOUND:
-        "You are signed in, but your learner profile is not linked yet. Ask your tutor to link your account before submitting work.",
+        "You are signed in. Finish setting up your learner details before submitting work.",
       CONFIRMATION_REQUIRED:
         "Check your email to confirm the account, then sign in.",
       NETWORK_ERROR:
@@ -104,7 +104,13 @@
     return {
       studentNumber: row.student_number.trim(),
       firstName: row.first_name.trim(),
-      displayName: row.display_name.trim()
+      surname:
+        typeof row.surname === "string" ? row.surname.trim() : "",
+      displayName: row.display_name.trim(),
+      contactEmail:
+        typeof row.contact_email === "string"
+          ? row.contact_email.trim()
+          : ""
     };
   }
 
@@ -133,6 +139,8 @@
             typeof row.academic_year === "string"
               ? row.academic_year.trim()
               : "",
+          yearGroup:
+            typeof row.year_group === "string" ? row.year_group.trim() : "",
           courseTitle:
             typeof row.course_title === "string"
               ? row.course_title.trim()
@@ -147,7 +155,7 @@
   function getProfile() {
     return client
       .request(
-        "/rest/v1/my_profile?select=student_number,first_name,display_name&limit=1",
+        "/rest/v1/my_profile?select=student_number,first_name,surname,display_name,contact_email&limit=1",
         { schema: "api" }
       )
       .then(safeProfile);
@@ -162,20 +170,29 @@
   }
 
   function contextFrom(profile, enrolments) {
-    var active =
-      enrolments.filter(function (enrolment) {
-        return enrolment.status === "active";
-      })[0] ||
-      enrolments[0] ||
-      null;
+    var activeRows = enrolments.filter(function (enrolment) {
+      return enrolment.status === "active";
+    });
+    var active = activeRows.sort(function (left, right) {
+      return String(right.joinedOn || "").localeCompare(
+        String(left.joinedOn || "")
+      );
+    })[0] || enrolments[0] || null;
     return Object.freeze({
       studentId: profile.studentNumber,
       studentNumber: profile.studentNumber,
       firstName: profile.firstName,
+      surname: profile.surname,
       displayName: profile.displayName,
+      fullName:
+        (profile.firstName + " " + (profile.surname || "")).trim() ||
+        profile.displayName,
+      contactEmail: profile.contactEmail,
       group: active ? active.groupCode : "",
       groupCode: active ? active.groupCode : "",
       groupName: active ? active.groupName : "",
+      yearGroup: active ? active.yearGroup : "",
+      academicYear: active ? active.academicYear : "",
       enrolments: enrolments.slice()
     });
   }
@@ -354,7 +371,21 @@
       });
   }
 
+  function refreshContext() {
+    var session = state.session;
+    if (!session && client && typeof client.getSessionAsync === "function") {
+      return client.getSessionAsync().then(loadContext);
+    }
+    return loadContext(session);
+  }
+
   function signOut() {
+    if (
+      window.SupabaseOnboarding &&
+      typeof window.SupabaseOnboarding.clearPending === "function"
+    ) {
+      window.SupabaseOnboarding.clearPending();
+    }
     return client.signOut().then(function () {
       return loadContext(null);
     });
@@ -381,6 +412,7 @@
     restoreProfile: restoreProfile,
     getProfile: getProfile,
     getEnrolments: getEnrolments,
+    refreshContext: refreshContext,
     getLearnerContext: function () {
       return state.profile
         ? contextFrom(state.profile, state.enrolments)

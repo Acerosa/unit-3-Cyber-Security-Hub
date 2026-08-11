@@ -217,6 +217,68 @@ if (existsAt("js/core/supabase-submission-adapter.js")) {
   );
 }
 
+if (existsAt("account/index.html") && existsAt("account/app.js")) {
+  const accountHtml = read("account/index.html");
+  const accountApp = read("account/app.js");
+  const signinForm = (accountHtml.match(
+    /<form id="signin-form"[\s\S]*?<\/form>/
+  ) || [""])[0];
+  [
+    "register-first-name",
+    "register-surname",
+    "register-student-number",
+    "register-option",
+    "register-email",
+    "register-password",
+    "register-password-confirm"
+  ].forEach((id) => {
+    record("registration-form-has-" + id, accountHtml.includes('id="' + id + '"'));
+  });
+  record(
+    "signin-form-has-no-registration-fields",
+    Boolean(signinForm) && !/register-(?:first-name|surname|student-number|option)/.test(signinForm)
+  );
+  record(
+    "registration-uses-auth-abstraction",
+    /SupabaseAuth\.signUpWithPassword/.test(accountApp) &&
+      !/\/auth\/v1\/signup/.test(accountApp)
+  );
+  record(
+    "registration-resumes-pending-onboarding",
+    /signed-in-unlinked/.test(accountApp) && /getPending\(\)/.test(accountApp)
+  );
+}
+
+if (existsAt("js/core/supabase-onboarding.js")) {
+  const onboarding = read("js/core/supabase-onboarding.js");
+  record(
+    "pending-onboarding-uses-session-storage",
+    /sessionStorage/.test(onboarding) && !/localStorage/.test(onboarding)
+  );
+  record(
+    "pending-onboarding-does-not-store-password",
+    !/pending\.(?:password|confirmPassword|accessToken|refreshToken)\s*=/.test(onboarding)
+  );
+  record(
+    "onboarding-uses-safe-api-abstraction",
+    /SupabaseLearningApi/.test(onboarding) &&
+      /getRegistrationOptions/.test(onboarding) &&
+      /completeLearnerOnboarding/.test(onboarding)
+  );
+}
+
+if (existsAt("js/learner-session-summary.js")) {
+  const summary = read("js/learner-session-summary.js");
+  record(
+    "session-summary-renders-safe-identity",
+    /fullName/.test(summary) && /yearGroup/.test(summary) && /contactEmail/.test(summary)
+  );
+  record(
+    "session-summary-clears-when-signed-out",
+    /state\.status !== "authenticated"[\s\S]*clear\(\)/.test(summary)
+  );
+}
+
 if (existsAt("js/core/backend-mode.js")) {
   const mode = read("js/core/backend-mode.js");
   record(

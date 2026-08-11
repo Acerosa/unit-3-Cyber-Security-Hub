@@ -54,7 +54,20 @@
     INVALID_RESPONSE:
       "The learner service returned an unexpected response. Try again in a moment.",
     VALIDATION_FAILED:
-      "The submission was rejected before it was sent. Refresh the page and try again."
+      "The submission was rejected before it was sent. Refresh the page and try again.",
+    INVALID_FIRST_NAME: "Enter your first name.",
+    INVALID_SURNAME: "Enter your surname.",
+    INVALID_STUDENT_NUMBER: "Enter your Student ID.",
+    INVALID_REGISTRATION_OPTION: "Choose an available year and group.",
+    GROUP_INACTIVE: "That group is no longer accepting registrations.",
+    ACADEMIC_YEAR_INACTIVE:
+      "That academic year is no longer accepting registrations.",
+    STUDENT_NUMBER_ALREADY_LINKED:
+      "That Student ID is already linked to another account. Contact your tutor.",
+    AUTH_ACCOUNT_ALREADY_LINKED:
+      "This account is already linked to a different learner profile.",
+    ONBOARDING_CONFLICT:
+      "These details do not match the learner record. Contact your tutor."
   });
 
   function SupabaseLearningError(code, message) {
@@ -233,6 +246,64 @@
     return Promise.resolve();
   }
 
+  function requireSignedInSession() {
+    var signedIn = auth && typeof auth.isSignedIn === "function"
+      ? auth.isSignedIn()
+      : Boolean(client && client.hasSession && client.hasSession());
+    if (!signedIn) {
+      return Promise.reject(new SupabaseLearningError("AUTH_REQUIRED"));
+    }
+    return Promise.resolve();
+  }
+
+  function onboardingError(error) {
+    var sourceCode = error && error.code ? String(error.code) : "";
+    var sourceMessage = error && error.message ? String(error.message) : "";
+    var codes = [
+      "INVALID_FIRST_NAME",
+      "INVALID_SURNAME",
+      "INVALID_STUDENT_NUMBER",
+      "INVALID_REGISTRATION_OPTION",
+      "GROUP_INACTIVE",
+      "ACADEMIC_YEAR_INACTIVE",
+      "STUDENT_NUMBER_ALREADY_LINKED",
+      "AUTH_ACCOUNT_ALREADY_LINKED",
+      "ONBOARDING_CONFLICT",
+      "AUTH_REQUIRED"
+    ];
+    var matched = codes.find(function (code) {
+      return sourceCode === code || sourceMessage.indexOf(code) !== -1;
+    });
+    if (matched) return new SupabaseLearningError(matched, sourceMessage);
+    return mappedError(error);
+  }
+
+  function getRegistrationOptions() {
+    return requireSignedInSession().then(function () {
+      return client.request("/rest/v1/rpc/registration_options", {
+        method: "POST",
+        schema: "api",
+        headers: { "Content-Type": "application/json" },
+        body: "{}"
+      });
+    }).catch(function (error) {
+      throw onboardingError(error);
+    });
+  }
+
+  function completeLearnerOnboarding(details) {
+    return requireSignedInSession().then(function () {
+      return client.request("/rest/v1/rpc/complete_learner_onboarding", {
+        method: "POST",
+        schema: "api",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(details)
+      });
+    }).catch(function (error) {
+      throw onboardingError(error);
+    });
+  }
+
   function getMyProfile() {
     return requireSession().then(function () {
       return client.request(
@@ -319,6 +390,8 @@
     submitAttempt: submitAttempt,
     getMyProfile: getMyProfile,
     getMyEnrolments: getMyEnrolments,
+    getRegistrationOptions: getRegistrationOptions,
+    completeLearnerOnboarding: completeLearnerOnboarding,
     getMyAssignments: getMyAssignments,
     getMyActivityDelivery: getMyActivityDelivery,
     getCurriculumWeeks: getCurriculumWeeks,

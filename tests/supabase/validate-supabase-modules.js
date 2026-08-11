@@ -76,6 +76,7 @@
     var adapter = global.Unit3SupabaseAdapter;
     var learningApi = global.SupabaseLearningApi;
     var client = global.SupabaseClient;
+    var onboarding = global.SupabaseOnboarding;
 
     // Config presence and safety
     assertTruthy(results, "supabase-config-present", config);
@@ -507,6 +508,39 @@
         "auth-exposes-is-signed-in",
         typeof auth.isSignedIn,
         "function"
+      );
+      assertEquals(
+        results,
+        "auth-exposes-context-refresh",
+        typeof auth.refreshContext,
+        "function"
+      );
+    }
+
+    assertTruthy(results, "onboarding-module-present", onboarding);
+    if (onboarding) {
+      assertEquals(
+        results,
+        "onboarding-exposes-registration-options",
+        typeof onboarding.getRegistrationOptions,
+        "function"
+      );
+      assertEquals(
+        results,
+        "onboarding-exposes-completion",
+        typeof onboarding.complete,
+        "function"
+      );
+      var leadingZeroProfile = onboarding.validateProfile({
+        firstName: "Ada",
+        surname: "Lovelace",
+        studentNumber: "001234"
+      });
+      assertEquals(
+        results,
+        "onboarding-preserves-leading-zeroes",
+        leadingZeroProfile.value.studentNumber,
+        "001234"
       );
     }
 

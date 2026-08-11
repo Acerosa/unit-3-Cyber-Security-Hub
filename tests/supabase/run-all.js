@@ -11,6 +11,7 @@ const path = require("node:path");
 
 const scripts = [
   path.join(__dirname, "run-node.js"),
+  path.join(__dirname, "validate-onboarding.js"),
   path.join(__dirname, "run-static-checks.js")
 ];
 
