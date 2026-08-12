@@ -671,3 +671,14 @@ Before release, confirm:
 - The original site remains available during testing
 - The original repository must not be archived yet
 - Do not commit to, rename, delete from, or rewrite the history of the source repository as part of hub work
+
+## 25. Shared Learning Platform integration
+
+The hub vendors the reviewed Learning Platform Core 0.1.0 browser build and
+initialises it once in `js/core/platform.js`. Core owns shared account, session,
+learner, onboarding and progress concerns; this repository continues to own
+Cyber curriculum, rendering, evidence and local draft recovery.
+
+See [`docs/core-integration.md`](docs/core-integration.md) for submission
+readiness, backend-authoritative progress and the explicit Week 1 `markSection`
+compatibility exception.

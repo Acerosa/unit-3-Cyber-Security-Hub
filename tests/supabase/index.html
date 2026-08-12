@@ -5,15 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Unit 3 Supabase migration tests</title>
   <link rel="stylesheet" href="../../css/main.css">
+  <link rel="stylesheet" href="../../vendor/learning-platform-core/0.1.0/theme.css">
+  <script src="../../js/core/theme-bootstrap.js"></script>
 </head>
 <body>
   <main class="site-main" id="main-content">
     <h1>Unit 3 Supabase migration tests</h1>
-    <p>Static developer checks for the shared Supabase modules. No network calls are made. Load this page from the repository root via <code>python3 -m http.server</code>.</p>
+    <p>Static developer checks for the shared Supabase modules. Load this page from the repository root via <code>python3 -m http.server</code>.</p>
     <div id="results" class="panel" aria-live="polite"></div>
     <p><a href="../../index.html">Back to hub home</a></p>
   </main>
+  <script src="../../js/config/app-config.js"></script>
   <script src="../../js/config/supabase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3"></script>
+  <script src="../../vendor/learning-platform-core/0.1.0/learning-platform-core.iife.js"></script>
+  <script src="../../js/core/platform.js"></script>
   <script src="../../js/core/backend-mode.js"></script>
   <script src="../../js/core/activity-key-map.js"></script>
   <script src="../../js/core/question-key-aliases.js"></script>

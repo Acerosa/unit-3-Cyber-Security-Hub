@@ -135,6 +135,55 @@
         getCompletionTimeSeconds: function () {
           return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
         },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          return [
+            evidence.structured(
+              'SB1',
+              {
+                whatPlaced: answers.whatPlaced,
+                whyIsolation: answers.whyIsolation
+              },
+              {
+                correct:
+                  String(answers.whatPlaced || '').trim().length >= 20 &&
+                  String(answers.whyIsolation || '').trim().length >= 25,
+                score:
+                  (String(answers.whatPlaced || '').trim().length >= 20 ? 0.5 : 0) +
+                  (String(answers.whyIsolation || '').trim().length >= 25 ? 0.5 : 0)
+              }
+            ),
+            evidence.freeText('SB2', answers.behaviourObserved, {
+              correct: String(answers.behaviourObserved || '').trim().length >= 25,
+              score: String(answers.behaviourObserved || '').trim().length >= 25 ? 1 : 0
+            }),
+            evidence.structured(
+              'SB3',
+              {
+                analysisRevealed: answers.analysisRevealed,
+                couldNotProve: answers.couldNotProve
+              },
+              {
+                correct:
+                  String(answers.analysisRevealed || '').trim().length >= 25 &&
+                  String(answers.couldNotProve || '').trim().length >= 25,
+                score:
+                  (String(answers.analysisRevealed || '').trim().length >= 25 ? 0.5 : 0) +
+                  (String(answers.couldNotProve || '').trim().length >= 25 ? 0.5 : 0)
+              }
+            ),
+            evidence.freeText('SB4', answers.whyUnsafeDirect, {
+              correct: String(answers.whyUnsafeDirect || '').trim().length >= 30,
+              score: String(answers.whyUnsafeDirect || '').trim().length >= 30 ? 1 : 0
+            })
+          ];
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
+        },
         canSubmit: function () {
           return true;
         }

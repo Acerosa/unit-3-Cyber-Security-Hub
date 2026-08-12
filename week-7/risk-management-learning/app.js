@@ -137,6 +137,19 @@
               Math.max(1, Math.round((Date.now() - startedAt) / 1000))
             );
           },
+          getResponses: function () {
+            var evidence = window.Unit3SupabaseEvidence;
+            var questions = data.knowledgeCheck.map(function (question, index) {
+              return Object.assign({}, question, { id: 'RM' + (index + 1) });
+            });
+            return evidence.fromQuizResult(result, questions);
+          },
+          getStartedAt: function () {
+            return new Date(startedAt).toISOString();
+          },
+          getCompletedAt: function () {
+            return new Date().toISOString();
+          },
           canSubmit: function () {
             return true;
           }

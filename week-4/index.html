@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/activity.css">
   <link rel="stylesheet" href="css/week4.css">
+  <link rel="stylesheet" href="../vendor/learning-platform-core/0.1.0/theme.css">
+  <link rel="stylesheet" href="../css/supabase-auth.css">
+  <script src="../js/core/theme-bootstrap.js"></script>
 </head>
 <body class="week-4-page">
   <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -69,7 +72,7 @@
     <section class="panel" aria-labelledby="w4-progress-heading">
       <h2 id="w4-progress-heading">Your Week 4 progress</h2>
       <div id="w4-completion" class="w4-completion-banner" aria-live="polite"></div>
-      <p class="panel-note">Progress is stored in this browser only and is separate from Weeks 1 to 3.</p>
+      <p class="panel-note">When shared-backend mode is active, signed-in completion is confirmed by the learner service. Drafts and unsent work remain in this browser.</p>
     </section>
     <details class="session-disclosure panel" id="session-1" open>
       <summary class="session-disclosure__summary">
@@ -144,9 +147,21 @@
   <footer class="site-footer" role="contentinfo">
     <p>Unit 3 Cyber Security Hub - OCR Level 3 IT formative learning resources</p>
   </footer>
-  <script src="../js/navigation.js"></script>
+    <script src="../js/config/app-config.js"></script>
+  <script src="../js/config/supabase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3"></script>
+  <script src="../vendor/learning-platform-core/0.1.0/learning-platform-core.iife.js"></script>
+  <script src="../js/core/platform.js"></script>
+  <script src="../js/core/supabase-client.js"></script>
+  <script src="../js/core/supabase-auth.js"></script>
+  <script src="../js/core/supabase-learning-api.js"></script>
+  <script src="../js/core/supabase-onboarding.js"></script>
+<script src="../js/navigation.js"></script>
   <script src="../js/session-disclosure.js"></script>
+    <script src="../js/core/backend-mode.js"></script>
+  <script src="../js/core/activity-key-map.js"></script>
   <script src="../js/week4-progress.js"></script>
+  <script src="../js/core/backend-progress.js"></script>
   <script src="data/tryhackme-resources.js"></script>
   <script src="js/dashboard.js"></script>
 </body>

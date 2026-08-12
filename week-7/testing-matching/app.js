@@ -190,6 +190,32 @@
           getCompletionTimeSeconds: function () {
             return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
           },
+          getResponses: function () {
+            var evidence = window.Unit3SupabaseEvidence;
+            return data.scenarios.map(function (scenario, index) {
+              var response = responses[scenario.id] || {};
+              var score = scenarioScore(scenario);
+              return evidence.structured(
+                'M' + (index + 1),
+                {
+                  selectedMeasure: response.measure || null,
+                  justification: response.justification || '',
+                  localScore: score
+                },
+                {
+                  responseType: 'single-choice',
+                  maxScore: 1,
+                  score: score
+                }
+              );
+            });
+          },
+          getStartedAt: function () {
+            return new Date(startedAt).toISOString();
+          },
+          getCompletedAt: function () {
+            return new Date().toISOString();
+          },
           canSubmit: function () {
             return true;
           }

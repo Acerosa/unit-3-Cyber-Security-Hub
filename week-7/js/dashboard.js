@@ -129,5 +129,10 @@
   renderCompletion();
   renderSession(1, 'w7-session-1-cards');
   renderSession(2, 'w7-session-2-cards');
+  window.addEventListener('unit3:backend-progress', function () {
+    renderCompletion();
+    renderSession(1, 'w7-session-1-cards');
+    renderSession(2, 'w7-session-2-cards');
+  });
   renderNcsc();
 })();

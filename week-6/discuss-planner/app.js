@@ -209,6 +209,38 @@
         getCompletionTimeSeconds: function () {
           return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
         },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var items = [
+            { id: 'DP1', value: state.issue, complete: String(state.issue || '').trim().length >= 20 },
+            { id: 'DP2', value: state.supporting, complete: String(state.supporting || '').trim().length >= data.columns[0].minLength },
+            { id: 'DP3', value: state.competing, complete: String(state.competing || '').trim().length >= data.columns[1].minLength },
+            { id: 'DP4', value: state.concessionConclusion, complete: String(state.concessionConclusion || '').trim().length >= data.columns[2].minLength },
+            { id: 'DP5', value: state.concessionConclusion, complete: hasConcessionLabel(state.concessionConclusion) },
+            { id: 'DP6', value: state, complete: JSON.stringify(state).toLowerCase().indexOf('northbank') !== -1 }
+          ];
+          return items.map(function (item) {
+            return evidence && evidence.structured
+              ? evidence.structured(item.id, item.value, {
+                  responseType: typeof item.value === 'string' ? 'text' : 'structured',
+                  correct: item.complete,
+                  score: item.complete ? 1 : 0
+                })
+              : {
+                  questionId: item.id,
+                  response: item.value,
+                  correct: item.complete,
+                  score: item.complete ? 1 : 0,
+                  responseType: typeof item.value === 'string' ? 'text' : 'structured'
+                };
+          });
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
+        },
         canSubmit: function () {
           return true;
         }

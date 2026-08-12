@@ -10,9 +10,13 @@ const { spawnSync } = require("node:child_process");
 const path = require("node:path");
 
 const scripts = [
+  path.join(__dirname, "..", "core-integration.test.js"),
+  path.join(__dirname, "..", "backend-progress.test.js"),
   path.join(__dirname, "run-node.js"),
   path.join(__dirname, "validate-onboarding.js"),
-  path.join(__dirname, "run-static-checks.js")
+  path.join(__dirname, "run-static-checks.js"),
+  path.join(__dirname, "..", "..", "week-6", "tests", "shared-backend.test.js"),
+  path.join(__dirname, "..", "..", "week-7", "tests", "shared-backend.test.js")
 ];
 
 let failures = 0;

@@ -226,6 +226,51 @@
               Math.max(1, Math.round((Date.now() - startedAt) / 1000))
             );
           },
+          getResponses: function () {
+            var evidence = window.Unit3SupabaseEvidence;
+            var responses = data.sections.map(function (section) {
+              var check = section.check;
+              var chosenIndex = sectionChecks[check.id];
+              var correct = chosenIndex === check.correctIndex;
+              var questionId = String(check.id).toUpperCase().replace(/-/g, '_');
+              var payload = {
+                chosenIndex: chosenIndex == null ? null : chosenIndex,
+                selectedOption: chosenIndex == null ? null : check.options[chosenIndex]
+              };
+              return evidence && evidence.structured
+                ? evidence.structured(questionId, payload, {
+                    responseType: 'single-choice',
+                    correct: correct,
+                    score: correct ? 1 : 0
+                  })
+                : {
+                    questionId: questionId,
+                    response: payload,
+                    correct: correct,
+                    score: correct ? 1 : 0,
+                    responseType: 'single-choice'
+                  };
+            });
+            var finalResponses =
+              evidence && evidence.fromQuizResult
+                ? evidence.fromQuizResult(result, data.knowledgeCheck)
+                : (result.answers || []).map(function (answer, index) {
+                    return {
+                      questionId: data.knowledgeCheck[index].id,
+                      response: { chosenIndex: answer.chosenIndex },
+                      correct: Boolean(answer.correct),
+                      score: answer.correct ? 1 : 0,
+                      responseType: 'single-choice'
+                    };
+                  });
+            return responses.concat(finalResponses);
+          },
+          getStartedAt: function () {
+            return new Date(startedAt).toISOString();
+          },
+          getCompletedAt: function () {
+            return new Date().toISOString();
+          },
           canSubmit: function () {
             return true;
           }

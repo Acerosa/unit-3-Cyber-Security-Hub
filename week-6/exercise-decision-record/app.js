@@ -256,6 +256,41 @@
         getCompletionTimeSeconds: function () {
           return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
         },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var completeEntries = entries.filter(entryComplete);
+          var hasReflection = entries.some(function (entry) {
+            return String(entry.reflection || '').trim().length >= 12;
+          });
+          var items = [
+            { id: 'ED1', value: completeEntries[0] || null, complete: completeEntries.length >= 1 },
+            { id: 'ED2', value: completeEntries[0] || null, complete: completeEntries.length >= 1 },
+            { id: 'ED3', value: completeEntries[1] || null, complete: completeEntries.length >= 2 },
+            { id: 'ED4', value: completeEntries[1] || null, complete: completeEntries.length >= 2 },
+            { id: 'ED5', value: entries.map(function (entry) { return entry.reflection || ''; }), complete: hasReflection && completeEntries.length >= 2 }
+          ];
+          return items.map(function (item) {
+            return evidence && evidence.structured
+              ? evidence.structured(item.id, item.value, {
+                  responseType: 'structured',
+                  correct: item.complete,
+                  score: item.complete ? 1 : 0
+                })
+              : {
+                  questionId: item.id,
+                  response: item.value,
+                  correct: item.complete,
+                  score: item.complete ? 1 : 0,
+                  responseType: 'structured'
+                };
+          });
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
+        },
         canSubmit: function () {
           return true;
         }

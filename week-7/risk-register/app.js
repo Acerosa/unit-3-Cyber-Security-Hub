@@ -753,6 +753,65 @@
         getCompletionTimeSeconds: function () {
           return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
         },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var validation = validate();
+          var result = entries.map(function (entry, index) {
+            return evidence.structured('RR' + (index + 1), entry, {
+              correct: entryComplete(entry),
+              score: entryComplete(entry) ? 1 : 0
+            });
+          });
+          var addressFirstOk =
+            decisionsMeta.addressFirstIndex !== '' &&
+            normalize(decisionsMeta.addressFirstJustification).length >= 20;
+          var acceptOk = entries.some(function (entry) {
+            return entry.decision === 'Accept' && normalize(entry.justification).length >= 12;
+          });
+          var costBenefitOk = entries.some(function (entry) {
+            return (
+              entry.decision === 'Mitigate' &&
+              normalize(entry.costConsequence).length >= 8 &&
+              normalize(entry.expectedBenefit).length >= 8
+            );
+          });
+          var effectivenessOk = entries.some(function (entry) {
+            var value = normalize(entry.effectivenessMeasure);
+            return value.length >= 12 && value !== 'installed';
+          });
+          [
+            {
+              id: 'RR6',
+              payload: {
+                addressFirstIndex: decisionsMeta.addressFirstIndex,
+                justification: decisionsMeta.addressFirstJustification
+              },
+              correct: addressFirstOk
+            },
+            { id: 'RR7', payload: { entries: entries }, correct: acceptOk },
+            { id: 'RR8', payload: { entries: entries }, correct: costBenefitOk },
+            { id: 'RR9', payload: { entries: entries }, correct: effectivenessOk },
+            {
+              id: 'RR10',
+              payload: { validationMessages: validation.messages, notes: decisionsMeta.notes },
+              correct: validation.messages.length === 0
+            }
+          ].forEach(function (item) {
+            result.push(
+              evidence.structured(item.id, item.payload, {
+                correct: item.correct,
+                score: item.correct ? 1 : 0
+              })
+            );
+          });
+          return result;
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
+        },
         canSubmit: function () {
           return true;
         }

@@ -93,6 +93,26 @@
               Math.max(1, Math.round((Date.now() - startedAt) / 1000))
             );
           },
+          getResponses: function () {
+            var evidence = window.Unit3SupabaseEvidence;
+            return evidence && evidence.fromQuizResult
+              ? evidence.fromQuizResult(result, data.comparisonQuiz)
+              : (result.answers || []).map(function (answer, index) {
+                  return {
+                    questionId: data.comparisonQuiz[index].id,
+                    response: { chosenIndex: answer.chosenIndex },
+                    correct: Boolean(answer.correct),
+                    score: answer.correct ? 1 : 0,
+                    responseType: 'single-choice'
+                  };
+                });
+          },
+          getStartedAt: function () {
+            return new Date(startedAt).toISOString();
+          },
+          getCompletedAt: function () {
+            return new Date().toISOString();
+          },
           canSubmit: function () {
             return true;
           }
