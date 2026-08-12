@@ -225,6 +225,57 @@
         getCompletionTimeSeconds: function () {
           return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
         },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var selectedCriteria = Object.keys(state.criteria).filter(function (key) {
+            return state.criteria[key];
+          });
+          var effectiveness = String(state.effectiveness || '').trim().toLowerCase();
+          var finalDimensionOk =
+            String(state.limitation || '').trim().length >= 15 &&
+            String(state.improved || '').trim().length >= 50;
+          return [
+            evidence.structured(
+              'AI1',
+              { selectedCriteria: selectedCriteria },
+              { correct: selectedCriteria.length >= 3, score: selectedCriteria.length >= 3 ? 1 : 0 }
+            ),
+            evidence.freeText('AI2', state.measure, {
+              correct: String(state.measure || '').trim().length >= 4,
+              score: String(state.measure || '').trim().length >= 4 ? 1 : 0
+            }),
+            evidence.freeText('AI3', state.evidence, {
+              correct: String(state.evidence || '').trim().length >= 25,
+              score: String(state.evidence || '').trim().length >= 25 ? 1 : 0
+            }),
+            evidence.freeText('AI4', state.justification, {
+              correct: String(state.justification || '').trim().length >= 25,
+              score: String(state.justification || '').trim().length >= 25 ? 1 : 0
+            }),
+            evidence.freeText('AI5', state.effectiveness, {
+              correct: effectiveness.length >= 20 && effectiveness.indexOf('installed') === -1,
+              score:
+                effectiveness.length >= 20 && effectiveness.indexOf('installed') === -1
+                  ? 1
+                  : 0
+            }),
+            evidence.structured(
+              'AI6',
+              {
+                limitation: state.limitation,
+                improvedAnswer: state.improved,
+                nextAction: state.nextAction
+              },
+              { correct: finalDimensionOk, score: finalDimensionOk ? 1 : 0 }
+            )
+          ];
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
+        },
         canSubmit: function () {
           return true;
         }

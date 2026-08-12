@@ -37,7 +37,7 @@ function walk(dir, callback) {
 
 function scoredActivityDirs() {
   const dirs = [];
-  for (const week of [2, 3, 4, 5]) {
+  for (const week of [2, 3, 4, 5, 6, 7]) {
     const weekRoot = path.join(root, "week-" + week);
     if (!fs.existsSync(weekRoot)) continue;
     walk(weekRoot, (abs) => {
@@ -53,14 +53,18 @@ function scoredActivityDirs() {
 }
 
 const REQUIRED_SCRIPTS = [
-  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",
+  "js/config/app-config.js",
   "js/config/supabase-config.js",
-  "js/core/backend-mode.js",
-  "js/core/activity-key-map.js",
-  "js/core/question-key-aliases.js",
+  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3",
+  "vendor/learning-platform-core/0.1.0/learning-platform-core.iife.js",
+  "js/core/platform.js",
   "js/core/supabase-client.js",
   "js/core/supabase-auth.js",
   "js/core/supabase-learning-api.js",
+  "js/core/supabase-onboarding.js",
+  "js/core/backend-mode.js",
+  "js/core/activity-key-map.js",
+  "js/core/question-key-aliases.js",
   "js/core/supabase-submission-adapter.js",
   "js/core/supabase-evidence.js",
   "js/core/unit3-supabase-submit-runner.js",
@@ -98,8 +102,8 @@ function assertScriptOrder(html, label) {
 const scored = scoredActivityDirs();
 record(
   "scored-activity-count",
-  scored.length === 38,
-  "expected 38 scored activities, found " + scored.length
+  scored.length === 68,
+  "expected 68 scored activities, found " + scored.length
 );
 
 scored.forEach((absDir) => {
@@ -185,7 +189,14 @@ if (existsAt("js/config/supabase-config.js")) {
   );
 }
 
-["js/week2-submit.js", "js/week3-submit.js", "js/week4-submit.js", "js/week5-submit.js"].forEach(
+[
+  "js/week2-submit.js",
+  "js/week3-submit.js",
+  "js/week4-submit.js",
+  "js/week5-submit.js",
+  "js/week6-submit.js",
+  "js/week7-submit.js"
+].forEach(
   (relative) => {
     const source = read(relative);
     record(
@@ -261,18 +272,20 @@ if (existsAt("account/index.html") && existsAt("account/app.js")) {
 if (existsAt("js/core/supabase-onboarding.js")) {
   const onboarding = read("js/core/supabase-onboarding.js");
   record(
-    "pending-onboarding-uses-session-storage",
-    /sessionStorage/.test(onboarding) && !/localStorage/.test(onboarding)
+    "pending-onboarding-is-owned-by-core",
+    /platform\.onboarding/.test(onboarding) &&
+      !/sessionStorage/.test(onboarding) &&
+      !/localStorage/.test(onboarding)
   );
   record(
     "pending-onboarding-does-not-store-password",
     !/pending\.(?:password|confirmPassword|accessToken|refreshToken)\s*=/.test(onboarding)
   );
   record(
-    "onboarding-uses-safe-api-abstraction",
-    /SupabaseLearningApi/.test(onboarding) &&
-      /getRegistrationOptions/.test(onboarding) &&
-      /completeLearnerOnboarding/.test(onboarding)
+    "onboarding-is-a-thin-core-facade",
+    /validateProfile:\s*onboarding\.validateProfile/.test(onboarding) &&
+      /getRegistrationOptions:\s*onboarding\.getRegistrationOptions/.test(onboarding) &&
+      /complete:\s*onboarding\.complete/.test(onboarding)
   );
 }
 

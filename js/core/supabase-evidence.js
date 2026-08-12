@@ -49,15 +49,54 @@
     );
   }
 
+  /**
+   * Submission contract 0.1.0 only accepts binary client marks:
+   * correct => awarded_score === question max; incorrect => awarded_score === 0.
+   * Partial local marks may be preserved inside response payloads.
+   */
+  function contractSafeMark(score, maxScore) {
+    var max = Number(maxScore);
+    if (!Number.isFinite(max) || max <= 0) max = 1;
+    var awarded = Number(score);
+    if (!Number.isFinite(awarded) || awarded <= 0) {
+      return { correct: false, score: 0 };
+    }
+    if (awarded >= max) {
+      return { correct: true, score: max };
+    }
+    return { correct: false, score: 0 };
+  }
+
   function freeText(questionId, value, extras) {
     extras = extras || {};
+    var text = value == null ? "" : String(value);
+    var mark = contractSafeMark(
+      typeof extras.score === "number" ? extras.score : extras.correct === false ? 0 : 1,
+      extras.maxScore != null ? extras.maxScore : 1
+    );
+    if (extras.correct === false && !(typeof extras.score === "number")) {
+      mark = { correct: false, score: 0 };
+    }
+    // Empty strings are rejected by api.submit_attempt; keep a structured blob.
+    if (!String(text).trim()) {
+      return structured(
+        questionId,
+        { text: "", answered: false },
+        {
+          responseType: extras.responseType || "text",
+          correct: mark.correct,
+          score: mark.score,
+          maxScore: extras.maxScore != null ? extras.maxScore : 1
+        }
+      );
+    }
     return Object.assign(
       {
         questionId: questionId,
-        response: value == null ? "" : value,
+        response: text,
         responseType: extras.responseType || "text",
-        correct: extras.correct !== false,
-        score: typeof extras.score === "number" ? extras.score : 1
+        correct: mark.correct,
+        score: mark.score
       },
       extras.fields || {}
     );
@@ -65,12 +104,23 @@
 
   function structured(questionId, payload, extras) {
     extras = extras || {};
+    var correct = Boolean(extras.correct);
+    var score =
+      typeof extras.score === "number" ? extras.score : correct ? 1 : 0;
+    if (typeof extras.maxScore === "number") {
+      var safe = contractSafeMark(score, extras.maxScore);
+      correct = safe.correct;
+      score = safe.score;
+    } else if (!correct && score !== 0) {
+      // Contract 0.1.0: incorrect client marks must be zero.
+      score = 0;
+    }
     return {
       questionId: questionId,
       response: payload,
       responseType: extras.responseType || "structured",
-      correct: Boolean(extras.correct),
-      score: typeof extras.score === "number" ? extras.score : extras.correct ? 1 : 0
+      correct: correct,
+      score: score
     };
   }
 
@@ -111,6 +161,7 @@
     freeText: freeText,
     structured: structured,
     classification: classification,
+    contractSafeMark: contractSafeMark,
     optionText: optionText,
     withTiming: withTiming
   });

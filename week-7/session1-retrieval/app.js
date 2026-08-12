@@ -10,6 +10,7 @@
   var host = document.getElementById('w7-activity-host');
   var startedAt = Date.now();
   var quizScore = 0;
+  var quizResult = null;
   var mode = 'quiz';
   var reflections = {};
   var completed = false;
@@ -60,7 +61,7 @@
     }
   }
 
-  function openSubmit(score) {
+  function openSubmit(score, quizResult) {
     window.Unit3Week7Submit.renderSubmitPanel({
       activityId: ACTIVITY_ID,
       hostId: 'w7-submit-host',
@@ -72,6 +73,30 @@
       },
       getCompletionTimeSeconds: function () {
         return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+      },
+      getResponses: function () {
+        var evidence = window.Unit3SupabaseEvidence;
+        var quizQuestions = data.questions.map(function (question, index) {
+          return Object.assign({}, question, { id: 'S1R' + (index + 1) });
+        });
+        var quizResponses = evidence.fromQuizResult(quizResult, quizQuestions);
+        return quizResponses.concat(
+          data.reflections.map(function (item, index) {
+            return evidence.freeText('S1R' + (index + 5), reflections[item.id], {
+              correct: String(reflections[item.id] || '').trim().length >= item.minChars,
+              score:
+                String(reflections[item.id] || '').trim().length >= item.minChars
+                  ? item.marks
+                  : 0
+            });
+          })
+        );
+      },
+      getStartedAt: function () {
+        return new Date(startedAt).toISOString();
+      },
+      getCompletedAt: function () {
+        return new Date().toISOString();
       },
       canSubmit: function () {
         return true;
@@ -161,7 +186,7 @@
       done.className = 'message message-success';
       done.textContent = 'Retrieval complete. Score: ' + score + ' / ' + data.total + '.';
       status.appendChild(done);
-      openSubmit(score);
+      openSubmit(score, quizResult);
     });
     actions.appendChild(btn);
     panel.appendChild(actions);
@@ -190,6 +215,7 @@
       questions: data.questions.slice(),
       hostId: 'w7-quiz-host',
       onComplete: function (result) {
+        quizResult = result;
         quizScore = result.score;
         save();
         mode = 'reflect';

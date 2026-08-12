@@ -33,6 +33,26 @@
         getCompletionTimeSeconds: function () {
           return result.completionTimeSeconds;
         },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          return evidence && evidence.fromQuizResult
+            ? evidence.fromQuizResult(result, data.questions)
+            : (result.answers || []).map(function (answer, index) {
+                return {
+                  questionId: data.questions[index].id,
+                  response: { chosenIndex: answer.chosenIndex },
+                  correct: Boolean(answer.correct),
+                  score: answer.correct ? 1 : 0,
+                  responseType: 'single-choice'
+                };
+              });
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
+        },
         canSubmit: function () {
           return true;
         }

@@ -96,25 +96,6 @@
     target.hidden = false;
   }
 
-  function loadScript(src, available) {
-    if (available()) return Promise.resolve();
-    return new Promise(function (resolve, reject) {
-      var existing = Array.from(document.scripts).find(function (script) {
-        return script.src === src;
-      });
-      if (existing) {
-        existing.addEventListener("load", resolve, { once: true });
-        existing.addEventListener("error", reject, { once: true });
-        return;
-      }
-      var script = document.createElement("script");
-      script.src = src;
-      script.addEventListener("load", resolve, { once: true });
-      script.addEventListener("error", reject, { once: true });
-      document.head.appendChild(script);
-    });
-  }
-
   function ensureStyle() {
     var href = jsRoot + "../css/supabase-auth.css";
     if (Array.from(document.styleSheets).some(function (sheet) {
@@ -127,24 +108,10 @@
   }
 
   function ensureDependencies() {
-    if (window.SupabaseAuth) return Promise.resolve();
-    if (!jsRoot) return Promise.reject(new Error("Unable to resolve shared scripts."));
-    return loadScript(
-      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2",
-      function () { return Boolean(window.supabase); }
-    ).then(function () {
-      return loadScript(jsRoot + "config/supabase-config.js", function () {
-        return Boolean(window.SUPABASE_CONFIG);
-      });
-    }).then(function () {
-      return loadScript(jsRoot + "core/supabase-client.js", function () {
-        return Boolean(window.SupabaseClient);
-      });
-    }).then(function () {
-      return loadScript(jsRoot + "core/supabase-auth.js", function () {
-        return Boolean(window.SupabaseAuth);
-      });
-    });
+    if (!window.SupabaseAuth || !window.LearningPlatform) {
+      return Promise.reject(new Error("Shared learning platform is unavailable."));
+    }
+    return window.LearningPlatform.ready;
   }
 
   function mount() {

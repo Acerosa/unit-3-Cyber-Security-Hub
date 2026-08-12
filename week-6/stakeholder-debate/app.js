@@ -169,6 +169,44 @@
         getCompletionTimeSeconds: function () {
           return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
         },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var items = [
+            {
+              id: 'SD0',
+              value: state.participationRole,
+              complete: Boolean(String(state.participationRole || '').trim())
+            }
+          ];
+          data.fields.forEach(function (field, index) {
+            items.push({
+              id: 'SD' + (index + 1),
+              value: state[field.id] || '',
+              complete: String(state[field.id] || '').trim().length >= field.minLength
+            });
+          });
+          return items.map(function (item) {
+            return evidence && evidence.freeText
+              ? evidence.freeText(item.id, item.value, {
+                  responseType: 'text',
+                  correct: item.complete,
+                  score: item.complete ? 1 : 0
+                })
+              : {
+                  questionId: item.id,
+                  response: item.value,
+                  correct: item.complete,
+                  score: item.complete ? 1 : 0,
+                  responseType: 'text'
+                };
+          });
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
+        },
         canSubmit: function () {
           return true;
         }

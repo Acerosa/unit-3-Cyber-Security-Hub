@@ -169,6 +169,17 @@
           : null
       })
       .then(function (submission) {
+        var backendProgress = window.Unit3BackendProgress;
+        if (!backendProgress || typeof backendProgress.reconcile !== "function") {
+          return submission;
+        }
+        return backendProgress.reconcile().catch(function () {
+          return [];
+        }).then(function () {
+          return submission;
+        });
+      })
+      .then(function (submission) {
         inFlight = false;
         if (options.progress && options.progress.markSubmitted) {
           options.progress.markSubmitted(activity.activityId);

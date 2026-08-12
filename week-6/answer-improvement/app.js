@@ -208,6 +208,43 @@
         getCompletionTimeSeconds: function () {
           return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
         },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var selected = Object.keys(state.criteria).filter(function (key) {
+            return state.criteria[key];
+          });
+          var improved = String(state.improved || '');
+          var rewrite = String(state.rewrite || '');
+          var items = [
+            { id: 'AI1', value: { selectedCriteria: selected }, complete: selected.length >= 3 },
+            { id: 'AI2', value: rewrite, complete: rewrite.trim().length >= 25 },
+            { id: 'AI3', value: improved, complete: improved.trim().length >= 50 },
+            { id: 'AI4', value: state.nextAction || '', complete: String(state.nextAction || '').trim().length >= 15 },
+            { id: 'AI5', value: improved, complete: /concession|however/i.test(improved) },
+            { id: 'AI6', value: rewrite, complete: /data protection|computer misuse|ethical/i.test(rewrite) }
+          ];
+          return items.map(function (item) {
+            return evidence && evidence.structured
+              ? evidence.structured(item.id, item.value, {
+                  responseType: typeof item.value === 'string' ? 'text' : 'structured',
+                  correct: item.complete,
+                  score: item.complete ? 1 : 0
+                })
+              : {
+                  questionId: item.id,
+                  response: item.value,
+                  correct: item.complete,
+                  score: item.complete ? 1 : 0,
+                  responseType: typeof item.value === 'string' ? 'text' : 'structured'
+                };
+          });
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
+        },
         canSubmit: function () {
           return true;
         }

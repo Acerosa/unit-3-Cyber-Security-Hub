@@ -161,7 +161,7 @@
       locked = true;
       var chosen = Number(selected.value);
       var correct = chosen === q.correctIndex;
-      checkAnswers.push({ correct: correct });
+      checkAnswers.push({ chosenIndex: chosen, correct: correct });
       panel.querySelectorAll('input[name="dl-check"]').forEach(function (input) {
         input.disabled = true;
       });
@@ -205,6 +205,36 @@
       },
       getCompletionTimeSeconds: function () {
         return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
+      },
+      getResponses: function () {
+        var evidence = window.Unit3SupabaseEvidence;
+        return checkAnswers.map(function (answer, index) {
+          var question = data.knowledgeChecks[index];
+          var questionId = 'DL' + (index + 1);
+          var payload = {
+            chosenIndex: answer.chosenIndex,
+            selectedOption: question.options[answer.chosenIndex]
+          };
+          return evidence && evidence.structured
+            ? evidence.structured(questionId, payload, {
+                responseType: 'single-choice',
+                correct: Boolean(answer.correct),
+                score: answer.correct ? 1 : 0
+              })
+            : {
+                questionId: questionId,
+                response: payload,
+                correct: Boolean(answer.correct),
+                score: answer.correct ? 1 : 0,
+                responseType: 'single-choice'
+              };
+        });
+      },
+      getStartedAt: function () {
+        return new Date(startedAt).toISOString();
+      },
+      getCompletedAt: function () {
+        return new Date().toISOString();
       },
       canSubmit: function () {
         return true;

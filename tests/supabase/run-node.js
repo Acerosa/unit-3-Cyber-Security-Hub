@@ -45,6 +45,94 @@ const sandboxWindow = {
   document: undefined
 };
 
+const platformAttemptIds = new Map();
+const signedOutAuthState = { status: "signed-out", session: null, error: null };
+const signedOutLearnerState = { status: "signed-out", context: null, error: null };
+const fakePlatform = {
+  client: {
+    schema() {
+      return {
+        rpc() { return Promise.resolve({ data: [], error: null }); },
+        from() {
+          return {
+            select() {
+              return {
+                order() { return Promise.resolve({ data: [], error: null }); }
+              };
+            }
+          };
+        }
+      };
+    }
+  },
+  auth: {
+    getSession() { return null; },
+    getState() { return signedOutAuthState; },
+    isSignedIn() { return false; },
+    subscribe(listener) { listener(signedOutAuthState); return function () {}; },
+    signIn() { return Promise.reject(new Error("not available in headless test")); },
+    signUp() { return Promise.reject(new Error("not available in headless test")); },
+    signOut() { return Promise.resolve(true); }
+  },
+  learner: {
+    getContext() { return null; },
+    getState() { return signedOutLearnerState; },
+    subscribe(listener) { listener(signedOutLearnerState); return function () {}; },
+    refresh() { return Promise.resolve(null); }
+  },
+  profile: { getProfile() { return Promise.resolve(null); } },
+  enrolment: { getEnrolments() { return Promise.resolve([]); } },
+  assignment: {
+    getAssignments() { return Promise.resolve([]); },
+    getCurriculumDelivery() { return Promise.resolve([]); }
+  },
+  progress: {
+    getProgress() { return Promise.resolve([]); },
+    getAttempts() { return Promise.resolve([]); },
+    getResponses() { return Promise.resolve([]); }
+  },
+  onboarding: {
+    pendingKey: "learning-platform.pending-onboarding.v1:unit-3-cyber-security",
+    validateProfile(details) {
+      const value = {
+        firstName: String(details.firstName || "").trim(),
+        surname: String(details.surname || "").trim(),
+        studentNumber: String(details.studentNumber || "").trim()
+      };
+      return value.firstName && value.surname && value.studentNumber
+        ? { ok: true, value }
+        : { ok: false, code: "INVALID_STUDENT_NUMBER" };
+    },
+    validateAccount() { return { ok: true, value: {} }; },
+    savePending(details) { return details; },
+    getPending() { return null; },
+    clearPending() {},
+    getRegistrationOptions() { return Promise.resolve([]); },
+    complete() { return Promise.resolve(null); }
+  },
+  submission: {
+    getAttemptId(activityKey) {
+      if (!platformAttemptIds.has(activityKey)) {
+        platformAttemptIds.set(activityKey, require("node:crypto").randomUUID());
+      }
+      return platformAttemptIds.get(activityKey);
+    },
+    beginAttempt(activityKey) {
+      const id = require("node:crypto").randomUUID();
+      platformAttemptIds.set(activityKey, id);
+      return id;
+    }
+  },
+  api: {
+    getRegistrationOptions() { return Promise.resolve([]); },
+    completeOnboarding() { return Promise.resolve(null); }
+  }
+};
+sandboxWindow.LearningPlatform = {
+  ready: Promise.resolve({ status: "signed-out" }),
+  platform: fakePlatform
+};
+
 const context = vm.createContext({
   window: sandboxWindow,
   console,

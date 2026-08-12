@@ -272,8 +272,59 @@
           getCompletionTimeSeconds: function () {
             return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
           },
+          getResponses: function () {
+            var evidence = window.Unit3SupabaseEvidence;
+            return data.questions.map(function (question, index) {
+              var questionId = 'OCR7_' + (index + 1);
+              var answer = answers[question.id];
+              var marks = Number(selfMarks[question.id]);
+              var score = Number.isFinite(marks)
+                ? Math.max(0, Math.min(question.marks, marks))
+                : 0;
+              if (question.responseType === 'mcq') {
+                return evidence.structured(
+                  questionId,
+                  {
+                    selectedOptionId: answer || null,
+                    selfAssessedMarks: score
+                  },
+                  {
+                    responseType: 'single-choice',
+                    maxScore: question.marks,
+                    score:
+                      answer === question.correctOptionId ? question.marks : 0
+                  }
+                );
+              }
+              return evidence.structured(
+                questionId,
+                {
+                  text: answer || '',
+                  answered: Boolean(String(answer || '').trim()),
+                  selfAssessedMarks: score
+                },
+                {
+                  responseType: 'extended-response',
+                  maxScore: question.marks,
+                  score: score
+                }
+              );
+            });
+          },
+          getStartedAt: function () {
+            return new Date(startedAt).toISOString();
+          },
+          getCompletedAt: function () {
+            return new Date().toISOString();
+          },
           canSubmit: function () {
-            return true;
+            return data.questions.every(function (question) {
+              var answer = answers[question.id];
+              if (question.responseType === 'mcq') {
+                return Boolean(answer);
+              }
+              return Boolean(String(answer || '').trim());
+            });
           },
           onSubmitFailed: function () {
             save();

@@ -150,6 +150,41 @@
         getCompletionTimeSeconds: function () {
           return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
         },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var fields = [
+            'financial',
+            'staffTime',
+            'downtime',
+            'usability',
+            'productivity',
+            'workaround',
+            'proportionate'
+          ];
+          return fields.map(function (fieldId, index) {
+            var value = answers[fieldId] || '';
+            var complete = fieldScore(fieldId) === 1;
+            return evidence && evidence.freeText
+              ? evidence.freeText('OC' + (index + 1), value, {
+                  responseType: 'text',
+                  correct: complete,
+                  score: complete ? 1 : 0
+                })
+              : {
+                  questionId: 'OC' + (index + 1),
+                  response: value,
+                  correct: complete,
+                  score: complete ? 1 : 0,
+                  responseType: 'text'
+                };
+          });
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
+        },
         canSubmit: function () {
           return true;
         }

@@ -169,6 +169,52 @@
           getCompletionTimeSeconds: function () {
             return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
           },
+          getResponses: function () {
+            var evidence = window.Unit3SupabaseEvidence;
+            var flags = feedbackFlags();
+            return [
+              evidence.structured(
+                'REC1',
+                { measure: answers.measure, registerRef: answers.registerRef },
+                { correct: flags.named, score: flags.named ? 1 : 0 }
+              ),
+              evidence.freeText('REC2', answers.whyOrg, {
+                correct: flags.context,
+                score: flags.context ? 1 : 0
+              }),
+              evidence.freeText('REC3', answers.effectiveness, {
+                correct: flags.effectiveness,
+                score: flags.effectiveness ? 1 : 0
+              }),
+              evidence.freeText('REC4', answers.costLimitation, {
+                correct: flags.limitation,
+                score: flags.limitation ? 1 : 0
+              }),
+              evidence.structured(
+                'REC5',
+                { alternative: answers.alternative, whyLessSuitable: answers.whyAltLess },
+                { correct: flags.comparison, score: flags.comparison ? 1 : 0 }
+              ),
+              evidence.structured(
+                'REC6',
+                {
+                  measure: answers.measure,
+                  organisationalReason: answers.whyOrg,
+                  effectiveness: answers.effectiveness
+                },
+                {
+                  correct: flags.named && flags.context && flags.effectiveness,
+                  score: flags.named && flags.context && flags.effectiveness ? 1 : 0
+                }
+              )
+            ];
+          },
+          getStartedAt: function () {
+            return new Date(startedAt).toISOString();
+          },
+          getCompletedAt: function () {
+            return new Date().toISOString();
+          },
           canSubmit: function () {
             return true;
           }

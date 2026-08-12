@@ -349,6 +349,52 @@
         getCompletionTimeSeconds: function () {
           return Math.max(1, Math.round((Date.now() - startedAt) / 1000));
         },
+        getResponses: function () {
+          var evidence = window.Unit3SupabaseEvidence;
+          var completeDecisions = state.entries.filter(costBenefitComplete);
+          var debriefOk =
+            state.entries.filter(entryComplete).length >= 2 &&
+            state.entries.some(function (entry) {
+              return String(entry.debriefNotes || '').trim().length >= 12;
+            });
+          return [
+            evidence.freeText('HT1', state.northbankContext, {
+              correct: String(state.northbankContext || '').trim().length >= 20,
+              score: String(state.northbankContext || '').trim().length >= 20 ? 1 : 0
+            }),
+            evidence.structured(
+              'HT2',
+              {
+                learnerRole: state.learnerRole,
+                exerciseTitle: state.exerciseTitle,
+                groupCode: state.groupCode,
+                groupNotes: state.groupNotes
+              },
+              {
+                correct: String(state.learnerRole || '').trim().length >= 3,
+                score: String(state.learnerRole || '').trim().length >= 3 ? 1 : 0
+              }
+            ),
+            evidence.structured('HT3', completeDecisions[0] || {}, {
+              correct: Boolean(completeDecisions[0]),
+              score: completeDecisions[0] ? 1 : 0
+            }),
+            evidence.structured('HT4', completeDecisions[1] || {}, {
+              correct: Boolean(completeDecisions[1]),
+              score: completeDecisions[1] ? 1 : 0
+            }),
+            evidence.structured('HT5', { decisions: state.entries }, {
+              correct: debriefOk,
+              score: debriefOk ? 1 : 0
+            })
+          ];
+        },
+        getStartedAt: function () {
+          return new Date(startedAt).toISOString();
+        },
+        getCompletedAt: function () {
+          return new Date().toISOString();
+        },
         canSubmit: function () {
           return true;
         }
