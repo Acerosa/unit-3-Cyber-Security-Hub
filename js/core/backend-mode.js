@@ -15,7 +15,7 @@
  *   1. Week 1 Activity API pages are forced to APPS_SCRIPT (no markSection RPC)
  *   2. ?backend=supabase / ?backend=apps_script in the current URL
  *   3. localStorage['unit3.backendMode'] = 'SUPABASE' | 'APPS_SCRIPT'
- *   4. SUPABASE_CONFIG.backendMode (default)
+ *   4. SUPABASE_CONFIG.backendMode (default SUPABASE for Weeks 2–7)
  */
 (function () {
   "use strict";
@@ -123,7 +123,7 @@
     if (resolved && isSupported(resolved)) {
       return resolved;
     }
-    return MODE.APPS_SCRIPT;
+    return MODE.SUPABASE;
   }
 
   function isSupabase() {
@@ -160,7 +160,7 @@
     if (fromQuery()) return "query-string";
     if (fromStorage()) return "local-storage-override";
     if (fromConfig()) return "supabase-config";
-    return "default-apps-script";
+    return "default-supabase";
   }
 
   window.Unit3BackendMode = Object.freeze({

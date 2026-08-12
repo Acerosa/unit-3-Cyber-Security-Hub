@@ -199,9 +199,23 @@ test("backend progress overrides completion while retaining local pending work",
 test("Week 1 remains an explicit Apps Script marking exception", () => {
   const mode = read("js/core/backend-mode.js");
   const config = read("js/activity-engine-config.js");
+  const supabaseConfig = read("js/config/supabase-config.js");
+  assert.match(supabaseConfig, /backendMode:\s*"SUPABASE"/);
   assert.match(mode, /week1-forced-apps-script/);
+  assert.match(mode, /isWeek1ActivityApiPage/);
   assert.match(mode, /return MODE\.APPS_SCRIPT/);
   assert.match(config, /markSection/);
+});
+
+test("Weeks 2–7 default to shared Supabase without query override", () => {
+  const mode = read("js/core/backend-mode.js");
+  assert.match(mode, /return MODE\.SUPABASE/);
+  assert.match(mode, /default-supabase/);
+  ["week2", "week3", "week4", "week5", "week6", "week7"].forEach((week) => {
+    const submit = read(`js/${week}-submit.js`);
+    assert.match(submit, /isSupabaseMode/);
+    assert.match(submit, /Unit3SupabaseSubmitRunner/);
+  });
 });
 
 test("Core account dialog is used on shared-backend activity pages", () => {

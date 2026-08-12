@@ -180,8 +180,8 @@ record(
 if (existsAt("js/config/supabase-config.js")) {
   const config = read("js/config/supabase-config.js");
   record(
-    "config-default-backend-mode-is-apps-script",
-    /backendMode:\s*"APPS_SCRIPT"/.test(config)
+    "config-default-backend-mode-is-supabase",
+    /backendMode:\s*"SUPABASE"/.test(config)
   );
   record(
     "config-lists-only-lower-case-week1-keys",

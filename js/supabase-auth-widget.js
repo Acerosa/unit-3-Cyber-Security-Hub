@@ -11,7 +11,7 @@
   function mode() {
     return window.Unit3BackendMode && window.Unit3BackendMode.getMode
       ? window.Unit3BackendMode.getMode()
-      : "APPS_SCRIPT";
+      : "SUPABASE";
   }
 
   function ensureHost() {
