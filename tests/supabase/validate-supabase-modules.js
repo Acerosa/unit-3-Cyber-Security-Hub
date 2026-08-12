@@ -126,29 +126,29 @@
     if (backendMode) {
       assertEquals(
         results,
-        "backend-mode-default-is-apps-script",
+        "backend-mode-default-is-supabase",
         backendMode.getMode(),
-        "APPS_SCRIPT"
+        "SUPABASE"
       );
       var setResult;
       try {
-        setResult = backendMode.setMode("SUPABASE");
+        setResult = backendMode.setMode("APPS_SCRIPT");
       } catch (error) {
         setResult = error && error.message ? error.message : String(error);
       }
-      assertEquals(results, "backend-mode-set-supabase", setResult, "SUPABASE");
+      assertEquals(results, "backend-mode-set-apps-script", setResult, "APPS_SCRIPT");
       assertEquals(
         results,
         "backend-mode-after-set",
         backendMode.getMode(),
-        "SUPABASE"
+        "APPS_SCRIPT"
       );
       backendMode.clearOverride();
       assertEquals(
         results,
-        "backend-mode-after-clear-defaults-apps-script",
+        "backend-mode-after-clear-defaults-supabase",
         backendMode.getMode(),
-        "APPS_SCRIPT"
+        "SUPABASE"
       );
       var threw = false;
       try {

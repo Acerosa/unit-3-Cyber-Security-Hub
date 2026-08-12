@@ -11,16 +11,16 @@
  * or any secret. All privileged access happens server-side via Supabase RLS.
  *
  * `backendMode` controls which submission transport is used:
- *   - "APPS_SCRIPT"  -> existing Google Apps Script /exec endpoints (rollback)
  *   - "SUPABASE"     -> api.submit_attempt on the shared Supabase project
+ *   - "APPS_SCRIPT"  -> existing Google Apps Script /exec endpoints (rollback)
  *
- * The default remains APPS_SCRIPT until representative Supabase testing
- * passes on the hosted synthetic environment. There is NO silent fallback:
- * a Supabase failure remains visible to the learner and the tutor.
- * Runtime overrides:
- *   - ?backend=supabase in the URL, or
- *   - localStorage['unit3.backendMode'] = 'SUPABASE'
- * are honoured by Unit3BackendMode.getMode() when present.
+ * Default is SUPABASE for Weeks 2–7 after hosted backend activation. There is
+ * NO silent fallback: a Supabase failure remains visible to the learner and
+ * the tutor. Controlled rollback for support/dev:
+ *   - ?backend=apps_script in the URL, or
+ *   - localStorage['unit3.backendMode'] = 'APPS_SCRIPT'
+ * are honoured by Unit3BackendMode.getMode() when present. Learners are not
+ * shown backend-selection UI.
  *
  * Week 1 override (deterministic, not an error fallback):
  *   Activity API pages under /activities/activity.html, /week-1/, and
@@ -47,7 +47,7 @@
     course: "ocr-level-3-it",
     projectUrl: "https://hubwpkrqndorznwzvaer.supabase.co",
     publishableKey: "sb_publishable_SlcVwn-vjm-hTUZlC_UH7g_V3GedixM",
-    backendMode: "APPS_SCRIPT",
+    backendMode: "SUPABASE",
     supportedBackendModes: Object.freeze(["APPS_SCRIPT", "SUPABASE"]),
     activityVersionAliases: VERSION_ALIASES,
     /*
