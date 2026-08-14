@@ -1,6 +1,10 @@
 (function () {
   "use strict";
 
+  if (window.LearningPlatform && window.LearningPlatform.platform) {
+    return;
+  }
+
   var core = window.LearningPlatformCore;
   var app = window.APP_CONFIG || {};
   var supabase = window.SUPABASE_CONFIG || {};
