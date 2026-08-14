@@ -52,12 +52,9 @@ function scoredActivityDirs() {
   return dirs;
 }
 
-const REQUIRED_SCRIPTS = [
-  "js/config/app-config.js",
-  "js/config/supabase-config.js",
-  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3",
-  "vendor/learning-platform-core/0.1.0/learning-platform-core.iife.js",
-  "js/core/platform.js",
+const inventory = JSON.parse(read("test/fixtures/route-inventory.json"));
+
+const REQUIRED_ADAPTERS = [
   "js/core/supabase-client.js",
   "js/core/supabase-auth.js",
   "js/core/supabase-learning-api.js",
@@ -67,35 +64,29 @@ const REQUIRED_SCRIPTS = [
   "js/core/question-key-aliases.js",
   "js/core/supabase-submission-adapter.js",
   "js/core/supabase-evidence.js",
-  "js/core/unit3-supabase-submit-runner.js",
-  "js/supabase-auth-widget.js"
+  "js/core/unit3-supabase-submit-runner.js"
 ];
 
 function assertScriptOrder(html, label) {
-  let lastIndex = -1;
-  let orderOk = true;
-  const missing = [];
-  REQUIRED_SCRIPTS.forEach((token) => {
-    const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp('<script[^>]+src="[^"]*' + escaped + '"');
-    const match = re.exec(html);
-    if (!match) {
-      missing.push(token);
-      orderOk = false;
-      return;
-    }
-    if (match.index < lastIndex) orderOk = false;
-    else lastIndex = match.index;
-  });
+  record(label + "-vite-shell", /id="root"/.test(html) && /src\/main\.tsx/.test(html));
+  record(label + "-no-cdn-supabase", !/cdn\.jsdelivr\.net/.test(html));
+  const missing = REQUIRED_ADAPTERS.filter((token) => inventory.sharedAdapters.indexOf(token) === -1);
   record(
     label + "-includes-supabase-modules",
     missing.length === 0,
     missing.length ? "missing: " + missing.join(", ") : ""
   );
+  let lastIndex = -1;
+  let orderOk = true;
+  REQUIRED_ADAPTERS.forEach((token) => {
+    const current = inventory.sharedAdapters.indexOf(token);
+    if (current === -1 || current < lastIndex) orderOk = false;
+    else lastIndex = current;
+  });
   record(
     label + "-module-order",
     orderOk,
-    orderOk ? "" : "Supabase module include order is not stable"
+    orderOk ? "" : "Supabase adapter order is not stable"
   );
 }
 
@@ -119,7 +110,7 @@ scored.forEach((absDir) => {
   assertScriptOrder(html, rel);
   record(
     rel + "-has-auth-css",
-    /css\/supabase-auth\.css/.test(html)
+    /css\/supabase-auth\.css/.test(read("src/main.tsx"))
   );
   record(
     rel + "-exposes-getResponses",
@@ -138,6 +129,7 @@ const forbiddenPattern =
 const skipDirs = new Set([
   path.join(root, ".git"),
   path.join(root, "node_modules"),
+  path.join(root, "dist"),
   path.join(root, "tmp")
 ]);
 const skipFileExtensions = new Set([

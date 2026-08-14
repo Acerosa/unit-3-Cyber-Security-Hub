@@ -18,7 +18,12 @@ desktop.ini
 # Local environment overrides (never commit secrets)
 .env
 .env.*
+!.env.example
 local.config.js
 
 # Local clasp switching files
 .clasp.week-*.active.json
+
+# Vite / Node
+node_modules
+dist

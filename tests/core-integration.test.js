@@ -67,11 +67,13 @@ test("reviewed Core exposes shared state, theme, error, and account UI contracts
 });
 
 test("one composition root owns shared platform services", () => {
-  const source = read("js/core/platform.js");
-  assert.equal((source.match(/core\.createPlatform\(/g) || []).length, 1);
-  assert.match(source, /platform\.initialise\(\)/);
-  assert.match(source, /window\.LearningPlatform/);
-  assert.match(read("js/config/app-config.js"), /coreVersion:\s*"0\.1\.0"/);
+  const source = read("src/platform.ts");
+  assert.match(source, /createPlatformFn\(/);
+  assert.match(source, /supabaseClient:\s*client/);
+  assert.match(source, /assignment:\s*platform\.assignments/);
+  assert.match(source, /navigationMode:\s*"as-supplied"/);
+  assert.match(read("js/config/app-config.js"), /coreVersion:\s*"0\.2\.0"/);
+  assert.match(read("src/config.ts"), /coreVersion:\s*"0\.2\.0"/);
 });
 
 test("legacy compatibility files delegate to Core without parallel sessions", () => {
@@ -112,36 +114,26 @@ test("canonical manifest declares the active Phase 1 contracts", () => {
   assert.equal(manifest.hubId, "unit-3-cyber-security");
   assert.deepEqual(manifest.courses, ["ocr-level-3-it"]);
   assert.deepEqual(manifest.compatibility.required, {
-    coreVersion: "0.1.0",
+    coreVersion: "0.2.0",
     learnerApiContractVersion: "0.1.0",
     submissionContractVersion: "0.1.0"
   });
 });
 
-test("all static learner routes load Core in dependency order", () => {
+test("all static learner routes are Vite shells that mount the React hub", () => {
   const routes = routeFiles();
   assert.equal(routes.length, 94);
-  const tokens = [
-    "js/core/theme-bootstrap.js",
-    "js/config/app-config.js",
-    "js/config/supabase-config.js",
-    "@supabase/supabase-js@2.112.3",
-    "learning-platform-core.iife.js",
-    "js/core/platform.js",
-    "js/core/supabase-client.js",
-    "js/core/supabase-auth.js",
-    "js/core/supabase-learning-api.js",
-    "js/core/supabase-onboarding.js"
-  ];
   routes.forEach((route) => {
     const html = read(route);
-    let previous = -1;
-    tokens.forEach((token) => {
-      const current = html.indexOf(token);
-      assert.ok(current > previous, `${route} must load ${token} in order`);
-      previous = current;
-    });
+    assert.match(html, /id="root"/, route);
+    assert.match(html, /src\/main\.tsx/, route);
+    assert.match(html, /theme-bootstrap\.js\?v=2/, route);
+    assert.ok(html.indexOf("theme-bootstrap.js") < html.indexOf('type="module"'), route);
+    assert.doesNotMatch(html, /learning-platform-core\.iife\.js/);
+    assert.doesNotMatch(html, /cdn\.jsdelivr\.net/);
   });
+  assert.match(read("src/main.tsx"), /@learning-platform\/core\/theme\.css/);
+  assert.match(read("package.json"), /"@learning-platform\/core": "file:\.\.\/learning-platform-core"/);
 });
 
 test("all learner route assets and local navigation targets still exist", () => {
@@ -220,8 +212,10 @@ test("Weeks 2–7 default to shared Supabase without query override", () => {
 
 test("Core account dialog is used on shared-backend activity pages", () => {
   const widget = read("js/supabase-auth-widget.js");
+  const hook = read("src/hooks/useHubPlatform.ts");
   assert.match(widget, /core\.createAccountDialog/);
-  assert.match(widget, /authService:\s*platform\.auth/);
-  assert.match(widget, /learnerContext:\s*platform\.learner/);
-  assert.match(widget, /onboardingService:\s*platform\.onboarding/);
+  assert.match(hook, /createAccountDialog/);
+  assert.match(hook, /authService:\s*platform\.auth/);
+  assert.match(hook, /learnerContext:\s*platform\.learner/);
+  assert.match(hook, /onboardingService:\s*platform\.onboarding/);
 });
