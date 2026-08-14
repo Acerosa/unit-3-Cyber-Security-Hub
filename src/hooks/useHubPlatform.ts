@@ -49,11 +49,12 @@ export function useHubPlatform(root: string) {
     });
     document.body.appendChild(dialog.element);
     setAccountDialog(dialog);
-    window.LearningPlatform = { platform, coreVersion: APP_CONFIG.coreVersion };
 
     void (async () => {
+      const ready = platform.initialise();
+      window.LearningPlatform = { platform, coreVersion: APP_CONFIG.coreVersion, ready };
       await loadHubAdapters(root);
-      await platform.initialise();
+      await ready;
       if (!cancelled) setAdaptersReady(true);
     })();
 
