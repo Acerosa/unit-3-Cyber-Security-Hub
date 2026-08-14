@@ -148,11 +148,11 @@
         return row ? [row] : [];
       });
     },
-    getMyEnrolments: platform.enrolment.getEnrolments,
-    getRegistrationOptions: platform.api.getRegistrationOptions,
-    completeLearnerOnboarding: platform.api.completeOnboarding,
-    getMyAssignments: platform.assignment.getAssignments,
-    getMyActivityDelivery: platform.assignment.getCurriculumDelivery,
+    getMyEnrolments: (platform.enrolment || platform.enrolments).getEnrolments,
+    getRegistrationOptions: platform.onboarding.getRegistrationOptions,
+    completeLearnerOnboarding: platform.onboarding.complete,
+    getMyAssignments: (platform.assignment || platform.assignments).getAssignments,
+    getMyActivityDelivery: (platform.assignment || platform.assignments).getCurriculumDelivery,
     getCurriculumWeeks: getCurriculumWeeks,
     getMyAttempts: platform.progress.getAttempts,
     getMyResponses: platform.progress.getResponses,

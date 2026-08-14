@@ -86,6 +86,7 @@ test("legacy compatibility files delegate to Core without parallel sessions", ()
   assert.match(auth, /platform\.learner/);
   assert.match(onboarding, /platform\.onboarding/);
   assert.doesNotMatch(onboarding, /sessionStorage|localStorage/);
+  assert.doesNotMatch(read("js/core/supabase-learning-api.js"), /platform\.api\./);
 });
 
 test("Core Auth restores the SDK-owned session", async () => {
