@@ -216,6 +216,7 @@ test("Core account dialog is used on shared-backend activity pages", () => {
   const hook = read("src/hooks/useHubPlatform.ts");
   assert.match(widget, /core\.createAccountDialog/);
   assert.match(hook, /createAccountDialog/);
+  assert.match(hook, /LearningPlatform = \{ platform, coreVersion: APP_CONFIG\.coreVersion, ready \}/);
   assert.match(hook, /authService:\s*platform\.auth/);
   assert.match(hook, /learnerContext:\s*platform\.learner/);
   assert.match(hook, /onboardingService:\s*platform\.onboarding/);
