@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { LearnerSummary, ThemeControl, ThemePreference } from "@learning-platform/ui";
 import { loadHubAdapters } from "../adapters/load-hub-adapters";
 import { APP_CONFIG } from "../config";
+import { loadUnit3Curriculum } from "../curriculum/apply-runtime";
 import { createHubPlatform, type HubPlatform } from "../platform";
 
 type AccountDialog = {
@@ -54,6 +55,7 @@ export function useHubPlatform(root: string) {
       const ready = platform.initialise();
       window.LearningPlatform = { platform, coreVersion: APP_CONFIG.coreVersion, ready };
       await loadHubAdapters(root);
+      await loadUnit3Curriculum(platform);
       await ready;
       if (!cancelled) setAdaptersReady(true);
     })();

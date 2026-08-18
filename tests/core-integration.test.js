@@ -6,7 +6,7 @@ const test = require("node:test");
 const vm = require("node:vm");
 
 const root = path.resolve(__dirname, "..");
-const coreAsset = "vendor/learning-platform-core/0.1.0/learning-platform-core.iife.js";
+const coreAsset = "vendor/learning-platform-core/0.2.0/learning-platform-core.iife.js";
 
 function read(relative) {
   return fs.readFileSync(path.join(root, relative), "utf8");
@@ -44,19 +44,16 @@ function loadCore() {
   return sandbox.LearningPlatformCore;
 }
 
-test("vendored Core is the exact reviewed f484b2d browser build", () => {
+test("vendored Core is the exact reviewed 0.2.0 browser build", () => {
   const hash = crypto.createHash("sha256").update(read(coreAsset)).digest("hex");
-  assert.equal(hash, "87a940431dc981af4aeb65d4c0a4c215c497346b0ce5a10d996261f0f1be44ed");
-  assert.match(read("vendor/learning-platform-core/0.1.0/PROVENANCE.md"), /f484b2d/);
+  assert.equal(hash, "c48398fafb34e36c42fd7733f07eaf4d388f20efce72ba35de295c6cb2a15761");
+  assert.match(read("vendor/learning-platform-core/0.2.0/PROVENANCE.md"), /curriculum-runtime/);
 });
 
-test("reviewed Core exposes shared state, theme, error, and account UI contracts", () => {
+test("reviewed Core exposes the 0.2.0 stable browser contract", () => {
   const core = loadCore();
   [
     "createPlatform",
-    "createAuthService",
-    "createLearnerContext",
-    "createOnboardingService",
     "createAccountDialog",
     "createThemeService",
     "createLoadingState",
@@ -64,6 +61,7 @@ test("reviewed Core exposes shared state, theme, error, and account UI contracts
   ].forEach((name) => {
     assert.equal(typeof core[name], "function", `${name} must be available`);
   });
+  assert.equal(typeof core.createAuthService, "undefined");
 });
 
 test("one composition root owns shared platform services", () => {
@@ -92,21 +90,43 @@ test("legacy compatibility files delegate to Core without parallel sessions", ()
 test("Core Auth restores the SDK-owned session", async () => {
   const core = loadCore();
   const session = { user: { id: "learner-1" }, access_token: "sdk-owned" };
-  const auth = core.createAuthService({
-    client: {
+  const platform = core.createPlatform({
+    hubCode: "unit-3-cyber-security",
+    hubName: "Unit 3 Cyber Security Hub",
+    supabase: {
+      projectUrl: "https://example.supabase.co",
+      publishableKey: "sb_publishable_example"
+    }
+  }, {
+    supabaseClient: {
       auth: {
         onAuthStateChange() {
           return { data: { subscription: { unsubscribe() {} } } };
         },
         getSession() { return Promise.resolve({ data: { session }, error: null }); },
         signOut() { return Promise.resolve({ error: null }); }
+      },
+      schema() {
+        return {
+          from() {
+            return {
+              select() { return this; },
+              eq() { return this; },
+              order() { return this; },
+              then(resolve) { return Promise.resolve({ data: [], error: null }).then(resolve); }
+            };
+          },
+          rpc() { return Promise.resolve({ data: [], error: null }); }
+        };
       }
     },
-    logger: { warn() {} }
+    document: null,
+    window: null
   });
-  await auth.initialise();
-  assert.equal(auth.getSession(), session);
-  assert.equal(auth.isSignedIn(), true);
+  await platform.initialise();
+  assert.equal(platform.auth.getSession(), session);
+  assert.equal(platform.auth.isSignedIn(), true);
+  platform.destroy();
 });
 
 test("canonical manifest declares the active Phase 1 contracts", () => {

@@ -30,6 +30,7 @@ function copyRuntimeFiles() {
   const inventory = JSON.parse(readFileSync(resolve("test/fixtures/route-inventory.json"), "utf8"));
   const files = new Set<string>([
     "js/core/theme-bootstrap.js",
+    "content/unit-3-cyber-security/package.json",
     ...inventory.sharedAdapters,
     ...inventory.routes.flatMap((route: { scripts: string[] }) => route.scripts)
   ]);

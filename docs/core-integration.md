@@ -1,7 +1,9 @@
 # Shared Learning Platform integration
 
-The hub vendors the reviewed `learning-platform-core` 0.1.0 browser build from
-commit `f484b2d`. `js/core/platform.js` is the single composition root. Core owns
+The hub vendors the reviewed `learning-platform-core` 0.2.0 browser build from
+commit `f59614ee`. Vite production uses `@learning-platform/core` 0.2.0
+(`createPlatform` in `src/platform.ts`). `js/core/platform.js` remains a
+compatibility composition root for Node tests. Core owns
 the Supabase client, Auth session, learner context, onboarding, profile,
 enrolments, assignments, attempts, progress, platform state, theme and account
 dialog.
@@ -30,7 +32,7 @@ as an authoritative completion.
 
 Week 1 continues to use the existing Apps Script Activity API. Its
 `markSection` operation returns section-level marking and feedback used by the
-generic Week 1 engine before final submission. Neither Core 0.1.0 nor learner
+generic Week 1 engine before final submission. Neither Core 0.2.0 nor learner
 API/submission contract 0.1.0 provides an equivalent operation. Week 1 pages
 are therefore forced to `APPS_SCRIPT` regardless of the global default; this is
 an explicit compatibility route, not an error fallback.

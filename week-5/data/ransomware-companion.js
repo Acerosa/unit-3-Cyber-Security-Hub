@@ -4,6 +4,9 @@
  */
 (function (global) {
   'use strict';
+  if (typeof globalThis !== "undefined" && globalThis.__lpPublishedCurriculum) {
+    return;
+  }
 
   global.Week5RansomwareCompanion = Object.freeze({
     activityId: 'week5-ransomware-companion',

@@ -10,7 +10,13 @@ declare global {
       enabledActivities: string[];
       backendMode: string;
     };
-    LearningPlatform?: { platform: unknown; coreVersion: string };
+    LearningPlatform?: {
+      platform: unknown;
+      coreVersion: string;
+      ready?: Promise<unknown>;
+    };
+    __lpPackage?: unknown;
+    __lpPublishedCurriculum?: boolean;
     Unit3Week1Progress?: WeekProgress;
     Unit3Week2Progress?: WeekProgress;
     Unit3Week3Progress?: WeekProgress;

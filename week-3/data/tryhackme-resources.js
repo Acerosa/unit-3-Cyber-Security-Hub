@@ -3,6 +3,9 @@
  */
 (function (global) {
   'use strict';
+  if (typeof globalThis !== "undefined" && globalThis.__lpPublishedCurriculum) {
+    return;
+  }
   global.Unit3Week3TryHackMeData = {
   "accessNotice": "Room access and availability must be confirmed by the tutor before the lesson. Learners should not purchase a subscription to complete a college activity unless the college has explicitly authorised it.",
   "industryVocabularyNote": "White hat, grey hat and black hat are industry terms. They do not replace the eight OCR attacker categories.",

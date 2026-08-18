@@ -11,11 +11,12 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "npm run test:node && npm run test:app && npm run build && node --test test/post-build/build.test.js",
-    "test:node": "node --test tests/core-integration.test.js tests/backend-progress.test.js test/site-integrity.test.js && node tests/supabase/run-all.js",
+    "test:node": "node --test tests/core-integration.test.js tests/backend-progress.test.js tests/curriculum-runtime.test.js test/site-integrity.test.js && node tests/supabase/run-all.js",
     "test:app": "vitest run",
     "check": "npm run typecheck && npm test"
   },
   "dependencies": {
+    "@learning-platform/content": "file:../learning-platform-content",
     "@learning-platform/core": "file:../learning-platform-core",
     "@learning-platform/ui": "file:../learning-platform-ui",
     "@supabase/supabase-js": "2.112.3",

@@ -3,6 +3,9 @@
  */
 (function (global) {
   'use strict';
+  if (typeof globalThis !== "undefined" && globalThis.__lpPublishedCurriculum) {
+    return;
+  }
   global.Week3PeerMarking = {
   "activityId": "week3-peer-marking",
   "activityName": "Peer Marking and Answer Improvement",

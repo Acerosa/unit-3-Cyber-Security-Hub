@@ -3,6 +3,9 @@
  */
 (function (global) {
   'use strict';
+  if (typeof globalThis !== "undefined" && globalThis.__lpPublishedCurriculum) {
+    return;
+  }
   global.Week3Session1Retrieval = {
   "activityId": "week3-session1-retrieval",
   "activityName": "Session 1 Retrieval Quiz",

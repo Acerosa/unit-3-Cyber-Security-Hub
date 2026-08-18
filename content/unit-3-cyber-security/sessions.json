@@ -1,0 +1,302 @@
+[
+  {
+    "schema": "lp.content.session",
+    "schemaVersion": "0.1.0",
+    "id": "week-1-session-1",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Session 1",
+      "kind": "session",
+      "sortOrder": 1
+    },
+    "relationships": {
+      "week": "week-1",
+      "activities": [
+        "u3-w01-baseline",
+        "u3-w01-cia",
+        "u3-w01-incidents",
+        "u3-w01-glossary"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.session",
+    "schemaVersion": "0.1.0",
+    "id": "week-1-session-2",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Session 2",
+      "kind": "retrieval",
+      "sortOrder": 2
+    },
+    "relationships": {
+      "week": "week-1",
+      "activities": [
+        "u3-w01-retrieval",
+        "u3-w01-command-words",
+        "u3-w01-ocr-practice",
+        "u3-w01-peer-improvement"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.session",
+    "schemaVersion": "0.1.0",
+    "id": "week-2-session-1",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Session 1",
+      "kind": "session",
+      "sortOrder": 1
+    },
+    "relationships": {
+      "week": "week-2",
+      "activities": [
+        "week2-session1-retrieval",
+        "week2-threat-vulnerability-learning",
+        "week2-malware-symptoms",
+        "week2-threat-vulnerability-sort",
+        "week2-vulnerabilities101-reflection"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.session",
+    "schemaVersion": "0.1.0",
+    "id": "week-2-session-2",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Session 2",
+      "kind": "retrieval",
+      "sortOrder": 2
+    },
+    "relationships": {
+      "week": "week-2",
+      "activities": [
+        "week2-session2-retrieval",
+        "week2-northbank-vulnerability-analysis",
+        "week2-six-mark-response-guide",
+        "week2-ocr-question-practice",
+        "week2-peer-marking-answer-improvement",
+        "week2-northbank-vulnerability-register"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.session",
+    "schemaVersion": "0.1.0",
+    "id": "week-3-session-1",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Session 1",
+      "kind": "session",
+      "sortOrder": 1
+    },
+    "relationships": {
+      "week": "week-3",
+      "activities": [
+        "week3-session1-retrieval",
+        "week3-attacker-types-learning",
+        "week3-attacker-case-matching",
+        "week3-justified-identification"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.session",
+    "schemaVersion": "0.1.0",
+    "id": "week-3-session-2",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Session 2",
+      "kind": "retrieval",
+      "sortOrder": 2
+    },
+    "relationships": {
+      "week": "week-3",
+      "activities": [
+        "week3-session2-retrieval",
+        "week3-ocr-question-practice",
+        "week3-peer-marking"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.session",
+    "schemaVersion": "0.1.0",
+    "id": "week-4-session-1",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Session 1",
+      "kind": "session",
+      "sortOrder": 1
+    },
+    "relationships": {
+      "week": "week-4",
+      "activities": [
+        "week4-session1-retrieval",
+        "week4-motivations-learning",
+        "week4-targets-methods",
+        "week4-northbank-exposure"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.session",
+    "schemaVersion": "0.1.0",
+    "id": "week-4-session-2",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Session 2",
+      "kind": "retrieval",
+      "sortOrder": 2
+    },
+    "relationships": {
+      "week": "week-4",
+      "activities": [
+        "week4-session2-retrieval",
+        "week4-mtm-mapping",
+        "week4-analyse-practice",
+        "week4-ocr-question-practice",
+        "week4-answer-improvement",
+        "week4-ethical-review"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.session",
+    "schemaVersion": "0.1.0",
+    "id": "week-5-session-1",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Session 1",
+      "kind": "session",
+      "sortOrder": 1
+    },
+    "relationships": {
+      "week": "week-5",
+      "activities": [
+        "week5-session1-retrieval",
+        "week5-impacts-learning",
+        "week5-impact-classification",
+        "week5-ransomware-companion",
+        "week5-exercise-debrief"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.session",
+    "schemaVersion": "0.1.0",
+    "id": "week-5-session-2",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Session 2",
+      "kind": "retrieval",
+      "sortOrder": 2
+    },
+    "relationships": {
+      "week": "week-5",
+      "activities": [
+        "week5-session2-retrieval",
+        "week5-stakeholder-grid",
+        "week5-impact-analysis",
+        "week5-ocr-question-practice",
+        "week5-answer-improvement"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.session",
+    "schemaVersion": "0.1.0",
+    "id": "week-6-session-1",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Session 1",
+      "kind": "session",
+      "sortOrder": 1
+    },
+    "relationships": {
+      "week": "week-6",
+      "activities": [
+        "week6-lo2-diagnostic",
+        "week6-ethical-learning",
+        "week6-ethical-classification",
+        "week6-legislation-learning",
+        "week6-legislation-matching",
+        "week6-operational-considerations",
+        "week6-government-initiatives",
+        "week6-ncsc-guidance",
+        "week6-exercise-decision-record",
+        "week6-session1-review"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.session",
+    "schemaVersion": "0.1.0",
+    "id": "week-6-session-2",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Session 2",
+      "kind": "retrieval",
+      "sortOrder": 2
+    },
+    "relationships": {
+      "week": "week-6",
+      "activities": [
+        "week6-legislation-retrieval",
+        "week6-employee-monitoring",
+        "week6-stakeholder-debate",
+        "week6-discuss-learning",
+        "week6-discuss-planner",
+        "week6-ocr-question-practice",
+        "week6-answer-improvement",
+        "week6-revision-organiser"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.session",
+    "schemaVersion": "0.1.0",
+    "id": "week-7-session-1",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Session 1",
+      "kind": "session",
+      "sortOrder": 1
+    },
+    "relationships": {
+      "week": "week-7",
+      "activities": [
+        "week7-session1-retrieval",
+        "week7-risk-management-learning",
+        "week7-northbank-risk-register",
+        "week7-testing-methods",
+        "week7-sandbox-observation",
+        "week7-detection-prevention",
+        "week7-heightened-threat"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.session",
+    "schemaVersion": "0.1.0",
+    "id": "week-7-session-2",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Session 2",
+      "kind": "retrieval",
+      "sortOrder": 2
+    },
+    "relationships": {
+      "week": "week-7",
+      "activities": [
+        "week7-session2-retrieval",
+        "week7-testing-matching",
+        "week7-recommendation-practice",
+        "week7-ocr-question-practice",
+        "week7-answer-improvement"
+      ]
+    }
+  }
+]
