@@ -15,6 +15,7 @@
 
   var platform = core.createPlatform({
     hubCode: app.hubId,
+    courseKey: app.courseKey,
     hubName: app.siteName,
     platformVersion: app.coreVersion,
     accountPath: "./account/",

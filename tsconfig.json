@@ -13,5 +13,5 @@
     "resolveJsonModule": true,
     "types": ["vite/client"]
   },
-  "include": ["src", "test/fixtures/route-inventory.json"]
+  "include": ["src", "test/fixtures/route-inventory.json", "content/unit-3-cyber-security/package.json"]
 }

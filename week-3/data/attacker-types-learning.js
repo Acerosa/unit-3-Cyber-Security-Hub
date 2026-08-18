@@ -3,6 +3,9 @@
  */
 (function (global) {
   'use strict';
+  if (typeof globalThis !== "undefined" && globalThis.__lpPublishedCurriculum) {
+    return;
+  }
   global.Week3AttackerTypesLearning = {
   "activityId": "week3-attacker-types-learning",
   "activityName": "Attacker Types Learning",

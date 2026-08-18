@@ -3,6 +3,9 @@
  */
 (function (global) {
   'use strict';
+  if (typeof globalThis !== "undefined" && globalThis.__lpPublishedCurriculum) {
+    return;
+  }
   global.Week3AttackerCaseMatching = {
   "activityId": "week3-attacker-case-matching",
   "activityName": "Attacker Case Study Matching",

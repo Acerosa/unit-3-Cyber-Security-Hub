@@ -3,6 +3,9 @@
  */
 (function (global) {
   'use strict';
+  if (typeof globalThis !== "undefined" && globalThis.__lpPublishedCurriculum) {
+    return;
+  }
 
   global.Week6DiscussPlanner = Object.freeze({
     activityId: 'week6-discuss-planner',

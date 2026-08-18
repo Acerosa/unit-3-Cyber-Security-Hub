@@ -3,6 +3,9 @@
  */
 (function (global) {
   'use strict';
+  if (typeof globalThis !== "undefined" && globalThis.__lpPublishedCurriculum) {
+    return;
+  }
 
   global.Week5ImpactAnalysis = Object.freeze({
     activityId: 'week5-impact-analysis',

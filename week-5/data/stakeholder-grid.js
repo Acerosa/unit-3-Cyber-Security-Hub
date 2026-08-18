@@ -3,6 +3,9 @@
  */
 (function (global) {
   'use strict';
+  if (typeof globalThis !== "undefined" && globalThis.__lpPublishedCurriculum) {
+    return;
+  }
 
   global.Week5StakeholderGrid = Object.freeze({
     activityId: 'week5-stakeholder-grid',

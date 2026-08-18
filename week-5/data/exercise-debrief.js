@@ -3,6 +3,9 @@
  */
 (function (global) {
   'use strict';
+  if (typeof globalThis !== "undefined" && globalThis.__lpPublishedCurriculum) {
+    return;
+  }
 
   global.Week5ExerciseDebrief = Object.freeze({
     activityId: 'week5-exercise-debrief',

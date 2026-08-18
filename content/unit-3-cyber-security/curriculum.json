@@ -1,0 +1,27 @@
+{
+  "schema": "lp.content.curriculum",
+  "schemaVersion": "0.1.0",
+  "id": "unit-3-cyber-security-curriculum",
+  "version": "0.1.0",
+  "metadata": {
+    "title": "Unit 3 Cyber Security",
+    "course": "ocr-level-3-it"
+  },
+  "relationships": {
+    "learningOutcomes": [
+      "LO1"
+    ],
+    "assignments": [
+      "formative-practice"
+    ],
+    "weeks": [
+      "week-1",
+      "week-2",
+      "week-3",
+      "week-4",
+      "week-5",
+      "week-6",
+      "week-7"
+    ]
+  }
+}

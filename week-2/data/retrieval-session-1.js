@@ -4,6 +4,9 @@
  */
 (function (global) {
   'use strict';
+  if (typeof globalThis !== "undefined" && globalThis.__lpPublishedCurriculum) {
+    return;
+  }
 
   global.Week2Session1Retrieval = Object.freeze({
     activityId: 'week2-session1-retrieval',

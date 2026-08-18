@@ -1,5 +1,6 @@
 import { createPlatform } from "@learning-platform/core";
 import { createClient } from "@supabase/supabase-js";
+import { validatePackage } from "@learning-platform/content";
 import { APP_CONFIG } from "./config";
 import { createSitePath } from "./paths";
 
@@ -16,6 +17,7 @@ export function createHubPlatform(root: string, createPlatformFn = createPlatfor
   });
   const platform = createPlatformFn({
     hubCode: APP_CONFIG.hubId,
+    courseKey: APP_CONFIG.courseKey,
     hubName: APP_CONFIG.siteName,
     platformVersion: APP_CONFIG.coreVersion,
     accountPath: createSitePath(root, "account/"),
@@ -30,7 +32,18 @@ export function createHubPlatform(root: string, createPlatformFn = createPlatfor
     navigationMode: "as-supplied",
     features: APP_CONFIG.features,
     theme: APP_CONFIG.theme
-  }, { supabaseClient: client });
+  }, {
+    supabaseClient: client,
+    localStorage: typeof window !== "undefined" ? window.localStorage : undefined,
+    validatePackage,
+    loadBundled: () =>
+      fetch(new URL("./content/unit-3-cyber-security/package.json", window.location.href)).then((response) => {
+        if (!response.ok) {
+          throw new Error("UNIT3_BUNDLED_PACKAGE_MISSING");
+        }
+        return response.json();
+      })
+  });
 
   return Object.freeze({
     ...platform,

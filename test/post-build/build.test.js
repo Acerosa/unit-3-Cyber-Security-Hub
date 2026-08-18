@@ -21,6 +21,7 @@ test("the Vite production build preserves every inventoried public route", funct
   assert.match(activity, /data-view="week1-activity"/);
   assert.match(nested, /data-activity="ncsc-guidance"/);
   assert.doesNotMatch(home + activity, /express|next\/server|Server Actions/i);
+  assert.equal(fs.existsSync(path.join(dist, "content/unit-3-cyber-security/package.json")), true);
   const assets = path.join(dist, "assets");
   const jsFiles = fs.readdirSync(assets).filter(function (name) { return name.endsWith(".js"); });
   const cssFiles = fs.readdirSync(assets).filter(function (name) { return name.endsWith(".css"); });

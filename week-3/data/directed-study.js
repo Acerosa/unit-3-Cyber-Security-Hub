@@ -3,6 +3,9 @@
  */
 (function (global) {
   'use strict';
+  if (typeof globalThis !== "undefined" && globalThis.__lpPublishedCurriculum) {
+    return;
+  }
   global.Week3DirectedStudy = {
   "resourceId": "week3-directed-study",
   "scored": false,

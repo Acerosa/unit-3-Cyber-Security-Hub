@@ -1,0 +1,13 @@
+{
+  "schema": "lp.content.hub",
+  "schemaVersion": "0.1.0",
+  "id": "unit-3-cyber-security",
+  "version": "0.2.0",
+  "metadata": {
+    "name": "Unit 3 Cyber Security Hub",
+    "description": "OCR Level 3 IT Unit 3 Cyber Security learner hub."
+  },
+  "relationships": {
+    "curriculum": "unit-3-cyber-security-curriculum"
+  }
+}

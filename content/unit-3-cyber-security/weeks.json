@@ -1,0 +1,156 @@
+[
+  {
+    "schema": "lp.content.week",
+    "schemaVersion": "0.1.0",
+    "id": "week-1",
+    "version": "0.1.0",
+    "metadata": {
+      "teachingWeek": 1,
+      "title": "Introduction to Cyber Security",
+      "status": "available"
+    },
+    "relationships": {
+      "curriculum": "unit-3-cyber-security-curriculum",
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "sessions": [
+        "week-1-session-1",
+        "week-1-session-2"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.week",
+    "schemaVersion": "0.1.0",
+    "id": "week-2",
+    "version": "0.1.0",
+    "metadata": {
+      "teachingWeek": 2,
+      "title": "Threats and Vulnerabilities",
+      "status": "available"
+    },
+    "relationships": {
+      "curriculum": "unit-3-cyber-security-curriculum",
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "sessions": [
+        "week-2-session-1",
+        "week-2-session-2"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.week",
+    "schemaVersion": "0.1.0",
+    "id": "week-3",
+    "version": "0.1.0",
+    "metadata": {
+      "teachingWeek": 3,
+      "title": "Types of attacker",
+      "status": "available"
+    },
+    "relationships": {
+      "curriculum": "unit-3-cyber-security-curriculum",
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "sessions": [
+        "week-3-session-1",
+        "week-3-session-2"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.week",
+    "schemaVersion": "0.1.0",
+    "id": "week-4",
+    "version": "0.1.0",
+    "metadata": {
+      "teachingWeek": 4,
+      "title": "Motivations and targets",
+      "status": "available"
+    },
+    "relationships": {
+      "curriculum": "unit-3-cyber-security-curriculum",
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "sessions": [
+        "week-4-session-1",
+        "week-4-session-2"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.week",
+    "schemaVersion": "0.1.0",
+    "id": "week-5",
+    "version": "0.1.0",
+    "metadata": {
+      "teachingWeek": 5,
+      "title": "Impacts of cyber security incidents",
+      "status": "available"
+    },
+    "relationships": {
+      "curriculum": "unit-3-cyber-security-curriculum",
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "sessions": [
+        "week-5-session-1",
+        "week-5-session-2"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.week",
+    "schemaVersion": "0.1.0",
+    "id": "week-6",
+    "version": "0.1.0",
+    "metadata": {
+      "teachingWeek": 6,
+      "title": "Ethical, legal and operational considerations",
+      "status": "available"
+    },
+    "relationships": {
+      "curriculum": "unit-3-cyber-security-curriculum",
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "sessions": [
+        "week-6-session-1",
+        "week-6-session-2"
+      ]
+    }
+  },
+  {
+    "schema": "lp.content.week",
+    "schemaVersion": "0.1.0",
+    "id": "week-7",
+    "version": "0.1.0",
+    "metadata": {
+      "teachingWeek": 7,
+      "title": "Risk management, testing and monitoring",
+      "status": "available"
+    },
+    "relationships": {
+      "curriculum": "unit-3-cyber-security-curriculum",
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "sessions": [
+        "week-7-session-1",
+        "week-7-session-2"
+      ]
+    }
+  }
+]
