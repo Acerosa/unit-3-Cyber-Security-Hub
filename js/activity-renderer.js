@@ -795,23 +795,11 @@
     row('Week', 'Week ' + (activity.weekNumber || ''));
     row('Session', activity.sessionName || '');
     row('Type', activity.activityType || '');
-    row('Version', activity.activityVersion || '');
     row(
       completionActivity ? 'Maximum completion points' : 'Maximum score',
       String(activity.maximumScore || '')
     );
-    row('Submission mode', recordType === 'LIVE' ? 'LIVE' : 'TEST');
     host.appendChild(list);
-    if (recordType !== 'LIVE') {
-      host.appendChild(
-        el('p', {
-          className: 'ae-test-banner',
-          role: 'status',
-          textContent:
-            'TEST mode: submissions are recorded for checking only and do not count as learner attempts.'
-        })
-      );
-    }
   }
 
   function renderProgress(host, completed, total, options) {

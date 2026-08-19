@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { APP_CONFIG } from "./config";
-import { breadcrumbs } from "./page-copy";
+import { breadcrumbs, pageHeader } from "./page-copy";
 import { navigationItems } from "./paths";
 import { WeekPage } from "./pages/WeekPage";
 
@@ -45,6 +45,20 @@ describe("Unit 3 presentation", () => {
     expect(items[0].path).toBe("");
     expect(items[1].path).toBe("week-6/");
     expect(items[0].href).toBeUndefined();
+  });
+
+  it("keeps learner-facing activity copy free of API and TEST language", () => {
+    const header = pageHeader({
+      page: "week1-activity",
+      section: "week-1",
+      root: "..",
+      view: "week1-activity",
+      activityId: "U3-W01-BASELINE"
+    });
+    expect(header.title).toBe("Week 1 activity");
+    expect(header.subtitle).toMatch(/practice/i);
+    expect(header.subtitle).not.toMatch(/API|TEST/i);
+    expect(header.title).not.toMatch(/API|TEST/i);
   });
 
   it("renders WeekView exam context around hub-owned week content", () => {

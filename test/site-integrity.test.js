@@ -76,6 +76,32 @@ test("APP_CONFIG navigation is the single learner IA", function () {
   assert.match(read("src/page-copy.ts"), /path:/);
 });
 
+test("activity engine cards follow hub theme tokens instead of hardcoded white", function () {
+  const css = read("css/activity-engine.css");
+  assert.match(css, /\.ae-content-block[\s\S]*background:\s*var\(--color-surface-muted\)/);
+  assert.match(css, /\.ae-question \{[\s\S]*background:\s*var\(--color-surface-muted\)/);
+  assert.match(css, /\.ae-choice \{[\s\S]*background:\s*var\(--color-input-bg\)/);
+  assert.doesNotMatch(css, /background:\s*#fff\b/);
+  assert.match(read("css/main.css"), /--color-input-bg/);
+});
+
+test("learner-facing activity copy does not mention API, TEST mode or marking path", function () {
+  const learnerFiles = [
+    "src/pages/ActivityPage.tsx",
+    "src/page-copy.ts",
+    "activities/activity.html",
+    "js/activity-engine.js",
+    "js/activity-renderer.js"
+  ].map(read).join("\n");
+  assert.doesNotMatch(learnerFiles, /Week 1 Activity API/);
+  assert.doesNotMatch(learnerFiles, /marking path/);
+  assert.doesNotMatch(learnerFiles, /Submit TEST/);
+  assert.doesNotMatch(learnerFiles, /TEST mode/);
+  assert.doesNotMatch(learnerFiles, /LIVE submissions/);
+  assert.match(read("src/pages/ActivityPage.tsx"), /Formative activity/);
+  assert.match(read("activities/activity.html"), /Submit your result/);
+});
+
 test("Week 1 activity.html keeps the activityId query contract", function () {
   const html = read("activities/activity.html");
   assert.match(html, /data-view="week1-activity"/);

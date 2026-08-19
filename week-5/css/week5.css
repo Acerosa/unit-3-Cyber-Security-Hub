@@ -2,7 +2,11 @@
 
 :root {
   --w5-accent: #1f4b3a;
-  --w5-accent-soft: #e7f2ec;
+  --w5-accent-soft: var(--color-info-bg);
+}
+
+html[data-theme="dark"] {
+  --w5-accent: #8fd4b3;
 }
 
 .week-5-page .page-header {
@@ -131,7 +135,7 @@
   padding: 0.75rem;
   border: 1px dashed var(--color-border);
   border-radius: var(--radius);
-  background: #f8fafb;
+  background: var(--color-surface-muted);
 }
 
 .w5-sort-column h3 {

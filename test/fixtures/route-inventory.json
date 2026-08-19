@@ -45,8 +45,8 @@
       "activity": "activity-api",
       "activityId": "U3-W01-COMMAND-WORDS",
       "title": "Activity | Unit 3 Cyber Security Hub",
-      "description": "API-driven Unit 3 formative activity.",
-      "heading": "Loading activity",
+      "description": "Formative Unit 3 Cyber Security activity.",
+      "heading": "Week 1 activity",
       "subtitle": "",
       "scripts": [
         "js/activity-api.js",
