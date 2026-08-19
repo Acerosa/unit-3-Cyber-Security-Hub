@@ -22,7 +22,7 @@
 
 .ae-meta-list dt {
   font-weight: 700;
-  color: var(--color-navy-mid);
+  color: var(--color-heading);
 }
 
 .ae-meta-list dd {
@@ -53,7 +53,7 @@
 
 .ae-content-block h4 {
   margin: 0 0 0.35rem;
-  color: var(--color-navy);
+  color: var(--color-heading);
   overflow-wrap: anywhere;
 }
 
@@ -115,7 +115,7 @@
   display: block;
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--color-navy);
+  color: var(--color-heading);
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
@@ -130,7 +130,7 @@
   display: block;
   margin: 0.9rem 0 0.45rem;
   font-weight: 700;
-  color: var(--color-navy-mid);
+  color: var(--color-heading);
 }
 
 .ae-evidence-input {
@@ -160,7 +160,7 @@
   display: block;
   margin: 0.35rem 0 0.45rem;
   font-weight: 700;
-  color: var(--color-navy-mid);
+  color: var(--color-heading);
 }
 
 .ae-short-response-input {
@@ -201,7 +201,7 @@
   display: block;
   margin: 0.35rem 0 0.45rem;
   font-weight: 700;
-  color: var(--color-navy-mid);
+  color: var(--color-heading);
 }
 
 .ae-extended-response-input,
@@ -303,7 +303,7 @@
 
 .ae-section-score {
   font-weight: 700;
-  color: var(--color-navy);
+  color: var(--color-heading);
 }
 
 .ae-final-panel .field {

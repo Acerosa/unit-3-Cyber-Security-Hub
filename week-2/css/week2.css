@@ -19,7 +19,7 @@
 }
 
 .w2-completion-banner strong {
-  color: var(--color-navy);
+  color: var(--color-heading);
 }
 
 .hub-card .activity-meta {
@@ -469,7 +469,7 @@
 
 .w2-thm-safety h3 {
   margin: 0 0 0.5rem;
-  color: var(--color-navy);
+  color: var(--color-heading);
 }
 
 .w2-thm-safety p {
