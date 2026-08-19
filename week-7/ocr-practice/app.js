@@ -5,6 +5,15 @@
   var progress = window.Unit3Week7Progress;
   if (!data) return;
 
+  function optionLabel(option) {
+    var utils = window.Unit3ActivityUtils;
+    if (utils && typeof utils.optionLabel === 'function') return utils.optionLabel(option);
+    if (option && typeof option === 'object') {
+      return String(option.text || option.optionId || option.label || option.id || '');
+    }
+    return option == null ? '' : String(option);
+  }
+
   var ACTIVITY_ID = data.activityId;
   var DRAFT_KEY = 'ocr-practice';
   var host = document.getElementById('w7-activity-host');
@@ -185,7 +194,7 @@
             save();
           });
           label.appendChild(input);
-          label.appendChild(document.createTextNode(' ' + opt.text));
+          label.appendChild(document.createTextNode(' ' + optionLabel(opt)));
           fieldset.appendChild(label);
         });
         block.appendChild(fieldset);

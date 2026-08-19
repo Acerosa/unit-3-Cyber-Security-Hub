@@ -8,6 +8,15 @@
     return;
   }
 
+  function optionLabel(option) {
+    var utils = window.Unit3ActivityUtils;
+    if (utils && typeof utils.optionLabel === 'function') return utils.optionLabel(option);
+    if (option && typeof option === 'object') {
+      return String(option.text || option.optionId || option.label || option.id || '');
+    }
+    return option == null ? '' : String(option);
+  }
+
   /*
    * Scoring: objective MCQ items (Q1–7) are auto-marked (2 marks each = 14 max).
    * The six-mark extended response (Q8) awards up to 6 completion marks when
@@ -312,7 +321,7 @@
         answers[q.id] = optionIndex;
       });
       label.appendChild(input);
-      label.appendChild(document.createTextNode(' ' + option));
+      label.appendChild(document.createTextNode(' ' + optionLabel(option)));
       fieldset.appendChild(label);
     });
     panel.appendChild(fieldset);

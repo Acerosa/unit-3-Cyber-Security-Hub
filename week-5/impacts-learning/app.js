@@ -5,6 +5,15 @@
   var progress = window.Unit3Week5Progress;
   if (!data) return;
 
+  function optionLabel(option) {
+    var utils = window.Unit3ActivityUtils;
+    if (utils && typeof utils.optionLabel === 'function') return utils.optionLabel(option);
+    if (option && typeof option === 'object') {
+      return String(option.text || option.optionId || option.label || option.id || '');
+    }
+    return option == null ? '' : String(option);
+  }
+
   var ACTIVITY_ID = data.activityId;
   var mode = 'overview';
   var lossIndex = 0;
@@ -119,7 +128,7 @@
         checkAnswers[item.id] = optionIndex;
       });
       label.appendChild(input);
-      label.appendChild(document.createTextNode(' ' + option));
+      label.appendChild(document.createTextNode(' ' + optionLabel(option)));
       fieldset.appendChild(label);
     });
     panel.appendChild(fieldset);

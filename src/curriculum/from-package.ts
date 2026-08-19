@@ -1,3 +1,5 @@
+import { normalizeActivityQuestions, normalizeMcqQuestionIfNeeded } from "./options";
+
 type ContentBlock = {
   id?: string;
   type?: string;
@@ -96,6 +98,7 @@ export function activityFromPackage(pkg: ContentPackage, activityId: string): Re
       correctOptionId: content.correctOptionId,
       ...content
     };
+    Object.assign(question, normalizeMcqQuestionIfNeeded(question));
     if (item.type === "classification" && content.sourceType !== "matching") {
       restored.cards = ((content.items as Array<Record<string, unknown>>) || []).map((card) => ({
         id: card.id,
@@ -119,7 +122,7 @@ export function activityFromPackage(pkg: ContentPackage, activityId: string): Re
 
   if (sections.length) restored.sections = sections;
   if (questions.length) restored.questions = questions;
-  return restored;
+  return normalizeActivityQuestions(restored);
 }
 
 export function catalogFromPackage(pkg: ContentPackage) {

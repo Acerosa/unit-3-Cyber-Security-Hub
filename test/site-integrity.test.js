@@ -102,6 +102,16 @@ test("learner-facing activity copy does not mention API, TEST mode or marking pa
   assert.match(read("activities/activity.html"), /Submit your result/);
 });
 
+test("week 2 and 3 quiz engines use optionLabel instead of stringifying option objects", function () {
+  ["js/week2-quiz.js", "js/week3-quiz.js"].forEach(function (file) {
+    const source = read(file);
+    assert.match(source, /optionLabel\(/);
+    assert.doesNotMatch(source, /createTextNode\(' ' \+ option\)/);
+  });
+  assert.match(read("js/activity-utils.js"), /function optionLabel/);
+  assert.match(read("src/curriculum/from-package.ts"), /normalizeActivityQuestions/);
+});
+
 test("Week 1 activity.html keeps the activityId query contract", function () {
   const html = read("activities/activity.html");
   assert.match(html, /data-view="week1-activity"/);

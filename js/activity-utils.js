@@ -77,6 +77,64 @@
     }
   }
 
+  function optionLabel(option) {
+    if (option == null) return '';
+    if (typeof option === 'string' || typeof option === 'number') return String(option);
+    if (typeof option !== 'object') return '';
+    var text = option.text != null ? option.text : option.label != null ? option.label : option.name;
+    if (text != null && String(text) !== '[object Object]') return String(text);
+    var id = option.optionId != null ? option.optionId : option.id;
+    return id != null ? String(id) : '';
+  }
+
+  function optionId(option, index) {
+    if (option && typeof option === 'object') {
+      var id = option.optionId != null ? option.optionId : option.id;
+      if (id != null && String(id)) return String(id);
+    }
+    return String((index || 0) + 1);
+  }
+
+  function normalizeOption(option, index) {
+    var id = optionId(option, index);
+    var text = optionLabel(option) || id;
+    return {
+      optionId: id,
+      text: text,
+      id: id,
+      label: text
+    };
+  }
+
+  function normalizeMcqQuestion(raw) {
+    var source = raw || {};
+    var options = (source.options || []).map(function (option, index) {
+      return normalizeOption(option, index);
+    });
+    var correctIndex = typeof source.correctIndex === 'number' ? source.correctIndex : -1;
+    if (correctIndex < 0 && source.correctOptionId != null) {
+      var wanted = String(source.correctOptionId);
+      correctIndex = -1;
+      options.forEach(function (option, i) {
+        if (correctIndex < 0 && (option.optionId === wanted || option.id === wanted)) {
+          correctIndex = i;
+        }
+      });
+    }
+    if (typeof correctIndex !== 'number' || isNaN(correctIndex)) {
+      correctIndex = -1;
+    }
+    var explanation =
+      source.explanation ||
+      (source.feedback && source.feedback.correct) ||
+      source.feedbackIncorrect;
+    var next = Object.assign({}, source);
+    next.options = options;
+    next.correctIndex = correctIndex;
+    if (explanation) next.explanation = explanation;
+    return next;
+  }
+
   function getOrCreateAttemptId(storageKey) {
     if (global.Unit3Submissions && global.Unit3Submissions.getOrCreateAttemptId) {
       return global.Unit3Submissions.getOrCreateAttemptId(storageKey);
@@ -97,6 +155,10 @@
   global.Unit3ActivityUtils = {
     el: el,
     setStatusMessage: setStatusMessage,
+    optionLabel: optionLabel,
+    optionId: optionId,
+    normalizeOption: normalizeOption,
+    normalizeMcqQuestion: normalizeMcqQuestion,
     createAttemptId: createAttemptId,
     getOrCreateAttemptId: getOrCreateAttemptId,
     clearAttemptId: clearAttemptId

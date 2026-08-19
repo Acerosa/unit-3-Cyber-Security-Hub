@@ -5,6 +5,15 @@
   var progress = window.Unit3Week7Progress;
   if (!data) return;
 
+  function optionLabel(option) {
+    var utils = window.Unit3ActivityUtils;
+    if (utils && typeof utils.optionLabel === 'function') return utils.optionLabel(option);
+    if (option && typeof option === 'object') {
+      return String(option.text || option.optionId || option.label || option.id || '');
+    }
+    return option == null ? '' : String(option);
+  }
+
   var ACTIVITY_ID = data.activityId;
   var DRAFT_KEY = 'risk-register';
   var host = document.getElementById('w7-activity-host');
@@ -270,9 +279,10 @@
     select.appendChild(blank);
     options.forEach(function (option) {
       var opt = document.createElement('option');
-      opt.value = option;
-      opt.textContent = option;
-      if (value === option) opt.selected = true;
+      var label = optionLabel(option);
+      opt.value = typeof option === 'object' && option ? label : option;
+      opt.textContent = label;
+      if (value === option || value === label) opt.selected = true;
       select.appendChild(opt);
     });
     select.addEventListener('change', function () {

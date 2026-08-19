@@ -5,6 +5,15 @@
   var progress = window.Unit3Week6Progress;
   if (!data) return;
 
+  function optionLabel(option) {
+    var utils = window.Unit3ActivityUtils;
+    if (utils && typeof utils.optionLabel === 'function') return utils.optionLabel(option);
+    if (option && typeof option === 'object') {
+      return String(option.text || option.optionId || option.label || option.id || '');
+    }
+    return option == null ? '' : String(option);
+  }
+
   var ACTIVITY_ID = data.activityId;
   var DRAFT_KEY = 'legislation-matching';
   var host = document.getElementById('w6-activity-host');
@@ -66,8 +75,9 @@
     select.appendChild(blank);
     options.forEach(function (option) {
       var opt = document.createElement('option');
-      opt.value = option;
-      opt.textContent = option;
+      var label = optionLabel(option);
+      opt.value = typeof option === 'object' && option ? label : option;
+      opt.textContent = label;
       if (value === option) opt.selected = true;
       select.appendChild(opt);
     });
