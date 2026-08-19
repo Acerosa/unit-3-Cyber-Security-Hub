@@ -38,6 +38,33 @@ test("all GitHub Pages routes are Vite shells that mount the React hub", functio
   assert.match(main, /from "\.\/App"/);
 });
 
+test("hub CSS applies dark-theme tokens to page surfaces, not only the navigation chrome", function () {
+  const main = read("css/main.css");
+  assert.match(main, /html\[data-theme="dark"\]/);
+  assert.match(main, /--color-heading/);
+  assert.match(main, /--color-surface-muted/);
+  assert.match(main, /--lp-background:\s*var\(--color-bg\)/);
+  assert.match(main, /--lp-text:\s*var\(--color-text\)/);
+  assert.match(main, /\.lp-shell\s*\{[\s\S]*color:\s*var\(--color-text\)/);
+  assert.match(main, /\.panel h2[\s\S]*color:\s*var\(--color-heading\)/);
+  assert.match(main, /\.lp-navigation\s*\{[\s\S]*background:\s*var\(--color-navy\)/);
+});
+
+test("the home page uses a Unit 14-style welcome and start-card layout", function () {
+  const html = read("index.html");
+  assert.match(html, /<h2 id="start-heading">Where to start<\/h2>/);
+  assert.doesNotMatch(html, /start-heading" class="visually-hidden"/);
+  assert.doesNotMatch(html, /home-start-grid/);
+  assert.doesNotMatch(html, /home-primary-card/);
+  assert.match(html, /<h3>Week 1<\/h3>/);
+  assert.match(html, />Open Week 1</);
+  assert.match(html, /class="home-week-scroller"/);
+  const main = read("css/main.css");
+  assert.match(main, /repeat\(auto-fit, minmax\(min\(100%, 16rem\), 1fr\)\)/);
+  assert.match(main, /\.home-week-scroller[\s\S]*overflow-y:\s*auto/);
+  assert.match(main, /\.home-week-scroller[\s\S]*\(--home-week-row\) \* 2/);
+});
+
 test("APP_CONFIG navigation is the single learner IA", function () {
   const config = read("src/config.ts") + read("js/config/app-config.js");
   ["Home", "Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Resources", "Help", "Account"]

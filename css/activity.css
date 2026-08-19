@@ -17,7 +17,7 @@
 .activity-panel h2 {
   margin: 0 0 0.75rem;
   font-size: 1.2rem;
-  color: var(--color-navy);
+  color: var(--color-heading);
 }
 
 .site-footer a {
@@ -45,7 +45,7 @@
 
 .course-details-list dt {
   font-weight: 600;
-  color: var(--color-navy-mid);
+  color: var(--color-heading);
 }
 
 .course-details-list dd {
