@@ -5,8 +5,27 @@
 (function (global) {
   'use strict';
 
+  function optionLabel(option) {
+    var utils = global.Unit3ActivityUtils;
+    if (utils && typeof utils.optionLabel === 'function') return utils.optionLabel(option);
+    if (option && typeof option === 'object') {
+      return String(option.text || option.optionId || option.label || option.id || '');
+    }
+    return option == null ? '' : String(option);
+  }
+
+  function normalizeQuestion(raw) {
+    var utils = global.Unit3ActivityUtils;
+    var q =
+      utils && typeof utils.normalizeMcqQuestion === 'function'
+        ? utils.normalizeMcqQuestion(raw)
+        : Object.assign({}, raw || {});
+    if (!q.explanation && q.feedbackIncorrect) q.explanation = q.feedbackIncorrect;
+    return q;
+  }
+
   function createQuiz(config) {
-    var questions = config.questions || [];
+    var questions = (config.questions || []).map(normalizeQuestion);
     var host = document.getElementById(config.hostId || 'w3-quiz-host');
     var progress = global.Unit3Week3Progress;
     var activityId = config.activityId;
@@ -80,7 +99,7 @@
         input.id = id;
         input.value = String(optionIndex);
         label.appendChild(input);
-        label.appendChild(document.createTextNode(' ' + option));
+        label.appendChild(document.createTextNode(' ' + optionLabel(option)));
         fieldset.appendChild(label);
       });
       panel.appendChild(fieldset);
@@ -233,10 +252,10 @@
           block.appendChild(prompt);
           var yours = document.createElement('p');
           yours.textContent =
-            'Your answer: ' + (q.options[item.chosenIndex] || 'No answer');
+            'Your answer: ' + (optionLabel(q.options[item.chosenIndex]) || 'No answer');
           block.appendChild(yours);
           var right = document.createElement('p');
-          right.textContent = 'Correct answer: ' + q.options[q.correctIndex];
+          right.textContent = 'Correct answer: ' + optionLabel(q.options[q.correctIndex]);
           block.appendChild(right);
           var why = document.createElement('p');
           why.textContent = q.explanation || '';

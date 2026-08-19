@@ -5,6 +5,15 @@
   var progress = window.Unit3Week6Progress;
   if (!data) return;
 
+  function optionLabel(option) {
+    var utils = window.Unit3ActivityUtils;
+    if (utils && typeof utils.optionLabel === 'function') return utils.optionLabel(option);
+    if (option && typeof option === 'object') {
+      return String(option.text || option.optionId || option.label || option.id || '');
+    }
+    return option == null ? '' : String(option);
+  }
+
   var ACTIVITY_ID = data.activityId;
   var host = document.getElementById('w6-activity-host');
   var startedAt = Date.now();
@@ -67,7 +76,7 @@
         sectionChecks[check.id] = optionIndex;
       });
       label.appendChild(input);
-      label.appendChild(document.createTextNode(' Ethical: ' + option));
+      label.appendChild(document.createTextNode(' Ethical: ' + optionLabel(option)));
       fieldset.appendChild(label);
     });
     panel.appendChild(fieldset);

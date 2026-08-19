@@ -5,30 +5,22 @@
 (function (global) {
   'use strict';
 
+  function optionLabel(option) {
+    var utils = global.Unit3ActivityUtils;
+    if (utils && typeof utils.optionLabel === 'function') return utils.optionLabel(option);
+    if (option && typeof option === 'object') {
+      return String(option.text || option.optionId || option.label || option.id || '');
+    }
+    return option == null ? '' : String(option);
+  }
+
   function normalizeQuestion(raw) {
-    var q = Object.assign({}, raw || {});
-    var options = (q.options || []).map(function (option) {
-      if (option && typeof option === 'object') {
-        return option.text != null ? String(option.text) : String(option.id || '');
-      }
-      return String(option);
-    });
-    q.options = options;
-    if (q.correctIndex == null && q.correctOptionId != null) {
-      var found = -1;
-      (raw.options || []).forEach(function (option, i) {
-        if (option && typeof option === 'object' && option.id === q.correctOptionId) {
-          found = i;
-        }
-      });
-      q.correctIndex = found;
-    }
-    if (typeof q.correctIndex !== 'number') {
-      q.correctIndex = -1;
-    }
-    if (!q.explanation && q.feedbackIncorrect) {
-      q.explanation = q.feedbackIncorrect;
-    }
+    var utils = global.Unit3ActivityUtils;
+    var q =
+      utils && typeof utils.normalizeMcqQuestion === 'function'
+        ? utils.normalizeMcqQuestion(raw)
+        : Object.assign({}, raw || {});
+    if (!q.explanation && q.feedbackIncorrect) q.explanation = q.feedbackIncorrect;
     return q;
   }
 
@@ -107,7 +99,7 @@
         input.id = id;
         input.value = String(optionIndex);
         label.appendChild(input);
-        label.appendChild(document.createTextNode(' ' + option));
+        label.appendChild(document.createTextNode(' ' + optionLabel(option)));
         fieldset.appendChild(label);
       });
       panel.appendChild(fieldset);
@@ -260,10 +252,10 @@
           block.appendChild(prompt);
           var yours = document.createElement('p');
           yours.textContent =
-            'Your answer: ' + (q.options[item.chosenIndex] || 'No answer');
+            'Your answer: ' + (optionLabel(q.options[item.chosenIndex]) || 'No answer');
           block.appendChild(yours);
           var right = document.createElement('p');
-          right.textContent = 'Correct answer: ' + q.options[q.correctIndex];
+          right.textContent = 'Correct answer: ' + optionLabel(q.options[q.correctIndex]);
           block.appendChild(right);
           var why = document.createElement('p');
           why.textContent = q.explanation || '';

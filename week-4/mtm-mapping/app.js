@@ -5,6 +5,15 @@
   var progress = window.Unit3Week4Progress;
   if (!data) return;
 
+  function optionLabel(option) {
+    var utils = window.Unit3ActivityUtils;
+    if (utils && typeof utils.optionLabel === 'function') return utils.optionLabel(option);
+    if (option && typeof option === 'object') {
+      return String(option.text || option.optionId || option.label || option.id || '');
+    }
+    return option == null ? '' : String(option);
+  }
+
   var ACTIVITY_ID = data.activityId;
   var DRAFT_KEY = 'mtm-mapping';
   var host = document.getElementById('w4-activity-host');
@@ -102,9 +111,10 @@
     select.appendChild(blank);
     options.forEach(function (opt) {
       var option = document.createElement('option');
-      option.value = opt;
-      option.textContent = opt;
-      if (value === opt) option.selected = true;
+      var label = optionLabel(opt);
+      option.value = typeof opt === 'object' && opt ? label : opt;
+      option.textContent = label;
+      if (value === opt || value === label) option.selected = true;
       select.appendChild(option);
     });
     select.addEventListener('change', function () {
@@ -309,14 +319,14 @@
       input.type = 'radio';
       input.name = 'presentation';
       input.id = id;
-      input.value = option;
-      if (presentationFormat === option) input.checked = true;
+      input.value = optionLabel(option);
+      if (presentationFormat === option || presentationFormat === optionLabel(option)) input.checked = true;
       input.addEventListener('change', function () {
-        presentationFormat = option;
+        presentationFormat = input.value;
         save();
       });
       label.appendChild(input);
-      label.appendChild(document.createTextNode(' ' + option));
+      label.appendChild(document.createTextNode(' ' + optionLabel(option)));
       fieldset.appendChild(label);
     });
     present.appendChild(fieldset);
