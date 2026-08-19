@@ -2,7 +2,11 @@
 
 :root {
   --w3-accent: #6b3d0a;
-  --w3-accent-soft: #f5efe6;
+  --w3-accent-soft: var(--color-info-bg);
+}
+
+html[data-theme="dark"] {
+  --w3-accent: #e8c08a;
 }
 
 .week-2-page .page-header {
@@ -131,7 +135,7 @@
   padding: 0.75rem;
   border: 1px dashed var(--color-border);
   border-radius: var(--radius);
-  background: #f8fafb;
+  background: var(--color-surface-muted);
 }
 
 .w3-sort-column h3 {

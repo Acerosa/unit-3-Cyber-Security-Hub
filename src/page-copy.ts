@@ -12,8 +12,8 @@ export function pageHeader(context: PageContext): { title: string; subtitle: str
   const route = findRoute(context);
   if (context.view === "week1-activity") {
     return {
-      title: context.activityId || "Week 1 activity",
-      subtitle: "API-driven formative activity. Answers are marked by the Week 1 Activity API."
+      title: "Week 1 activity",
+      subtitle: "This is practice work. It is not a qualification grade, and you can retry it."
     };
   }
   return {
@@ -36,7 +36,10 @@ export function breadcrumbs(context: PageContext): BreadcrumbItem[] {
     return items;
   }
   if (context.view !== "home" && context.view !== "week") {
-    items.push({ label: route?.heading || context.activityId || "Activity", path: undefined });
+    items.push({
+      label: pageHeader(context).title,
+      path: undefined
+    });
   }
   if (items.length === 1 && context.view === "home") {
     items[0] = { label: "Home", path: undefined };

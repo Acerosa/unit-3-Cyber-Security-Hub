@@ -428,7 +428,6 @@
     );
     line(data.recorded ? 'Result recorded.' : 'Result was not recorded.');
     if (data.duplicate) line('This was recognised as a duplicate retry of the same attempt.');
-    line('Record type: ' + (data.recordType || configModule.resolveRecordType()));
     if (completionActivity) {
       line(
         (data.score != null ? data.score : '-') +
@@ -447,11 +446,6 @@
     }
     if (data.attemptNumber != null) {
       line('Attempt number: ' + data.attemptNumber);
-    } else if ((data.recordType || '') === 'TEST') {
-      line('Attempt number: not assigned for TEST records.');
-    }
-    if ((data.recordType || configModule.resolveRecordType()) === 'TEST') {
-      line('TEST mode: this submission does not count as a learner attempt.');
     }
     if (justSubmitted) {
       setStatusMessage(
@@ -528,14 +522,14 @@
     ) {
       setStatusMessage(
         'ae-submit-status',
-        'LIVE submissions are disabled for this pilot.',
+        'Submissions are not available right now. Ask your tutor if you need to record this work.',
         'error'
       );
       return;
     }
 
     document.getElementById('ae-btn-submit').disabled = true;
-    setStatusMessage('ae-submit-status', 'Submitting your TEST result…', 'info');
+    setStatusMessage('ae-submit-status', 'Submitting your result…', 'info');
 
     api
       .submitAttempt(payload)
@@ -557,7 +551,7 @@
   function handleStartAnother() {
     if (
       !window.confirm(
-        'Start another attempt? Your previous TEST submission remains in the results workbook if it was recorded.'
+        'Start another attempt? Your previous submission stays recorded if it was sent successfully.'
       )
     ) {
       return;
@@ -582,8 +576,7 @@
       showPanel('ae-error', true);
       setStatusMessage(
         'ae-error-messages',
-        'This page only runs activities configured for the Activity API. Activity ID: ' +
-          activityId,
+        'This activity could not be opened. Return to Week 1 and try again.',
         'error'
       );
       return;

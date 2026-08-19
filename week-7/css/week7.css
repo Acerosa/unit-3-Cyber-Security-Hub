@@ -2,7 +2,11 @@
 
 :root {
   --w7-accent: #1f4d3a;
-  --w7-accent-soft: #e7f2ec;
+  --w7-accent-soft: var(--color-info-bg);
+}
+
+html[data-theme="dark"] {
+  --w7-accent: #8fd4b3;
 }
 
 .week-7-page .page-header {
@@ -131,7 +135,7 @@
   padding: 0.75rem;
   border: 1px dashed var(--color-border);
   border-radius: var(--radius);
-  background: #f8fafb;
+  background: var(--color-surface-muted);
 }
 
 .w7-sort-column h3 {
@@ -635,25 +639,26 @@
 }
 
 .w7-risk-high {
-  background: #f8e8e8;
-  color: #7a1f1f;
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
 }
 
 .w7-risk-medium {
-  background: #f7f0e0;
-  color: #6a4b00;
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
 }
 
 .w7-risk-low {
-  background: #e7f2ec;
-  color: #1f4d3a;
+  background: var(--color-success-bg);
+  color: var(--color-success);
 }
 
 .w7-misconception {
   margin: 0.75rem 0;
   padding: 0.75rem 0.9rem;
-  border-left: 4px solid #8a4b08;
-  background: #fff8ef;
+  border-left: 4px solid var(--color-warning);
+  background: var(--color-warning-bg);
+  color: var(--color-text);
 }
 
 .w7-platform-section {

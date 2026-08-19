@@ -1,8 +1,8 @@
 /* Week 2 accent and activity helpers — extends shared hub styles */
 
 :root {
-  --w2-accent: #0a5f6d;
-  --w2-accent-soft: #e6f3f5;
+  --w2-accent: var(--color-teal-dark);
+  --w2-accent-soft: var(--color-info-bg);
 }
 
 .week-2-page .page-header {
@@ -131,7 +131,7 @@
   padding: 0.75rem;
   border: 1px dashed var(--color-border);
   border-radius: var(--radius);
-  background: #f8fafb;
+  background: var(--color-surface-muted);
 }
 
 .w2-sort-column h3 {

@@ -108,7 +108,7 @@
     var baseUrl = cfg.apiBaseUrl;
     if (!baseUrl || baseUrl.indexOf('/exec') === -1) {
       return Promise.reject(
-        makeError('NETWORK_ERROR', 'Activity API URL is not configured.')
+        makeError('NETWORK_ERROR', 'The activity service is not available.')
       );
     }
     if (baseUrl.indexOf('script.googleusercontent.com') !== -1) {
