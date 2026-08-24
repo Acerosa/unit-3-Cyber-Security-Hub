@@ -832,3 +832,8 @@ a {
     background-image: none;
   }
 }
+
+/* Core account fields use the hidden attribute when switching modes. */
+.lp-form__field[hidden] {
+  display: none !important;
+}

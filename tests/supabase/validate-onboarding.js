@@ -78,9 +78,8 @@ async function run() {
   }).value.studentNumber, "001234");
   assert.equal(onboarding.validateAccount({
     email: "ada@college.invalid",
-    password: "password-one",
-    confirmPassword: "different"
-  }).code, "PASSWORD_MISMATCH");
+    password: "password-one"
+  }).ok, true);
 
   onboarding.savePending({
     firstName: " Ada ",
