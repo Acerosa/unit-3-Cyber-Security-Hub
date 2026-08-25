@@ -112,6 +112,18 @@ test("week 2 and 3 quiz engines use optionLabel instead of stringifying option o
   assert.match(read("src/curriculum/from-package.ts"), /normalizeActivityQuestions/);
 });
 
+test("week pages use docked catalogue progress chrome without replacing PageHost engines", function () {
+  const weekPage = read("src/pages/WeekPage.tsx");
+  assert.match(weekPage, /PracticeProgressPanel/);
+  assert.match(weekPage, /defaultCollapsed/);
+  assert.match(weekPage, /showProgress:\s*false/);
+  assert.match(weekPage, /getCompletionSummary/);
+  assert.match(weekPage, /<PageHost/);
+  assert.doesNotMatch(weekPage, /InteractiveActivity/);
+  assert.match(read("src/pages/PageHost.tsx"), /unit3-page-body/);
+  assert.match(read("src/pages/PageHost.tsx"), /loadPageScripts/);
+});
+
 test("Week 1 activity.html keeps the activityId query contract", function () {
   const html = read("activities/activity.html");
   assert.match(html, /data-view="week1-activity"/);

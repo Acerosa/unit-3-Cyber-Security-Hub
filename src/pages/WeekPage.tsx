@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { WeekView } from "@learning-platform/ui";
+import { PracticeProgressPanel, WeekView } from "@learning-platform/ui";
 import { createSitePath } from "../paths";
 import type { PageContext } from "../page-context";
 import { findRoute } from "../page-copy";
@@ -43,60 +43,70 @@ export function WeekPage({
     return () => window.removeEventListener("unit3:backend-progress", read);
   }, [adaptersReady, week]);
 
+  const weekBadge = `Week ${week}: ${WEEK_TITLES[week] || ""}`.trim();
+
   return (
-    <WeekView
-      week={{
-        id: `week-${week}`,
-        teachingWeek: week,
-        title: route?.heading || `Week ${week}`,
-        subtitle: (route?.subtitle || "").replace(/\s+/g, " ").trim(),
-        status: "available"
-      }}
-      learningOutcomes={outcomeFromSubtitle(route?.subtitle || "")}
-      context={{
-        type: "exam",
-        contextType: "exam",
-        heading: "Examination context",
-        description: "Formative OCR Unit 3 Cyber Security learning. This is not a live examination.",
-        items: [
-          { label: "Qualification", value: "OCR Level 3 IT" },
-          { label: "Unit", value: "Unit 3 Cyber Security" },
-          { label: "Week", value: `Week ${week}: ${WEEK_TITLES[week] || ""}`.trim() }
-        ]
-      }}
-      features={{
-        showTitle: false,
-        showAssignmentContext: false,
-        showProjectContext: false,
-        showExamContext: true
-      }}
-      progress={progress ? {
-        title: `Week ${week} progress`,
-        completed: progress.completed,
-        total: progress.total,
-        description: "Signed-in completion is confirmed by the learner service. Drafts stay in this browser until submitted."
-      } : null}
-      previousWeek={week > 1 ? { label: `Week ${week - 1}`, href: createSitePath(context.root, `week-${week - 1}/`) } : null}
-      nextWeek={week < 7 ? { label: `Week ${week + 1}`, href: createSitePath(context.root, `week-${week + 1}/`) } : null}
-      sessions={[
-        {
-          id: `week-${week}-content`,
-          title: "Learning this week",
-          kind: "session",
-          defaultOpen: true,
-          activities: [
-            {
-              children: (
-                <PageHost
-                  root={context.root}
-                  scripts={route?.scripts || []}
-                  adaptersReady={adaptersReady}
-                />
-              )
-            }
+    <>
+      {progress ? (
+        <PracticeProgressPanel
+          title={`Week ${week} progress`}
+          badge={weekBadge}
+          score={{ correct: progress.completed, total: progress.total }}
+          progress={progress.total > 0 ? progress.completed / progress.total : 0}
+          completed={progress.total > 0 && progress.completed >= progress.total}
+          message="Signed-in completion is confirmed by the learner service. Drafts stay in this browser until submitted."
+          defaultCollapsed
+        />
+      ) : null}
+      <WeekView
+        week={{
+          id: `week-${week}`,
+          teachingWeek: week,
+          title: route?.heading || `Week ${week}`,
+          subtitle: (route?.subtitle || "").replace(/\s+/g, " ").trim(),
+          status: "available"
+        }}
+        learningOutcomes={outcomeFromSubtitle(route?.subtitle || "")}
+        context={{
+          type: "exam",
+          contextType: "exam",
+          heading: "Examination context",
+          description: "Formative OCR Unit 3 Cyber Security learning. This is not a live examination.",
+          items: [
+            { label: "Qualification", value: "OCR Level 3 IT" },
+            { label: "Unit", value: "Unit 3 Cyber Security" },
+            { label: "Week", value: weekBadge }
           ]
-        }
-      ]}
-    />
+        }}
+        features={{
+          showTitle: false,
+          showAssignmentContext: false,
+          showProjectContext: false,
+          showExamContext: true,
+          showProgress: false
+        }}
+        previousWeek={week > 1 ? { label: `Week ${week - 1}`, href: createSitePath(context.root, `week-${week - 1}/`) } : null}
+        nextWeek={week < 7 ? { label: `Week ${week + 1}`, href: createSitePath(context.root, `week-${week + 1}/`) } : null}
+        sessions={[
+          {
+            id: `week-${week}-content`,
+            title: "Learning this week",
+            kind: "session",
+            defaultOpen: true,
+            activities: [
+              {
+                children: (
+                  <PageHost
+                    root={context.root}
+                    scripts={route?.scripts || []}
+                    adaptersReady={adaptersReady}
+                  />
+                )
+              }
+            ]
+          }
+        ]}
+      />
+    </>
   );
 }
