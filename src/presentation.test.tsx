@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { APP_CONFIG } from "./config";
 import { breadcrumbs, pageHeader } from "./page-copy";
 import { navigationItems } from "./paths";
+import { ActivityPage } from "./pages/ActivityPage";
 import { WeekPage } from "./pages/WeekPage";
 
 vi.mock("./adapters/load-hub-adapters", () => ({
@@ -12,6 +13,8 @@ vi.mock("./adapters/load-hub-adapters", () => ({
 
 afterEach(() => {
   delete window.Unit3Week2Progress;
+  delete window.Unit3Week2Submit;
+  delete window.__lpPackage;
   cleanup();
 });
 
@@ -108,5 +111,56 @@ describe("Unit 3 presentation", () => {
       /Week 2: Threats and Vulnerabilities/
     );
     expect(screen.getByRole("button", { name: "Hide progress details" })).toBeTruthy();
+  });
+
+  it("renders Week 2 Session 1 Retrieval through InteractiveActivity and the existing submit helper", () => {
+    const markCompleted = vi.fn();
+    const renderSubmitPanel = vi.fn();
+    window.Unit3Week2Progress = { markStarted: vi.fn(), markCompleted };
+    window.Unit3Week2Submit = { renderSubmitPanel };
+    window.__lpPackage = {
+      activities: [
+        {
+          id: "week2-session1-retrieval",
+          version: "1.0.0",
+          blocks: [
+            {
+              id: "q1",
+              type: "single-choice",
+              content: {
+                questionId: "week2-session1-retrieval:s1-q1",
+                sourceQuestionId: "s1-q1",
+                prompt: "Which statement best describes cyber security?",
+                options: [
+                  { id: "a", label: "Wrong" },
+                  { id: "b", label: "Protecting systems, networks and data" }
+                ],
+                correctOptionId: "b",
+                formative: true
+              }
+            }
+          ]
+        }
+      ]
+    };
+    render(
+      <ActivityPage
+        context={{
+          page: "week-2-session1-retrieval",
+          section: "week-2",
+          root: "../..",
+          view: "activity",
+          week: 2,
+          activity: "session1-retrieval"
+        }}
+        adaptersReady
+      />
+    );
+
+    fireEvent.click(screen.getByLabelText("Protecting systems, networks and data"));
+    fireEvent.click(screen.getByRole("button", { name: "Check answer" }));
+    expect(markCompleted).toHaveBeenCalledWith("week2-session1-retrieval", 1, 1);
+    expect(renderSubmitPanel).toHaveBeenCalledTimes(1);
+    expect(document.querySelector("[data-unit3-host]")).toBeTruthy();
   });
 });
