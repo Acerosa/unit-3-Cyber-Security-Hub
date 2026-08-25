@@ -1,11 +1,19 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { APP_CONFIG } from "./config";
 import { breadcrumbs, pageHeader } from "./page-copy";
 import { navigationItems } from "./paths";
 import { WeekPage } from "./pages/WeekPage";
 
-afterEach(cleanup);
+vi.mock("./adapters/load-hub-adapters", () => ({
+  loadHubAdapters: async () => {},
+  loadPageScripts: async () => {}
+}));
+
+afterEach(() => {
+  delete window.Unit3Week2Progress;
+  cleanup();
+});
 
 describe("Unit 3 presentation", () => {
   it("keeps Home, Weeks 1–7, Resources, Help and Account in the authoritative nav", () => {
@@ -71,5 +79,34 @@ describe("Unit 3 presentation", () => {
     expect(screen.getByText("Examination context")).toBeTruthy();
     expect(screen.getByText("OCR Level 3 IT")).toBeTruthy();
     expect(screen.getByText("Learning this week")).toBeTruthy();
+    expect(screen.queryByRole("complementary", { name: "Week 2 progress" })).toBeNull();
+  });
+
+  it("docks the catalogue progress panel from Unit 3 completion summary", () => {
+    window.Unit3Week2Progress = {
+      getCompletionSummary: () => ({ completed: 3, total: 10 })
+    };
+    render(
+      <WeekPage
+        context={{ page: "week-2", section: "week-2", root: "..", view: "week", week: 2 }}
+        adaptersReady
+      />
+    );
+
+    const panel = screen.getByRole("complementary", { name: "Week 2 progress" });
+    expect(panel.getAttribute("data-lp-practice-progress-panel")).toBe("");
+    expect(panel.getAttribute("data-lp-docked")).toBe("left");
+    expect(panel.getAttribute("data-lp-collapsed")).toBe("true");
+    expect(screen.getByLabelText("3 of 10 correct")).toBeTruthy();
+    expect(panel.querySelector("[data-lp-progress-badge]")).toBeNull();
+    expect(document.querySelector("[data-unit3-host]")).toBeTruthy();
+    expect(screen.queryByText("3 of 10 complete (30%)")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Show progress details" }));
+    expect(panel.getAttribute("data-lp-collapsed")).toBe("false");
+    expect(panel.querySelector("[data-lp-progress-badge]")?.textContent).toMatch(
+      /Week 2: Threats and Vulnerabilities/
+    );
+    expect(screen.getByRole("button", { name: "Hide progress details" })).toBeTruthy();
   });
 });
