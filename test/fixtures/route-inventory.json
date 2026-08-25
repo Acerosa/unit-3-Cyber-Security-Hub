@@ -286,10 +286,7 @@
       "scripts": [
         "js/week2-progress.js",
         "js/core/backend-progress.js",
-        "js/week2-submit.js",
-        "js/week2-quiz.js",
-        "week-2/data/retrieval-session-1.js",
-        "week-2/session1-retrieval/app.js"
+        "js/week2-submit.js"
       ],
       "redirectTo": ""
     },

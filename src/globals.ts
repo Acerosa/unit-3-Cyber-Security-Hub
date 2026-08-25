@@ -24,12 +24,17 @@ declare global {
     Unit3Week5Progress?: WeekProgress;
     Unit3Week6Progress?: WeekProgress;
     Unit3Week7Progress?: WeekProgress;
+    Unit3Week2Submit?: {
+      renderSubmitPanel?: (options: Record<string, unknown>) => void;
+    };
   }
 }
 
 export type WeekProgress = {
   ACTIVITY_CATALOG?: Array<{ activityId: string }>;
   getCompletionSummary?: () => { completed: number; total: number; inProgress?: number; notStarted?: number };
+  markStarted?: (activityId: string) => unknown;
+  markCompleted?: (activityId: string, score?: number, total?: number, extra?: unknown) => unknown;
 };
 
 window.APP_CONFIG = APP_CONFIG;

@@ -119,6 +119,18 @@ test("GitHub Pages consumes reviewed UI 0.1.3 for catalogue chrome", function ()
   assert.match(workflow, /ref:\s*v0\.1\.3/);
 });
 
+test("Week 2 Session 1 Retrieval uses the catalogue pilot without replacing other week engines", function () {
+  const activityPage = read("src/pages/ActivityPage.tsx");
+  const inventory = read("test/fixtures/route-inventory.json");
+  assert.match(activityPage, /CataloguePilot/);
+  assert.match(read("src/pages/CataloguePilot.tsx"), /InteractiveActivity/);
+  assert.match(read("src/pages/CataloguePilot.tsx"), /Unit3Week2Submit/);
+  assert.match(read("src/pages/CataloguePilot.tsx"), /markCompleted/);
+  assert.match(read("week-2/session1-retrieval/index.html"), /Submit your result when every question has been checked/);
+  assert.doesNotMatch(inventory.split("week-2/session1-retrieval/index.html")[1].split("week-2/session2-retrieval")[0], /week2-quiz\.js/);
+  assert.match(inventory.split("week-2/session2-retrieval/index.html")[1].split("week-2/threat-vulnerability")[0], /week2-quiz\.js/);
+});
+
 test("week pages use docked catalogue progress chrome without replacing PageHost engines", function () {
   const weekPage = read("src/pages/WeekPage.tsx");
   assert.match(weekPage, /PracticeProgressPanel/);
