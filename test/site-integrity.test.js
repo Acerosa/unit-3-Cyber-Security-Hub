@@ -112,6 +112,13 @@ test("week 2 and 3 quiz engines use optionLabel instead of stringifying option o
   assert.match(read("src/curriculum/from-package.ts"), /normalizeActivityQuestions/);
 });
 
+test("GitHub Pages consumes reviewed UI 0.1.3 for catalogue chrome", function () {
+  const workflow = read(".github/workflows/pages.yml");
+  assert.match(workflow, /Check out reviewed UI/);
+  assert.match(workflow, /Acerosa\/Acerosa-learning-platform-ui/);
+  assert.match(workflow, /ref:\s*v0\.1\.3/);
+});
+
 test("week pages use docked catalogue progress chrome without replacing PageHost engines", function () {
   const weekPage = read("src/pages/WeekPage.tsx");
   assert.match(weekPage, /PracticeProgressPanel/);
