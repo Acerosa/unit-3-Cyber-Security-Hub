@@ -1,7 +1,8 @@
 /**
- * Soft academic-integrity guidance for learning responses.
- * Reminds learners to write in their own words; does not block paste.
- * Excludes learner-details and other opted-out fields.
+ * Academic-integrity guidance for learning responses.
+ * Blocks paste/drop on learning textareas (aligned with UI TextResponse) and
+ * reminds learners to write in their own words.
+ * Excludes learner-details, auth forms, and catalogue library text fields.
  */
 (function (global) {
   'use strict';
@@ -15,10 +16,13 @@
     'Write your answers and notes in your own words. Do not paste flags, answer keys, walkthrough answers or copied solution text into this application. Tutors may review responses.';
 
   var FIELD_MESSAGE =
-    'Use your own words. Do not paste flags or copied answers. Tutors may check this response.';
+    'Use your own words. Paste is disabled. Tutors may check this response.';
 
   var PASTE_MESSAGE =
-    'Reminder: write in your own words. Do not paste flags or copied answers. Tutors may review what you submit.';
+    'Paste is disabled. Type your answer in your own words.';
+
+  var DROP_MESSAGE =
+    'Dropping text is disabled. Type your answer in your own words.';
 
   var pasteTimer = null;
 
@@ -43,9 +47,17 @@
     if (!node || !node.closest) return true;
     if (node.disabled || node.readOnly) return true;
     if (node.getAttribute('data-academic-integrity') === 'exclude') return true;
+    // Catalogue ShortResponse / Reflection / LearningTextField already block paste.
     if (
       node.closest(
-        '[data-academic-integrity="exclude"], #learner-details-form, .learner-details-form, #ld-partner-block, .partner-details-block'
+        '[data-lp-block="short-response"], [data-lp-block="reflection"], [data-lp-response], [data-lp-learning-text-field]'
+      )
+    ) {
+      return true;
+    }
+    if (
+      node.closest(
+        '[data-academic-integrity="exclude"], #learner-details-form, .learner-details-form, #ld-partner-block, .partner-details-block, .student-account, [data-student-account], [data-student-sign-in]'
       )
     ) {
       return true;
@@ -54,11 +66,7 @@
   }
 
   function isLearningTextarea(node) {
-    return (
-      node &&
-      node.tagName === 'TEXTAREA' &&
-      !isExcluded(node)
-    );
+    return node && node.tagName === 'TEXTAREA' && !isExcluded(node);
   }
 
   function isLearningTextInput(node) {
@@ -122,19 +130,23 @@
     return live;
   }
 
-  function announcePasteReminder() {
+  function announce(message) {
     var live = ensureLiveRegion();
     live.textContent = '';
     global.clearTimeout(pasteTimer);
     pasteTimer = global.setTimeout(function () {
-      live.textContent = PASTE_MESSAGE;
+      live.textContent = message;
     }, 10);
   }
 
   function insertPageNotice() {
     if (document.getElementById(NOTICE_ID)) return;
 
-    var main = document.getElementById('main-content') || document.querySelector('main');
+    var main =
+      document.getElementById('main-content') ||
+      document.querySelector('main') ||
+      document.querySelector('[data-lp-main]') ||
+      document.querySelector('.lp-shell__main');
     if (!main) return;
 
     var notice = document.createElement('aside');
@@ -156,10 +168,23 @@
     var tutor = document.createElement('p');
     tutor.className = 'panel-note';
     tutor.textContent =
-      'Tutors may check responses for pasted flags, answer keys or copied walkthrough text.';
+      'Paste and drop are disabled on learning answer fields. Tutors may check responses for copied walkthrough text.';
     notice.appendChild(tutor);
 
     main.insertBefore(notice, main.firstChild);
+  }
+
+  function showFieldNotice(field, message) {
+    var noticeId = (field.id || 'ai-field') + '-paste-notice';
+    var notice = document.getElementById(noticeId);
+    if (!notice && field.parentNode) {
+      notice = document.createElement('p');
+      notice.id = noticeId;
+      notice.className = 'ai-integrity-paste-notice panel-note';
+      notice.setAttribute('role', 'status');
+      field.parentNode.insertBefore(notice, field.nextSibling);
+    }
+    if (notice) notice.textContent = message;
   }
 
   function enhanceField(field) {
@@ -188,8 +213,15 @@
       }
     }
 
-    field.addEventListener('paste', function () {
-      announcePasteReminder();
+    field.addEventListener('paste', function (event) {
+      event.preventDefault();
+      showFieldNotice(field, PASTE_MESSAGE);
+      announce(PASTE_MESSAGE);
+    });
+    field.addEventListener('drop', function (event) {
+      event.preventDefault();
+      showFieldNotice(field, DROP_MESSAGE);
+      announce(DROP_MESSAGE);
     });
   }
 
@@ -240,6 +272,7 @@
     enhance: enhance,
     PAGE_MESSAGE: PAGE_MESSAGE,
     FIELD_MESSAGE: FIELD_MESSAGE,
-    PASTE_MESSAGE: PASTE_MESSAGE
+    PASTE_MESSAGE: PASTE_MESSAGE,
+    DROP_MESSAGE: DROP_MESSAGE
   };
 })(window);

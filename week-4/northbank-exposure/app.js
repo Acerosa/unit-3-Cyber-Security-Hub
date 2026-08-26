@@ -31,6 +31,11 @@
     }
   }
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for northbank-exposure fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   function save() {
     if (progress) {
       progress.setDraft(DRAFT_KEY, {
@@ -41,8 +46,10 @@
     }
   }
 
+  var MIN_CHARS = 80;
+
   function filled(text) {
-    return String(text || '').trim().length >= 8;
+    return String(text || '').trim().length >= MIN_CHARS;
   }
 
   function computeScore() {
@@ -62,7 +69,11 @@
       var row = state.exposures[prompt.id] || {};
       if (!filled(row.item) || !filled(row.motivation) || !filled(row.whyAttractive)) {
         messages.push(
-          'Complete all three fields for exposure item ' + (index + 1) + ' before submitting.'
+          'Complete all three fields for exposure item ' +
+            (index + 1) +
+            ' (at least ' +
+            MIN_CHARS +
+            ' characters each) before submitting.'
         );
       }
     });
@@ -70,26 +81,23 @@
   }
 
   function field(wrapParent, id, labelText, value, onInput, rows) {
-    var wrap = document.createElement('div');
-    wrap.className = 'w4-reflection-field';
-    var label = document.createElement('label');
-    label.setAttribute('for', id);
-    label.textContent = labelText;
-    wrap.appendChild(label);
-    var area = document.createElement('textarea');
-    area.id = id;
-    area.rows = rows || 3;
-    area.value = value || '';
-    area.addEventListener('input', function () {
-      onInput(area.value);
-      save();
+    textFields.mount(wrapParent, {
+      wrapClass: 'w4-reflection-field',
+      id: id,
+      prompt: labelText + ' (min ' + MIN_CHARS + ' characters)',
+      minChars: MIN_CHARS,
+      value: value || '',
+      rows: rows || 3,
+      onChange: function (next) {
+        onInput(next);
+        save();
+      }
     });
-    wrap.appendChild(area);
-    wrapParent.appendChild(wrap);
   }
 
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';

@@ -22,6 +22,11 @@
     }
   }
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for discuss-planner fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   function save() {
     if (progress) {
       progress.setDraft(DRAFT_KEY, {
@@ -81,6 +86,7 @@
 
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';
@@ -94,22 +100,18 @@
       '</p>' +
       '<p id="w6-planner-save-note" class="panel-note" aria-live="polite">Draft saved automatically in this browser.</p>';
 
-    var issueWrap = document.createElement('div');
-    issueWrap.className = 'w6-reflection-field';
-    var issueLabel = document.createElement('label');
-    issueLabel.setAttribute('for', 'planner-issue');
-    issueLabel.textContent = data.issuePrompt;
-    issueWrap.appendChild(issueLabel);
-    var issueArea = document.createElement('textarea');
-    issueArea.id = 'planner-issue';
-    issueArea.rows = 3;
-    issueArea.value = state.issue || '';
-    issueArea.addEventListener('input', function () {
-      state.issue = issueArea.value;
-      save();
+    textFields.mount(panel, {
+      wrapClass: 'w6-reflection-field',
+      id: 'planner-issue',
+      prompt: data.issuePrompt,
+      minChars: 20,
+      value: state.issue || '',
+      rows: 3,
+      onChange: function (next) {
+        state.issue = next;
+        save();
+      }
     });
-    issueWrap.appendChild(issueArea);
-    panel.appendChild(issueWrap);
 
     var grid = document.createElement('div');
     grid.className = 'w6-plan-grid w6-two-col';
@@ -123,21 +125,20 @@
       desc.className = 'panel-note';
       desc.textContent = col.description;
       card.appendChild(desc);
-      var label = document.createElement('label');
-      label.setAttribute('for', 'planner-' + col.id);
-      label.textContent = col.requiresConcessionLabel
-        ? 'Your response (include "' + data.concessionLabel + '" before the conclusion)'
-        : 'Your notes';
-      card.appendChild(label);
-      var area = document.createElement('textarea');
-      area.id = 'planner-' + col.id;
-      area.rows = 6;
-      area.value = state[col.id] || '';
-      area.addEventListener('input', function () {
-        state[col.id] = area.value;
-        save();
+      textFields.mount(card, {
+        wrapClass: 'w6-reflection-field',
+        id: 'planner-' + col.id,
+        prompt: col.requiresConcessionLabel
+          ? 'Your response (include "' + data.concessionLabel + '" before the conclusion)'
+          : 'Your notes',
+        minChars: col.minLength,
+        value: state[col.id] || '',
+        rows: 6,
+        onChange: function (next) {
+          state[col.id] = next;
+          save();
+        }
       });
-      card.appendChild(area);
       grid.appendChild(card);
     });
     panel.appendChild(grid);

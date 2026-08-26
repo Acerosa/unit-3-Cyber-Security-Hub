@@ -48,6 +48,11 @@
     }
   }
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for stakeholder-grid fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   function rowComplete(id, requireSafety) {
     var row = rows[id] || {};
     var base =
@@ -128,26 +133,21 @@
     return messages;
   }
 
-  function textCell(parent, id, label, value, onInput, readOnly) {
-    var wrap = document.createElement('div');
-    wrap.className = 'w5-reflection-field';
-    var lab = document.createElement('label');
-    lab.setAttribute('for', id);
-    lab.textContent = label;
-    wrap.appendChild(lab);
-    var area = document.createElement('textarea');
-    area.id = id;
-    area.rows = 3;
-    area.value = value || '';
-    area.readOnly = !!readOnly;
-    if (readOnly) area.setAttribute('aria-readonly', 'true');
-    area.addEventListener('input', function () {
-      onInput(area.value);
-      save();
-      updateCompletion();
+  function textCell(parent, id, label, value, onInput, readOnly, minChars) {
+    textFields.mount(parent, {
+      wrapClass: 'w5-reflection-field',
+      id: id,
+      prompt: label,
+      minChars: minChars,
+      value: value || '',
+      rows: 3,
+      disabled: !!readOnly,
+      onChange: function (next) {
+        onInput(next);
+        save();
+        updateCompletion();
+      }
     });
-    wrap.appendChild(area);
-    parent.appendChild(wrap);
   }
 
   function updateCompletion() {
@@ -162,6 +162,7 @@
 
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';
@@ -206,7 +207,8 @@
           function (value) {
             rows[stakeholder.id][col.id] = value;
           },
-          false
+          false,
+          8
         );
       });
       panel.appendChild(block);
@@ -222,7 +224,9 @@
       reflection.overlooked,
       function (value) {
         reflection.overlooked = value;
-      }
+      },
+      false,
+      20
     );
     textCell(
       ref,
@@ -231,7 +235,9 @@
       reflection.hardest,
       function (value) {
         reflection.hardest = value;
-      }
+      },
+      false,
+      12
     );
     textCell(
       ref,
@@ -240,7 +246,9 @@
       reflection.compare,
       function (value) {
         reflection.compare = value;
-      }
+      },
+      false,
+      20
     );
     panel.appendChild(ref);
 

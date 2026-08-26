@@ -6,6 +6,11 @@
   var host = document.getElementById('w3-dis-host');
   if (!data || !host) return;
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for directed-study fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   var room = ((thm && thm.resources) || []).filter(function (item) {
     return item.roomId === 'hackermethodology';
   })[0];
@@ -19,6 +24,7 @@
     values = {};
   }
 
+  textFields.destroyAll();
   host.textContent = '';
   var panel = document.createElement('section');
   panel.className = 'panel';
@@ -65,22 +71,18 @@
     '<p class="panel-note">Printable/local notes only. This directed-study resource is not a scored API submission.</p>';
   fields.forEach(function (field, index) {
     var id = 'research-' + index;
-    var wrap = document.createElement('div');
-    wrap.className = 'w3-reflection-field';
-    var label = document.createElement('label');
-    label.setAttribute('for', id);
-    label.textContent = field;
-    wrap.appendChild(label);
-    var area = document.createElement('textarea');
-    area.id = id;
-    area.rows = 2;
-    area.value = values[field] || '';
-    area.addEventListener('input', function () {
-      values[field] = area.value;
-      localStorage.setItem(key, JSON.stringify(values));
+    textFields.mount(form, {
+      wrapClass: 'w3-reflection-field',
+      id: id,
+      prompt: field,
+      minChars: 80,
+      value: values[field] || '',
+      rows: 2,
+      onChange: function (next) {
+        values[field] = next;
+        localStorage.setItem(key, JSON.stringify(values));
+      }
     });
-    wrap.appendChild(area);
-    form.appendChild(wrap);
   });
   var actions = document.createElement('div');
   actions.className = 'w3-actions';

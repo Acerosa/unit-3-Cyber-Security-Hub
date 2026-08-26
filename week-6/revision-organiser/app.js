@@ -51,6 +51,11 @@
     }
   }
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for revision-organiser fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   function save() {
     if (progress) {
       progress.setDraft(DRAFT_KEY, {
@@ -59,6 +64,10 @@
         savedAt: new Date().toISOString()
       });
     }
+  }
+
+  function fieldMinChars(field) {
+    return field.minLength != null ? field.minLength : 40;
   }
 
   function sectionComplete(section) {
@@ -100,6 +109,7 @@
 
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';
@@ -112,23 +122,19 @@
       card.className = 'w6-review-item';
       card.innerHTML = '<h3>Section ' + section.code + ': ' + section.title + '</h3>';
       section.fields.forEach(function (field) {
-        var wrap = document.createElement('div');
-        wrap.className = 'w6-reflection-field';
-        var label = document.createElement('label');
         var inputId = section.id + '-' + field.id;
-        label.setAttribute('for', inputId);
-        label.textContent = field.label;
-        wrap.appendChild(label);
-        var area = document.createElement('textarea');
-        area.id = inputId;
-        area.rows = field.id === 'practiceQuestion' ? 3 : 2;
-        area.value = (state[section.id] && state[section.id][field.id]) || '';
-        area.addEventListener('input', function () {
-          state[section.id][field.id] = area.value;
-          save();
+        textFields.mount(card, {
+          wrapClass: 'w6-reflection-field',
+          id: inputId,
+          prompt: field.label,
+          minChars: fieldMinChars(field),
+          value: (state[section.id] && state[section.id][field.id]) || '',
+          rows: field.id === 'practiceQuestion' ? 3 : 2,
+          onChange: function (next) {
+            state[section.id][field.id] = next;
+            save();
+          }
         });
-        wrap.appendChild(area);
-        card.appendChild(wrap);
       });
       panel.appendChild(card);
     });
@@ -137,40 +143,32 @@
     diagnosticBlock.className = 'w6-review-item';
     diagnosticBlock.innerHTML = '<h3>Diagnostic revision priorities</h3>';
     data.weakestFields.forEach(function (field) {
-      var wrap = document.createElement('div');
-      wrap.className = 'w6-reflection-field';
-      var label = document.createElement('label');
-      label.setAttribute('for', field.id);
-      label.textContent = field.label;
-      wrap.appendChild(label);
-      var area = document.createElement('textarea');
-      area.id = field.id;
-      area.rows = 2;
-      area.value = state[field.id] || '';
-      area.addEventListener('input', function () {
-        state[field.id] = area.value;
-        save();
+      textFields.mount(diagnosticBlock, {
+        wrapClass: 'w6-reflection-field',
+        id: field.id,
+        prompt: field.label,
+        minChars: fieldMinChars(field),
+        value: state[field.id] || '',
+        rows: 2,
+        onChange: function (next) {
+          state[field.id] = next;
+          save();
+        }
       });
-      wrap.appendChild(area);
-      diagnosticBlock.appendChild(wrap);
     });
     data.priorityFields.forEach(function (field) {
-      var wrap = document.createElement('div');
-      wrap.className = 'w6-reflection-field';
-      var label = document.createElement('label');
-      label.setAttribute('for', field.id);
-      label.textContent = field.label;
-      wrap.appendChild(label);
-      var area = document.createElement('textarea');
-      area.id = field.id;
-      area.rows = 2;
-      area.value = state[field.id] || '';
-      area.addEventListener('input', function () {
-        state[field.id] = area.value;
-        save();
+      textFields.mount(diagnosticBlock, {
+        wrapClass: 'w6-reflection-field',
+        id: field.id,
+        prompt: field.label,
+        minChars: fieldMinChars(field),
+        value: state[field.id] || '',
+        rows: 2,
+        onChange: function (next) {
+          state[field.id] = next;
+          save();
+        }
       });
-      wrap.appendChild(area);
-      diagnosticBlock.appendChild(wrap);
     });
     panel.appendChild(diagnosticBlock);
 

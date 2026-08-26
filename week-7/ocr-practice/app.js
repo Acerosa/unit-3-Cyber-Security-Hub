@@ -93,8 +93,14 @@
     return Array.isArray(q.markScheme) ? q.markScheme.join('; ') : String(q.markScheme || '');
   }
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for OCR free-text fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';
@@ -199,21 +205,19 @@
         });
         block.appendChild(fieldset);
       } else {
-        var areaId = 'ocr-' + q.id;
-        var label = document.createElement('label');
-        label.setAttribute('for', areaId);
-        label.textContent = 'Your response';
-        block.appendChild(label);
-        var area = document.createElement('textarea');
-        area.id = areaId;
-        area.rows = q.commandWord === 'Discuss' || q.commandWord === 'Compare' ? 8 : 5;
-        area.disabled = review;
-        area.value = answers[q.id] || '';
-        area.addEventListener('input', function () {
-          answers[q.id] = area.value;
-          save();
+        textFields.mount(block, {
+          wrapClass: 'w7-reflection-field',
+          id: 'ocr-' + q.id,
+          prompt: 'Your response',
+          minChars: 80,
+          value: answers[q.id] || '',
+          rows: q.commandWord === 'Discuss' || q.commandWord === 'Compare' ? 8 : 5,
+          disabled: review,
+          onChange: function (next) {
+            answers[q.id] = next;
+            save();
+          }
         });
-        block.appendChild(area);
         var markLabel = document.createElement('label');
         markLabel.setAttribute('for', 'self-' + q.id);
         markLabel.textContent = 'Self-assessed marks (0-' + q.marks + ')';

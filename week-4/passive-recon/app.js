@@ -5,10 +5,16 @@
   var host = document.getElementById('w4-activity-host');
   if (!data || !host) return;
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for passive-recon fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   var rooms = (data.resources || []).filter(function (item) {
     return item.deliveryMode === 'in-class';
   });
 
+  textFields.destroyAll();
   host.textContent = '';
   var panel = document.createElement('section');
   panel.className = 'panel';
@@ -91,18 +97,14 @@
   reflection.innerHTML = '<h3>Reflection notes (local only)</h3>';
   ['Technique / finding', 'What it revealed (read-only)', 'Possible motivation (why)'].forEach(
     function (labelText, index) {
-      var wrap = document.createElement('div');
-      wrap.className = 'w4-reflection-field';
-      var label = document.createElement('label');
-      var id = 'thm-note-' + index;
-      label.setAttribute('for', id);
-      label.textContent = labelText;
-      wrap.appendChild(label);
-      var area = document.createElement('textarea');
-      area.id = id;
-      area.rows = 3;
-      wrap.appendChild(area);
-      reflection.appendChild(wrap);
+      textFields.mount(reflection, {
+        wrapClass: 'w4-reflection-field',
+        id: 'thm-note-' + index,
+        prompt: labelText,
+        minChars: 80,
+        value: '',
+        rows: 3
+      });
     }
   );
   panel.appendChild(reflection);

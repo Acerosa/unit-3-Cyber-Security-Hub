@@ -13196,7 +13196,7 @@
             "questionId": "week6-employee-monitoring:role",
             "sourceQuestionId": "role",
             "prompt": "Stakeholder role you are preparing for (Employees, Managers, Customers, The data protection regulator, or Shareholders)",
-            "minChars": 8
+            "minChars": 20
           }
         },
         {
@@ -13228,7 +13228,7 @@
             "questionId": "week6-employee-monitoring:evidence",
             "sourceQuestionId": "evidence",
             "prompt": "Evidence from the Northbank insider breach scenario",
-            "minChars": 60
+            "minChars": 80
           }
         },
         {
@@ -13244,7 +13244,7 @@
             "questionId": "week6-employee-monitoring:opposingArgument",
             "sourceQuestionId": "opposingArgument",
             "prompt": "Strongest opposing argument another stakeholder might raise",
-            "minChars": 60
+            "minChars": 80
           }
         },
         {
@@ -13260,7 +13260,7 @@
             "questionId": "week6-employee-monitoring:hardestOpposing",
             "sourceQuestionId": "hardestOpposing",
             "prompt": "Hardest opposing point for your role to answer",
-            "minChars": 50
+            "minChars": 80
           }
         },
         {
@@ -15085,7 +15085,7 @@
             "questionId": "week7-sandbox-observation:whatPlaced",
             "sourceQuestionId": "whatPlaced",
             "prompt": "What was placed in the sandbox (as described by the tutor)?",
-            "minChars": 20
+            "minChars": 80
           }
         },
         {
@@ -15101,7 +15101,7 @@
             "questionId": "week7-sandbox-observation:whyIsolation",
             "sourceQuestionId": "whyIsolation",
             "prompt": "Why was isolation used?",
-            "minChars": 25
+            "minChars": 80
           }
         },
         {
@@ -15117,7 +15117,7 @@
             "questionId": "week7-sandbox-observation:behaviourObserved",
             "sourceQuestionId": "behaviourObserved",
             "prompt": "What behaviour was observed?",
-            "minChars": 25
+            "minChars": 80
           }
         },
         {
@@ -15133,7 +15133,7 @@
             "questionId": "week7-sandbox-observation:analysisRevealed",
             "sourceQuestionId": "analysisRevealed",
             "prompt": "What did the analysis reveal (or suggest)?",
-            "minChars": 25
+            "minChars": 80
           }
         },
         {
@@ -15149,7 +15149,7 @@
             "questionId": "week7-sandbox-observation:couldNotProve",
             "sourceQuestionId": "couldNotProve",
             "prompt": "What could the sandbox demonstration not prove?",
-            "minChars": 25
+            "minChars": 80
           }
         },
         {
@@ -15165,7 +15165,7 @@
             "questionId": "week7-sandbox-observation:whyUnsafeDirect",
             "sourceQuestionId": "whyUnsafeDirect",
             "prompt": "Why would it be unsafe to open the sample directly on a clinical or personal device?",
-            "minChars": 30
+            "minChars": 80
           }
         },
         {
@@ -16388,7 +16388,7 @@
             "questionId": "week7-recommendation-practice:measure",
             "sourceQuestionId": "measure",
             "prompt": "1. Name the recommended measure",
-            "minChars": 4
+            "minChars": 20
           }
         },
         {
@@ -16404,7 +16404,7 @@
             "questionId": "week7-recommendation-practice:whyOrg",
             "sourceQuestionId": "whyOrg",
             "prompt": "2. Why this suits Northbank (organisational context)",
-            "minChars": 40
+            "minChars": 80
           }
         },
         {
@@ -16420,7 +16420,7 @@
             "questionId": "week7-recommendation-practice:effectiveness",
             "sourceQuestionId": "effectiveness",
             "prompt": "3. How effectiveness will be judged (measurable)",
-            "minChars": 30
+            "minChars": 80
           }
         },
         {
@@ -16436,7 +16436,7 @@
             "questionId": "week7-recommendation-practice:registerRef",
             "sourceQuestionId": "registerRef",
             "prompt": "Risk register reference (entry or asset name)",
-            "minChars": 3
+            "minChars": 20
           }
         },
         {
@@ -16452,7 +16452,7 @@
             "questionId": "week7-recommendation-practice:costLimitation",
             "sourceQuestionId": "costLimitation",
             "prompt": "Cost or limitation",
-            "minChars": 25
+            "minChars": 80
           }
         },
         {
@@ -16468,7 +16468,7 @@
             "questionId": "week7-recommendation-practice:alternative",
             "sourceQuestionId": "alternative",
             "prompt": "Compare an alternative measure",
-            "minChars": 25
+            "minChars": 80
           }
         },
         {
@@ -16484,7 +16484,7 @@
             "questionId": "week7-recommendation-practice:whyAltLess",
             "sourceQuestionId": "whyAltLess",
             "prompt": "Why the alternative is less effective here",
-            "minChars": 25
+            "minChars": 80
           }
         },
         {

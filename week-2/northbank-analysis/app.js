@@ -29,6 +29,11 @@
     progress.markStarted(data.activityId);
   }
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for northbank-analysis fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   function normalise(text) {
     return String(text || '')
       .toLowerCase()
@@ -98,6 +103,7 @@
   function render() {
     var host = document.getElementById('w2-analysis-host');
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
 
     data.scenarios.forEach(function (scenario, index) {
@@ -118,24 +124,21 @@
       var form = document.createElement('div');
       form.className = 'w2-analysis-form';
 
-      function addTextField(label, key, hint) {
+      function addTextField(label, key, hint, minChars, rows) {
         var group = document.createElement('div');
         group.className = 'form-group';
-        var lbl = document.createElement('label');
         var inputId = scenario.id + '-' + key;
-        lbl.setAttribute('for', inputId);
-        lbl.textContent = label;
-        group.appendChild(lbl);
-        var input = document.createElement('input');
-        input.type = 'text';
-        input.id = inputId;
-        input.className = 'form-control';
-        input.value = answers[scenario.id][key];
-        input.disabled = checked;
-        input.addEventListener('input', function (event) {
-          answers[scenario.id][key] = event.target.value;
+        textFields.mount(group, {
+          id: inputId,
+          prompt: label,
+          minChars: minChars,
+          value: answers[scenario.id][key],
+          rows: rows || 2,
+          disabled: checked,
+          onChange: function (next) {
+            answers[scenario.id][key] = next;
+          }
         });
-        group.appendChild(input);
         if (hint) {
           var note = document.createElement('p');
           note.className = 'panel-note';
@@ -177,10 +180,10 @@
         form.appendChild(group);
       }
 
-      addTextField('Vulnerability (name the weakness)', 'vulnerability');
+      addTextField('Vulnerability (name the weakness)', 'vulnerability', null, 40, 2);
       addSelect('Category', 'category', data.categories);
-      addTextField('Threat (who or what could exploit it)', 'threat');
-      addTextField('Likely incident (harmful outcome)', 'likelyIncident');
+      addTextField('Threat (who or what could exploit it)', 'threat', null, 40, 2);
+      addTextField('Likely incident (harmful outcome)', 'likelyIncident', null, 40, 2);
 
       var ciaGroup = document.createElement('fieldset');
       ciaGroup.className = 'w2-cia-fieldset';
@@ -217,7 +220,9 @@
       addTextField(
         'Short justification',
         'justification',
-        'Explain the chain: threat exploits vulnerability, then incident, then CIA impact.'
+        'Explain the chain: threat exploits vulnerability, then incident, then CIA impact.',
+        20,
+        3
       );
 
       panel.appendChild(form);

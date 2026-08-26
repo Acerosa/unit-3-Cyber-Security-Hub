@@ -1,13 +1,13 @@
 # Catalogue migration (Weeks 1–7)
 
-Cyber learner activities render through `@learning-platform/ui` **v0.1.4** where the exercise fits shared components. Pages CI pins that UI tag. This hub keeps classic per-activity `app.js` only for worksheets the library cannot express cleanly.
+Cyber learner activities render through `@learning-platform/ui` **v0.1.5** where the exercise fits shared components. Pages CI pins that UI tag. This hub keeps classic per-activity `app.js` only for worksheets the library cannot express cleanly.
 
 ## Player modes
 
 | Mode | Behaviour | Examples |
 | --- | --- | --- |
 | **catalogue** | Content package blocks → `InteractiveActivity` (OptionCards, Classification, ShortResponse / Reflection). Empty HTML shell; progress scripts only. **No** per-activity `app.js`. | Retrieval / learning MCQs, sorts & classify activities, short written checkpoints |
-| **host** | Existing activity UI via `PageHost` + `week-N/<slug>/app.js` (+ data globals as needed) | OCR shells, peer / answer-improvement, multi-field registers, dual-select matching, planners, checklists |
+| **host** | Existing activity UI via `PageHost` + `week-N/<slug>/app.js` (+ data globals as needed). Free-text answers should mount library `LearningTextField` via `window.Unit3LearningText.mount` (paste/minChars/counter, **no** per-field Save; host keeps one Submit). | OCR shells, peer / answer-improvement, multi-field registers, dual-select matching, planners, checklists |
 | **hybrid** | Practical shell stays; catalogue writing overlays | Week 2 TryHackMe `vulnerabilities101` + reflection |
 
 Mode lists live in `src/catalogue/week-activities.ts` (`WEEK_HOST_ACTIVITY_IDS`, `WEEK_HYBRID_ACTIVITY_IDS`, `WEEK_ACTIVITY_SLUGS`).
@@ -24,7 +24,9 @@ Writing is **threaded** through sessions (roughly one short formative prompt aft
 
 ## What remains on classic `app.js`
 
-Do not delete these engines without an explicit port:
+Do not delete these engines without an explicit port. Host free-text answers mount `@learning-platform/ui` `LearningTextField` through `window.Unit3LearningText.createMounts()` / `.mount` (installed in `loadHubAdapters`) — paste/minChars/counter, **no** per-field Save; host keeps one Submit. Catalogue `ShortResponse` / `Reflection` stay on the catalogue path.
+
+Pilot + Waves 2–4 rolled through main week host worksheets (OCR extended, peer/answer-improvement, planners, grids, registers, northbank analysis/exposure, hybrid THM reflection). Clipboard helper textareas are not learning fields.
 
 - **Week 2:** northbank analysis, OCR, peer-marking, vulnerability register; hybrid THM shell
 - **Week 3:** OCR, peer-marking

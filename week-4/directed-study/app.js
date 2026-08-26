@@ -6,6 +6,11 @@
   var host = document.getElementById('w4-activity-host');
   if (!data || !host) return;
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for directed-study fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   var room = ((thm && thm.resources) || []).filter(function (item) {
     return item.roomId === data.tryhackmeRoomId;
   })[0];
@@ -22,6 +27,7 @@
     localStorage.setItem(key, JSON.stringify(values));
   }
 
+  textFields.destroyAll();
   host.textContent = '';
   var panel = document.createElement('section');
   panel.className = 'panel';
@@ -83,23 +89,21 @@
     var techWrap = document.createElement('div');
     techWrap.innerHTML = '<h4>Three search techniques (local notes)</h4>';
     for (var i = 1; i <= 3; i += 1) {
-      var wrap = document.createElement('div');
-      wrap.className = 'w4-reflection-field';
-      var label = document.createElement('label');
       var id = 'dork-' + i;
-      label.setAttribute('for', id);
-      label.textContent = 'Technique ' + i;
-      wrap.appendChild(label);
-      var area = document.createElement('textarea');
-      area.id = id;
-      area.rows = 2;
-      area.value = values[id] || '';
-      area.addEventListener('input', function (event) {
-        values[event.target.id] = event.target.value;
-        persist();
+      textFields.mount(techWrap, {
+        wrapClass: 'w4-reflection-field',
+        id: id,
+        prompt: 'Technique ' + i,
+        minChars: 80,
+        value: values[id] || '',
+        rows: 2,
+        onChange: function (fieldId) {
+          return function (next) {
+            values[fieldId] = next;
+            persist();
+          };
+        }(id)
       });
-      wrap.appendChild(area);
-      techWrap.appendChild(wrap);
     }
     thmBlock.appendChild(techWrap);
     panel.appendChild(thmBlock);
@@ -123,22 +127,20 @@
 
   data.writtenAnalysis.planningFields.forEach(function (field, index) {
     var id = 'analysis-' + index;
-    var wrap = document.createElement('div');
-    wrap.className = 'w4-reflection-field';
-    var label = document.createElement('label');
-    label.setAttribute('for', id);
-    label.textContent = field;
-    wrap.appendChild(label);
-    var area = document.createElement('textarea');
-    area.id = id;
-    area.rows = 2;
-    area.value = values[id] || '';
-    area.addEventListener('input', function () {
-      values[id] = area.value;
-      persist();
+    textFields.mount(analysis, {
+      wrapClass: 'w4-reflection-field',
+      id: id,
+      prompt: field,
+      minChars: 80,
+      value: values[id] || '',
+      rows: 2,
+      onChange: function (fieldId) {
+        return function (next) {
+          values[fieldId] = next;
+          persist();
+        };
+      }(id)
     });
-    wrap.appendChild(area);
-    analysis.appendChild(wrap);
   });
 
   var checklist = document.createElement('ul');

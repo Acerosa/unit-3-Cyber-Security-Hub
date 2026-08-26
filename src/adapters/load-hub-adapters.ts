@@ -1,12 +1,14 @@
 import inventory from "../../test/fixtures/route-inventory.json";
 import { createSitePath } from "../paths";
 import { loadClassicScripts } from "./load-classic-scripts";
+import { installUnit3LearningText } from "./learning-text-field";
 
 let loaded = false;
 
 export async function loadHubAdapters(root: string) {
   if (loaded) return;
   loaded = true;
+  installUnit3LearningText();
   await loadClassicScripts(inventory.sharedAdapters.map((file) => createSitePath(root, file)));
 }
 

@@ -76,8 +76,14 @@
     return messages;
   }
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for answer-improvement fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';
@@ -130,33 +136,30 @@
       panel.appendChild(label);
     });
 
-    function field(id, labelText, key, rows) {
-      var wrap = document.createElement('div');
-      wrap.className = 'w4-reflection-field';
-      var label = document.createElement('label');
-      label.setAttribute('for', id);
-      label.textContent = labelText;
-      wrap.appendChild(label);
-      var area = document.createElement('textarea');
-      area.id = id;
-      area.rows = rows;
-      area.value = state[key] || '';
-      area.addEventListener('input', function () {
-        state[key] = area.value;
-        save();
+    function field(id, labelText, key, rows, minChars) {
+      textFields.mount(panel, {
+        wrapClass: 'w4-reflection-field',
+        id: id,
+        prompt: labelText,
+        minChars: minChars,
+        value: state[key] || '',
+        rows: rows,
+        onChange: function (next) {
+          state[key] = next;
+          save();
+        }
       });
-      wrap.appendChild(area);
-      panel.appendChild(wrap);
     }
 
     field(
       'descriptive-spot',
       'Where is the response descriptive rather than analytical?',
       'descriptiveSpot',
-      3
+      3,
+      10
     );
-    field('rewrite', data.rewritePrompt, 'rewrite', 4);
-    field('improvement', data.improvementActionPrompt, 'improvement', 3);
+    field('rewrite', data.rewritePrompt, 'rewrite', 4, 20);
+    field('improvement', data.improvementActionPrompt, 'improvement', 3, 10);
 
     var exemplar = document.createElement('details');
     exemplar.className = 'session-disclosure';

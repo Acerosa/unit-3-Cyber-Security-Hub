@@ -3,7 +3,7 @@
 The hub vendors the reviewed `learning-platform-core` 0.2.0 browser build from
 commit `f59614ee`. Vite production uses `@learning-platform/core` 0.2.0
 (`createPlatform` in `src/platform.ts`). Pages CI pins
-`@learning-platform/ui` **v0.1.4** for catalogue chrome (`InteractiveActivity`,
+`@learning-platform/ui` **v0.1.5** for catalogue chrome (`InteractiveActivity`,
 `ShortResponse`, `Reflection`). `js/core/platform.js` remains a
 compatibility composition root for Node tests. Core owns
 the Supabase client, Auth session, learner context, onboarding, profile,

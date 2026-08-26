@@ -5,6 +5,11 @@
   var host = document.getElementById('w4-activity-host');
   if (!data || !host) return;
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for support-challenge fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   var key = 'unit3-week4-challenge-notes';
   var values = {};
   try {
@@ -13,6 +18,7 @@
     values = {};
   }
 
+  textFields.destroyAll();
   host.textContent = '';
   var panel = document.createElement('section');
   panel.className = 'panel';
@@ -70,22 +76,18 @@
     var block = document.createElement('article');
     block.className = 'w4-review-item';
     block.innerHTML = '<h4>' + challenge.title + '</h4><p>' + challenge.prompt + '</p>';
-    var wrap = document.createElement('div');
-    wrap.className = 'w4-reflection-field';
-    var label = document.createElement('label');
-    label.setAttribute('for', challenge.id);
-    label.textContent = 'Local notes (optional)';
-    wrap.appendChild(label);
-    var area = document.createElement('textarea');
-    area.id = challenge.id;
-    area.rows = 5;
-    area.value = values[challenge.id] || '';
-    area.addEventListener('input', function () {
-      values[challenge.id] = area.value;
-      localStorage.setItem(key, JSON.stringify(values));
+    textFields.mount(block, {
+      wrapClass: 'w4-reflection-field',
+      id: challenge.id,
+      prompt: 'Local notes (optional)',
+      minChars: 80,
+      value: values[challenge.id] || '',
+      rows: 5,
+      onChange: function (next) {
+        values[challenge.id] = next;
+        localStorage.setItem(key, JSON.stringify(values));
+      }
     });
-    wrap.appendChild(area);
-    block.appendChild(wrap);
     challenges.appendChild(block);
   });
   panel.appendChild(challenges);

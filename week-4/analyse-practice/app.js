@@ -26,6 +26,14 @@
     }
   }
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for analyse-practice fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
+  var SHORT_MIN = 40;
+  var PLAN_MIN = 40;
+
   function save() {
     if (progress) {
       progress.setDraft(DRAFT_KEY, {
@@ -41,7 +49,7 @@
     if (String(state.motivation || '').trim()) marks += 1;
     if (String(state.target || '').trim()) marks += 1;
     if (String(state.method || '').trim()) marks += 1;
-    if (String(state.plan || '').trim().length >= 40) marks += 1;
+    if (String(state.plan || '').trim().length >= PLAN_MIN) marks += 1;
     var checked = Object.keys(state.checklist).filter(function (key) {
       return state.checklist[key];
     }).length;
@@ -50,7 +58,7 @@
     var hasConnective = data.connectives.some(function (word) {
       return plan.indexOf(word) !== -1;
     });
-    if (hasConnective && plan.length >= 40) marks += 1;
+    if (hasConnective && plan.length >= PLAN_MIN) marks += 1;
     return Math.min(data.total, marks);
   }
 
@@ -65,7 +73,7 @@
     if (!String(state.method || '').trim()) {
       messages.push('Identify an appropriate method before submitting.');
     }
-    if (String(state.plan || '').trim().length < 40) {
+    if (String(state.plan || '').trim().length < PLAN_MIN) {
       messages.push('Complete the final connection in the analysis plan before submitting.');
     }
     return messages;
@@ -73,6 +81,7 @@
 
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';
@@ -177,30 +186,25 @@
       planBox.appendChild(mind);
     }
 
-    function simpleField(id, labelText, key) {
-      var wrap = document.createElement('div');
-      wrap.className = 'w4-reflection-field';
-      var label = document.createElement('label');
-      label.setAttribute('for', id);
-      label.textContent = labelText;
-      wrap.appendChild(label);
-      var input = document.createElement(key === 'plan' ? 'textarea' : 'input');
-      if (key !== 'plan') input.type = 'text';
-      else input.rows = 8;
-      input.id = id;
-      input.value = state[key] || '';
-      input.addEventListener('input', function () {
-        state[key] = input.value;
-        save();
+    function mountAnswer(id, labelText, key, rows, minChars) {
+      textFields.mount(planBox, {
+        wrapClass: 'w4-reflection-field',
+        id: id,
+        prompt: labelText,
+        minChars: minChars,
+        value: state[key] || '',
+        rows: rows,
+        onChange: function (next) {
+          state[key] = next;
+          save();
+        }
       });
-      wrap.appendChild(input);
-      planBox.appendChild(wrap);
     }
 
-    simpleField('analyse-motivation', 'Plausible motivation (why)', 'motivation');
-    simpleField('analyse-target', 'Relevant target (what)', 'target');
-    simpleField('analyse-method', 'Appropriate method (how)', 'method');
-    simpleField('analyse-plan', 'Analysis plan / response draft', 'plan');
+    mountAnswer('analyse-motivation', 'Plausible motivation (why)', 'motivation', 2, SHORT_MIN);
+    mountAnswer('analyse-target', 'Relevant target (what)', 'target', 2, SHORT_MIN);
+    mountAnswer('analyse-method', 'Appropriate method (how)', 'method', 2, SHORT_MIN);
+    mountAnswer('analyse-plan', 'Analysis plan / response draft', 'plan', 8, PLAN_MIN);
 
     data.checklist.forEach(function (item, index) {
       var label = document.createElement('label');

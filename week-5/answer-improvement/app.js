@@ -77,27 +77,29 @@
     return messages;
   }
 
-  function field(parent, id, labelText, key, rows) {
-    var wrap = document.createElement('div');
-    wrap.className = 'w5-reflection-field';
-    var label = document.createElement('label');
-    label.setAttribute('for', id);
-    label.textContent = labelText;
-    wrap.appendChild(label);
-    var area = document.createElement('textarea');
-    area.id = id;
-    area.rows = rows;
-    area.value = state[key] || '';
-    area.addEventListener('input', function () {
-      state[key] = area.value;
-      save();
+  function field(parent, id, labelText, key, rows, minChars) {
+    textFields.mount(parent, {
+      wrapClass: 'w5-reflection-field',
+      id: id,
+      prompt: labelText,
+      minChars: minChars,
+      value: state[key] || '',
+      rows: rows,
+      onChange: function (next) {
+        state[key] = next;
+        save();
+      }
     });
-    wrap.appendChild(area);
-    parent.appendChild(wrap);
   }
+
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for answer-improvement fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
 
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';
@@ -162,11 +164,11 @@
     });
     panel.appendChild(req);
 
-    field(panel, 'missing-safety', 'Missing safety impact', 'missingSafety', 3);
-    field(panel, 'stakeholder', 'Stakeholder affected', 'stakeholder', 2);
-    field(panel, 'evidence', 'Evidence or reasoning', 'evidence', 3);
-    field(panel, 'timescale', 'Timescale', 'timescale', 2);
-    field(panel, 'improved', 'Improved analytical paragraph', 'improved', 6);
+    field(panel, 'missing-safety', 'Missing safety impact', 'missingSafety', 3, 20);
+    field(panel, 'stakeholder', 'Stakeholder affected', 'stakeholder', 2, 3);
+    field(panel, 'evidence', 'Evidence or reasoning', 'evidence', 3, 15);
+    field(panel, 'timescale', 'Timescale', 'timescale', 2, 8);
+    field(panel, 'improved', 'Improved analytical paragraph', 'improved', 6, 40);
 
     if (state.submittedAttempt) {
       var model = document.createElement('p');

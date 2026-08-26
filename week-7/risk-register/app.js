@@ -29,6 +29,22 @@
     notes: ''
   };
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for risk-register fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
+  var TEXT_FIELD_MINS = {
+    asset: 2,
+    threat: 4,
+    vulnerability: 4,
+    mitigation: 8,
+    costConsequence: 8,
+    expectedBenefit: 8,
+    effectivenessMeasure: 8,
+    justification: 12
+  };
+
   function blankEntry() {
     return {
       asset: '',
@@ -294,23 +310,19 @@
     parent.appendChild(wrap);
   }
 
-  function renderTextField(parent, id, labelText, value, rows, onInput) {
-    var wrap = document.createElement('div');
-    wrap.className = 'w7-reflection-field';
-    var label = document.createElement('label');
-    label.setAttribute('for', id);
-    label.textContent = labelText;
-    wrap.appendChild(label);
-    var area = document.createElement('textarea');
-    area.id = id;
-    area.rows = rows || 2;
-    area.value = value || '';
-    area.addEventListener('input', function () {
-      onInput(area.value);
-      save();
+  function renderTextField(parent, id, labelText, value, rows, onInput, minChars) {
+    textFields.mount(parent, {
+      wrapClass: 'w7-reflection-field',
+      id: id,
+      prompt: labelText,
+      minChars: minChars,
+      value: value || '',
+      rows: rows || 2,
+      onChange: function (next) {
+        onInput(next);
+        save();
+      }
     });
-    wrap.appendChild(area);
-    parent.appendChild(wrap);
   }
 
   function renderScoringGuide(parent) {
@@ -413,7 +425,8 @@
           field.rows,
           function (value) {
             entry[field.id] = value;
-          }
+          },
+          TEXT_FIELD_MINS[field.id] || 8
         );
       }
     });
@@ -496,6 +509,7 @@
 
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';
@@ -688,7 +702,8 @@
       3,
       function (value) {
         decisionsMeta.addressFirstJustification = value;
-      }
+      },
+      20
     );
     renderTextField(
       meta,
@@ -698,7 +713,8 @@
       2,
       function (value) {
         decisionsMeta.notes = value;
-      }
+      },
+      20
     );
     panel.appendChild(meta);
 
