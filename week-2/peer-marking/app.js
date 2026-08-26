@@ -81,9 +81,15 @@
     );
   }
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for peer-marking fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   function render() {
     var host = document.getElementById('w2-peer-host');
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
 
     var original = originalAnswer();
@@ -274,31 +280,29 @@
     reflectHeading.textContent = 'Strength and improvement';
     reflectSection.appendChild(reflectHeading);
 
-    function addTextarea(labelText, id, value, onInput) {
-      var group = document.createElement('div');
-      group.className = 'form-group';
-      var lbl = document.createElement('label');
-      lbl.setAttribute('for', id);
-      lbl.textContent = labelText;
-      group.appendChild(lbl);
-      var area = document.createElement('textarea');
-      area.id = id;
-      area.className = 'form-control';
-      area.rows = 3;
-      area.value = value;
-      area.addEventListener('input', function (event) {
-        onInput(event.target.value);
+    textFields.mount(reflectSection, {
+      wrapClass: 'form-group',
+      id: 'peer-strength',
+      prompt: 'One strength in your original answer',
+      minChars: 10,
+      value: strength,
+      rows: 3,
+      onChange: function (next) {
+        strength = next;
         savePeerDraft();
-      });
-      group.appendChild(area);
-      reflectSection.appendChild(group);
-    }
-
-    addTextarea('One strength in your original answer', 'peer-strength', strength, function (v) {
-      strength = v;
+      }
     });
-    addTextarea('One improvement needed', 'peer-improvement', improvement, function (v) {
-      improvement = v;
+    textFields.mount(reflectSection, {
+      wrapClass: 'form-group',
+      id: 'peer-improvement',
+      prompt: 'One improvement needed',
+      minChars: 10,
+      value: improvement,
+      rows: 3,
+      onChange: function (next) {
+        improvement = next;
+        savePeerDraft();
+      }
     });
     host.appendChild(reflectSection);
 
@@ -309,24 +313,19 @@
     rewriteHeading.id = 'rewrite-heading';
     rewriteHeading.textContent = 'Rewrite your answer';
     rewriteSection.appendChild(rewriteHeading);
-    var rewriteGroup = document.createElement('div');
-    rewriteGroup.className = 'form-group';
-    var rewriteLabel = document.createElement('label');
-    rewriteLabel.setAttribute('for', 'peer-improved-answer');
-    rewriteLabel.textContent = 'Improved response';
-    rewriteGroup.appendChild(rewriteLabel);
-    var rewriteArea = document.createElement('textarea');
-    rewriteArea.id = 'peer-improved-answer';
-    rewriteArea.className = 'form-control';
-    rewriteArea.rows = 8;
-    rewriteArea.value = improvedAnswer;
-    rewriteArea.addEventListener('input', function (event) {
-      improvedAnswer = event.target.value;
-      savePeerDraft();
-      renderCompare();
+    textFields.mount(rewriteSection, {
+      wrapClass: 'form-group',
+      id: 'peer-improved-answer',
+      prompt: 'Improved response',
+      minChars: 20,
+      value: improvedAnswer,
+      rows: 8,
+      onChange: function (next) {
+        improvedAnswer = next;
+        savePeerDraft();
+        renderCompare();
+      }
     });
-    rewriteGroup.appendChild(rewriteArea);
-    rewriteSection.appendChild(rewriteGroup);
 
     var compareHost = document.createElement('div');
     compareHost.id = 'peer-compare-host';

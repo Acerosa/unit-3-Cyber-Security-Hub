@@ -5,6 +5,11 @@
   var progress = window.Unit3Week7Progress;
   if (!data) return;
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for directed-study fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   var host = document.getElementById('w7-activity-host');
   var DRAFT_KEY = 'directed-study';
   var state = {
@@ -54,26 +59,23 @@
   }
 
   function textField(parent, id, labelText, getter, setter, rows) {
-    var wrap = document.createElement('div');
-    wrap.className = 'w7-reflection-field';
-    var label = document.createElement('label');
-    label.setAttribute('for', id);
-    label.textContent = labelText;
-    wrap.appendChild(label);
-    var area = document.createElement('textarea');
-    area.id = id;
-    area.rows = rows || 3;
-    area.value = getter() || '';
-    area.addEventListener('input', function () {
-      setter(area.value);
-      save();
+    textFields.mount(parent, {
+      wrapClass: 'w7-reflection-field',
+      id: id,
+      prompt: labelText,
+      minChars: 80,
+      value: getter() || '',
+      rows: rows || 3,
+      onChange: function (next) {
+        setter(next);
+        save();
+      }
     });
-    wrap.appendChild(area);
-    parent.appendChild(wrap);
   }
 
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';

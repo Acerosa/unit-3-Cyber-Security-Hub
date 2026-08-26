@@ -5,6 +5,11 @@
   var progress = window.Unit3Week7Progress;
   if (!data) return;
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for support-challenge fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   var host = document.getElementById('w7-activity-host');
   var DRAFT_KEY = 'support-challenge';
   var responses = {};
@@ -32,6 +37,7 @@
 
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';
@@ -114,22 +120,18 @@
       var block = document.createElement('section');
       block.className = 'w7-review-item';
       block.innerHTML = '<h4>' + item.title + '</h4><p>' + item.prompt + '</p>';
-      var wrap = document.createElement('div');
-      wrap.className = 'w7-reflection-field';
-      var label = document.createElement('label');
-      label.setAttribute('for', item.id);
-      label.textContent = 'Your optional challenge response';
-      wrap.appendChild(label);
-      var area = document.createElement('textarea');
-      area.id = item.id;
-      area.rows = 5;
-      area.value = responses[item.id] || '';
-      area.addEventListener('input', function () {
-        responses[item.id] = area.value;
-        save();
+      textFields.mount(block, {
+        wrapClass: 'w7-reflection-field',
+        id: item.id,
+        prompt: 'Your optional challenge response',
+        minChars: 80,
+        value: responses[item.id] || '',
+        rows: 5,
+        onChange: function (next) {
+          responses[item.id] = next;
+          save();
+        }
       });
-      wrap.appendChild(area);
-      block.appendChild(wrap);
       panel.appendChild(block);
     });
 

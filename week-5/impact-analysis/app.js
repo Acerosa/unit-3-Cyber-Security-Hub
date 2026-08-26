@@ -25,6 +25,13 @@
     }
   }
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for impact-analysis fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
+  var WRITING_MIN = 30;
+
   function save() {
     if (progress) {
       progress.setDraft(DRAFT_KEY, {
@@ -41,9 +48,9 @@
       return state.annotations[key];
     }).length;
     if (selected >= 3) marks += 2;
-    if (String(state.immediate || '').trim().length >= 30) marks += 1;
-    if (String(state.sixMonths || '').trim().length >= 30) marks += 1;
-    if (String(state.improvement || '').trim().length >= 30) marks += 1;
+    if (String(state.immediate || '').trim().length >= WRITING_MIN) marks += 1;
+    if (String(state.sixMonths || '').trim().length >= WRITING_MIN) marks += 1;
+    if (String(state.improvement || '').trim().length >= WRITING_MIN) marks += 1;
     var combined = (state.immediate + ' ' + state.sixMonths).toLowerCase();
     if (
       combined.indexOf('because') !== -1 ||
@@ -66,13 +73,13 @@
     if (selected < 3) {
       messages.push('Identify at least three places where the stronger response earns additional credit.');
     }
-    if (String(state.immediate || '').trim().length < 30) {
+    if (String(state.immediate || '').trim().length < WRITING_MIN) {
       messages.push('Write a full immediate-impact sentence.');
     }
-    if (String(state.sixMonths || '').trim().length < 30) {
+    if (String(state.sixMonths || '').trim().length < WRITING_MIN) {
       messages.push('Write a full six-month impact sentence.');
     }
-    if (String(state.improvement || '').trim().length < 30) {
+    if (String(state.improvement || '').trim().length < WRITING_MIN) {
       messages.push('Complete the answer-improvement sentence.');
     }
     return messages;
@@ -80,6 +87,7 @@
 
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';
@@ -151,40 +159,32 @@
     }
 
     data.writingTasks.forEach(function (task) {
-      var wrap = document.createElement('div');
-      wrap.className = 'w5-reflection-field';
-      var label = document.createElement('label');
-      label.setAttribute('for', task.id);
-      label.textContent = task.label + ' (starter: ' + task.starter + ')';
-      wrap.appendChild(label);
-      var area = document.createElement('textarea');
-      area.id = task.id;
-      area.rows = 3;
-      area.value = state[task.id] || '';
-      area.addEventListener('input', function () {
-        state[task.id] = area.value;
-        save();
+      textFields.mount(panel, {
+        wrapClass: 'w5-reflection-field',
+        id: task.id,
+        prompt: task.label + ' (starter: ' + task.starter + ')',
+        minChars: WRITING_MIN,
+        value: state[task.id] || '',
+        rows: 3,
+        onChange: function (next) {
+          state[task.id] = next;
+          save();
+        }
       });
-      wrap.appendChild(area);
-      panel.appendChild(wrap);
     });
 
-    var improveWrap = document.createElement('div');
-    improveWrap.className = 'w5-reflection-field';
-    var improveLabel = document.createElement('label');
-    improveLabel.setAttribute('for', 'improvement');
-    improveLabel.textContent = data.improvementPrompt;
-    improveWrap.appendChild(improveLabel);
-    var improveArea = document.createElement('textarea');
-    improveArea.id = 'improvement';
-    improveArea.rows = 3;
-    improveArea.value = state.improvement || '';
-    improveArea.addEventListener('input', function () {
-      state.improvement = improveArea.value;
-      save();
+    textFields.mount(panel, {
+      wrapClass: 'w5-reflection-field',
+      id: 'improvement',
+      prompt: data.improvementPrompt,
+      minChars: WRITING_MIN,
+      value: state.improvement || '',
+      rows: 3,
+      onChange: function (next) {
+        state.improvement = next;
+        save();
+      }
     });
-    improveWrap.appendChild(improveArea);
-    panel.appendChild(improveWrap);
 
     var actions = document.createElement('div');
     actions.className = 'w5-actions';

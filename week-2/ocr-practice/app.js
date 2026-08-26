@@ -34,6 +34,11 @@
   var timerId = null;
   var extendedText = '';
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for OCR extended response');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   if (progress) {
     progress.markStarted(data.activityId);
     var savedDraft = progress.getDraft(data.extendedDraftKey);
@@ -368,34 +373,18 @@
       ' characters). Prose is not keyword-marked here.';
     panel.appendChild(note);
 
-    var group = document.createElement('div');
-    group.className = 'form-group';
-    var lbl = document.createElement('label');
-    lbl.setAttribute('for', 'ocr-extended-response');
-    lbl.textContent = 'Your response';
-    group.appendChild(lbl);
-    var textarea = document.createElement('textarea');
-    textarea.id = 'ocr-extended-response';
-    textarea.className = 'form-control';
-    textarea.rows = 10;
-    textarea.value = extendedText;
-    textarea.disabled = finished;
-    textarea.addEventListener('input', function (event) {
-      saveExtendedDraft(event.target.value);
-      var counter = document.getElementById('ocr-char-count');
-      if (counter) {
-        counter.textContent =
-          event.target.value.trim().length + ' characters (minimum ' + EXTENDED_MIN_CHARS + ')';
+    textFields.mount(panel, {
+      wrapClass: 'form-group',
+      id: 'ocr-extended-response',
+      prompt: 'Your response',
+      minChars: EXTENDED_MIN_CHARS,
+      value: extendedText,
+      rows: 10,
+      disabled: finished,
+      onChange: function (next) {
+        saveExtendedDraft(next);
       }
     });
-    group.appendChild(textarea);
-    var counter = document.createElement('p');
-    counter.id = 'ocr-char-count';
-    counter.className = 'panel-note';
-    counter.textContent =
-      extendedText.trim().length + ' characters (minimum ' + EXTENDED_MIN_CHARS + ')';
-    group.appendChild(counter);
-    panel.appendChild(group);
 
     if (finished) {
       var extScore = extendedScore();
@@ -412,6 +401,7 @@
   function render() {
     var host = document.getElementById('w2-ocr-host');
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
 
     if (finished) {

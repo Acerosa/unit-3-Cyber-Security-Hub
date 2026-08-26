@@ -15,7 +15,8 @@
     "js/activity-engine-config.js",
     "js/learner-details.js",
     "js/submissions.js",
-    "js/session-disclosure.js"
+    "js/session-disclosure.js",
+    "js/academic-integrity.js"
   ],
   "routes": [
     {

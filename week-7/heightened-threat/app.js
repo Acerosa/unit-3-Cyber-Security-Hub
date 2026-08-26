@@ -72,6 +72,11 @@
     }
   }
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for heightened-threat fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   function refValue(entry) {
     if (entry.riskRegisterRef === '__manual__') return String(entry.manualRef || '').trim();
     return String(entry.riskRegisterRef || '').trim();
@@ -113,23 +118,19 @@
     return Math.min(data.total, score);
   }
 
-  function field(parent, id, labelText, key, rows) {
-    var wrap = document.createElement('div');
-    wrap.className = 'w7-reflection-field';
-    var label = document.createElement('label');
-    label.setAttribute('for', id);
-    label.textContent = labelText;
-    wrap.appendChild(label);
-    var area = document.createElement('textarea');
-    area.id = id;
-    area.rows = rows;
-    area.value = state[key] || '';
-    area.addEventListener('input', function () {
-      state[key] = area.value;
-      save();
+  function field(parent, id, labelText, key, rows, minChars) {
+    textFields.mount(parent, {
+      wrapClass: 'w7-reflection-field',
+      id: id,
+      prompt: labelText,
+      minChars: minChars,
+      value: state[key] || '',
+      rows: rows,
+      onChange: function (next) {
+        state[key] = next;
+        save();
+      }
     });
-    wrap.appendChild(area);
-    parent.appendChild(wrap);
   }
 
   function renderEntryForm(parent, entry, onSave, onCancel) {
@@ -137,16 +138,27 @@
     form.className = 'w7-decision-entry';
     var registerOptions = loadRegisterOptions();
 
+    var entryMins = {
+      proposedAction: 8,
+      riskAddressed: 8,
+      additionalMonitoring: 40,
+      costAccepted: 8,
+      benefitGained: 8,
+      stopDelayReduce: 40,
+      groupJustification: 12,
+      debriefNotes: 12
+    };
+
     data.entryFields.forEach(function (fieldDef) {
       var wrap = document.createElement('div');
       wrap.className = 'w7-reflection-field';
-      var label = document.createElement('label');
       var fieldId = 'ht-' + fieldDef.id;
-      label.setAttribute('for', fieldId);
-      label.textContent = fieldDef.label;
-      wrap.appendChild(label);
 
       if (fieldDef.type === 'ref') {
+        var label = document.createElement('label');
+        label.setAttribute('for', fieldId);
+        label.textContent = fieldDef.label;
+        wrap.appendChild(label);
         var select = document.createElement('select');
         select.id = fieldId;
         var blank = document.createElement('option');
@@ -164,25 +176,28 @@
           entry.riskRegisterRef = select.value;
         });
         wrap.appendChild(select);
-        var manual = document.createElement('input');
-        manual.type = 'text';
-        manual.id = fieldId + '-manual';
-        manual.placeholder = 'Manual reference if needed';
-        manual.value = entry.manualRef || '';
-        manual.addEventListener('input', function () {
-          entry.manualRef = manual.value;
-          if (manual.value.trim()) entry.riskRegisterRef = '__manual__';
+        textFields.mount(wrap, {
+          id: fieldId + '-manual',
+          prompt: 'Manual reference if needed',
+          minChars: 20,
+          value: entry.manualRef || '',
+          rows: 1,
+          onChange: function (next) {
+            entry.manualRef = next;
+            if (String(next || '').trim()) entry.riskRegisterRef = '__manual__';
+          }
         });
-        wrap.appendChild(manual);
       } else {
-        var area = document.createElement('textarea');
-        area.id = fieldId;
-        area.rows = fieldDef.rows || 2;
-        area.value = entry[fieldDef.id] || '';
-        area.addEventListener('input', function () {
-          entry[fieldDef.id] = area.value;
+        textFields.mount(wrap, {
+          id: fieldId,
+          prompt: fieldDef.label,
+          minChars: entryMins[fieldDef.id] || 40,
+          value: entry[fieldDef.id] || '',
+          rows: fieldDef.rows || 2,
+          onChange: function (next) {
+            entry[fieldDef.id] = next;
+          }
         });
-        wrap.appendChild(area);
       }
       form.appendChild(wrap);
     });
@@ -209,6 +224,7 @@
 
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';
@@ -229,17 +245,18 @@
       data.collaborationNote +
       '</p>';
 
-    field(panel, 'exercise-title', 'Exercise title', 'exerciseTitle', 1);
+    field(panel, 'exercise-title', 'Exercise title', 'exerciseTitle', 1, 20);
     field(
       panel,
       'northbank-context',
       'Northbank context for this facilitated session',
       'northbankContext',
-      3
+      3,
+      20
     );
-    field(panel, 'learner-role', 'Your role in the group', 'learnerRole', 1);
-    field(panel, 'group-code', 'Local group code (shared verbally)', 'groupCode', 1);
-    field(panel, 'group-notes', 'Shared group notes paste area', 'groupNotes', 4);
+    field(panel, 'learner-role', 'Your role in the group', 'learnerRole', 1, 3);
+    field(panel, 'group-code', 'Local group code (shared verbally)', 'groupCode', 1, 20);
+    field(panel, 'group-notes', 'Shared group notes paste area', 'groupNotes', 4, 40);
 
     state.entries.forEach(function (entry, index) {
       if (editingIndex === index) return;

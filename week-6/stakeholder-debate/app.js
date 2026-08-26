@@ -22,6 +22,11 @@
     }
   }
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for stakeholder-debate fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   function save() {
     if (progress) {
       progress.setDraft(DRAFT_KEY, {
@@ -54,27 +59,24 @@
     return messages;
   }
 
-  function field(parent, id, labelText, key, rows) {
-    var wrap = document.createElement('div');
-    wrap.className = 'w6-reflection-field';
-    var label = document.createElement('label');
-    label.setAttribute('for', id);
-    label.textContent = labelText;
-    wrap.appendChild(label);
-    var area = document.createElement('textarea');
-    area.id = id;
-    area.rows = rows || 4;
-    area.value = state[key] || '';
-    area.addEventListener('input', function () {
-      state[key] = area.value;
-      save();
+  function field(parent, id, labelText, key, rows, minChars) {
+    textFields.mount(parent, {
+      wrapClass: 'w6-reflection-field',
+      id: id,
+      prompt: labelText,
+      minChars: minChars,
+      value: state[key] || '',
+      rows: rows || 4,
+      onChange: function (next) {
+        state[key] = next;
+        save();
+      }
     });
-    wrap.appendChild(area);
-    parent.appendChild(wrap);
   }
 
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';
@@ -117,7 +119,7 @@
     panel.appendChild(rolesNote);
 
     data.fields.forEach(function (item) {
-      field(panel, item.id, item.label, item.id, item.id === 'opening' ? 3 : 4);
+      field(panel, item.id, item.label, item.id, item.id === 'opening' ? 3 : 4, item.minLength);
     });
 
     var actions = document.createElement('div');

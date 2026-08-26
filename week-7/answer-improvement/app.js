@@ -92,27 +92,29 @@
     return messages;
   }
 
-  function field(parent, id, labelText, key, rows) {
-    var wrap = document.createElement('div');
-    wrap.className = 'w7-reflection-field';
-    var label = document.createElement('label');
-    label.setAttribute('for', id);
-    label.textContent = labelText;
-    wrap.appendChild(label);
-    var area = document.createElement('textarea');
-    area.id = id;
-    area.rows = rows;
-    area.value = state[key] || '';
-    area.addEventListener('input', function () {
-      state[key] = area.value;
-      save();
+  function field(parent, id, labelText, key, rows, minChars) {
+    textFields.mount(parent, {
+      wrapClass: 'w7-reflection-field',
+      id: id,
+      prompt: labelText,
+      minChars: minChars,
+      value: state[key] || '',
+      rows: rows,
+      onChange: function (next) {
+        state[key] = next;
+        save();
+      }
     });
-    wrap.appendChild(area);
-    parent.appendChild(wrap);
   }
+
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for answer-improvement fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
 
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';
@@ -161,13 +163,13 @@
       panel.appendChild(label);
     });
 
-    field(panel, 'measure', '2. ' + data.workflowPrompts.measure, 'measure', 2);
-    field(panel, 'evidence', '3. ' + data.workflowPrompts.evidence, 'evidence', 3);
-    field(panel, 'justification', '4. ' + data.workflowPrompts.justification, 'justification', 3);
-    field(panel, 'effectiveness', '5. ' + data.workflowPrompts.effectiveness, 'effectiveness', 3);
-    field(panel, 'limitation', '6. ' + data.workflowPrompts.limitation, 'limitation', 2);
-    field(panel, 'improved', '7. ' + data.workflowPrompts.improved, 'improved', 8);
-    field(panel, 'next-action', data.nextActionPrompt, 'nextAction', 3);
+    field(panel, 'measure', '2. ' + data.workflowPrompts.measure, 'measure', 2, 4);
+    field(panel, 'evidence', '3. ' + data.workflowPrompts.evidence, 'evidence', 3, 25);
+    field(panel, 'justification', '4. ' + data.workflowPrompts.justification, 'justification', 3, 25);
+    field(panel, 'effectiveness', '5. ' + data.workflowPrompts.effectiveness, 'effectiveness', 3, 20);
+    field(panel, 'limitation', '6. ' + data.workflowPrompts.limitation, 'limitation', 2, 15);
+    field(panel, 'improved', '7. ' + data.workflowPrompts.improved, 'improved', 8, 50);
+    field(panel, 'next-action', data.nextActionPrompt, 'nextAction', 3, 12);
 
     if (state.submittedAttempt) {
       var model = document.createElement('p');

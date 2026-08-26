@@ -246,6 +246,14 @@
   function render() {
     var host = document.getElementById('w2-reflection-host');
     if (!host) return;
+    if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+      throw new Error('Unit3LearningText.createMounts is required for vulnerabilities101 fields');
+    }
+    if (!render._textFields) {
+      render._textFields = window.Unit3LearningText.createMounts();
+    }
+    var textFields = render._textFields;
+    textFields.destroyAll();
     host.textContent = '';
 
     var panel = document.createElement('section');
@@ -268,39 +276,31 @@
     panel.appendChild(status);
 
     function addField(id, labelText, key, hint) {
-      var wrap = document.createElement('div');
-      wrap.className = 'w2-reflection-field';
-
-      var label = document.createElement('label');
-      label.setAttribute('for', id);
-      label.textContent = labelText;
-      wrap.appendChild(label);
-
       if (hint) {
         var hintP = document.createElement('p');
         hintP.className = 'panel-note';
         hintP.id = id + '-hint';
         hintP.textContent = hint;
-        wrap.appendChild(hintP);
+        panel.appendChild(hintP);
       }
-
-      var textarea = document.createElement('textarea');
-      textarea.id = id;
-      textarea.rows = 5;
-      textarea.value = reflections[key];
-      if (hint) textarea.setAttribute('aria-describedby', id + '-hint');
-      textarea.addEventListener('input', function () {
-        reflections[key] = textarea.value;
-        saveDraft();
-        updateStatus(host);
-        if (computeScore() === TOTAL) {
-          maybeComplete();
-        } else if (progress) {
-          progress.markStarted(ACTIVITY_ID);
+      textFields.mount(panel, {
+        wrapClass: 'w2-reflection-field',
+        id: id,
+        prompt: labelText,
+        minChars: 80,
+        value: reflections[key],
+        rows: 5,
+        onChange: function (next) {
+          reflections[key] = next;
+          saveDraft();
+          updateStatus(host);
+          if (computeScore() === TOTAL) {
+            maybeComplete();
+          } else if (progress) {
+            progress.markStarted(ACTIVITY_ID);
+          }
         }
       });
-      wrap.appendChild(textarea);
-      panel.appendChild(wrap);
     }
 
     addField(

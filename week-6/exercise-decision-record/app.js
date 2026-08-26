@@ -45,6 +45,11 @@
     }
   }
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for exercise-decision-record fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   function entryComplete(entry) {
     return (
       String(entry.title || '').trim().length >= 3 &&
@@ -73,15 +78,27 @@
     var form = document.createElement('div');
     form.className = 'w6-decision-entry';
 
+    var fieldMins = {
+      title: 3,
+      decision: 8,
+      reason: 8,
+      stakeholder: 3,
+      ethical: 8,
+      legal: 8,
+      operational: 8,
+      evidenceNeeded: 8,
+      reflection: 12
+    };
+
     data.entryFields.forEach(function (field) {
       var wrap = document.createElement('div');
       wrap.className = 'w6-reflection-field';
-      var label = document.createElement('label');
-      label.setAttribute('for', 'field-' + field.id);
-      label.textContent = field.label;
-      wrap.appendChild(label);
 
       if (field.type === 'select') {
+        var label = document.createElement('label');
+        label.setAttribute('for', 'field-' + field.id);
+        label.textContent = field.label;
+        wrap.appendChild(label);
         var select = document.createElement('select');
         select.id = 'field-' + field.id;
         var blank = document.createElement('option');
@@ -100,14 +117,16 @@
         });
         wrap.appendChild(select);
       } else {
-        var area = document.createElement('textarea');
-        area.id = 'field-' + field.id;
-        area.rows = field.rows || 2;
-        area.value = entry[field.id] || '';
-        area.addEventListener('input', function () {
-          entry[field.id] = area.value;
+        textFields.mount(wrap, {
+          id: 'field-' + field.id,
+          prompt: field.label,
+          minChars: fieldMins[field.id] || 8,
+          value: entry[field.id] || '',
+          rows: field.rows || 2,
+          onChange: function (next) {
+            entry[field.id] = next;
+          }
         });
-        wrap.appendChild(area);
       }
       form.appendChild(wrap);
     });
@@ -134,6 +153,7 @@
 
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';

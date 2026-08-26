@@ -50,8 +50,14 @@
     return Math.min(data.total, marks);
   }
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for peer-marking fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';
@@ -125,28 +131,40 @@
     });
 
     function field(id, labelText, key, rows) {
-      var wrap = document.createElement('div');
-      wrap.className = 'w3-reflection-field';
-      var label = document.createElement('label');
-      label.setAttribute('for', id);
-      label.textContent = labelText;
-      wrap.appendChild(label);
-      var area = document.createElement(rows ? 'textarea' : 'input');
       if (!rows) {
+        var wrap = document.createElement('div');
+        wrap.className = 'w3-reflection-field';
+        var label = document.createElement('label');
+        label.setAttribute('for', id);
+        label.textContent = labelText;
+        wrap.appendChild(label);
+        var area = document.createElement('input');
         area.type = 'number';
         area.min = '0';
         area.max = String(data.question.marks);
-      } else {
-        area.rows = rows;
+        area.id = id;
+        area.value = state[key] != null ? state[key] : '';
+        area.addEventListener('input', function () {
+          state[key] = Number(area.value);
+          save();
+        });
+        wrap.appendChild(area);
+        panel.appendChild(wrap);
+        return;
       }
-      area.id = id;
-      area.value = state[key] != null ? state[key] : '';
-      area.addEventListener('input', function () {
-        state[key] = rows ? area.value : Number(area.value);
-        save();
+      var minChars = key === 'rewrite' ? 20 : 30;
+      textFields.mount(panel, {
+        wrapClass: 'w3-reflection-field',
+        id: id,
+        prompt: labelText,
+        minChars: minChars,
+        value: state[key] != null ? String(state[key]) : '',
+        rows: rows,
+        onChange: function (next) {
+          state[key] = next;
+          save();
+        }
       });
-      wrap.appendChild(area);
-      panel.appendChild(wrap);
     }
 
     field('awarded-mark', 'Awarded mark for the sample (0–4)', 'awarded');

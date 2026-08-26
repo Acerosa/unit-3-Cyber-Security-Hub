@@ -53,6 +53,11 @@
     }
   }
 
+  if (!window.Unit3LearningText || typeof window.Unit3LearningText.createMounts !== 'function') {
+    throw new Error('Unit3LearningText.createMounts is required for mtm-mapping fields');
+  }
+  var textFields = window.Unit3LearningText.createMounts();
+
   function scenarioComplete(id) {
     var row = responses[id] || {};
     return (
@@ -125,23 +130,19 @@
     parent.appendChild(wrap);
   }
 
-  function textField(parent, id, labelText, value, onInput, rows) {
-    var wrap = document.createElement('div');
-    wrap.className = 'w4-reflection-field';
-    var label = document.createElement('label');
-    label.setAttribute('for', id);
-    label.textContent = labelText;
-    wrap.appendChild(label);
-    var area = document.createElement('textarea');
-    area.id = id;
-    area.rows = rows || 3;
-    area.value = value || '';
-    area.addEventListener('input', function () {
-      onInput(area.value);
-      save();
+  function textField(parent, id, labelText, value, onInput, rows, minChars) {
+    textFields.mount(parent, {
+      wrapClass: 'w4-reflection-field',
+      id: id,
+      prompt: labelText,
+      minChars: minChars,
+      value: value || '',
+      rows: rows || 3,
+      onChange: function (next) {
+        onInput(next);
+        save();
+      }
     });
-    wrap.appendChild(area);
-    parent.appendChild(wrap);
   }
 
   function renderScenarioForm(parent, scenario, index) {
@@ -200,7 +201,9 @@
       row.evidence,
       function (value) {
         row.evidence = value;
-      }
+      },
+      3,
+      8
     );
     textField(
       block,
@@ -210,7 +213,8 @@
       function (value) {
         row.connection = value;
       },
-      4
+      4,
+      20
     );
     selectField(
       block,
@@ -229,13 +233,16 @@
       row.alternativeWhy,
       function (value) {
         row.alternativeWhy = value;
-      }
+      },
+      3,
+      40
     );
     parent.appendChild(block);
   }
 
   function render() {
     if (!host) return;
+    textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
     panel.className = 'panel';
