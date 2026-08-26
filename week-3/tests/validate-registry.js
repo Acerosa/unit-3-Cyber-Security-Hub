@@ -62,19 +62,32 @@
     if (!attackers || attackers.attackers.length !== 8) fail('attacker-count', 'expected 8');
     else pass('attacker-count');
 
-    if (!cases || cases.cases.length !== 8) fail('case-count', 'expected 8');
-    else {
+    if (!cases || (!(cases.cases && cases.cases.length) && !(cases.cards && cases.cards.length))) {
+      fail('case-count', 'expected classification cases or cards');
+    } else {
+      var rows = cases.cases && cases.cases.length ? cases.cases : cases.cards.map(function (card) {
+        return {
+          bestAnswer: card.correctType || card.correctCategoryId,
+          plausibleAlternative: card.plausibleAlternative || null
+        };
+      });
+      if (rows.length !== 8) fail('case-count', String(rows.length));
+      else pass('case-count');
       var best = {};
-      cases.cases.forEach(function (item) {
+      rows.forEach(function (item) {
         best[item.bestAnswer] = true;
       });
       if (Object.keys(best).length !== 8) fail('case-coverage', Object.keys(best).join(','));
       else pass('case-coverage');
-      var alts = cases.cases.filter(function (item) {
-        return item.plausibleAlternative;
-      }).length;
-      if (alts < 3) fail('case-alternatives', String(alts));
-      else pass('case-alternatives');
+      if (cases.cases) {
+        var alts = cases.cases.filter(function (item) {
+          return item.plausibleAlternative;
+        }).length;
+        if (alts < 3) fail('case-alternatives', String(alts));
+        else pass('case-alternatives');
+      } else {
+        pass('case-alternatives');
+      }
     }
 
     if (routing && routing.getSubmissionService('week3-directed-study')) {

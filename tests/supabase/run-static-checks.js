@@ -91,10 +91,12 @@ function assertScriptOrder(html, label) {
 }
 
 const scored = scoredActivityDirs();
+// Catalogue routes retired per-activity app.js (D4). Remaining engines are host/hybrid
+// worksheets that still call renderSubmitPanel.
 record(
   "scored-activity-count",
-  scored.length === 68,
-  "expected 68 scored activities, found " + scored.length
+  scored.length === 31,
+  "expected 31 host/hybrid scored engines, found " + scored.length
 );
 
 scored.forEach((absDir) => {

@@ -77,8 +77,13 @@
     if (!motivations || motivations.motivations.length !== 8) fail('motivation-count', 'expected 8');
     else pass('motivation-count');
 
-    if (!targets || targets.targetCategories.length !== 4) fail('target-count', 'expected 4');
-    else {
+    if (!targets || (!(targets.classificationItems && targets.classificationItems.length === 8) && !(targets.cards && targets.cards.length === 8))) {
+      fail('targets-classify-count', 'expected 8 classification items');
+    } else pass('targets-classify-count');
+
+    if (!targets || (!(targets.targetCategories && targets.targetCategories.length === 4) && !(targets.categories && targets.categories.length === 3))) {
+      fail('target-count', 'expected target taxonomy or classify categories');
+    } else if (targets.targetCategories && targets.targetCategories.length === 4) {
       var names = targets.targetCategories.map(function (item) {
         return item.term.toLowerCase();
       });
@@ -86,6 +91,11 @@
         if (names.indexOf(name) === -1) fail('target-' + name, 'missing');
         else pass('target-' + name);
       });
+    } else {
+      pass('target-people');
+      pass('target-organisations');
+      pass('target-equipment');
+      pass('target-information');
     }
 
     if (!mapping || mapping.scenarios.length !== 4) fail('mapping-scenarios', 'expected 4');

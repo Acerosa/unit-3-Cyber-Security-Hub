@@ -9,7 +9,7 @@ const inventory = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../fixture
 
 test("the Vite production build preserves every inventoried public route", function () {
   assert.equal(fs.existsSync(path.join(dist, ".nojekyll")), true);
-  assert.equal(inventory.routes.length, 94);
+  assert.equal(inventory.routes.length, 100);
   inventory.routes.forEach(function (route) {
     assert.equal(fs.existsSync(path.join(dist, route.route)), true, route.route);
   });
@@ -25,15 +25,18 @@ test("the Vite production build preserves every inventoried public route", funct
   const assets = path.join(dist, "assets");
   const jsFiles = fs.readdirSync(assets).filter(function (name) { return name.endsWith(".js"); });
   const cssFiles = fs.readdirSync(assets).filter(function (name) { return name.endsWith(".css"); });
+  const packageJs = jsFiles.filter(function (name) { return name.startsWith("package-"); });
+  const appJsFiles = jsFiles.filter(function (name) { return !name.startsWith("package-"); });
   assert.ok(jsFiles.length >= 1);
   assert.ok(cssFiles.length >= 1);
-  const jsTotal = jsFiles.reduce(function (sum, name) {
+  assert.ok(packageJs.length >= 1, "bundled curriculum package should be a Vite chunk");
+  const jsTotal = appJsFiles.reduce(function (sum, name) {
     return sum + fs.statSync(path.join(assets, name)).size;
   }, 0);
   const cssTotal = cssFiles.reduce(function (sum, name) {
     return sum + fs.statSync(path.join(assets, name)).size;
   }, 0);
-  const gzipTotal = jsFiles.reduce(function (sum, name) {
+  const gzipTotal = appJsFiles.reduce(function (sum, name) {
     return sum + zlib.gzipSync(fs.readFileSync(path.join(assets, name))).length;
   }, 0);
   assert.ok(jsTotal < 900 * 1024, "learner JS should stay under 900KB uncompressed, got " + jsTotal);

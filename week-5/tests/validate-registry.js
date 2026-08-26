@@ -85,23 +85,26 @@
     if (!impacts.definitions || !impacts.definitions.safety) fail('safety-definition', 'missing');
     else pass('safety-definition');
 
-    if (!classification || classification.items.length !== 8) fail('classification-count', 'expected 8');
+    var classifyRows = classification && (classification.items || classification.classificationItems || classification.cards);
+    if (!classification || !classifyRows || classifyRows.length !== 8) fail('classification-count', 'expected 8');
     else {
       pass('classification-count');
-      var cats = classification.categories.join('|');
+      var cats = (classification.categories || []).map(function (item) {
+        return typeof item === 'string' ? item : (item.label || item.id || '');
+      }).join('|');
       ['Loss', 'Disruption', 'Safety', 'More than one category'].forEach(function (name) {
         if (cats.indexOf(name) === -1) fail('category-' + name, cats);
         else pass('category-' + name);
       });
-      var ambiguous = classification.items.filter(function (item) {
+      var ambiguousSource = classification.items || classifyRows;
+      var ambiguous = ambiguousSource.filter(function (item) {
         return item.ambiguous;
       }).length;
       if (ambiguous < 1) fail('ambiguous-items', String(ambiguous));
       else pass('ambiguous-items');
-      var appointment = classification.items.some(function (item) {
-        return /healthcare appointment is cancelled|cancelled healthcare appointment/i.test(
-          item.statement
-        );
+      var appointment = classifyRows.some(function (item) {
+        var text = item.statement || item.text || '';
+        return /healthcare appointment is cancelled|cancelled healthcare appointment/i.test(text);
       });
       if (!appointment) fail('cancelled-appointment-example', 'missing');
       else pass('cancelled-appointment-example');

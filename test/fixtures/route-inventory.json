@@ -102,21 +102,6 @@
       "redirectTo": ""
     },
     {
-      "route": "week-1/glossary/index.html",
-      "view": "redirect",
-      "page": "week-1-glossary",
-      "section": "week-1",
-      "week": 1,
-      "activity": "glossary",
-      "activityId": "",
-      "title": "Cyber Security Glossary | Unit 3 Cyber Security Hub",
-      "description": "",
-      "heading": "Cyber Security Glossary",
-      "subtitle": "",
-      "scripts": [],
-      "redirectTo": "../../activities/activity.html?activityId=U3-W01-GLOSSARY"
-    },
-    {
       "route": "week-1/index.html",
       "view": "week",
       "page": "week-1",
@@ -132,19 +117,124 @@
       "redirectTo": ""
     },
     {
+      "route": "week-1/baseline/index.html",
+      "view": "activity",
+      "page": "week-1-baseline",
+      "section": "week-1",
+      "week": 1,
+      "activity": "baseline",
+      "activityId": "",
+      "title": "Baseline check | Week 1",
+      "description": "Week 1 baseline formative reflection.",
+      "heading": "Baseline check",
+      "subtitle": "This is practice work. It is not a qualification grade, and you can retry it.",
+      "scripts": [],
+      "redirectTo": ""
+    },
+    {
+      "route": "week-1/cia/index.html",
+      "view": "activity",
+      "page": "week-1-cia",
+      "section": "week-1",
+      "week": 1,
+      "activity": "cia",
+      "activityId": "",
+      "title": "CIA triad | Week 1",
+      "description": "Week 1 CIA triad formative reflection.",
+      "heading": "CIA triad",
+      "subtitle": "This is practice work. It is not a qualification grade, and you can retry it.",
+      "scripts": [],
+      "redirectTo": ""
+    },
+    {
+      "route": "week-1/incidents/index.html",
+      "view": "activity",
+      "page": "week-1-incidents",
+      "section": "week-1",
+      "week": 1,
+      "activity": "incidents",
+      "activityId": "",
+      "title": "Incidents | Week 1",
+      "description": "Week 1 incidents formative reflection.",
+      "heading": "Incidents",
+      "subtitle": "This is practice work. It is not a qualification grade, and you can retry it.",
+      "scripts": [],
+      "redirectTo": ""
+    },
+    {
+      "route": "week-1/glossary/index.html",
+      "view": "activity",
+      "page": "week-1-glossary",
+      "section": "week-1",
+      "week": 1,
+      "activity": "glossary",
+      "activityId": "",
+      "title": "Cyber Security Glossary | Week 1",
+      "description": "Week 1 glossary formative reflection.",
+      "heading": "Cyber Security Glossary",
+      "subtitle": "This is practice work. It is not a qualification grade, and you can retry it.",
+      "scripts": [],
+      "redirectTo": ""
+    },
+    {
       "route": "week-1/retrieval-quiz/index.html",
-      "view": "redirect",
+      "view": "activity",
       "page": "week-1-retrieval-quiz",
       "section": "week-1",
       "week": 1,
       "activity": "retrieval-quiz",
       "activityId": "",
-      "title": "Session 2 Retrieval Quiz | Unit 3 Cyber Security Hub",
-      "description": "",
+      "title": "Session 2 Retrieval Quiz | Week 1",
+      "description": "Week 1 retrieval formative reflection.",
       "heading": "Session 2 Retrieval Quiz",
-      "subtitle": "",
+      "subtitle": "This is practice work. It is not a qualification grade, and you can retry it.",
       "scripts": [],
-      "redirectTo": "../../activities/activity.html?activityId=U3-W01-RETRIEVAL"
+      "redirectTo": ""
+    },
+    {
+      "route": "week-1/command-words/index.html",
+      "view": "activity",
+      "page": "week-1-command-words",
+      "section": "week-1",
+      "week": 1,
+      "activity": "command-words",
+      "activityId": "",
+      "title": "Command words | Week 1",
+      "description": "Week 1 command words formative reflection.",
+      "heading": "Command words",
+      "subtitle": "This is practice work. It is not a qualification grade, and you can retry it.",
+      "scripts": [],
+      "redirectTo": ""
+    },
+    {
+      "route": "week-1/ocr-practice/index.html",
+      "view": "activity",
+      "page": "week-1-ocr-practice",
+      "section": "week-1",
+      "week": 1,
+      "activity": "ocr-practice",
+      "activityId": "",
+      "title": "OCR practice | Week 1",
+      "description": "Week 1 OCR formative reflection.",
+      "heading": "OCR practice",
+      "subtitle": "This is practice work. It is not a qualification grade, and you can retry it.",
+      "scripts": [],
+      "redirectTo": ""
+    },
+    {
+      "route": "week-1/peer-improvement/index.html",
+      "view": "activity",
+      "page": "week-1-peer-improvement",
+      "section": "week-1",
+      "week": 1,
+      "activity": "peer-improvement",
+      "activityId": "",
+      "title": "Peer improvement | Week 1",
+      "description": "Week 1 peer improvement formative reflection.",
+      "heading": "Peer improvement",
+      "subtitle": "This is practice work. It is not a qualification grade, and you can retry it.",
+      "scripts": [],
+      "redirectTo": ""
     },
     {
       "route": "week-2/index.html",
@@ -200,11 +290,7 @@
       "subtitle": "Review malware types, then answer ten knowledge-check questions. Score is out of 10.",
       "scripts": [
         "js/week2-progress.js",
-        "js/core/backend-progress.js",
-        "js/week2-submit.js",
-        "js/week2-quiz.js",
-        "week-2/data/malware-symptoms.js",
-        "week-2/malware-symptoms/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -285,8 +371,7 @@
       "subtitle": "Recall Week 1 ideas before you move into threats and vulnerabilities.",
       "scripts": [
         "js/week2-progress.js",
-        "js/core/backend-progress.js",
-        "js/week2-submit.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -304,11 +389,7 @@
       "subtitle": "Check your understanding of threats, vulnerabilities, categories and malware symptoms.",
       "scripts": [
         "js/week2-progress.js",
-        "js/core/backend-progress.js",
-        "js/week2-submit.js",
-        "js/week2-quiz.js",
-        "week-2/data/retrieval-session-2.js",
-        "week-2/session2-retrieval/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -326,11 +407,7 @@
       "subtitle": "Use Point–Explanation–Contextual link for OCR explain questions.",
       "scripts": [
         "js/week2-progress.js",
-        "js/core/backend-progress.js",
-        "js/week2-submit.js",
-        "js/week2-quiz.js",
-        "week-2/data/six-mark-guide.js",
-        "week-2/six-mark-guide/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -348,11 +425,7 @@
       "subtitle": "Understand how a threat exploits a vulnerability to cause a cyber security incident.",
       "scripts": [
         "js/week2-progress.js",
-        "js/core/backend-progress.js",
-        "js/week2-submit.js",
-        "js/week2-quiz.js",
-        "week-2/data/threat-vulnerability-learning.js",
-        "week-2/threat-vulnerability-learning/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -370,10 +443,7 @@
       "subtitle": "Classify twelve scenario cards, then explore how threats and vulnerabilities connect.",
       "scripts": [
         "js/week2-progress.js",
-        "js/core/backend-progress.js",
-        "js/week2-submit.js",
-        "week-2/data/threat-vulnerability-sort.js",
-        "week-2/threat-vulnerability-sort/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -434,10 +504,7 @@
       "subtitle": "Match eight anonymised cases to OCR attacker types using evidence.",
       "scripts": [
         "js/week3-progress.js",
-        "js/core/backend-progress.js",
-        "js/week3-submit.js",
-        "week-3/data/attacker-case-matching.js",
-        "week-3/attacker-case-matching/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -455,12 +522,7 @@
       "subtitle": "Explore the eight OCR attacker types, Northbank insider roles and an 8-mark knowledge check.",
       "scripts": [
         "js/week3-progress.js",
-        "js/core/backend-progress.js",
-        "js/week3-submit.js",
-        "week-3/data/attacker-types.js",
-        "week-3/data/attacker-types-learning.js",
-        "js/week3-quiz.js",
-        "week-3/attacker-types-learning/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -520,10 +582,7 @@
       "subtitle": "Write justified attacker identifications worth 12 marks.",
       "scripts": [
         "js/week3-progress.js",
-        "js/core/backend-progress.js",
-        "js/week3-submit.js",
-        "week-3/data/justified-identification.js",
-        "week-3/justified-identification/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -604,11 +663,7 @@
       "subtitle": "Retrieve Week 2 ideas and introduce attacker types.",
       "scripts": [
         "js/week3-progress.js",
-        "js/core/backend-progress.js",
-        "js/week3-submit.js",
-        "week-3/data/retrieval-session-1.js",
-        "js/week3-quiz.js",
-        "week-3/session1-retrieval/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -626,11 +681,7 @@
       "subtitle": "Practise distinctions between OCR attacker types.",
       "scripts": [
         "js/week3-progress.js",
-        "js/core/backend-progress.js",
-        "js/week3-submit.js",
-        "week-3/data/retrieval-session-2.js",
-        "js/week3-quiz.js",
-        "week-3/session2-retrieval/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -712,10 +763,7 @@
       "subtitle": "Short ethical review without later-week legislation detail.",
       "scripts": [
         "js/week4-progress.js",
-        "js/core/backend-progress.js",
-        "js/week4-submit.js",
-        "week-4/data/ethical-review.js",
-        "week-4/ethical-review/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -753,11 +801,7 @@
       "subtitle": "Eight OCR motivations with definitions, evidence and test questions.",
       "scripts": [
         "js/week4-progress.js",
-        "js/core/backend-progress.js",
-        "js/week4-submit.js",
-        "week-4/data/motivations.js",
-        "js/week4-quiz.js",
-        "week-4/motivations-learning/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -859,11 +903,7 @@
       "subtitle": "Retrieve eight attacker types and complete the homework harvest.",
       "scripts": [
         "js/week4-progress.js",
-        "js/core/backend-progress.js",
-        "js/week4-submit.js",
-        "week-4/data/retrieval-session-1.js",
-        "js/week4-quiz.js",
-        "week-4/session1-retrieval/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -881,11 +921,7 @@
       "subtitle": "Rapid retrieval to stop methods being recorded as motivations.",
       "scripts": [
         "js/week4-progress.js",
-        "js/core/backend-progress.js",
-        "js/week4-submit.js",
-        "week-4/data/retrieval-session-2.js",
-        "js/week4-quiz.js",
-        "week-4/session2-retrieval/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -924,10 +960,7 @@
       "subtitle": "Why, what and how classification for Week 4 targets and methods.",
       "scripts": [
         "js/week4-progress.js",
-        "js/core/backend-progress.js",
-        "js/week4-submit.js",
-        "week-4/data/targets-methods.js",
-        "week-4/targets-methods/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -987,10 +1020,7 @@
       "subtitle": "Reflect on decisions, stakeholders, timescales and trade-offs.",
       "scripts": [
         "js/week5-progress.js",
-        "js/core/backend-progress.js",
-        "js/week5-submit.js",
-        "week-5/data/exercise-debrief.js",
-        "week-5/exercise-debrief/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1029,11 +1059,7 @@
       "subtitle": "Classify impact statements, including ambiguous cases.",
       "scripts": [
         "js/week5-progress.js",
-        "js/core/backend-progress.js",
-        "js/week5-submit.js",
-        "js/week5-quiz.js",
-        "week-5/data/impact-classification.js",
-        "week-5/impact-classification/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1051,11 +1077,7 @@
       "subtitle": "OCR impact categories with Northbank examples and learner checks.",
       "scripts": [
         "js/week5-progress.js",
-        "js/core/backend-progress.js",
-        "js/week5-submit.js",
-        "js/week5-quiz.js",
-        "week-5/data/impacts-learning.js",
-        "week-5/impacts-learning/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1134,11 +1156,7 @@
       "subtitle": "Shift from Week 4 cause to Week 5 consequence.",
       "scripts": [
         "js/week5-progress.js",
-        "js/core/backend-progress.js",
-        "js/week5-submit.js",
-        "js/week5-quiz.js",
-        "week-5/data/retrieval-session-1.js",
-        "week-5/session1-retrieval/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1156,11 +1174,7 @@
       "subtitle": "Rapid retrieval on loss, disruption, safety and stakeholders.",
       "scripts": [
         "js/week5-progress.js",
-        "js/core/backend-progress.js",
-        "js/week5-submit.js",
-        "js/week5-quiz.js",
-        "week-5/data/retrieval-session-2.js",
-        "week-5/session2-retrieval/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1303,10 +1317,7 @@
       "subtitle": "Prepare a stakeholder position on how far Northbank should monitor staff.",
       "scripts": [
         "js/week6-progress.js",
-        "js/core/backend-progress.js",
-        "js/week6-submit.js",
-        "week-6/data/employee-monitoring.js",
-        "week-6/employee-monitoring/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1324,11 +1335,7 @@
       "subtitle": "Classify actions with feedback that separates ethics from law.",
       "scripts": [
         "js/week6-progress.js",
-        "js/core/backend-progress.js",
-        "js/week6-submit.js",
-        "js/week6-quiz.js",
-        "week-6/data/ethical-classification.js",
-        "week-6/ethical-classification/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1346,11 +1353,7 @@
       "subtitle": "Responsible disclosure, monitoring, ethical hacking and authorisation.",
       "scripts": [
         "js/week6-progress.js",
-        "js/core/backend-progress.js",
-        "js/week6-submit.js",
-        "js/week6-quiz.js",
-        "week-6/data/ethical-learning.js",
-        "week-6/ethical-learning/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1431,11 +1434,7 @@
       "subtitle": "Computer Misuse Act 1990, data protection legislation and Police and Justice Act 2006 amendments.",
       "scripts": [
         "js/week6-progress.js",
-        "js/core/backend-progress.js",
-        "js/week6-submit.js",
-        "js/week6-quiz.js",
-        "week-6/data/legislation-learning.js",
-        "week-6/legislation-learning/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1475,11 +1474,7 @@
       "subtitle": "Retrieve statute names with duties or offences, and distinguish law from ethics.",
       "scripts": [
         "js/week6-progress.js",
-        "js/core/backend-progress.js",
-        "js/week6-submit.js",
-        "js/week6-quiz.js",
-        "week-6/data/legislation-retrieval.js",
-        "week-6/legislation-retrieval/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1497,11 +1492,7 @@
       "subtitle": "Formative diagnostic across LO2 sections 2.1 to 2.6.",
       "scripts": [
         "js/week6-progress.js",
-        "js/core/backend-progress.js",
-        "js/week6-submit.js",
-        "js/week6-quiz.js",
-        "week-6/data/lo2-diagnostic.js",
-        "week-6/lo2-diagnostic/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1562,11 +1553,7 @@
       "subtitle": "Cost, staff time, downtime, usability and productivity trade-offs.",
       "scripts": [
         "js/week6-progress.js",
-        "js/core/backend-progress.js",
-        "js/week6-submit.js",
-        "js/week6-quiz.js",
-        "week-6/data/operational-considerations.js",
-        "week-6/operational-considerations/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1605,11 +1592,7 @@
       "subtitle": "Distinguish legal requirements, ethical choices and operational practicality.",
       "scripts": [
         "js/week6-progress.js",
-        "js/core/backend-progress.js",
-        "js/week6-submit.js",
-        "js/week6-quiz.js",
-        "week-6/data/session1-review.js",
-        "week-6/session1-review/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1689,11 +1672,7 @@
       "subtitle": "Intrusion detection and prevention, NIDS, HIDS, DIDS, anomaly-based and signature-based detection, and honeypots.",
       "scripts": [
         "js/week7-progress.js",
-        "js/core/backend-progress.js",
-        "js/week7-submit.js",
-        "js/week7-quiz.js",
-        "week-7/data/detection-prevention.js",
-        "week-7/detection-prevention/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1792,10 +1771,7 @@
       "subtitle": "Name the measure, explain why it suits Northbank, and state how effectiveness is judged.",
       "scripts": [
         "js/week7-progress.js",
-        "js/core/backend-progress.js",
-        "js/week7-submit.js",
-        "week-7/data/recommendation-practice.js",
-        "week-7/recommendation-practice/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1813,11 +1789,7 @@
       "subtitle": "Stages of risk management, including mitigate, accept and prioritise decisions for Northbank.",
       "scripts": [
         "js/week7-progress.js",
-        "js/core/backend-progress.js",
-        "js/week7-submit.js",
-        "js/week7-quiz.js",
-        "week-7/data/risk-management-learning.js",
-        "week-7/risk-management-learning/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1856,10 +1828,7 @@
       "subtitle": "Record observations from the tutor-led sandboxed file-analysis demonstration.",
       "scripts": [
         "js/week7-progress.js",
-        "js/core/backend-progress.js",
-        "js/week7-submit.js",
-        "week-7/data/sandbox-observation.js",
-        "week-7/sandbox-observation/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1877,11 +1846,7 @@
       "subtitle": "Recall Cyber Essentials, revisit the Week 2 vulnerability register, and separate threat from vulnerability.",
       "scripts": [
         "js/week7-progress.js",
-        "js/core/backend-progress.js",
-        "js/week7-submit.js",
-        "js/week7-quiz.js",
-        "week-7/data/session1-retrieval.js",
-        "week-7/session1-retrieval/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1899,11 +1864,7 @@
       "subtitle": "Detection versus prevention, testing methods, risk terminology and monitoring measures.",
       "scripts": [
         "js/week7-progress.js",
-        "js/core/backend-progress.js",
-        "js/week7-submit.js",
-        "js/week7-quiz.js",
-        "week-7/data/session2-retrieval.js",
-        "week-7/session2-retrieval/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1941,10 +1902,7 @@
       "subtitle": "Match testing or monitoring measures to situations and justify defensible alternatives.",
       "scripts": [
         "js/week7-progress.js",
-        "js/core/backend-progress.js",
-        "js/week7-submit.js",
-        "week-7/data/testing-matching.js",
-        "week-7/testing-matching/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },
@@ -1962,11 +1920,7 @@
       "subtitle": "Penetration testing, fuzzing, security functionality testing and sandboxing.",
       "scripts": [
         "js/week7-progress.js",
-        "js/core/backend-progress.js",
-        "js/week7-submit.js",
-        "js/week7-quiz.js",
-        "week-7/data/testing-methods.js",
-        "week-7/testing-methods/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     }

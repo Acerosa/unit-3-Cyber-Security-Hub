@@ -107,14 +107,17 @@
       else pass('diagnostic-topics');
     }
 
+    var classifyRows = classification && (classification.items || classification.classificationItems || classification.cards);
     if (!classification || !classification.categories) fail('classification-categories', 'missing');
     else {
-      var cats = classification.categories.join('|').toLowerCase();
+      var cats = (classification.categories || []).map(function (item) {
+        return typeof item === 'string' ? item : (item.label || item.id || '');
+      }).join('|').toLowerCase();
       ['unethical', 'unlawful', 'both', 'neither'].forEach(function (name) {
         if (cats.indexOf(name) === -1) fail('category-' + name, cats);
         else pass('category-' + name);
       });
-      if (!classification.items || classification.items.length !== 8) {
+      if (!classifyRows || classifyRows.length !== 8) {
         fail('classification-count', 'expected 8');
       } else pass('classification-count');
     }

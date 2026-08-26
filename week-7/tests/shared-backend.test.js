@@ -4,32 +4,17 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..', '..');
+// Host-only engines still ship app.js. Catalogue Week 7 activities use Content + UI.
 const scoredApps = [
-  'session1-retrieval',
-  'risk-management-learning',
   'risk-register',
-  'testing-methods',
-  'sandbox-observation',
-  'detection-prevention',
   'heightened-threat',
-  'session2-retrieval',
-  'testing-matching',
-  'recommendation-practice',
   'ocr-practice',
   'answer-improvement'
 ];
 
 const catalogueEvidencePatterns = {
-  'session1-retrieval': [/S1R.*index \+ 1/, /S1R.*index \+ 5/],
-  'risk-management-learning': [/RM.*index \+ 1/],
   'risk-register': [/RR.*index \+ 1/, /'RR6'/, /'RR7'/, /'RR8'/, /'RR9'/, /'RR10'/],
-  'testing-methods': [/TM.*index \+ 1/],
-  'sandbox-observation': [/'SB1'/, /'SB2'/, /'SB3'/, /'SB4'/],
-  'detection-prevention': [/DP.*index \+ 1/],
   'heightened-threat': [/'HT1'/, /'HT2'/, /'HT3'/, /'HT4'/, /'HT5'/],
-  'session2-retrieval': [/S2R.*index \+ 1/],
-  'testing-matching': [/M.*index \+ 1/],
-  'recommendation-practice': [/'REC1'/, /'REC2'/, /'REC3'/, /'REC4'/, /'REC5'/, /'REC6'/],
   'ocr-practice': [/OCR7_.*index \+ 1/],
   'answer-improvement': [/'AI1'/, /'AI2'/, /'AI3'/, /'AI4'/, /'AI5'/, /'AI6'/]
 };

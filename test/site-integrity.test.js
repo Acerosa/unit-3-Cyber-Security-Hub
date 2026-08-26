@@ -12,7 +12,7 @@ function read(relativePath) {
 }
 
 test("the committed inventory lists every learner-facing public route", function () {
-  assert.equal(routeFiles.length, 94);
+  assert.equal(routeFiles.length, 100);
   assert.equal(inventory.routes.filter((route) => route.view === "week").length, 7);
   assert.equal(inventory.routes.filter((route) => route.view === "week1-activity").length, 1);
   assert.equal(inventory.routes.some((route) => route.route === "activities/activity.html"), true);
@@ -112,33 +112,203 @@ test("week 2 and 3 quiz engines use optionLabel instead of stringifying option o
   assert.match(read("src/curriculum/from-package.ts"), /normalizeActivityQuestions/);
 });
 
-test("GitHub Pages consumes reviewed UI 0.1.3 for catalogue chrome", function () {
+test("GitHub Pages consumes reviewed UI 0.1.4 for catalogue chrome", function () {
   const workflow = read(".github/workflows/pages.yml");
   assert.match(workflow, /Check out reviewed UI/);
   assert.match(workflow, /Acerosa\/Acerosa-learning-platform-ui/);
-  assert.match(workflow, /ref:\s*v0\.1\.3/);
+  assert.match(workflow, /ref:\s*v0\.1\.4/);
 });
 
-test("Week 2 Session 1 Retrieval uses the catalogue pilot without replacing other week engines", function () {
-  const activityPage = read("src/pages/ActivityPage.tsx");
+test("Week 2 lists activities on the week page and links each activity to the next", function () {
+  const weekPage = read("src/pages/WeekPage.tsx");
+  assert.match(weekPage, /weekPageFromPackage/);
+  assert.match(weekPage, /Open activity/);
+  assert.match(weekPage, /<PageHost/);
+  assert.doesNotMatch(weekPage, /InteractiveActivity/);
+  assert.match(read("src/pages/ActivityPage.tsx"), /InteractiveActivity/);
+  assert.match(read("src/pages/ActivityPage.tsx"), /ActivitySequenceNav/);
+  assert.doesNotMatch(read("src/pages/ActivityPage.tsx"), /CataloguePilot/);
+  assert.equal(fs.existsSync(path.join(projectRoot, "src/pages/CataloguePilot.tsx")), false);
+  assert.doesNotMatch(read("week-2/session1-retrieval/index.html"), /url=\.\.\//);
+  assert.match(read("week-2/session1-retrieval/index.html"), /data-view="activity"/);
   const inventory = read("test/fixtures/route-inventory.json");
-  assert.match(activityPage, /CataloguePilot/);
-  assert.match(read("src/pages/CataloguePilot.tsx"), /InteractiveActivity/);
-  assert.match(read("src/pages/CataloguePilot.tsx"), /Unit3Week2Submit/);
-  assert.match(read("src/pages/CataloguePilot.tsx"), /markCompleted/);
-  assert.match(read("week-2/session1-retrieval/index.html"), /Submit your result when every question has been checked/);
-  assert.doesNotMatch(inventory.split("week-2/session1-retrieval/index.html")[1].split("week-2/session2-retrieval")[0], /week2-quiz\.js/);
-  assert.match(inventory.split("week-2/session2-retrieval/index.html")[1].split("week-2/threat-vulnerability")[0], /week2-quiz\.js/);
+  const catalogueOwned = [
+    "week-2/session1-retrieval/index.html",
+    "week-2/session2-retrieval/index.html",
+    "week-2/threat-vulnerability-learning/index.html",
+    "week-2/malware-symptoms/index.html",
+    "week-2/threat-vulnerability-sort/index.html",
+    "week-2/six-mark-guide/index.html"
+  ];
+  catalogueOwned.forEach((route) => {
+    const chunk = inventory.split(route)[1].split('"redirectTo"')[0];
+    assert.doesNotMatch(chunk, /week2-quiz\.js/);
+    assert.doesNotMatch(chunk, /\/app\.js/);
+  });
+  const week3CatalogueOwned = [
+    "week-3/session1-retrieval/index.html",
+    "week-3/session2-retrieval/index.html",
+    "week-3/attacker-types-learning/index.html",
+    "week-3/attacker-case-matching/index.html",
+    "week-3/justified-identification/index.html"
+  ];
+  week3CatalogueOwned.forEach((route) => {
+    const chunk = inventory.split(route)[1].split('"redirectTo"')[0];
+    assert.doesNotMatch(chunk, /\/app\.js/);
+    assert.doesNotMatch(chunk, /week3-quiz\.js/);
+  });
+  const week4CatalogueOwned = [
+    "week-4/session1-retrieval/index.html",
+    "week-4/session2-retrieval/index.html",
+    "week-4/motivations-learning/index.html",
+    "week-4/targets-methods/index.html",
+    "week-4/ethical-review/index.html"
+  ];
+  week4CatalogueOwned.forEach((route) => {
+    const chunk = inventory.split(route)[1].split('"redirectTo"')[0];
+    assert.doesNotMatch(chunk, /\/app\.js/);
+    assert.doesNotMatch(chunk, /week4-quiz\.js/);
+  });
+  const week5CatalogueOwned = [
+    "week-5/session1-retrieval/index.html",
+    "week-5/session2-retrieval/index.html",
+    "week-5/impacts-learning/index.html",
+    "week-5/impact-classification/index.html",
+    "week-5/exercise-debrief/index.html"
+  ];
+  week5CatalogueOwned.forEach((route) => {
+    const chunk = inventory.split(route)[1].split('"redirectTo"')[0];
+    assert.doesNotMatch(chunk, /\/app\.js/);
+    assert.doesNotMatch(chunk, /week5-quiz\.js/);
+  });
+  assert.match(inventory.split("week-5/ransomware-companion/index.html")[1].split("week-5/session1")[0], /week-5\/ransomware-companion\/app\.js/);
+  assert.match(inventory.split("week-5/stakeholder-grid/index.html")[1].split('"redirectTo"')[0], /week-5\/stakeholder-grid\/app\.js/);
+  assert.match(inventory.split("week-5/impact-analysis/index.html")[1].split("week-5/impact-classification")[0], /week-5\/impact-analysis\/app\.js/);
+  assert.match(inventory.split("week-5/ocr-practice/index.html")[1].split("week-5/ransomware")[0], /week-5\/ocr-practice\/app\.js/);
+  const week6CatalogueOwned = [
+    "week-6/lo2-diagnostic/index.html",
+    "week-6/ethical-learning/index.html",
+    "week-6/ethical-classification/index.html",
+    "week-6/legislation-learning/index.html",
+    "week-6/operational-considerations/index.html",
+    "week-6/session1-review/index.html",
+    "week-6/legislation-retrieval/index.html",
+    "week-6/employee-monitoring/index.html"
+  ];
+  week6CatalogueOwned.forEach((route) => {
+    const chunk = inventory.split(route)[1].split('"redirectTo"')[0];
+    assert.doesNotMatch(chunk, /\/app\.js/);
+    assert.doesNotMatch(chunk, /week6-quiz\.js/);
+  });
+  assert.match(inventory.split("week-6/legislation-matching/index.html")[1].split('"redirectTo"')[0], /week-6\/legislation-matching\/app\.js/);
+  assert.match(inventory.split("week-6/government-initiatives/index.html")[1].split('"redirectTo"')[0], /week-6\/government-initiatives\/app\.js/);
+  assert.match(inventory.split("week-6/ncsc-guidance/index.html")[1].split('"redirectTo"')[0], /week-6\/ncsc-guidance\/app\.js/);
+  assert.match(inventory.split("week-6/discuss-learning/index.html")[1].split('"redirectTo"')[0], /week-6\/discuss-learning\/app\.js/);
+  assert.match(inventory.split("week-6/discuss-planner/index.html")[1].split('"redirectTo"')[0], /week-6\/discuss-planner\/app\.js/);
+  assert.match(inventory.split("week-6/ocr-practice/index.html")[1].split('"redirectTo"')[0], /week-6\/ocr-practice\/app\.js/);
+  const week7CatalogueOwned = [
+    "week-7/session1-retrieval/index.html",
+    "week-7/risk-management-learning/index.html",
+    "week-7/testing-methods/index.html",
+    "week-7/sandbox-observation/index.html",
+    "week-7/detection-prevention/index.html",
+    "week-7/session2-retrieval/index.html",
+    "week-7/testing-matching/index.html",
+    "week-7/recommendation-practice/index.html"
+  ];
+  week7CatalogueOwned.forEach((route) => {
+    const chunk = inventory.split(route)[1].split('"redirectTo"')[0];
+    assert.doesNotMatch(chunk, /\/app\.js/);
+    assert.doesNotMatch(chunk, /week7-quiz\.js/);
+  });
+  assert.match(inventory.split("week-7/risk-register/index.html")[1].split('"redirectTo"')[0], /week-7\/risk-register\/app\.js/);
+  assert.match(inventory.split("week-7/heightened-threat/index.html")[1].split('"redirectTo"')[0], /week-7\/heightened-threat\/app\.js/);
+  assert.match(inventory.split("week-7/ocr-practice/index.html")[1].split('"redirectTo"')[0], /week-7\/ocr-practice\/app\.js/);
+  assert.match(inventory.split("week-7/answer-improvement/index.html")[1].split('"redirectTo"')[0], /week-7\/answer-improvement\/app\.js/);
+  assert.match(inventory.split("week-4/mtm-mapping/index.html")[1].split("week-4/northbank")[0], /week-4\/mtm-mapping\/app\.js/);
+  assert.match(inventory.split("week-4/ocr-practice/index.html")[1].split("week-4/passive-recon")[0], /week-4\/ocr-practice\/app\.js/);
+  assert.match(inventory.split("week-4/analyse-practice/index.html")[1].split("week-4/answer-improvement")[0], /week-4\/analyse-practice\/app\.js/);
+  assert.match(inventory.split("week-4/northbank-exposure/index.html")[1].split("week-4/ocr-practice")[0], /week-4\/northbank-exposure\/app\.js/);
+  assert.match(inventory.split("week-3/ocr-practice/index.html")[1].split("week-3/peer-marking")[0], /week-3\/ocr-practice\/app\.js/);
+  assert.match(inventory.split("week-3/peer-marking/index.html")[1].split("week-3/pentesting")[0], /week-3\/peer-marking\/app\.js/);
+  assert.match(inventory.split("week-2/ocr-practice/index.html")[1].split("week-2/peer-marking")[0], /week-2\/ocr-practice\/app\.js/);
+  assert.match(inventory.split("week-2/vulnerabilities101/index.html")[1].split("week-2/vulnerability-register")[0], /week2-tryhackme\.js/);
+  assert.match(read("src/catalogue/week-activities.ts"), /CATALOGUE_WEEKS = \[1, 2, 3, 4, 5, 6, 7\]/);
+  assert.match(read("src/catalogue/fallback.tsx"), /isCatalogueReactType/);
+  assert.doesNotMatch(read("src/catalogue/fallback.tsx"), /Save response/);
 });
 
-test("week pages use docked catalogue progress chrome without replacing PageHost engines", function () {
+test("catalogue routes never ship or inventory-load per-activity app.js", function () {
+  const weekActivities = read("src/catalogue/week-activities.ts");
+  const inventoryJson = JSON.parse(read("test/fixtures/route-inventory.json"));
+
+  function parseWeekObjectMap(name) {
+    const match = weekActivities.match(new RegExp(`export const ${name}[\\s\\S]*?=\\s*(\\{[\\s\\S]*?\\n\\};)`));
+    assert.ok(match, name);
+    const out = {};
+    for (let week = 1; week <= 7; week += 1) {
+      const weekMatch = match[1].match(new RegExp(`${week}:\\s*\\{([^}]*)\\}`));
+      out[week] = {};
+      if (!weekMatch) continue;
+      for (const kv of weekMatch[1].matchAll(/"([^"]+)":\s*"([^"]+)"/g)) {
+        out[week][kv[1]] = kv[2];
+      }
+    }
+    return out;
+  }
+
+  function parseWeekIdList(name) {
+    const match = weekActivities.match(new RegExp(`export const ${name}[\\s\\S]*?=\\s*(\\{[\\s\\S]*?\\n\\};)`));
+    assert.ok(match, name);
+    const out = {};
+    for (let week = 1; week <= 7; week += 1) {
+      const weekMatch = match[1].match(new RegExp(`${week}:\\s*\\[([^\\]]*)\\]`));
+      out[week] = [];
+      if (!weekMatch) continue;
+      for (const id of weekMatch[1].matchAll(/"([^"]+)"/g)) out[week].push(id[1]);
+    }
+    return out;
+  }
+
+  const slugs = parseWeekObjectMap("WEEK_ACTIVITY_SLUGS");
+  const host = parseWeekIdList("WEEK_HOST_ACTIVITY_IDS");
+  const hybrid = parseWeekIdList("WEEK_HYBRID_ACTIVITY_IDS");
+
+  for (let week = 1; week <= 7; week += 1) {
+    for (const [activityId, slug] of Object.entries(slugs[week] || {})) {
+      const isHost = (host[week] || []).includes(activityId);
+      const isHybrid = (hybrid[week] || []).includes(activityId);
+      const route = `week-${week}/${slug}/index.html`;
+      const entry = inventoryJson.routes.find((item) => item.route === route);
+      assert.ok(entry, `inventory missing ${route}`);
+      const scripts = entry.scripts || [];
+      const loadsApp = scripts.some((script) => String(script).endsWith(`/${slug}/app.js`));
+      const appPath = path.join(projectRoot, `week-${week}`, slug, "app.js");
+      if (isHost) {
+        assert.equal(loadsApp, true, `${activityId} host must inventory-load app.js`);
+        assert.equal(fs.existsSync(appPath), true, `${activityId} host app.js must exist`);
+      } else if (isHybrid) {
+        // Hybrid keeps the practical shell engine (e.g. TryHackMe).
+        assert.equal(fs.existsSync(appPath), true, `${activityId} hybrid app.js must exist`);
+      } else {
+        assert.equal(loadsApp, false, `${activityId} catalogue must not inventory-load app.js`);
+        assert.equal(fs.existsSync(appPath), false, `${activityId} catalogue app.js must be retired`);
+        assert.equal(
+          scripts.some((script) => /week\d+-quiz\.js$/.test(String(script))),
+          false,
+          `${activityId} catalogue must not load week quiz engine`
+        );
+      }
+    }
+  }
+});
+
+test("week pages keep docked catalogue progress chrome", function () {
   const weekPage = read("src/pages/WeekPage.tsx");
   assert.match(weekPage, /PracticeProgressPanel/);
   assert.match(weekPage, /defaultCollapsed/);
   assert.match(weekPage, /showProgress:\s*false/);
-  assert.match(weekPage, /getCompletionSummary/);
-  assert.match(weekPage, /<PageHost/);
-  assert.doesNotMatch(weekPage, /InteractiveActivity/);
+  assert.match(weekPage, /data-lp-week-page/);
   assert.match(read("src/pages/PageHost.tsx"), /unit3-page-body/);
   assert.match(read("src/pages/PageHost.tsx"), /loadPageScripts/);
 });
