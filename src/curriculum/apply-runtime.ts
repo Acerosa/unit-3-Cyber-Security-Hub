@@ -51,6 +51,14 @@ export function applyUnit3Curriculum(
   return runtime;
 }
 
+export function activeContentPackage(pkg?: ContentPackage | null): ContentPackage | null {
+  if (pkg) return pkg;
+  if (typeof window !== "undefined" && window.__lpPackage) {
+    return window.__lpPackage as ContentPackage;
+  }
+  return null;
+}
+
 export async function loadUnit3Curriculum(platform: {
   curriculum: {
     loadLatest: () => Promise<unknown>;

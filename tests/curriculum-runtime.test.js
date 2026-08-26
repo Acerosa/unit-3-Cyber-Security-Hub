@@ -28,8 +28,13 @@ test("the live hub loads teaching content through platform.curriculum.loadLatest
   const hook = read("src/hooks/useHubPlatform.ts");
   const platform = read("src/platform.ts");
   assert.match(hook, /loadUnit3Curriculum\(platform\)/);
+  assert.match(hook, /setContentReady/);
+  assert.match(hook, /loadHubAdapters\(root\)/);
+  assert.match(hook, /Promise\.all\(\[adapters, ready\]\)/);
   assert.match(platform, /validatePackage/);
   assert.match(platform, /loadBundled/);
+  assert.match(platform, /import\("\.\.\/content\/unit-3-cyber-security\/package\.json"\)/);
+  assert.doesNotMatch(platform, /fetch\(new URL/);
   assert.doesNotMatch(platform, /published_curriculum_package/);
   assert.doesNotMatch(hook, /lp\.curriculum\.cache/);
   assert.match(read("src/curriculum/apply-runtime.ts"), /loadLatest/);

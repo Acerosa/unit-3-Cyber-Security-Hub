@@ -37,12 +37,7 @@ export function createHubPlatform(root: string, createPlatformFn = createPlatfor
     localStorage: typeof window !== "undefined" ? window.localStorage : undefined,
     validatePackage,
     loadBundled: () =>
-      fetch(new URL("./content/unit-3-cyber-security/package.json", window.location.href)).then((response) => {
-        if (!response.ok) {
-          throw new Error("UNIT3_BUNDLED_PACKAGE_MISSING");
-        }
-        return response.json();
-      })
+      import("../content/unit-3-cyber-security/package.json").then((mod) => mod.default)
   });
 
   return Object.freeze({

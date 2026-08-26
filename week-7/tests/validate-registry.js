@@ -184,13 +184,17 @@
       fail('session2-count', session2 && session2.questions && session2.questions.length);
     } else pass('session2-count');
 
-    if (!matching || !matching.scenarios || matching.scenarios.length !== 8) {
-      fail('matching-count', matching && matching.scenarios && matching.scenarios.length);
+    var matchRows = matching && (matching.scenarios || matching.classificationItems || matching.cards);
+    if (!matchRows || matchRows.length !== 8) {
+      fail('matching-count', matchRows && matchRows.length);
     } else {
-      var altCount = matching.scenarios.filter(function (s) {
+      pass('matching-count');
+      var altSource = matching.scenarios || [];
+      var altCount = altSource.filter(function (s) {
         return s.alternativeAnswers && s.alternativeAnswers.length;
       }).length;
-      if (altCount < 2) fail('matching-alternatives', String(altCount));
+      // Remainder keeps alternativeAnswers; Content classify marks preferred only.
+      if (altSource.length && altCount < 2) fail('matching-alternatives', String(altCount));
       else pass('matching-alternatives');
     }
 

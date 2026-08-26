@@ -1,4 +1,5 @@
-import { HubShell, LearnerHeader } from "@learning-platform/ui";
+import { HubShell, LearnerHeader, LoadingState } from "@learning-platform/ui";
+import { useEffect } from "react";
 import { APP_CONFIG } from "./config";
 import { useHubPlatform } from "./hooks/useHubPlatform";
 import { currentIds, type PageContext } from "./page-context";
@@ -8,20 +9,38 @@ import { PageHost } from "./pages/PageHost";
 import { WeekPage } from "./pages/WeekPage";
 import { createSitePath, navigationItems } from "./paths";
 
-function PageBody({ context, adaptersReady }: { context: PageContext; adaptersReady: boolean }) {
+function RouteRedirect({ root, to }: { root: string; to: string }) {
+  useEffect(() => {
+    window.location.replace(createSitePath(root, to));
+  }, [root, to]);
+  return <LoadingState message="Opening this week's activities..." />;
+}
+
+function PageBody({
+  context,
+  contentReady,
+  adaptersReady
+}: {
+  context: PageContext;
+  contentReady: boolean;
+  adaptersReady: boolean;
+}) {
   const route = findRoute(context);
   const scripts = route?.scripts || [];
+  if (route?.redirectTo) {
+    return <RouteRedirect root={context.root} to={route.redirectTo} />;
+  }
   if (context.view === "week") {
-    return <WeekPage context={context} adaptersReady={adaptersReady} />;
+    return <WeekPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} />;
   }
   if (context.view === "activity" || context.view === "week1-activity") {
-    return <ActivityPage context={context} adaptersReady={adaptersReady} />;
+    return <ActivityPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} />;
   }
   return <PageHost root={context.root} scripts={scripts} adaptersReady={adaptersReady} />;
 }
 
 export function App({ context }: { context: PageContext }) {
-  const { learner, theme, accountDialog, platform, adaptersReady } = useHubPlatform(context.root);
+  const { learner, theme, accountDialog, platform, contentReady, adaptersReady } = useHubPlatform(context.root);
   const header = pageHeader(context);
 
   return (
@@ -76,7 +95,7 @@ export function App({ context }: { context: PageContext }) {
         ]
       }}
     >
-      <PageBody context={context} adaptersReady={adaptersReady} />
+      <PageBody context={context} contentReady={contentReady} adaptersReady={adaptersReady} />
     </HubShell>
   );
 }

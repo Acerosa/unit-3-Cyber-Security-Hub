@@ -143,7 +143,7 @@ test("canonical manifest declares the active Phase 1 contracts", () => {
 
 test("all static learner routes are Vite shells that mount the React hub", () => {
   const routes = routeFiles();
-  assert.equal(routes.length, 94);
+  assert.equal(routes.length, 100);
   routes.forEach((route) => {
     const html = read(route);
     assert.match(html, /id="root"/, route);

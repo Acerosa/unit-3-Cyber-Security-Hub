@@ -4,19 +4,12 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..', '..');
+// Host-only engines still ship app.js. Catalogue Week 6 activities use Content + UI.
 const scoredApps = [
-  'lo2-diagnostic',
-  'ethical-learning',
-  'ethical-classification',
-  'legislation-learning',
   'legislation-matching',
-  'operational-considerations',
   'government-initiatives',
   'ncsc-guidance',
   'exercise-decision-record',
-  'session1-review',
-  'legislation-retrieval',
-  'employee-monitoring',
   'stakeholder-debate',
   'discuss-learning',
   'discuss-planner',
@@ -26,18 +19,10 @@ const scoredApps = [
 ];
 
 const catalogueEvidencePatterns = {
-  'lo2-diagnostic': [/fromQuizResult\(result, data\.questions\)/],
-  'ethical-learning': [/replace\(\/-\/g, '_'\)/, /fromQuizResult\(result, data\.knowledgeCheck\)/],
-  'ethical-classification': [/evidence\.classification\(item\.id/],
-  'legislation-learning': [/fromQuizResult\(result, data\.knowledgeCheck\)/],
   'legislation-matching': [/evidence\.structured\(scenario\.id/],
-  'operational-considerations': [/'OC' \+ \(index \+ 1\)/],
   'government-initiatives': [/fromQuizResult\(result, data\.comparisonQuiz\)/],
   'ncsc-guidance': [/'NC' \+ \(index \+ 1\)/],
   'exercise-decision-record': [/'ED1'/, /'ED2'/, /'ED3'/, /'ED4'/, /'ED5'/],
-  'session1-review': [/fromQuizResult\(result, data\.questions\)/],
-  'legislation-retrieval': [/'LR' \+ \(index \+ 1\)/],
-  'employee-monitoring': [/'EM0'/, /'EM' \+ \(index \+ 1\)/],
   'stakeholder-debate': [/'SD0'/, /'SD' \+ \(index \+ 1\)/],
   'discuss-learning': [/'DL' \+ \(index \+ 1\)/],
   'discuss-planner': [/'DP1'/, /'DP2'/, /'DP3'/, /'DP4'/, /'DP5'/, /'DP6'/],

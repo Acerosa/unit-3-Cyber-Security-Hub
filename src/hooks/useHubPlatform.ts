@@ -18,6 +18,7 @@ export function useHubPlatform(root: string) {
   const [theme, setTheme] = useState<ThemeControl | null>(null);
   const [accountDialog, setAccountDialog] = useState<AccountDialog | null>(null);
   const [platformState, setPlatformState] = useState("loading");
+  const [contentReady, setContentReady] = useState(false);
   const [adaptersReady, setAdaptersReady] = useState(false);
 
   useEffect(() => {
@@ -54,9 +55,13 @@ export function useHubPlatform(root: string) {
     void (async () => {
       const ready = platform.initialise();
       window.LearningPlatform = { platform, coreVersion: APP_CONFIG.coreVersion, ready };
-      await loadHubAdapters(root);
-      await loadUnit3Curriculum(platform);
-      await ready;
+      const adapters = loadHubAdapters(root);
+      try {
+        await loadUnit3Curriculum(platform);
+      } finally {
+        if (!cancelled) setContentReady(true);
+      }
+      await Promise.all([adapters, ready]);
       if (!cancelled) setAdaptersReady(true);
     })();
 
@@ -69,7 +74,7 @@ export function useHubPlatform(root: string) {
     };
   }, [platform, root]);
 
-  return { platform, learner, theme, accountDialog, platformState, adaptersReady };
+  return { platform, learner, theme, accountDialog, platformState, contentReady, adaptersReady };
 }
 
 export type { HubPlatform };
