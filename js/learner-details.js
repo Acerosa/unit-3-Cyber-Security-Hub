@@ -315,7 +315,7 @@
       className: 'privacy-notice learner-privacy-notice',
       role: 'note',
       textContent:
-        'Your name, Student ID, class group and activity result will be sent to a staff-controlled Google Sheet for formative assessment and progress tracking. Do not enter sensitive personal information beyond the fields requested.'
+        'Your name, Student ID, class group and activity result will be sent to the staff-controlled learning platform for formative assessment and progress tracking. Do not enter sensitive personal information beyond the fields requested.'
     });
   }
 
