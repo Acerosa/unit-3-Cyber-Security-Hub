@@ -98,7 +98,7 @@ export function weekPageFromPackage(pkg: ContentPackage, weekId: string): WeekPa
       teachingWeek,
       title: week.metadata?.title || `Week ${teachingWeek}`,
       subtitle: "",
-      status: week.metadata?.status || "available"
+      status: String(week.metadata?.status ?? "")
     },
     learningOutcomes,
     sessions

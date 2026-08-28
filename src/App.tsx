@@ -1,13 +1,16 @@
-import { HubShell, LearnerHeader, LoadingState } from "@learning-platform/ui";
-import { useEffect } from "react";
+import { LearnerHeader, LoadingState } from "@learning-platform/ui";
+import { useEffect, useMemo } from "react";
+import { Unit3HubShell } from "./components/Unit3HubShell";
 import { APP_CONFIG } from "./config";
+import { liveContentPackage } from "./curriculum/apply-runtime";
 import { useHubPlatform } from "./hooks/useHubPlatform";
 import { currentIds, type PageContext } from "./page-context";
 import { breadcrumbs, findRoute, pageHeader } from "./page-copy";
 import { ActivityPage } from "./pages/ActivityPage";
+import { HomePage } from "./pages/HomePage";
 import { PageHost } from "./pages/PageHost";
 import { WeekPage } from "./pages/WeekPage";
-import { createSitePath, navigationItems } from "./paths";
+import { buildUnit3Navigation, createSitePath } from "./paths";
 
 function RouteRedirect({ root, to }: { root: string; to: string }) {
   useEffect(() => {
@@ -30,6 +33,9 @@ function PageBody({
   if (route?.redirectTo) {
     return <RouteRedirect root={context.root} to={route.redirectTo} />;
   }
+  if (context.view === "home") {
+    return <HomePage root={context.root} livePackage={contentReady ? liveContentPackage() : null} />;
+  }
   if (context.view === "week") {
     return <WeekPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} />;
   }
@@ -42,12 +48,17 @@ function PageBody({
 export function App({ context }: { context: PageContext }) {
   const { learner, theme, accountDialog, platform, contentReady, adaptersReady } = useHubPlatform(context.root);
   const header = pageHeader(context);
+  const livePackage = contentReady ? liveContentPackage() : null;
+  const navigation = useMemo(
+    () => buildUnit3Navigation(context.root, livePackage),
+    [context.root, livePackage]
+  );
 
   return (
-    <HubShell
+    <Unit3HubShell
       brandTitle={APP_CONFIG.shortName}
       brandTagline={APP_CONFIG.qualification}
-      navigation={navigationItems([...APP_CONFIG.navigation], context.root)}
+      navigation={navigation}
       currentId={context.section}
       currentIds={currentIds(context)}
       theme={theme}
@@ -96,6 +107,6 @@ export function App({ context }: { context: PageContext }) {
       }}
     >
       <PageBody context={context} contentReady={contentReady} adaptersReady={adaptersReady} />
-    </HubShell>
+    </Unit3HubShell>
   );
 }

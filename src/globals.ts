@@ -16,6 +16,7 @@ declare global {
       ready?: Promise<unknown>;
     };
     __lpPackage?: unknown;
+    __lpLivePackage?: unknown;
     __lpPublishedCurriculum?: boolean;
     Unit3Week1Progress?: WeekProgress;
     Unit3Week2Progress?: WeekProgress;

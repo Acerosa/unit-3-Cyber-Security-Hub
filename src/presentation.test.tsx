@@ -1,7 +1,8 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import pkg from "../content/unit-3-cyber-security/package.json";
 import { APP_CONFIG } from "./config";
+import { configureBundledPackage } from "./curriculum/runtime-weeks";
 import { breadcrumbs, pageHeader } from "./page-copy";
 import { navigationItems } from "./paths";
 import { ActivityPage } from "./pages/ActivityPage";
@@ -13,6 +14,10 @@ vi.mock("./adapters/load-hub-adapters", () => ({
   loadPageScripts: async () => {}
 }));
 
+beforeAll(() => {
+  configureBundledPackage(pkg as import("./curriculum/from-package").ContentPackage);
+});
+
 afterEach(() => {
   delete window.Unit3Week2Progress;
   delete window.Unit3Week2Submit;
@@ -22,6 +27,7 @@ afterEach(() => {
   delete window.Unit3Week6Progress;
   delete window.Unit3Week7Progress;
   delete window.__lpPackage;
+  delete window.__lpLivePackage;
   cleanup();
 });
 
