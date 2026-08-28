@@ -2,6 +2,7 @@ import react from "@vitejs/plugin-react";
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { defineConfig } from "vite";
+import { platformResolve } from "./vite.resolve";
 
 function collectHtml(directory: string, acc: string[] = []): string[] {
   for (const entry of readdirSync(directory)) {
@@ -55,6 +56,7 @@ function copyStaticAssets() {
 
 export default defineConfig({
   base: "./",
+  resolve: platformResolve,
   plugins: [react(), copyStaticAssets()],
   build: {
     sourcemap: true,
