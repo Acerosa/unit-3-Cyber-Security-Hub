@@ -53,7 +53,16 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: unit-3-Cyber-Security-Hub/package-lock.json
+          cache-dependency-path: |
+            unit-3-Cyber-Security-Hub/package-lock.json
+            learning-platform-ui/package-lock.json
+
+      - name: Verify reviewed Core ships curriculum-runtime
+        run: test -f learning-platform-core/dist/curriculum-runtime.esm.js
+
+      - name: Install shared UI peer dependencies
+        working-directory: learning-platform-ui
+        run: npm ci
 
       - name: Install, test and build
         working-directory: unit-3-Cyber-Security-Hub
