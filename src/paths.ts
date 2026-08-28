@@ -19,6 +19,15 @@ export function navigationItems(
   }));
 }
 
+/** Structural navigation only — safe before bundled curriculum is configured. */
+export function buildUnit3NavigationFallback(root: string): Unit3NavigationItem[] {
+  return APP_CONFIG.navigation.map((item) => ({
+    id: item.id,
+    label: item.label,
+    path: item.id === "home" ? createSitePath(root) : createSitePath(root, item.path)
+  }));
+}
+
 /** Structural navigation with runtime week access metadata from published curriculum. */
 export function buildUnit3Navigation(root: string, livePackage?: ContentPackage | null): Unit3NavigationItem[] {
   const runtimeWeeks = unit3RuntimeWeeks(livePackage);

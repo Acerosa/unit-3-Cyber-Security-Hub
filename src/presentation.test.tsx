@@ -93,21 +93,19 @@ describe("Unit 3 presentation", () => {
         adaptersReady={false}
       />
     );
-    expect(screen.getByText("Examination context")).toBeTruthy();
-    expect(screen.getByText("OCR Level 3 IT")).toBeTruthy();
-    expect(screen.getByText("Learning this week")).toBeTruthy();
-    expect(screen.getByText("Loading Unit 3 materials...")).toBeTruthy();
-    expect(screen.queryByRole("complementary", { name: "Week 2 progress" })).toBeNull();
+    expect(screen.getByText("Loading curriculum...")).toBeTruthy();
+    expect(screen.queryByText("Examination context")).toBeNull();
   });
 
   it("docks the catalogue progress panel from Unit 3 completion summary", () => {
+    window.__lpPackage = pkg;
     window.Unit3Week2Progress = {
       getCompletionSummary: () => ({ completed: 3, total: 10 })
     };
     render(
       <WeekPage
         context={{ page: "week-2", section: "week-2", root: "..", view: "week", week: 2 }}
-        contentReady={false}
+        contentReady
         adaptersReady
       />
     );
@@ -118,7 +116,7 @@ describe("Unit 3 presentation", () => {
     expect(panel.getAttribute("data-lp-collapsed")).toBe("true");
     expect(screen.getByLabelText("3 of 10 correct")).toBeTruthy();
     expect(panel.querySelector("[data-lp-progress-badge]")).toBeNull();
-    expect(document.querySelector("[data-unit3-host]")).toBeTruthy();
+    expect(screen.getAllByRole("link", { name: "Open activity" }).length).toBeGreaterThan(0);
     expect(screen.queryByText("3 of 10 complete (30%)")).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Show progress details" }));

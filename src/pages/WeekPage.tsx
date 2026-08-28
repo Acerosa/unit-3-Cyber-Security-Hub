@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { PracticeProgressPanel, WeekAccessGuard, WeekView } from "@learning-platform/ui";
+import { PracticeProgressPanel, WeekAccessGuard, WeekView, LoadingState } from "@learning-platform/ui";
 import { loadPageScripts } from "../adapters/load-hub-adapters";
 import {
   CATALOGUE_PROGRESS_SCRIPTS,
@@ -57,6 +57,9 @@ export function WeekPage({
 }) {
   const route = findRoute(context);
   const week = context.week || 1;
+  if (!contentReady) {
+    return <LoadingState message="Loading curriculum..." />;
+  }
   const weekId = `week-${week}`;
   const weekBadge = `Week ${week}: ${WEEK_TITLES[week] || ""}`.trim();
   const livePackage = contentReady ? liveContentPackage() : null;

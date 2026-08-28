@@ -10,7 +10,7 @@ import { ActivityPage } from "./pages/ActivityPage";
 import { HomePage } from "./pages/HomePage";
 import { PageHost } from "./pages/PageHost";
 import { WeekPage } from "./pages/WeekPage";
-import { buildUnit3Navigation, createSitePath } from "./paths";
+import { buildUnit3Navigation, buildUnit3NavigationFallback, createSitePath } from "./paths";
 
 function RouteRedirect({ root, to }: { root: string; to: string }) {
   useEffect(() => {
@@ -33,8 +33,11 @@ function PageBody({
   if (route?.redirectTo) {
     return <RouteRedirect root={context.root} to={route.redirectTo} />;
   }
+  if (!contentReady) {
+    return <LoadingState message="Loading curriculum..." />;
+  }
   if (context.view === "home") {
-    return <HomePage root={context.root} livePackage={contentReady ? liveContentPackage() : null} />;
+    return <HomePage root={context.root} livePackage={liveContentPackage()} />;
   }
   if (context.view === "week") {
     return <WeekPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} />;
@@ -48,10 +51,11 @@ function PageBody({
 export function App({ context }: { context: PageContext }) {
   const { learner, theme, accountDialog, platform, contentReady, adaptersReady } = useHubPlatform(context.root);
   const header = pageHeader(context);
-  const livePackage = contentReady ? liveContentPackage() : null;
   const navigation = useMemo(
-    () => buildUnit3Navigation(context.root, livePackage),
-    [context.root, livePackage]
+    () => (contentReady
+      ? buildUnit3Navigation(context.root, liveContentPackage())
+      : buildUnit3NavigationFallback(context.root)),
+    [context.root, contentReady]
   );
 
   return (
