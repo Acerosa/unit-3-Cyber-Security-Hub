@@ -69,12 +69,17 @@ export function activeContentPackage(pkg?: ContentPackage | null): ContentPackag
   return null;
 }
 
+import { ensureBundledConfigured } from "../platform";
+
 export async function loadUnit3Curriculum(platform: {
   curriculum: {
     loadLatest: () => Promise<unknown>;
     renderStatus?: (state: unknown) => string;
   };
 }) {
-  const runtime = await platform.curriculum.loadLatest() as CurriculumRuntime;
-  return applyUnit3Curriculum(runtime, window, (state) => platform.curriculum.renderStatus?.(state) || "");
+  const [, runtime] = await Promise.all([
+    ensureBundledConfigured(),
+    platform.curriculum.loadLatest()
+  ]);
+  return applyUnit3Curriculum(runtime as CurriculumRuntime, window, (state) => platform.curriculum.renderStatus?.(state) || "");
 }

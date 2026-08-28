@@ -7,7 +7,20 @@ import { configureBundledPackage } from "./curriculum/runtime-weeks";
 
 const supabaseConfig = () => window.SUPABASE_CONFIG;
 
+let bundledReady: Promise<import("./curriculum/from-package").ContentPackage> | null = null;
+
+export function ensureBundledConfigured() {
+  if (!bundledReady) {
+    bundledReady = import("../content/unit-3-cyber-security/package.json").then((mod) => {
+      configureBundledPackage(mod.default as import("./curriculum/from-package").ContentPackage);
+      return mod.default as import("./curriculum/from-package").ContentPackage;
+    });
+  }
+  return bundledReady;
+}
+
 export function createHubPlatform(root: string, createPlatformFn = createPlatform) {
+  ensureBundledConfigured();
   const config = supabaseConfig();
   const client = createClient(config.projectUrl, config.publishableKey, {
     auth: {
@@ -37,11 +50,7 @@ export function createHubPlatform(root: string, createPlatformFn = createPlatfor
     supabaseClient: client,
     localStorage: typeof window !== "undefined" ? window.localStorage : undefined,
     validatePackage,
-    loadBundled: () =>
-      import("../content/unit-3-cyber-security/package.json").then((mod) => {
-        configureBundledPackage(mod.default as import("./curriculum/from-package").ContentPackage);
-        return mod.default;
-      })
+    loadBundled: () => ensureBundledConfigured()
   });
 
   return Object.freeze({
