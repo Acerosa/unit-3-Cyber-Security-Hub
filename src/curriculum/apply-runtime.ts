@@ -1,5 +1,6 @@
 import globals from "./runtime-globals.json";
 import { activityFromPackage, type ContentPackage } from "./from-package";
+import { runtimeContentPackage } from "./runtime-weeks";
 
 export type CurriculumRuntime = {
   source?: string;
@@ -23,8 +24,10 @@ export function applyUnit3Curriculum(
   target: Window & typeof globalThis = window,
   renderStatus?: (state: unknown) => string
 ) {
-  const pkg = runtime.package || null;
+  const livePackage = runtime.package || null;
+  const pkg = runtimeContentPackage(livePackage);
   const source = runtime.source || "none";
+  target.__lpLivePackage = livePackage || undefined;
   target.__lpPackage = pkg || undefined;
   target.__lpPublishedCurriculum = Boolean(pkg);
   if (target.document?.body) {
@@ -49,6 +52,13 @@ export function applyUnit3Curriculum(
     }
   });
   return runtime;
+}
+
+export function liveContentPackage(): ContentPackage | null {
+  if (typeof window !== "undefined" && window.__lpLivePackage) {
+    return window.__lpLivePackage as ContentPackage;
+  }
+  return null;
 }
 
 export function activeContentPackage(pkg?: ContentPackage | null): ContentPackage | null {

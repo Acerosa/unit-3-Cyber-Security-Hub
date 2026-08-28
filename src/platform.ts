@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { validatePackage } from "@learning-platform/content";
 import { APP_CONFIG } from "./config";
 import { createSitePath } from "./paths";
+import { configureBundledPackage } from "./curriculum/runtime-weeks";
 
 const supabaseConfig = () => window.SUPABASE_CONFIG;
 
@@ -37,7 +38,10 @@ export function createHubPlatform(root: string, createPlatformFn = createPlatfor
     localStorage: typeof window !== "undefined" ? window.localStorage : undefined,
     validatePackage,
     loadBundled: () =>
-      import("../content/unit-3-cyber-security/package.json").then((mod) => mod.default)
+      import("../content/unit-3-cyber-security/package.json").then((mod) => {
+        configureBundledPackage(mod.default as import("./curriculum/from-package").ContentPackage);
+        return mod.default;
+      })
   });
 
   return Object.freeze({

@@ -1,6 +1,7 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { activityFromPackage, weekPageFromPackage } from "./from-package";
 import { applyUnit3Curriculum } from "./apply-runtime";
+import { configureBundledPackage } from "./runtime-weeks";
 import {
   CATALOGUE_WEEKS,
   catalogueActivity,
@@ -12,6 +13,10 @@ import {
 } from "../catalogue/week-activities";
 import pkg from "../../content/unit-3-cyber-security/package.json";
 
+beforeAll(() => {
+  configureBundledPackage(pkg as import("./from-package").ContentPackage);
+});
+
 declare global {
   interface Window {
     Week2ThreatVulnerabilitySort?: { title?: string; cards?: Array<{ id: string }> };
@@ -20,6 +25,7 @@ declare global {
 
 afterEach(() => {
   delete window.__lpPackage;
+  delete window.__lpLivePackage;
   delete window.__lpPublishedCurriculum;
   delete window.Week2ThreatVulnerabilitySort;
   document.body.removeAttribute("data-curriculum-source");
