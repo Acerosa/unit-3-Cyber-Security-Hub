@@ -16,11 +16,10 @@
  *
  * Default is SUPABASE for Weeks 2–7 after hosted backend activation. There is
  * NO silent fallback: a Supabase failure remains visible to the learner and
- * the tutor. Controlled rollback for support/dev:
- *   - ?backend=apps_script in the URL, or
- *   - localStorage['unit3.backendMode'] = 'APPS_SCRIPT'
- * are honoured by Unit3BackendMode.getMode() when present. Learners are not
- * shown backend-selection UI.
+ * the tutor. Query string (`?backend=`) and localStorage
+ * (`unit3.backendMode`) overrides are ignored by Unit3BackendMode.getMode().
+ * Support rollback is an explicit `backendMode` change in this file, not a
+ * learner-controlled switch. There is no backend-selection UI.
  *
  * Week 1 override (deterministic, not an error fallback):
  *   Activity API pages under /activities/activity.html, /week-1/, and

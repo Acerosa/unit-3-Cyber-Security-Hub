@@ -48,14 +48,16 @@ foundation is loaded on the Week 1 routes.
 
 ## Controlled Apps Script rollback
 
-Apps Script implementations remain in the repository. Support/dev can force
-rollback for Weeks 2–7 without changing learner-facing UI:
+Apps Script implementations remain in the repository for Week 1 (required) and
+Weeks 2–7 (rollback-only). `Unit3BackendMode.getMode()` does **not** honour
+`?backend=` or `localStorage['unit3.backendMode']`. Learners cannot switch
+transport.
 
-- URL: `?backend=apps_script`
-- Storage: `localStorage['unit3.backendMode'] = 'APPS_SCRIPT'`
+Support rollback for Weeks 2–7 is an explicit `backendMode` change in
+`js/config/supabase-config.js`, not a query-string or browser-storage switch.
 
 There is no silent transport fallback. If Supabase fails, the failure stays
-visible. Rollback must be an explicit, observable override.
+visible.
 
 ## Backend activation prerequisites
 
