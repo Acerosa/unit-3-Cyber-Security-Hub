@@ -3,13 +3,16 @@
  *
  * The Apps Script data packs (imported into Supabase) use catalogue stable
  * keys such as W2OCR-Q01 / MOTKC1 / MAP1MOT. The static frontend data files
- * often use different local IDs (ocr-q1 / mot-kc1 / map-espionage). This
+ * often use different local IDs (ocr-q1 / mot-kc1 / map-espionage-mot). This
  * module is the single boundary map — never scatter aliases across pages.
  *
  * Resolution order in Unit3ActivityKeyMap.normaliseQuestionKey(id, activityKey):
  *   1. explicit alias for (activityKey, frontendId)
- *   2. uppercase
- *   3. uppercase with hyphens removed
+ *   2. case-insensitive match against that activity's canonical keys
+ *   3. fail closed for known local IDs that have no alias
+ *   4. uppercase passthrough
+ *
+ * Hosted question IDs are never renamed here.
  */
 (function () {
   "use strict";
@@ -30,7 +33,8 @@
       "ocr-q4": "W2OCR-Q04",
       "ocr-q5": "W2OCR-Q05",
       "ocr-q6": "W2OCR-Q06",
-      "ocr-q7": "W2OCR-Q07"
+      "ocr-q7": "W2OCR-Q07",
+      "ocr-q8": "W2OCR-Q08"
     },
     "week2-vulnerabilities101-reflection": {
       "notes": "W2V101-Q01",
@@ -61,10 +65,14 @@
       "mot-kc8": "MOTKC8"
     },
     "week4-mtm-mapping": {
-      "map-espionage": "MAP1",
-      "map-hacktivism": "MAP2",
-      "map-ransomware": "MAP3",
-      "map-defacement": "MAP4"
+      "map-espionage-mot": "MAP1MOT",
+      "map-espionage-tgt": "MAP1TGT",
+      "map-hacktivism-mot": "MAP2MOT",
+      "map-hacktivism-tgt": "MAP2TGT",
+      "map-ransomware-mot": "MAP3MOT",
+      "map-ransomware-tgt": "MAP3TGT",
+      "map-defacement-mot": "MAP4MOT",
+      "map-defacement-tgt": "MAP4TGT"
     },
     "week4-ocr-question-practice": {
       "ocr-1": "OCR1",
@@ -163,22 +171,128 @@
     }
   });
 
+  /*
+   * Local IDs that must never silently uppercase into a non-catalogue key.
+   * If a frontend ID matches the pattern and has no alias, mapping fails closed.
+   */
+  var CLOSED_FRONTEND = Object.freeze({
+    "week2-ocr-question-practice": /^ocr-q\d+$/i,
+    "week4-mtm-mapping":
+      /^map-(espionage|hacktivism|ransomware|defacement)(?:-mot|-tgt)?$/i
+  });
+
+  /*
+   * Week 1 live engine IDs are already catalogue keys (BAS-Q01, INC-Q01, …).
+   * Unknown local IDs such as b-q1 must not be invented as B-Q1.
+   */
+  var REQUIRED_RESULT = Object.freeze({
+    "u3-w01-baseline": /^BAS-Q\d{2}$/,
+    "u3-w01-cia": /^CIA-Q\d{2}$/,
+    "u3-w01-incidents": /^INC-Q\d{2}$/,
+    "u3-w01-glossary": /^GLO-Q\d{2}$/,
+    "u3-w01-retrieval": /^RET-Q\d{2}[A-Z]?$/,
+    "u3-w01-command-words": /^Q\d{3}$/,
+    "u3-w01-ocr-practice": /^OCR-Q/,
+    "u3-w01-peer-improvement": /^PM-Q\d{2}$/
+  });
+
+  /*
+   * Classification labels that Batch B stores as single-choice option letters.
+   * Preserve the original category fields; also emit the hosted optionId.
+   */
+  var CATEGORY_OPTION_ALIASES = freezeMap({
+    "week2-threat-vulnerability-sort": {
+      threat: "A",
+      vulnerability: "B"
+    }
+  });
+
+  var LABEL_OPTION_ALIASES = freezeMap({
+    "week4-mtm-mapping": {
+      Espionage: "m0",
+      "Righting perceived wrongs": "m1",
+      "Public good": "m2",
+      Publicity: "m3",
+      Thrill: "m4",
+      Fraud: "m5",
+      "Score settling": "m6",
+      "Income generation": "m7",
+      People: "t0",
+      Organisations: "t1",
+      Equipment: "t2",
+      Information: "t3"
+    }
+  });
+
+  function activityName(activityKey) {
+    return typeof activityKey === "string" ? activityKey.trim().toLowerCase() : "";
+  }
+
+  function tableFor(activityKey) {
+    return ALIASES[activityName(activityKey)] || {};
+  }
+
+  function resolve(activityKey, questionId) {
+    var raw = typeof questionId === "string" ? questionId.trim() : "";
+    if (!raw) return "";
+    var table = tableFor(activityKey);
+    if (Object.prototype.hasOwnProperty.call(table, raw)) {
+      return table[raw];
+    }
+    var lower = raw.toLowerCase();
+    if (Object.prototype.hasOwnProperty.call(table, lower)) {
+      return table[lower];
+    }
+    var keys = Object.keys(table);
+    var upper = raw.toUpperCase();
+    var i;
+    for (i = 0; i < keys.length; i += 1) {
+      var canonical = table[keys[i]];
+      if (typeof canonical === "string" && canonical.toUpperCase() === upper) {
+        return canonical;
+      }
+    }
+    return "";
+  }
+
+  function closedFrontendPattern(activityKey) {
+    return CLOSED_FRONTEND[activityName(activityKey)] || null;
+  }
+
+  function requiredResultPattern(activityKey) {
+    return REQUIRED_RESULT[activityName(activityKey)] || null;
+  }
+
+  function resolveLabelOption(activityKey, label) {
+    var table = LABEL_OPTION_ALIASES[activityName(activityKey)] || {};
+    var raw = typeof label === "string" ? label.trim() : "";
+    if (!raw) return "";
+    if (Object.prototype.hasOwnProperty.call(table, raw)) return table[raw];
+    return "";
+  }
+
+  function resolveCategoryOption(activityKey, category) {
+    var table = CATEGORY_OPTION_ALIASES[activityName(activityKey)] || {};
+    var raw = typeof category === "string" ? category.trim() : "";
+    if (!raw) return "";
+    if (Object.prototype.hasOwnProperty.call(table, raw)) return table[raw];
+    if (Object.prototype.hasOwnProperty.call(table, raw.toLowerCase())) {
+      return table[raw.toLowerCase()];
+    }
+    return "";
+  }
+
   window.Unit3QuestionKeyAliases = Object.freeze({
     ALIASES: ALIASES,
-    resolve: function (activityKey, questionId) {
-      var activity =
-        typeof activityKey === "string" ? activityKey.trim().toLowerCase() : "";
-      var raw = typeof questionId === "string" ? questionId.trim() : "";
-      if (!raw) return "";
-      var table = ALIASES[activity] || {};
-      if (Object.prototype.hasOwnProperty.call(table, raw)) {
-        return table[raw];
-      }
-      var lower = raw.toLowerCase();
-      if (Object.prototype.hasOwnProperty.call(table, lower)) {
-        return table[lower];
-      }
-      return "";
-    }
+    CLOSED_FRONTEND: CLOSED_FRONTEND,
+    REQUIRED_RESULT: REQUIRED_RESULT,
+    CATEGORY_OPTION_ALIASES: CATEGORY_OPTION_ALIASES,
+    LABEL_OPTION_ALIASES: LABEL_OPTION_ALIASES,
+    tableFor: tableFor,
+    resolve: resolve,
+    closedFrontendPattern: closedFrontendPattern,
+    requiredResultPattern: requiredResultPattern,
+    resolveCategoryOption: resolveCategoryOption,
+    resolveLabelOption: resolveLabelOption
   });
 })();

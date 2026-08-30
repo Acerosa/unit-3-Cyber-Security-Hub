@@ -5,7 +5,7 @@
  *   - Supabase public configuration exists with no privileged credentials
  *   - Explicit rollback backend mode with no automatic Apps Script fallback
  *   - Activity key normalisation (Week 1 upper- to lower-case)
- *   - Activity version mapping (1.0 -> 1.0.0)
+ *   - Activity version mapping (1.0 fallback; Batch B catalogue versions by activity)
  *   - Question stable key uppercasing
  *   - Adapter payload shape (only the eight RPC parameters, no browser-owned
  *     learner identity fields)
@@ -209,6 +209,36 @@
         keyMap.normaliseActivityVersion("2.1.3"),
         "2.1.3"
       );
+      assertEquals(
+        results,
+        "catalogue-version-week2-malware",
+        keyMap.catalogueVersionFor("week2-malware-symptoms"),
+        "1.1.0"
+      );
+      assertEquals(
+        results,
+        "catalogue-version-week2-ocr",
+        keyMap.catalogueVersionFor("week2-ocr-question-practice"),
+        "1.2.0"
+      );
+      assertEquals(
+        results,
+        "catalogue-version-week5-patterns",
+        keyMap.catalogueVersionFor("week5-vulnerability-patterns"),
+        "1.0.0"
+      );
+      assertEquals(
+        results,
+        "catalogue-version-week1",
+        keyMap.catalogueVersionFor("U3-W01-BASELINE"),
+        "1.2.0"
+      );
+      assertEquals(
+        results,
+        "activity-version-uses-catalogue-when-activity-known",
+        keyMap.normaliseActivityVersion("1.0", "week2-session1-retrieval"),
+        "1.1.0"
+      );
       var threwOnForbidden = false;
       try {
         keyMap.assertNoLearnerIdentity({ studentId: "AB123" });
@@ -257,7 +287,7 @@
         results,
         "payload-activity-version-mapped",
         payload.p_activity_version,
-        "1.0.0"
+        "1.1.0"
       );
       assertEquals(
         results,
@@ -281,7 +311,7 @@
         results,
         "payload-response-payload-preserved",
         payload.p_responses[0].response_payload,
-        { chosenIndex: 1, selectedOptionId: "b", optionId: "b" }
+        { chosenIndex: 1, selectedOptionId: "B", optionId: "B" }
       );
       assertEquals(
         results,
@@ -320,15 +350,16 @@
         /"student_id"|"studentId"|"enrolment_id"|"assignment_id"|"attempt_number"|"max_score"/i
       );
 
-      // Week 1 case normalisation from the adapter
+      // Week 1 mapping uses live catalogue keys and Batch B 1.2.0.
+      // Production submit remains Apps Script; this only tests the mapping layer.
       var week1Payload = adapter.buildRpcPayload({
         activityId: "U3-W01-BASELINE",
         activityVersion: "1.0",
         clientAttemptId: "22222222-2222-2222-2222-222222222222",
         responses: [
           {
-            questionId: "b-q1",
-            response: "example",
+            questionId: "BAS-Q01",
+            response: { optionId: "a" },
             correct: true,
             score: 1
           }
@@ -339,6 +370,24 @@
         "week1-payload-activity-key-lowercased",
         week1Payload.p_activity_key,
         "u3-w01-baseline"
+      );
+      assertEquals(
+        results,
+        "week1-payload-activity-version-batch-b",
+        week1Payload.p_activity_version,
+        "1.2.0"
+      );
+      assertEquals(
+        results,
+        "week1-payload-question-id",
+        week1Payload.p_responses[0].question_id,
+        "BAS-Q01"
+      );
+      assertEquals(
+        results,
+        "week1-payload-omits-is-correct",
+        week1Payload.p_responses[0].is_correct,
+        undefined
       );
 
       // Stable client_attempt_id across the same attempt
@@ -557,6 +606,30 @@
       );
       assertEquals(
         results,
+        "alias-week2-ocr-q8",
+        keyMap.normaliseQuestionKey("ocr-q8", "week2-ocr-question-practice"),
+        "W2OCR-Q08"
+      );
+      assertEquals(
+        results,
+        "alias-week2-ocr-canonical-passthrough",
+        keyMap.normaliseQuestionKey("W2OCR-Q08", "week2-ocr-question-practice"),
+        "W2OCR-Q08"
+      );
+      assertEquals(
+        results,
+        "alias-week4-mtm-mot",
+        keyMap.normaliseQuestionKey("map-espionage-mot", "week4-mtm-mapping"),
+        "MAP1MOT"
+      );
+      assertEquals(
+        results,
+        "alias-week4-mtm-tgt",
+        keyMap.normaliseQuestionKey("MAP4TGT", "week4-mtm-mapping"),
+        "MAP4TGT"
+      );
+      assertEquals(
+        results,
         "alias-week4-motivation",
         keyMap.normaliseQuestionKey("mot-kc3", "week4-motivations-learning"),
         "MOTKC3"
@@ -665,7 +738,7 @@
         results,
         "mixed-payload-version",
         mixedPayload.p_activity_version,
-        "1.0.0"
+        "1.1.0"
       );
       assertEquals(
         results,
@@ -673,6 +746,359 @@
         mixedPayload.p_responses[0].question_id,
         "SORT-01"
       );
+      assertEquals(
+        results,
+        "mixed-payload-sort-option-from-category",
+        mixedPayload.p_responses[0].response_payload.optionId,
+        "A"
+      );
+      assertEquals(
+        results,
+        "mixed-payload-sort-preserves-category",
+        mixedPayload.p_responses[0].response_payload.category,
+        "threat"
+      );
+    }
+
+    if (adapter && keyMap) {
+      var chosenIndexPayload = adapter.normaliseResponse(
+        {
+          questionId: "mw-q1",
+          response: { chosenIndex: 1 },
+          responseType: "single-choice"
+        },
+        "week2-malware-symptoms"
+      );
+      assertEquals(
+        results,
+        "chosen-index-fallback-week2-uppercase",
+        chosenIndexPayload.response_payload.optionId,
+        "B"
+      );
+
+      var ocrOption = adapter.normaliseResponse(
+        {
+          questionId: "ocr-q7",
+          response: { chosenIndex: 2, selectedOptionId: "c" },
+          responseType: "single-choice"
+        },
+        "week2-ocr-question-practice"
+      );
+      assertEquals(results, "ocr-q7-maps-to-q07", ocrOption.question_id, "W2OCR-Q07");
+      assertEquals(
+        results,
+        "ocr-option-letter-lowercase",
+        ocrOption.response_payload.optionId,
+        "c"
+      );
+
+      var selectedAlias = adapter.normaliseResponse(
+        {
+          questionId: "P1",
+          response: { selectedOptionId: "A" },
+          responseType: "single-choice"
+        },
+        "week5-vulnerability-patterns"
+      );
+      assertEquals(
+        results,
+        "selected-option-id-to-option-id-lower",
+        selectedAlias.response_payload.optionId,
+        "a"
+      );
+
+      var week5Version = adapter.buildRpcPayload({
+        activityId: "week5-vulnerability-patterns",
+        activityVersion: "1.0",
+        clientAttemptId: "44444444-4444-4444-4444-444444444444",
+        responses: [{ questionId: "P1", response: { optionId: "a" } }]
+      });
+      assertEquals(
+        results,
+        "week5-patterns-keeps-1-0-0",
+        week5Version.p_activity_version,
+        "1.0.0"
+      );
+
+      var ocrVersion = adapter.buildRpcPayload({
+        activityId: "week2-ocr-question-practice",
+        activityVersion: "1.0",
+        clientAttemptId: "55555555-5555-5555-5555-555555555555",
+        responses: [
+          { questionId: "ocr-q8", response: { text: "phishing at Northbank" } }
+        ]
+      });
+      assertEquals(results, "ocr-version-1-2-0", ocrVersion.p_activity_version, "1.2.0");
+      assertEquals(
+        results,
+        "ocr-q8-maps-to-w2ocr-q08",
+        ocrVersion.p_responses[0].question_id,
+        "W2OCR-Q08"
+      );
+      assertDeepEqual(
+        results,
+        "ocr-q8-text-passthrough",
+        ocrVersion.p_responses[0].response_payload,
+        { text: "phishing at Northbank" }
+      );
+
+      var classificationMapped = adapter.normaliseResponse(
+        {
+          questionId: "sort-01",
+          response: {
+            category: "vulnerability",
+            justification: "Weak password."
+          },
+          responseType: "classification"
+        },
+        "week2-threat-vulnerability-sort"
+      );
+      assertDeepEqual(
+        results,
+        "classification-maps-category-and-option",
+        classificationMapped.response_payload,
+        {
+          category: "vulnerability",
+          justification: "Weak password.",
+          optionId: "B",
+          categoryId: "vulnerability"
+        }
+      );
+
+      var incidents = adapter.normaliseResponse(
+        {
+          questionId: "INC-Q01",
+          value: {
+            incidentType: "phishing",
+            ciaAim: "Confidentiality",
+            evidence: "Fake invoice email."
+          },
+          responseType: "matching"
+        },
+        "U3-W01-INCIDENTS"
+      );
+      assertEquals(results, "week1-incident-key", incidents.question_id, "INC-Q01");
+      assertDeepEqual(
+        results,
+        "week1-incident-multi-field-preserved",
+        incidents.response_payload,
+        {
+          incidentType: "phishing",
+          ciaAim: "Confidentiality",
+          evidence: "Fake invoice email."
+        }
+      );
+
+      var legislation = adapter.normaliseResponse(
+        {
+          questionId: "M1",
+          response: {
+            legislation: "Computer Misuse Act 1990",
+            duty: "Unauthorised access"
+          },
+          responseType: "matching"
+        },
+        "week6-legislation-matching"
+      );
+      assertDeepEqual(
+        results,
+        "legislation-multi-field-preserved",
+        legislation.response_payload,
+        {
+          legislation: "Computer Misuse Act 1990",
+          duty: "Unauthorised access"
+        }
+      );
+
+      var mtmMot = adapter.normaliseResponse(
+        {
+          questionId: "MAP1MOT",
+          response: {
+            motivation: "Espionage",
+            evidence: "Quiet collection",
+            connection: "Secret documents without publicity."
+          },
+          responseType: "structured"
+        },
+        "week4-mtm-mapping"
+      );
+      assertEquals(results, "mtm-mot-option-from-label", mtmMot.response_payload.optionId, "m0");
+      assertEquals(
+        results,
+        "mtm-mot-keeps-motivation",
+        mtmMot.response_payload.motivation,
+        "Espionage"
+      );
+
+      var week7Path = adapter.buildRpcPayload({
+        activityId: "week7-session2-retrieval",
+        activityVersion: "1.0",
+        clientAttemptId: "66666666-6666-6666-6666-666666666666",
+        responses: [{ questionId: "S2R1", response: { chosenIndex: 0 } }]
+      });
+      assertEquals(
+        results,
+        "week7-submission-path-version",
+        week7Path.p_activity_version,
+        "1.1.0"
+      );
+      assertEquals(results, "week7-submission-path-key", week7Path.p_responses[0].question_id, "S2R1");
+      assertEquals(
+        results,
+        "week7-chosen-index-lower-letter",
+        week7Path.p_responses[0].response_payload.optionId,
+        "a"
+      );
+
+      var marked = adapter.normaliseResponse(
+        {
+          questionId: "S1-Q1",
+          response: {
+            optionId: "B",
+            awarded_score: 1,
+            is_correct: true
+          }
+        },
+        "week2-session1-retrieval"
+      );
+      assertEquals(results, "strips-awarded-score", marked.response_payload.awarded_score, undefined);
+      assertEquals(results, "strips-is-correct", marked.response_payload.is_correct, undefined);
+      assertEquals(results, "keeps-server-option", marked.response_payload.optionId, "B");
+
+      var unknownAliasThrew = false;
+      var unknownAliasMessage = "";
+      try {
+        keyMap.normaliseQuestionKey("ocr-q99", "week2-ocr-question-practice");
+      } catch (err) {
+        unknownAliasThrew = /UNKNOWN_QUESTION/.test(String(err && err.message));
+        unknownAliasMessage = String(err && err.message);
+      }
+      record(
+        results,
+        "unknown-alias-fails-closed",
+        unknownAliasThrew,
+        unknownAliasThrew ? "" : unknownAliasMessage || "expected UNKNOWN_QUESTION"
+      );
+
+      var bareMtmThrew = false;
+      try {
+        keyMap.normaliseQuestionKey("map-espionage", "week4-mtm-mapping");
+      } catch (err) {
+        bareMtmThrew = /UNKNOWN_QUESTION/.test(String(err && err.message));
+      }
+      record(
+        results,
+        "mtm-bare-scenario-fails-closed",
+        bareMtmThrew,
+        bareMtmThrew ? "" : "map-espionage must not invent MAP1"
+      );
+
+      var missingWeek1Threw = false;
+      try {
+        adapter.normaliseResponse(
+          { questionId: "b-q1", response: "example" },
+          "U3-W01-BASELINE"
+        );
+      } catch (err) {
+        missingWeek1Threw = /UNKNOWN_QUESTION/.test(String(err && err.message));
+      }
+      record(
+        results,
+        "missing-week1-mapping-fails-closed",
+        missingWeek1Threw,
+        missingWeek1Threw ? "" : "b-q1 must not invent B-Q1"
+      );
+
+      var malformedThrew = false;
+      try {
+        adapter.normaliseResponse(
+          {
+            questionId: "sort-01",
+            response: "threat",
+            responseType: "classification"
+          },
+          "week2-threat-vulnerability-sort"
+        );
+      } catch (err) {
+        malformedThrew = /MALFORMED_CLASSIFICATION/.test(String(err && err.message));
+      }
+      record(
+        results,
+        "malformed-classification-fails-closed",
+        malformedThrew,
+        malformedThrew ? "" : "string classification payload must throw"
+      );
+
+      var emptyClassificationThrew = false;
+      try {
+        adapter.normaliseResponse(
+          {
+            questionId: "sort-01",
+            response: {},
+            responseType: "classification"
+          },
+          "week2-threat-vulnerability-sort"
+        );
+      } catch (err) {
+        emptyClassificationThrew = /MALFORMED_CLASSIFICATION/.test(
+          String(err && err.message)
+        );
+      }
+      record(
+        results,
+        "empty-classification-fails-closed",
+        emptyClassificationThrew,
+        emptyClassificationThrew ? "" : "empty classification object must throw"
+      );
+
+      var week1Counts = {
+        "u3-w01-baseline": [
+          "BAS-Q01",
+          "BAS-Q02",
+          "BAS-Q03",
+          "BAS-Q04",
+          "BAS-Q05",
+          "BAS-Q06",
+          "BAS-Q07",
+          "BAS-Q08",
+          "BAS-Q09",
+          "BAS-Q10"
+        ],
+        "u3-w01-incidents": [
+          "INC-Q01",
+          "INC-Q02",
+          "INC-Q03",
+          "INC-Q04",
+          "INC-Q05",
+          "INC-Q06",
+          "INC-Q07",
+          "INC-Q08",
+          "INC-Q09",
+          "INC-Q10",
+          "INC-Q11",
+          "INC-Q12"
+        ]
+      };
+      Object.keys(week1Counts).forEach(function (activityId) {
+        var keys = week1Counts[activityId];
+        var mapped = keys.map(function (id) {
+          return keyMap.normaliseQuestionKey(id, activityId);
+        });
+        var unique = mapped.filter(function (id, index) {
+          return mapped.indexOf(id) === index;
+        });
+        record(
+          results,
+          "week1-response-count-" + activityId,
+          unique.length === keys.length &&
+            unique.every(function (id, index) {
+              return id === keys[index];
+            }),
+          unique.length === keys.length
+            ? ""
+            : "mapped " + unique.join(",")
+        );
+      });
     }
 
     return results;

@@ -33,10 +33,10 @@
 
   var VERSION_ALIASES = Object.freeze({
     /*
-     * Frontend activity metadata records activityVersion as '1.0' but the
-     * Supabase catalogue stores activity versions as '1.0.0'. This is a
-     * single central mapping — never scatter conversion logic across
-     * week scripts.
+     * Fallback only when no activity key is available. Outbound Unit 3
+     * submits use Unit3ActivityKeyMap.catalogueVersionFor(activityKey)
+     * so Weeks 2–7 target Batch B (1.1.0 / 1.2.0 / kept 1.0.0) rather
+     * than historical 1.0.0. Never scatter conversion across week scripts.
      */
     "1.0": "1.0.0"
   });
