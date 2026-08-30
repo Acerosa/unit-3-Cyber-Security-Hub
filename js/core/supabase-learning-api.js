@@ -2,8 +2,8 @@
  * Unit 3 learner API compatibility adapter.
  *
  * Core owns Auth, profile, enrolment, assignment and progress reads. The
- * scored-evidence RPC remains a hub adapter because submission contract 0.1.0
- * still expects client-marked awarded_score/is_correct fields.
+ * scored-evidence RPC remains a hub adapter because Unit 3 question keys and
+ * option aliases still need hub-specific normalisation. Marks are not sent.
  */
 (function () {
   "use strict";
