@@ -10278,6 +10278,1054 @@
   {
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
+    "id": "week5-secure-rewrite",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Improving insecure implementations",
+      "status": "available",
+      "summary": "Choose a secure alternative for each fictional Northbank snippet and explain one root-cause fix.",
+      "href": null,
+      "activityType": "Guided learning",
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "week5-secure-rewrite-q-r1",
+        "week5-secure-rewrite-q-r2",
+        "week5-secure-rewrite-q-r3",
+        "week5-secure-rewrite-q-r4",
+        "week5-secure-rewrite-q-r5",
+        "week5-secure-rewrite-q-r6",
+        "week5-secure-rewrite-explain"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-secure-rewrite-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Improving insecure implementations",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-secure-rewrite-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Each item shows a deliberately insecure training snippet, then asks you to choose a secure alternative. The goal is to fix the root cause (how data and access are handled), not to hide one example string. All data is fictional."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-secure-rewrite-boundary",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "callout",
+        "content": {
+          "text": "These snippets are incomplete on purpose. They only need to show that the weakness exists. Do not extend them into working attacks, and do not copy them into production systems."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-secure-rewrite-q-r1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-secure-rewrite:r1",
+          "sourceQuestionId": "r1",
+          "prompt": "Insecure training lookup: query = \"SELECT * FROM training_patients WHERE surname = '\" + typedSurname + \"'\". Which rewrite is the secure alternative?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Keep concatenating, but convert the surname to uppercase first"
+            },
+            {
+              "id": "b",
+              "label": "Use a parameterised query so the surname is bound as data, not mixed into the SQL text"
+            },
+            {
+              "id": "c",
+              "label": "Hide the lookup behind a longer URL"
+            },
+            {
+              "id": "d",
+              "label": "Print the full query on the screen so staff can check it"
+            }
+          ],
+          "correctOptionId": "b",
+          "feedback": {
+            "correct": "Parameter binding (or an equivalent ORM API) keeps untrusted text out of the SQL structure. Filtering a few characters is brittle and is not the root-cause fix.",
+            "incorrect": "Parameter binding (or an equivalent ORM API) keeps untrusted text out of the SQL structure. Filtering a few characters is brittle and is not the root-cause fix."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-secure-rewrite-q-r2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-secure-rewrite:r2",
+          "sourceQuestionId": "r2",
+          "prompt": "Insecure training page: comments.innerHTML = visitorMessage. Which rewrite is appropriate?",
+          "options": [
+            {
+              "id": "a",
+              "label": "comments.textContent = visitorMessage (or another encoding-safe output method)"
+            },
+            {
+              "id": "b",
+              "label": "comments.innerHTML = visitorMessage + visitorMessage"
+            },
+            {
+              "id": "c",
+              "label": "Disable CSS so scripts cannot run"
+            },
+            {
+              "id": "d",
+              "label": "Store the message twice in localStorage"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "textContent (or auto-escaping templates) treats the message as text. Doubling innerHTML or relying on CSS does not fix unsafe HTML insertion.",
+            "incorrect": "textContent (or auto-escaping templates) treats the message as text. Doubling innerHTML or relying on CSS does not fix unsafe HTML insertion."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-secure-rewrite-q-r3",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-secure-rewrite:r3",
+          "sourceQuestionId": "r3",
+          "prompt": "Insecure training config: CLINIC_DEMO_TOKEN = \"not-a-real-secret\" committed next to the app. What should happen?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Leave it, because the value says it is not real"
+            },
+            {
+              "id": "b",
+              "label": "Remove it from the file, load secrets from a secret store or environment at run time, and rotate any value that was copied"
+            },
+            {
+              "id": "c",
+              "label": "Rename the variable to TOKEN2"
+            },
+            {
+              "id": "d",
+              "label": "Email the token to every staff member so they remember it"
+            }
+          ],
+          "correctOptionId": "b",
+          "feedback": {
+            "correct": "Secrets must not travel with source copies. Rotate anything that was exposed, even in a demo, so the old value cannot be reused.",
+            "incorrect": "Secrets must not travel with source copies. Rotate anything that was exposed, even in a demo, so the old value cannot be reused."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-secure-rewrite-q-r4",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-secure-rewrite:r4",
+          "sourceQuestionId": "r4",
+          "prompt": "Insecure records route: return trainingRecord(idFromUrl) with no further check. What is the secure alternative?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Load the record only if the signed-in clinician is authorised for that patient or role"
+            },
+            {
+              "id": "b",
+              "label": "Use a longer patient number so it is harder to guess"
+            },
+            {
+              "id": "c",
+              "label": "Show a warning banner but still return any record"
+            },
+            {
+              "id": "d",
+              "label": "Cache every training record in the browser"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Object-level authorisation is the root-cause fix. Longer IDs (obscurity) do not replace an access check.",
+            "incorrect": "Object-level authorisation is the root-cause fix. Longer IDs (obscurity) do not replace an access check."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-secure-rewrite-q-r5",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-secure-rewrite:r5",
+          "sourceQuestionId": "r5",
+          "prompt": "Insecure kiosk setup: a shared admin / admin login on the training terminal. What is the secure alternative?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Unique accounts, no default passwords, and MFA where the platform supports it"
+            },
+            {
+              "id": "b",
+              "label": "Write admin / admin on a sticky note under the keyboard"
+            },
+            {
+              "id": "c",
+              "label": "Use admin / admin but change the username to Admin"
+            },
+            {
+              "id": "d",
+              "label": "Disable the screen lock so staff save time"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Shared defaults are the weakness. Unique credentials and extra factors reduce the chance that one leaked password opens the kiosk.",
+            "incorrect": "Shared defaults are the weakness. Unique credentials and extra factors reduce the chance that one leaked password opens the kiosk."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-secure-rewrite-q-r6",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-secure-rewrite:r6",
+          "sourceQuestionId": "r6",
+          "prompt": "Insecure share: Everyone (clinic Wi-Fi) = Read on the draft-letters folder. What is the secure alternative?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Restrict the share to the staff group that needs those files; keep guests off that folder"
+            },
+            {
+              "id": "b",
+              "label": "Add more files to the same open share so it is harder to find letters"
+            },
+            {
+              "id": "c",
+              "label": "Rename the folder to PRIVATE but leave Everyone = Read"
+            },
+            {
+              "id": "d",
+              "label": "Email all draft letters to a public mailing list instead"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Least privilege on the share is the configuration fix. Renaming or hiding files does not change who can open them.",
+            "incorrect": "Least privilege on the share is the configuration fix. Renaming or hiding files does not change who can open them."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-secure-rewrite-explain",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "formative": true,
+          "questionId": "week5-secure-rewrite:explain",
+          "sourceQuestionId": "explain",
+          "prompt": "Choose one insecure snippet. Explain the weakness, the possible impact for Northbank, the secure alternative you chose, and one way a reviewer could detect a regression. Do not include attack steps against a real system.",
+          "minChars": 150,
+          "guidance": "Cover weakness, impact, fix, and detection. Fix the root cause, not one example string."
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "week5-controls-matching",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Choosing defensive controls",
+      "status": "available",
+      "summary": "Match Northbank situations to an appropriate control and justify one recommendation.",
+      "href": null,
+      "activityType": "Classification",
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "week5-controls-matching-classification",
+        "week5-controls-matching-justify"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-controls-matching-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Choosing defensive controls",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-controls-matching-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "A control reduces risk by removing a weakness, limiting a threat, or reducing impact. Pick the control that best fits each fictional Northbank situation. Prefer the control that treats the root cause, not a single symptom."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-controls-matching-classification",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "classification",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-controls-matching",
+          "sourceQuestionId": "week5-controls-matching",
+          "prompt": "Match each situation to the most appropriate defensive control.",
+          "categories": [
+            {
+              "id": "Patching and updates",
+              "label": "Patching and updates"
+            },
+            {
+              "id": "Access control",
+              "label": "Access control / least privilege"
+            },
+            {
+              "id": "Input validation",
+              "label": "Input validation / safe queries"
+            },
+            {
+              "id": "Secrets hygiene",
+              "label": "Secrets and credential hygiene"
+            },
+            {
+              "id": "Detection",
+              "label": "Detection and monitoring"
+            }
+          ],
+          "items": [
+            {
+              "id": "c1",
+              "text": "The kiosk still runs last year’s booking component after the vendor issued a fix.",
+              "correctCategoryId": "Patching and updates",
+              "explanation": "Apply the vendor fix and keep a version inventory. Patching treats the unpatched-software vulnerability."
+            },
+            {
+              "id": "c2",
+              "text": "The training app shows any patient record whose number appears in the URL.",
+              "correctCategoryId": "Access control",
+              "explanation": "Check that the signed-in user is allowed to see that record (object-level authorisation)."
+            },
+            {
+              "id": "c3",
+              "text": "Surnames are concatenated into a SQL string in a training lookup.",
+              "correctCategoryId": "Input validation",
+              "explanation": "Use parameterised queries and validate/encode untrusted input so it cannot change the query."
+            },
+            {
+              "id": "c4",
+              "text": "A demo token is written into a config file that is copied with the project.",
+              "correctCategoryId": "Secrets hygiene",
+              "explanation": "Remove the secret from source, store it in a proper secret store, and rotate the demo value."
+            },
+            {
+              "id": "c5",
+              "text": "Reception still uses the original admin / admin kiosk login.",
+              "correctCategoryId": "Secrets hygiene",
+              "explanation": "Unique credentials, no shared defaults, and MFA where the platform supports it. This is credential hygiene rather than a network monitor."
+            },
+            {
+              "id": "c6",
+              "text": "Wi-Fi guests can open the shared folder of draft clinic letters.",
+              "correctCategoryId": "Access control",
+              "explanation": "Tighten share permissions and separate guest and staff access (least privilege)."
+            },
+            {
+              "id": "c7",
+              "text": "Managers want an alert if many failed logins hit the kiosk overnight.",
+              "correctCategoryId": "Detection",
+              "explanation": "Logging and alerting detect suspected misuse. Detection does not replace patching or access control."
+            },
+            {
+              "id": "c8",
+              "text": "A reviewer is asked to find innerHTML assignments that use visitor-supplied text.",
+              "correctCategoryId": "Detection",
+              "explanation": "Code review and scanning are detection methods for unsafe output handling; the later fix is encoding or textContent."
+            }
+          ],
+          "feedback": {
+            "correct": "Those situations match the expected controls.",
+            "incorrect": "Ask whether the need is to patch, restrict access, handle input safely, protect secrets, or detect misuse."
+          }
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-controls-matching-justify",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "formative": true,
+          "questionId": "week5-controls-matching:justify",
+          "sourceQuestionId": "justify",
+          "prompt": "Choose one Northbank situation. Name the vulnerability, the control you would recommend, and how you would tell whether the control is working. Do not propose attacking a live system.",
+          "minChars": 120,
+          "guidance": "Name the weakness, the control, and a simple effectiveness check (for example: the record lookup now denies other clinicians)."
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "week5-threat-vulnerability-risk",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Vulnerability, threat and risk",
+      "status": "available",
+      "summary": "Classify Northbank statements as vulnerability, threat or risk, then explain how they connect.",
+      "href": null,
+      "activityType": "Classification",
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "week5-threat-vulnerability-risk-classification",
+        "week5-threat-vulnerability-risk-explain"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-threat-vulnerability-risk-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Vulnerability, threat and risk",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-threat-vulnerability-risk-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Keep the three terms separate. A vulnerability is a weakness. A threat is a potential cause of harm (a person, process or event). Risk is the combination of that threat using a vulnerability and the impact that would follow. Classify each statement, then explain one chain in your own words."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-threat-vulnerability-risk-classification",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "classification",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-threat-vulnerability-risk",
+          "sourceQuestionId": "week5-threat-vulnerability-risk",
+          "prompt": "Classify each statement as a vulnerability, a threat, or a risk.",
+          "categories": [
+            {
+              "id": "Vulnerability",
+              "label": "Vulnerability"
+            },
+            {
+              "id": "Threat",
+              "label": "Threat"
+            },
+            {
+              "id": "Risk",
+              "label": "Risk"
+            }
+          ],
+          "items": [
+            {
+              "id": "t1",
+              "text": "The training booking app concatenates surnames into a SQL string.",
+              "correctCategoryId": "Vulnerability",
+              "explanation": "This is a weakness in how the app is written."
+            },
+            {
+              "id": "t2",
+              "text": "A criminal group that tries to steal clinic appointment data for fraud.",
+              "correctCategoryId": "Threat",
+              "explanation": "This names who might cause harm, not the weakness itself."
+            },
+            {
+              "id": "t3",
+              "text": "If the unpatched kiosk is reached, patients may miss reviews and Northbank’s reputation may be damaged.",
+              "correctCategoryId": "Risk",
+              "explanation": "This combines a weakness with possible impact — that is risk language."
+            },
+            {
+              "id": "t4",
+              "text": "The shared training folder allows any Wi-Fi guest to read draft letters.",
+              "correctCategoryId": "Vulnerability",
+              "explanation": "Over-open permissions are a configuration weakness."
+            },
+            {
+              "id": "t5",
+              "text": "Ransomware operators targeting health organisations this year.",
+              "correctCategoryId": "Threat",
+              "explanation": "A threat is a potential source of harm, even before a specific clinic is hit."
+            },
+            {
+              "id": "t6",
+              "text": "There is a realistic chance that default kiosk logins lead to cancelled appointments and clinical delay.",
+              "correctCategoryId": "Risk",
+              "explanation": "Likelihood plus impact is risk, not just the weak password itself."
+            },
+            {
+              "id": "t7",
+              "text": "No check that clinician A is allowed to open patient 1044’s training record.",
+              "correctCategoryId": "Vulnerability",
+              "explanation": "Missing authorisation is a vulnerability in the application."
+            },
+            {
+              "id": "t8",
+              "text": "A former contractor still has a live remote-access account they should not have.",
+              "correctCategoryId": "Vulnerability",
+              "explanation": "An account that was not removed is a control weakness. The person could also be discussed as a threat, but the statement describes leftover access, which is the vulnerability to classify here."
+            }
+          ],
+          "feedback": {
+            "correct": "Those statements match vulnerability, threat or risk.",
+            "incorrect": "Ask: is this a weakness, a source of harm, or the chance and impact together?"
+          }
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-threat-vulnerability-risk-explain",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "formative": true,
+          "questionId": "week5-threat-vulnerability-risk:explain",
+          "sourceQuestionId": "explain",
+          "prompt": "Write one chain for Northbank: name a vulnerability, a threat that might use it, and the risk (chance and impact) for patients or the organisation. Keep the example fictional.",
+          "minChars": 120,
+          "guidance": "Use all three terms. Vulnerability = weakness. Threat = who/what might cause harm. Risk = likelihood and impact."
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "week5-vulnerability-patterns",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Recognising vulnerability patterns",
+      "status": "available",
+      "summary": "Identify common weakness patterns in fictional Northbank examples and explain why they matter.",
+      "href": null,
+      "activityType": "Guided learning",
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "week5-vulnerability-patterns-q-p1",
+        "week5-vulnerability-patterns-q-p2",
+        "week5-vulnerability-patterns-q-p3",
+        "week5-vulnerability-patterns-q-p4",
+        "week5-vulnerability-patterns-q-p5",
+        "week5-vulnerability-patterns-q-p6",
+        "week5-vulnerability-patterns-q-p7",
+        "week5-vulnerability-patterns-q-p8",
+        "week5-vulnerability-patterns-checkpoint"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-vulnerability-patterns-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Recognising vulnerability patterns",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-vulnerability-patterns-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "A vulnerability is a weakness in a system, process or configuration that could be used to cause harm. This activity uses simplified, fictional Northbank clinic examples so you can recognise the pattern, explain the possible impact, and name a defensive check. Do not use these ideas against real systems."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-vulnerability-patterns-boundary",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "callout",
+        "content": {
+          "text": "Classroom boundary: every snippet is a deliberately weak training example. You are practising identification, detection and secure alternatives — not attacking live services or handling real patient data."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-vulnerability-patterns-q-p1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-vulnerability-patterns:p1",
+          "sourceQuestionId": "p1",
+          "prompt": "A training booking page still accepts the clinic’s original demo login of admin / admin. What vulnerability pattern is this?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Weak or default credentials"
+            },
+            {
+              "id": "b",
+              "label": "A threat actor’s motivation"
+            },
+            {
+              "id": "c",
+              "label": "A completed ransomware impact"
+            },
+            {
+              "id": "d",
+              "label": "A legal requirement to keep demo accounts"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Default or shared logins are a vulnerability: they make it too easy for the wrong person to authenticate. A threat is whoever might try; the risk is the chance and impact of that happening at Northbank.",
+            "incorrect": "Default or shared logins are a vulnerability: they make it too easy for the wrong person to authenticate. A threat is whoever might try; the risk is the chance and impact of that happening at Northbank."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-vulnerability-patterns-q-p2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-vulnerability-patterns:p2",
+          "sourceQuestionId": "p2",
+          "prompt": "A fictional records URL is /training/records/patient/1044. The app shows whichever training record matches the number, without checking that the signed-in clinician is allowed to see it. What is the main weakness?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Missing object-level access control"
+            },
+            {
+              "id": "b",
+              "label": "The clinic uses too many firewalls"
+            },
+            {
+              "id": "c",
+              "label": "Backups are encrypted"
+            },
+            {
+              "id": "d",
+              "label": "Staff completed phishing training"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "If the app trusts an identifier in the URL and does not also check authorisation, one user may reach another patient’s training record. Detection: review whether every record lookup also checks ownership or role.",
+            "incorrect": "If the app trusts an identifier in the URL and does not also check authorisation, one user may reach another patient’s training record. Detection: review whether every record lookup also checks ownership or role."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-vulnerability-patterns-q-p3",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-vulnerability-patterns:p3",
+          "sourceQuestionId": "p3",
+          "prompt": "A Northbank training lookup is built as: query = \"SELECT * FROM training_patients WHERE surname = '\" + typedSurname + \"'\". What pattern should you flag?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Untrusted input concatenated into a query"
+            },
+            {
+              "id": "b",
+              "label": "Using a database at all"
+            },
+            {
+              "id": "c",
+              "label": "Encrypting backups overnight"
+            },
+            {
+              "id": "d",
+              "label": "Asking the learner to type a surname"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Joining untrusted text into a query string can change what the lookup does. Do not try this against real systems. Detection: look for string-built SQL. Remediation: use a parameterised query so the surname is data, not code.",
+            "incorrect": "Joining untrusted text into a query string can change what the lookup does. Do not try this against real systems. Detection: look for string-built SQL. Remediation: use a parameterised query so the surname is data, not code."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-vulnerability-patterns-q-p4",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-vulnerability-patterns:p4",
+          "sourceQuestionId": "p4",
+          "prompt": "A fictional training config contains CLINIC_DEMO_TOKEN = \"not-a-real-secret\" in a file that is copied into the learner hub. Why is this a vulnerability pattern?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Secrets in source or config can be reused if the file leaks"
+            },
+            {
+              "id": "b",
+              "label": "Tokens should always be printed on posters"
+            },
+            {
+              "id": "c",
+              "label": "Demo tokens cannot be misused even if copied"
+            },
+            {
+              "id": "d",
+              "label": "This is only a threat, not a weakness"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Hard-coded credentials are a weakness in how secrets are stored. If the file is copied, the token travels with it. Detection: search repos for token-like assignments. Fix: store secrets in a secret manager or environment the app reads at run time, and rotate anything that leaked.",
+            "incorrect": "Hard-coded credentials are a weakness in how secrets are stored. If the file is copied, the token travels with it. Detection: search repos for token-like assignments. Fix: store secrets in a secret manager or environment the app reads at run time, and rotate anything that leaked."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-vulnerability-patterns-q-p5",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-vulnerability-patterns:p5",
+          "sourceQuestionId": "p5",
+          "prompt": "Northbank’s training kiosk still runs last year’s unpatched booking component after a vendor published a fix. What is the vulnerability?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Unpatched or outdated software"
+            },
+            {
+              "id": "b",
+              "label": "Having a vendor at all"
+            },
+            {
+              "id": "c",
+              "label": "Publishing a fix too quickly"
+            },
+            {
+              "id": "d",
+              "label": "Asking reception staff to reboot weekly"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Known, unfixed weaknesses in software are vulnerabilities. A threat is anyone who tries to use that known gap. Impact at a clinic can include disrupted bookings or exposed records. Detection: inventory versions and compare them with vendor advisories.",
+            "incorrect": "Known, unfixed weaknesses in software are vulnerabilities. A threat is anyone who tries to use that known gap. Impact at a clinic can include disrupted bookings or exposed records. Detection: inventory versions and compare them with vendor advisories."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-vulnerability-patterns-q-p6",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-vulnerability-patterns:p6",
+          "sourceQuestionId": "p6",
+          "prompt": "A feedback box does comments.innerHTML = visitorMessage in a training page. What is the main client-side risk?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Untrusted text can be treated as HTML in the page"
+            },
+            {
+              "id": "b",
+              "label": "The page uses too much CSS"
+            },
+            {
+              "id": "c",
+              "label": "innerHTML always encrypts the message"
+            },
+            {
+              "id": "d",
+              "label": "Visitors cannot submit empty comments"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Putting untrusted strings into HTML can change the page for other users. Detection: look for innerHTML, document.write or unsafe templating with user text. Secure alternative: textContent or a library that encodes output.",
+            "incorrect": "Putting untrusted strings into HTML can change the page for other users. Detection: look for innerHTML, document.write or unsafe templating with user text. Secure alternative: textContent or a library that encodes output."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-vulnerability-patterns-q-p7",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-vulnerability-patterns:p7",
+          "sourceQuestionId": "p7",
+          "prompt": "A shared training folder is set so that anyone on the clinic Wi-Fi can read every file, including draft letters. What configuration weakness is this?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Excessive permissions / overly open sharing"
+            },
+            {
+              "id": "b",
+              "label": "Using folders instead of paper"
+            },
+            {
+              "id": "c",
+              "label": "Wi-Fi existing in the building"
+            },
+            {
+              "id": "d",
+              "label": "Encrypting the letters after they are posted"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Over-permissive shares are a configuration vulnerability: more people can read data than the job requires. Detection: review share permissions and group membership. Control: least privilege and separate staff / visitor networks.",
+            "incorrect": "Over-permissive shares are a configuration vulnerability: more people can read data than the job requires. Detection: review share permissions and group membership. Control: least privilege and separate staff / visitor networks."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-vulnerability-patterns-q-p8",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "week5-vulnerability-patterns:p8",
+          "sourceQuestionId": "p8",
+          "prompt": "Which check best detects several of these weaknesses before they reach live clinic systems?",
+          "options": [
+            {
+              "id": "a",
+              "label": "A code and configuration review against a short secure-coding checklist"
+            },
+            {
+              "id": "b",
+              "label": "Hoping no one notices"
+            },
+            {
+              "id": "c",
+              "label": "Deleting log files each night so nothing is stored"
+            },
+            {
+              "id": "d",
+              "label": "Publishing admin passwords in the staff newsletter"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Reviews, dependency/version checks, and secret scanning are detection approaches. They do not replace patching, access control or input validation — they help you find those gaps while the example is still in training data.",
+            "incorrect": "Reviews, dependency/version checks, and secret scanning are detection approaches. They do not replace patching, access control or input validation — they help you find those gaps while the example is still in training data."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-vulnerability-patterns-checkpoint",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "formative": true,
+          "questionId": "week5-vulnerability-patterns:checkpoint",
+          "sourceQuestionId": "checkpoint",
+          "prompt": "Pick one Northbank example from this activity. Name the vulnerability pattern, one possible impact for patients or staff, and one detection check a reviewer could use. Do not describe steps for attacking a real system.",
+          "minChars": 120,
+          "guidance": "Name the pattern, the impact, and a detection check. Stay with the fictional clinic examples."
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
     "id": "week6-lo2-diagnostic",
     "version": "1.0.0",
     "metadata": {

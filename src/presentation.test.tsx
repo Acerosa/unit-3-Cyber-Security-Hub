@@ -330,7 +330,9 @@ describe("Unit 3 presentation", () => {
       { week: 4, activity: "motivations-learning", page: "week-4-motivations-learning", section: "week-4", expectOptionCards: true, expectWriting: true },
       { week: 4, activity: "targets-methods", page: "week-4-targets-methods", section: "week-4", expectClassification: true, expectWriting: true },
       { week: 5, activity: "impacts-learning", page: "week-5-impacts-learning", section: "week-5", expectOptionCards: true, expectWriting: true },
+      { week: 5, activity: "vulnerability-patterns", page: "week-5-vulnerability-patterns", section: "week-5", expectOptionCards: true, expectWriting: true },
       { week: 5, activity: "impact-classification", page: "week-5-impact-classification", section: "week-5", expectClassification: true, expectWriting: true },
+      { week: 5, activity: "threat-vulnerability-risk", page: "week-5-threat-vulnerability-risk", section: "week-5", expectClassification: true, expectWriting: true },
       { week: 6, activity: "ethical-learning", page: "week-6-ethical-learning", section: "week-6", expectOptionCards: true, expectWriting: true },
       { week: 6, activity: "ethical-classification", page: "week-6-ethical-classification", section: "week-6", expectClassification: true, expectWriting: true },
       { week: 7, activity: "risk-management-learning", page: "week-7-risk-management-learning", section: "week-7", expectOptionCards: true, expectWriting: true },
@@ -648,6 +650,55 @@ describe("Unit 3 presentation", () => {
 
     expect(document.querySelector("[data-unit3-host]")).toBeTruthy();
     expect(document.querySelector("[data-lp-activity]")).toBeNull();
+  });
+
+  it("renders Week 5 vulnerability-patterns as catalogue option cards", () => {
+    window.__lpPackage = pkg;
+    window.Unit3Week5Progress = { markStarted: vi.fn(), markCompleted: vi.fn() };
+    render(
+      <ActivityPage
+        context={{
+          page: "week-5-vulnerability-patterns",
+          section: "week-5",
+          root: "../..",
+          view: "activity",
+          week: 5,
+          activity: "vulnerability-patterns"
+        }}
+        contentReady
+        adaptersReady
+      />
+    );
+
+    expect(document.querySelector('[data-lp-activity="week5-vulnerability-patterns"]')).toBeTruthy();
+    expect(document.querySelectorAll('[data-lp-block="option-cards"]').length).toBe(8);
+    expect(document.querySelector('[data-lp-block="short-response"]')).toBeTruthy();
+    expect(document.querySelector("[data-unit3-host]")).toBeNull();
+    expect(screen.getByRole("link", { name: /Next: Vulnerability, threat and risk/ })).toBeTruthy();
+  });
+
+  it("renders Week 5 threat-vulnerability-risk as catalogue classification", () => {
+    window.__lpPackage = pkg;
+    window.Unit3Week5Progress = { markStarted: vi.fn(), markCompleted: vi.fn() };
+    render(
+      <ActivityPage
+        context={{
+          page: "week-5-threat-vulnerability-risk",
+          section: "week-5",
+          root: "../..",
+          view: "activity",
+          week: 5,
+          activity: "threat-vulnerability-risk"
+        }}
+        contentReady
+        adaptersReady
+      />
+    );
+
+    expect(document.querySelector('[data-lp-activity="week5-threat-vulnerability-risk"]')).toBeTruthy();
+    expect(document.querySelector('[data-lp-block="classification"]')).toBeTruthy();
+    expect(screen.getByText(/Use dropdown lists instead/)).toBeTruthy();
+    expect(document.querySelector("[data-unit3-host]")).toBeNull();
   });
 
   it("renders Week 6 ethical-classification as catalogue classification", () => {

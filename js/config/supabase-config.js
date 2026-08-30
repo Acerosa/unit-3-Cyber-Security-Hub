@@ -34,7 +34,7 @@
   var VERSION_ALIASES = Object.freeze({
     /*
      * Frontend activity metadata records activityVersion as '1.0' but the
-     * Supabase catalogue stores 76 activity versions as '1.0.0'. This is a
+     * Supabase catalogue stores activity versions as '1.0.0'. This is a
      * single central mapping — never scatter conversion logic across
      * week scripts.
      */
@@ -94,6 +94,8 @@
       "week4-answer-improvement",
       "week4-ethical-review",
       "week5-session1-retrieval",
+      "week5-vulnerability-patterns",
+      "week5-threat-vulnerability-risk",
       "week5-impacts-learning",
       "week5-impact-classification",
       "week5-ransomware-companion",
@@ -101,6 +103,8 @@
       "week5-session2-retrieval",
       "week5-stakeholder-grid",
       "week5-impact-analysis",
+      "week5-controls-matching",
+      "week5-secure-rewrite",
       "week5-ocr-question-practice",
       "week5-answer-improvement",
       "week6-lo2-diagnostic",

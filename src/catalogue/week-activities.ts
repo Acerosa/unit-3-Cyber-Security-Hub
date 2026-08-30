@@ -74,6 +74,8 @@ export const WEEK_ACTIVITY_SLUGS: Record<number, Record<string, string>> = {
   },
   5: {
     "week5-session1-retrieval": "session1-retrieval",
+    "week5-vulnerability-patterns": "vulnerability-patterns",
+    "week5-threat-vulnerability-risk": "threat-vulnerability-risk",
     "week5-impacts-learning": "impacts-learning",
     "week5-impact-classification": "impact-classification",
     "week5-ransomware-companion": "ransomware-companion",
@@ -81,6 +83,8 @@ export const WEEK_ACTIVITY_SLUGS: Record<number, Record<string, string>> = {
     "week5-session2-retrieval": "session2-retrieval",
     "week5-stakeholder-grid": "stakeholder-grid",
     "week5-impact-analysis": "impact-analysis",
+    "week5-controls-matching": "controls-matching",
+    "week5-secure-rewrite": "secure-rewrite",
     "week5-ocr-question-practice": "ocr-practice",
     "week5-answer-improvement": "answer-improvement"
   },

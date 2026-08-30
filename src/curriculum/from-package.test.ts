@@ -180,6 +180,47 @@ describe("Unit 3 package hydration", () => {
     const debrief = catalogueActivity(pkg, "week5-exercise-debrief");
     expect((debrief?.blocks || []).filter((block) => block.type === "short-response")).toHaveLength(5);
     expect((debrief?.blocks || []).some((block) => block.type === "reflection")).toBe(false);
+
+    expect(cataloguePlayerMode(5, "week5-vulnerability-patterns", catalogueActivity(pkg, "week5-vulnerability-patterns"))).toBe("catalogue");
+    expect(cataloguePlayerMode(5, "week5-threat-vulnerability-risk", catalogueActivity(pkg, "week5-threat-vulnerability-risk"))).toBe("catalogue");
+    expect(cataloguePlayerMode(5, "week5-controls-matching", catalogueActivity(pkg, "week5-controls-matching"))).toBe("catalogue");
+    expect(cataloguePlayerMode(5, "week5-secure-rewrite", catalogueActivity(pkg, "week5-secure-rewrite"))).toBe("catalogue");
+
+    const patterns = catalogueActivity(pkg, "week5-vulnerability-patterns");
+    expect((patterns?.blocks || []).filter((block) => block.type === "single-choice")).toHaveLength(8);
+    expect((patterns?.blocks || []).some((block) => block.type === "short-response")).toBe(true);
+    expect((patterns?.blocks || []).some((block) => block.type === "reflection")).toBe(false);
+
+    const terms = catalogueActivity(pkg, "week5-threat-vulnerability-risk");
+    const termsBlock = (terms?.blocks || []).find((block) => block.type === "classification");
+    const termItems = ((termsBlock?.content as { items?: Array<{ id: string; correctCategoryId?: string }> }).items) || [];
+    expect(termItems).toHaveLength(8);
+    expect(termItems.find((item) => item.id === "t1")?.correctCategoryId).toBe("Vulnerability");
+    expect(termItems.find((item) => item.id === "t2")?.correctCategoryId).toBe("Threat");
+    expect(termItems.find((item) => item.id === "t3")?.correctCategoryId).toBe("Risk");
+    expect((terms?.blocks || []).some((block) => block.type === "short-response")).toBe(true);
+
+    const controls = catalogueActivity(pkg, "week5-controls-matching");
+    const controlBlock = (controls?.blocks || []).find((block) => block.type === "classification");
+    const controlItems = ((controlBlock?.content as { items?: Array<{ id: string; correctCategoryId?: string }> }).items) || [];
+    expect(controlItems).toHaveLength(8);
+    expect(controlItems.find((item) => item.id === "c1")?.correctCategoryId).toBe("Patching and updates");
+    expect(controlItems.find((item) => item.id === "c3")?.correctCategoryId).toBe("Input validation");
+    expect((controls?.blocks || []).some((block) => block.type === "short-response")).toBe(true);
+
+    const rewrite = catalogueActivity(pkg, "week5-secure-rewrite");
+    expect((rewrite?.blocks || []).filter((block) => block.type === "single-choice")).toHaveLength(6);
+    expect((rewrite?.blocks || []).some((block) => block.type === "short-response")).toBe(true);
+
+    const page = weekPageFromPackage(pkg, "week-5");
+    const ids = page?.sessions.flatMap((session) => session.activities.map((item) => item.id)) || [];
+    expect(ids).toContain("week5-vulnerability-patterns");
+    expect(ids).toContain("week5-threat-vulnerability-risk");
+    expect(ids).toContain("week5-controls-matching");
+    expect(ids).toContain("week5-secure-rewrite");
+    const sequence = catalogueSequence(page, 5);
+    expect(neighboursInSequence(sequence, "week5-session1-retrieval").next?.slug).toBe("vulnerability-patterns");
+    expect(neighboursInSequence(sequence, "week5-impact-analysis").next?.slug).toBe("controls-matching");
   });
 
   it("restores Week 6 ethical-classification and written catalogue shapes", () => {
@@ -261,6 +302,10 @@ describe("Unit 3 package hydration", () => {
       "week4-motivations-learning",
       "week4-targets-methods",
       "week5-impacts-learning",
+      "week5-vulnerability-patterns",
+      "week5-threat-vulnerability-risk",
+      "week5-controls-matching",
+      "week5-secure-rewrite",
       "week6-ethical-learning",
       "week6-legislation-retrieval",
       "week7-risk-management-learning",

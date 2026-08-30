@@ -987,6 +987,24 @@
       "redirectTo": ""
     },
     {
+      "route": "week-5/controls-matching/index.html",
+      "view": "activity",
+      "page": "week-5-controls-matching",
+      "section": "week-5",
+      "week": 5,
+      "activity": "controls-matching",
+      "activityId": "",
+      "title": "Choosing defensive controls | Week 5",
+      "description": "Match situations to defensive controls and justify a recommendation.",
+      "heading": "Choosing defensive controls",
+      "subtitle": "Match situations to defensive controls and justify a recommendation.",
+      "scripts": [
+        "js/week5-progress.js",
+        "js/core/backend-progress.js"
+      ],
+      "redirectTo": ""
+    },
+    {
       "route": "week-5/directed-study/index.html",
       "view": "activity",
       "page": "week-5-directed-study",
@@ -1144,6 +1162,24 @@
       "redirectTo": ""
     },
     {
+      "route": "week-5/secure-rewrite/index.html",
+      "view": "activity",
+      "page": "week-5-secure-rewrite",
+      "section": "week-5",
+      "week": 5,
+      "activity": "secure-rewrite",
+      "activityId": "",
+      "title": "Improving insecure implementations | Week 5",
+      "description": "Choose secure alternatives for deliberately insecure training snippets.",
+      "heading": "Improving insecure implementations",
+      "subtitle": "Choose secure alternatives for deliberately insecure training snippets.",
+      "scripts": [
+        "js/week5-progress.js",
+        "js/core/backend-progress.js"
+      ],
+      "redirectTo": ""
+    },
+    {
       "route": "week-5/session1-retrieval/index.html",
       "view": "activity",
       "page": "week-5-session1-retrieval",
@@ -1218,6 +1254,42 @@
         "js/week5-submit.js",
         "week-5/data/support-challenge.js",
         "week-5/support-challenge/app.js"
+      ],
+      "redirectTo": ""
+    },
+    {
+      "route": "week-5/threat-vulnerability-risk/index.html",
+      "view": "activity",
+      "page": "week-5-threat-vulnerability-risk",
+      "section": "week-5",
+      "week": 5,
+      "activity": "threat-vulnerability-risk",
+      "activityId": "",
+      "title": "Vulnerability, threat and risk | Week 5",
+      "description": "Distinguish vulnerability, threat and risk using Northbank statements.",
+      "heading": "Vulnerability, threat and risk",
+      "subtitle": "Distinguish vulnerability, threat and risk using Northbank statements.",
+      "scripts": [
+        "js/week5-progress.js",
+        "js/core/backend-progress.js"
+      ],
+      "redirectTo": ""
+    },
+    {
+      "route": "week-5/vulnerability-patterns/index.html",
+      "view": "activity",
+      "page": "week-5-vulnerability-patterns",
+      "section": "week-5",
+      "week": 5,
+      "activity": "vulnerability-patterns",
+      "activityId": "",
+      "title": "Recognising vulnerability patterns | Week 5",
+      "description": "Identify common weakness patterns in fictional Northbank examples.",
+      "heading": "Recognising vulnerability patterns",
+      "subtitle": "Identify common weakness patterns in fictional Northbank examples.",
+      "scripts": [
+        "js/week5-progress.js",
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },

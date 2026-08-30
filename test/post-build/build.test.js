@@ -9,7 +9,7 @@ const inventory = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../fixture
 
 test("the Vite production build preserves every inventoried public route", function () {
   assert.equal(fs.existsSync(path.join(dist, ".nojekyll")), true);
-  assert.equal(inventory.routes.length, 100);
+  assert.equal(inventory.routes.length, 104);
   inventory.routes.forEach(function (route) {
     assert.equal(fs.existsSync(path.join(dist, route.route)), true, route.route);
   });

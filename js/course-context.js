@@ -508,6 +508,32 @@
       allowsPartner: false,
       attemptStorageKey: 'unit3-week5-attempt:week5-session1-retrieval'
     }),
+    'week5-vulnerability-patterns': Object.freeze({
+      activityId: 'week5-vulnerability-patterns',
+      activityName: 'Recognising vulnerability patterns',
+      weekNumber: 5,
+      sessionName: 'Session 1',
+      activityType: 'Guided learning',
+      activityVersion: '1.0',
+      maximumScore: 8,
+      itemMinimum: 1,
+      itemMaximum: 8,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week5-attempt:week5-vulnerability-patterns'
+    }),
+    'week5-threat-vulnerability-risk': Object.freeze({
+      activityId: 'week5-threat-vulnerability-risk',
+      activityName: 'Vulnerability, threat and risk',
+      weekNumber: 5,
+      sessionName: 'Session 1',
+      activityType: 'Classification',
+      activityVersion: '1.0',
+      maximumScore: 8,
+      itemMinimum: 1,
+      itemMaximum: 8,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week5-attempt:week5-threat-vulnerability-risk'
+    }),
     'week5-impacts-learning': Object.freeze({
       activityId: 'week5-impacts-learning',
       activityName: 'Impacts Learning: Loss, Disruption and Safety',
@@ -598,6 +624,32 @@
       itemMaximum: 6,
       allowsPartner: false,
       attemptStorageKey: 'unit3-week5-attempt:week5-impact-analysis'
+    }),
+    'week5-controls-matching': Object.freeze({
+      activityId: 'week5-controls-matching',
+      activityName: 'Choosing defensive controls',
+      weekNumber: 5,
+      sessionName: 'Session 2',
+      activityType: 'Classification',
+      activityVersion: '1.0',
+      maximumScore: 8,
+      itemMinimum: 1,
+      itemMaximum: 8,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week5-attempt:week5-controls-matching'
+    }),
+    'week5-secure-rewrite': Object.freeze({
+      activityId: 'week5-secure-rewrite',
+      activityName: 'Improving insecure implementations',
+      weekNumber: 5,
+      sessionName: 'Session 2',
+      activityType: 'Guided learning',
+      activityVersion: '1.0',
+      maximumScore: 6,
+      itemMinimum: 1,
+      itemMaximum: 6,
+      allowsPartner: false,
+      attemptStorageKey: 'unit3-week5-attempt:week5-secure-rewrite'
     }),
     'week5-ocr-question-practice': Object.freeze({
       activityId: 'week5-ocr-question-practice',
