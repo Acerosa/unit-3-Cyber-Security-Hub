@@ -7,6 +7,41 @@ const test = require("node:test");
 const root = path.resolve(__dirname, "..");
 const requireFromHub = createRequire(path.join(root, "package.json"));
 
+function resolveCoreRuntimeDist(coreRoot) {
+  return path.join(coreRoot, "dist", "curriculum-runtime.esm.js");
+}
+
+test("reviewed Core ships curriculum-runtime before hub install", () => {
+  const corePackagePath = requireFromHub.resolve("@learning-platform/core/package.json");
+  const coreRoot = path.dirname(corePackagePath);
+  const runtimeDist = resolveCoreRuntimeDist(coreRoot);
+
+  assert.equal(
+    fs.existsSync(runtimeDist),
+    true,
+    `missing ${runtimeDist}; build or check out reviewed Core before hub npm ci`
+  );
+});
+
+test("linked UI installs Core where Vitest resolves external imports", () => {
+  const uiPackagePath = requireFromHub.resolve("@learning-platform/ui/package.json");
+  const uiRoot = path.dirname(uiPackagePath);
+  const uiCoreLink = path.join(uiRoot, "node_modules", "@learning-platform", "core");
+
+  assert.equal(
+    fs.existsSync(uiCoreLink),
+    true,
+    "run npm ci in learning-platform-ui before hub tests so @learning-platform/core resolves from ../learning-platform-ui/dist/index.js"
+  );
+
+  const runtimeDist = resolveCoreRuntimeDist(uiCoreLink);
+  assert.equal(
+    fs.existsSync(runtimeDist),
+    true,
+    `missing ${runtimeDist} in UI node_modules`
+  );
+});
+
 test("shared package exports resolve for week visibility migration", async () => {
   const core = await import("@learning-platform/core/curriculum-runtime");
 

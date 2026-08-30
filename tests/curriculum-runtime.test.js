@@ -16,7 +16,7 @@ test("the converted Unit 3 package keeps hub identity, weeks and activity ids", 
   assert.equal(pkg.curriculum.metadata.course, "ocr-level-3-it");
   assert.equal(pkg.version, "0.2.0");
   assert.equal(pkg.weeks.length, 7);
-  assert.equal(pkg.activities.length, 76);
+  assert.equal(pkg.activities.length, 80);
   assert.ok(pkg.weeks.every((week, index) => week.id === `week-${index + 1}`));
   assert.ok(pkg.activities.some((activity) => activity.id === "week2-threat-vulnerability-sort"));
   assert.ok(pkg.activities.some((activity) => activity.id === "u3-w01-baseline"));

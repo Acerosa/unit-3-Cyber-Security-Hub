@@ -23,8 +23,34 @@
       scored: true
     }),
     Object.freeze({
-      activityId: 'week5-impacts-learning',
+      activityId: 'week5-vulnerability-patterns',
       number: 2,
+      title: 'Recognising vulnerability patterns',
+      description:
+        'Identify common weakness patterns in fictional Northbank examples, explain possible impact, and name a detection check.',
+      type: 'Guided learning',
+      estimatedMinutes: 25,
+      session: 1,
+      total: 8,
+      path: 'vulnerability-patterns/',
+      scored: true
+    }),
+    Object.freeze({
+      activityId: 'week5-threat-vulnerability-risk',
+      number: 3,
+      title: 'Vulnerability, threat and risk',
+      description:
+        'Classify statements as vulnerability, threat or risk, then write one Northbank chain that uses all three terms.',
+      type: 'Classification',
+      estimatedMinutes: 20,
+      session: 1,
+      total: 8,
+      path: 'threat-vulnerability-risk/',
+      scored: true
+    }),
+    Object.freeze({
+      activityId: 'week5-impacts-learning',
+      number: 4,
       title: 'Impacts Learning: Loss, Disruption and Safety',
       description:
         'Learn the OCR impact categories with Northbank examples, learner checks and feedback that separates similar impact types.',
@@ -37,7 +63,7 @@
     }),
     Object.freeze({
       activityId: 'week5-impact-classification',
-      number: 3,
+      number: 5,
       title: 'Loss, Disruption and Safety Classification',
       description:
         'Classify short impact statements, including ambiguous healthcare examples where more than one category may be justified.',
@@ -50,7 +76,7 @@
     }),
     Object.freeze({
       activityId: 'week5-ransomware-companion',
-      number: 4,
+      number: 6,
       title: 'Northbank Ransomware Exercise Companion',
       description:
         'Prepare for the tutor-facilitated NCSC Exercise in a Box ransomware exercise with role cards and a structured decision record.',
@@ -63,7 +89,7 @@
     }),
     Object.freeze({
       activityId: 'week5-exercise-debrief',
-      number: 5,
+      number: 7,
       title: 'Exercise Debrief',
       description:
         'Revisit recorded decisions to identify intended impact reduction, stakeholders, timescale and possible negative effects on others.',
@@ -76,7 +102,7 @@
     }),
     Object.freeze({
       activityId: 'week5-session2-retrieval',
-      number: 6,
+      number: 8,
       title: 'Session 2 Retrieval Quiz',
       description:
         'Rapid retrieval on loss, disruption, safety, stakeholders and immediate versus longer-term consequences.',
@@ -89,7 +115,7 @@
     }),
     Object.freeze({
       activityId: 'week5-stakeholder-grid',
-      number: 7,
+      number: 9,
       title: 'Stakeholder Impact Grid',
       description:
         'Complete a Northbank ransomware impact grid covering every required stakeholder and all three impact categories with scenario evidence.',
@@ -102,7 +128,7 @@
     }),
     Object.freeze({
       activityId: 'week5-impact-analysis',
-      number: 8,
+      number: 10,
       title: 'Analysing Rather Than Listing Impacts',
       description:
         'Compare weak and stronger analytical responses, then write immediate and six-month impact sentences for Northbank.',
@@ -114,8 +140,34 @@
       scored: true
     }),
     Object.freeze({
+      activityId: 'week5-controls-matching',
+      number: 11,
+      title: 'Choosing defensive controls',
+      description:
+        'Match Northbank situations to patching, access control, input handling, secrets hygiene or detection, then justify one recommendation.',
+      type: 'Classification',
+      estimatedMinutes: 25,
+      session: 2,
+      total: 8,
+      path: 'controls-matching/',
+      scored: true
+    }),
+    Object.freeze({
+      activityId: 'week5-secure-rewrite',
+      number: 12,
+      title: 'Improving insecure implementations',
+      description:
+        'Choose a secure alternative for each deliberately insecure training snippet and explain one root-cause fix.',
+      type: 'Guided learning',
+      estimatedMinutes: 25,
+      session: 2,
+      total: 6,
+      path: 'secure-rewrite/',
+      scored: true
+    }),
+    Object.freeze({
       activityId: 'week5-ocr-question-practice',
-      number: 9,
+      number: 13,
       title: 'OCR-Style Impact Questions',
       description:
         'Timed OCR-style practice on loss, disruption, safety, stakeholders and an extended analysis question (20 marks).',
@@ -128,7 +180,7 @@
     }),
     Object.freeze({
       activityId: 'week5-answer-improvement',
-      number: 10,
+      number: 14,
       title: 'Marking and Answer Improvement',
       description:
         'Mark a response that over-emphasises financial loss, then improve it with safety, stakeholder, evidence and timescale detail.',

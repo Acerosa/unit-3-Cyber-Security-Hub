@@ -6,6 +6,8 @@
 
   var EXPECTED = [
     { id: 'week5-session1-retrieval', total: 8, version: '1.0' },
+    { id: 'week5-vulnerability-patterns', total: 8, version: '1.0' },
+    { id: 'week5-threat-vulnerability-risk', total: 8, version: '1.0' },
     { id: 'week5-impacts-learning', total: 9, version: '1.0' },
     { id: 'week5-impact-classification', total: 8, version: '1.0' },
     { id: 'week5-ransomware-companion', total: 4, version: '1.0' },
@@ -13,6 +15,8 @@
     { id: 'week5-session2-retrieval', total: 12, version: '1.0' },
     { id: 'week5-stakeholder-grid', total: 10, version: '1.0' },
     { id: 'week5-impact-analysis', total: 6, version: '1.0' },
+    { id: 'week5-controls-matching', total: 8, version: '1.0' },
+    { id: 'week5-secure-rewrite', total: 6, version: '1.0' },
     { id: 'week5-ocr-question-practice', total: 20, version: '1.0' },
     { id: 'week5-answer-improvement', total: 6, version: '1.0' }
   ];

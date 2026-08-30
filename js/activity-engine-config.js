@@ -101,6 +101,8 @@
 
     // Week 5 local activities submit through the Week 5 Apps Script API (URL deferred).
     'week5-session1-retrieval': SUBMISSION_SERVICE.WEEK5_API,
+    'week5-vulnerability-patterns': SUBMISSION_SERVICE.WEEK5_API,
+    'week5-threat-vulnerability-risk': SUBMISSION_SERVICE.WEEK5_API,
     'week5-impacts-learning': SUBMISSION_SERVICE.WEEK5_API,
     'week5-impact-classification': SUBMISSION_SERVICE.WEEK5_API,
     'week5-ransomware-companion': SUBMISSION_SERVICE.WEEK5_API,
@@ -108,6 +110,8 @@
     'week5-session2-retrieval': SUBMISSION_SERVICE.WEEK5_API,
     'week5-stakeholder-grid': SUBMISSION_SERVICE.WEEK5_API,
     'week5-impact-analysis': SUBMISSION_SERVICE.WEEK5_API,
+    'week5-controls-matching': SUBMISSION_SERVICE.WEEK5_API,
+    'week5-secure-rewrite': SUBMISSION_SERVICE.WEEK5_API,
     'week5-ocr-question-practice': SUBMISSION_SERVICE.WEEK5_API,
     'week5-answer-improvement': SUBMISSION_SERVICE.WEEK5_API,
 

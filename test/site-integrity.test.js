@@ -12,7 +12,7 @@ function read(relativePath) {
 }
 
 test("the committed inventory lists every learner-facing public route", function () {
-  assert.equal(routeFiles.length, 100);
+  assert.equal(routeFiles.length, 104);
   assert.equal(inventory.routes.filter((route) => route.view === "week").length, 7);
   assert.equal(inventory.routes.filter((route) => route.view === "week1-activity").length, 1);
   assert.equal(inventory.routes.some((route) => route.route === "activities/activity.html"), true);
@@ -173,9 +173,13 @@ test("Week 2 lists activities on the week page and links each activity to the ne
   const week5CatalogueOwned = [
     "week-5/session1-retrieval/index.html",
     "week-5/session2-retrieval/index.html",
+    "week-5/vulnerability-patterns/index.html",
+    "week-5/threat-vulnerability-risk/index.html",
     "week-5/impacts-learning/index.html",
     "week-5/impact-classification/index.html",
-    "week-5/exercise-debrief/index.html"
+    "week-5/exercise-debrief/index.html",
+    "week-5/controls-matching/index.html",
+    "week-5/secure-rewrite/index.html"
   ];
   week5CatalogueOwned.forEach((route) => {
     const chunk = inventory.split(route)[1].split('"redirectTo"')[0];
