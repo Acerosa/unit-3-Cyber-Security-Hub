@@ -139,9 +139,9 @@
       assertEquals(results, "backend-mode-set-apps-script", setResult, "APPS_SCRIPT");
       assertEquals(
         results,
-        "backend-mode-after-set",
+        "backend-mode-ignores-storage-override",
         backendMode.getMode(),
-        "APPS_SCRIPT"
+        "SUPABASE"
       );
       backendMode.clearOverride();
       assertEquals(
@@ -228,7 +228,7 @@
       var responses = [
         {
           questionId: "s1-q1",
-          response: { chosenIndex: 1 },
+          response: { chosenIndex: 1, selectedOptionId: "b" },
           correct: true,
           score: 1
         },
@@ -281,19 +281,19 @@
         results,
         "payload-response-payload-preserved",
         payload.p_responses[0].response_payload,
-        { chosenIndex: 1 }
+        { chosenIndex: 1, selectedOptionId: "b", optionId: "b" }
       );
       assertEquals(
         results,
-        "payload-response-is-correct",
+        "payload-response-omits-client-mark",
         payload.p_responses[0].is_correct,
-        true
+        undefined
       );
       assertEquals(
         results,
-        "payload-response-awarded-score",
+        "payload-response-omits-awarded-score",
         payload.p_responses[0].awarded_score,
-        1
+        undefined
       );
       // Only the eight RPC parameters may be present
       var allowedKeys = [
@@ -391,7 +391,8 @@
         {
           category: "threat",
           subcategory: "phishing",
-          justification: "External social engineering."
+          justification: "External social engineering.",
+          categoryId: "threat"
         }
       );
 
@@ -417,9 +418,9 @@
       );
       assertEquals(
         results,
-        "response-ocr-multi-mark-score",
+        "response-ocr-omits-client-score",
         ocr.awarded_score,
-        6
+        undefined
       );
 
       // Reflection/text response
@@ -636,6 +637,8 @@
         { responseType: "reflection" }
       );
       assertEquals(results, "evidence-reflection-type", reflection.responseType, "reflection");
+      assertEquals(results, "evidence-reflection-default-unscored", reflection.correct, false);
+      assertEquals(results, "evidence-reflection-default-score", reflection.score, 0);
 
       var ocr = evidence.structured(
         "W2OCR-Q07",

@@ -13,9 +13,10 @@
  *
  * Resolution order (first match wins):
  *   1. Week 1 Activity API pages are forced to APPS_SCRIPT (no markSection RPC)
- *   2. ?backend=supabase / ?backend=apps_script in the current URL
- *   3. localStorage['unit3.backendMode'] = 'SUPABASE' | 'APPS_SCRIPT'
- *   4. SUPABASE_CONFIG.backendMode (default SUPABASE for Weeks 2–7)
+ *   2. SUPABASE_CONFIG.backendMode (default SUPABASE for Weeks 2–7)
+ *
+ * Learners cannot switch transport via query string or localStorage.
+ * Those were previously support overrides and are ignored in getMode().
  */
 (function () {
   "use strict";
@@ -119,7 +120,7 @@
     if (isWeek1ActivityApiPage()) {
       return MODE.APPS_SCRIPT;
     }
-    var resolved = fromQuery() || fromStorage() || fromConfig();
+    var resolved = fromConfig();
     if (resolved && isSupported(resolved)) {
       return resolved;
     }
@@ -157,8 +158,6 @@
 
   function describeSource() {
     if (isWeek1ActivityApiPage()) return "week1-forced-apps-script";
-    if (fromQuery()) return "query-string";
-    if (fromStorage()) return "local-storage-override";
     if (fromConfig()) return "supabase-config";
     return "default-supabase";
   }

@@ -71,7 +71,7 @@
     extras = extras || {};
     var text = value == null ? "" : String(value);
     var mark = contractSafeMark(
-      typeof extras.score === "number" ? extras.score : extras.correct === false ? 0 : 1,
+      typeof extras.score === "number" ? extras.score : extras.correct === true ? 1 : 0,
       extras.maxScore != null ? extras.maxScore : 1
     );
     if (extras.correct === false && !(typeof extras.score === "number")) {

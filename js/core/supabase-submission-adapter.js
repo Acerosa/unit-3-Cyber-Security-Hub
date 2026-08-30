@@ -2,8 +2,8 @@
  * Unit 3 scored-evidence adapter.
  *
  * Core owns attempt identity and secure top-level submission fields. This
- * adapter retains only Cyber-specific activity/question key normalisation and
- * contract 0.1.0 client-mark evidence fields.
+ * adapter retains only Cyber-specific activity/question key normalisation.
+ * Marks are not sent: the backend scores from protected marking specs.
  */
 (function () {
   "use strict";
@@ -49,10 +49,6 @@
     return service.beginAttempt(normaliseActivityKey(activityKey));
   }
 
-  function finite(value) {
-    return typeof value === "number" && Number.isFinite(value);
-  }
-
   function timestamp(value) {
     if (!value) return null;
     var date = value instanceof Date ? value : new Date(value);
@@ -75,18 +71,24 @@
     if (evidence === undefined) evidence = raw.response_payload;
     if (evidence === undefined) evidence = raw.value;
     if (evidence === undefined) evidence = raw.answer;
+    if (evidence && typeof evidence === "object" && !Array.isArray(evidence)) {
+      var optionId =
+        evidence.optionId ||
+        evidence.selectedOptionId ||
+        evidence.option_id ||
+        evidence.selected_option_id;
+      var categoryId =
+        evidence.categoryId || evidence.category || evidence.category_id;
+      if (optionId || categoryId) {
+        evidence = Object.assign({}, evidence);
+        if (optionId && !evidence.optionId) evidence.optionId = optionId;
+        if (categoryId && !evidence.categoryId) evidence.categoryId = categoryId;
+      }
+    }
     var payload = {
       question_id: questionKey,
       response_payload: evidence
     };
-    if (typeof raw.correct === "boolean") payload.is_correct = raw.correct;
-    else if (typeof raw.is_correct === "boolean") {
-      payload.is_correct = raw.is_correct;
-    }
-    if (finite(raw.score)) payload.awarded_score = raw.score;
-    else if (finite(raw.awarded_score)) {
-      payload.awarded_score = raw.awarded_score;
-    }
     if (typeof raw.responseType === "string" && raw.responseType) {
       payload.response_type = raw.responseType;
     } else if (typeof raw.response_type === "string" && raw.response_type) {
