@@ -167,56 +167,54 @@
         var evidence = window.Unit3SupabaseEvidence;
         var out = [];
         data.questions.forEach(function (q) {
-          if (q.type !== 'mcq') return;
-          // Catalogue W2OCR-Q07 is the extended item; skip the 7th MCQ (ocr-q7).
-          var match = String(q.id || '').match(/^ocr-q(\d+)$/i);
-          var n = match ? Number(match[1]) : 0;
-          if (!n || n > 6) return;
-          var qid = 'W2OCR-Q0' + n;
-          var chosen = answers[q.id];
-          var correct = chosen === q.correctIndex;
-          var payload = {
-            chosenIndex: chosen,
-            selectedOption:
-              typeof chosen === 'number' && q.options ? q.options[chosen] : null
-          };
-          if (evidence && evidence.structured) {
-            out.push(
-              evidence.structured(qid, payload, {
-                responseType: 'single-choice',
+          if (q.type === 'mcq') {
+            var chosen = answers[q.id];
+            var correct = chosen === q.correctIndex;
+            var payload = {
+              chosenIndex: chosen,
+              selectedOption:
+                typeof chosen === 'number' && q.options ? q.options[chosen] : null
+            };
+            if (evidence && evidence.structured) {
+              out.push(
+                evidence.structured(q.id, payload, {
+                  responseType: 'single-choice',
+                  correct: correct,
+                  score: correct ? q.marks || 1 : 0
+                })
+              );
+            } else {
+              out.push({
+                questionId: q.id,
+                response: payload,
                 correct: correct,
-                score: correct ? q.marks || 1 : 0
+                score: correct ? q.marks || 1 : 0,
+                responseType: 'single-choice'
+              });
+            }
+            return;
+          }
+          if (q.type !== 'extended') return;
+          var extScore = extendedScore();
+          if (evidence && evidence.freeText) {
+            out.push(
+              evidence.freeText(q.id, extendedText, {
+                responseType: 'text',
+                correct: extScore > 0,
+                score: extScore,
+                fields: {}
               })
             );
           } else {
             out.push({
-              questionId: qid,
-              response: payload,
-              correct: correct,
-              score: correct ? q.marks || 1 : 0,
-              responseType: 'single-choice'
+              questionId: q.id,
+              response: extendedText,
+              responseType: 'text',
+              correct: extScore > 0,
+              score: extScore
             });
           }
         });
-        var extScore = extendedScore();
-        if (evidence && evidence.freeText) {
-          out.push(
-            evidence.freeText('W2OCR-Q07', extendedText, {
-              responseType: 'text',
-              correct: extScore > 0,
-              score: extScore,
-              fields: {}
-            })
-          );
-        } else {
-          out.push({
-            questionId: 'W2OCR-Q07',
-            response: extendedText,
-            responseType: 'text',
-            correct: extScore > 0,
-            score: extScore
-          });
-        }
         return out;
       },
       getStartedAt: function () {

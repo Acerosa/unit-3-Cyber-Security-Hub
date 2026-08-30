@@ -56,7 +56,8 @@
   }
 
   function normaliseResponse(raw, activityKey) {
-    var normaliseQuestion = keyMap().normaliseQuestionKey || String;
+    var map = keyMap();
+    var normaliseQuestion = map.normaliseQuestionKey || String;
     if (!raw || typeof raw !== "object") {
       throw new Error("Response evidence must be an object.");
     }
@@ -71,19 +72,8 @@
     if (evidence === undefined) evidence = raw.response_payload;
     if (evidence === undefined) evidence = raw.value;
     if (evidence === undefined) evidence = raw.answer;
-    if (evidence && typeof evidence === "object" && !Array.isArray(evidence)) {
-      var optionId =
-        evidence.optionId ||
-        evidence.selectedOptionId ||
-        evidence.option_id ||
-        evidence.selected_option_id;
-      var categoryId =
-        evidence.categoryId || evidence.category || evidence.category_id;
-      if (optionId || categoryId) {
-        evidence = Object.assign({}, evidence);
-        if (optionId && !evidence.optionId) evidence.optionId = optionId;
-        if (categoryId && !evidence.categoryId) evidence.categoryId = categoryId;
-      }
+    if (typeof map.normaliseResponsePayload === "function") {
+      evidence = map.normaliseResponsePayload(evidence, activityKey, raw);
     }
     var payload = {
       question_id: questionKey,
@@ -96,6 +86,18 @@
     }
     if (typeof raw.chosenIndex === "number") {
       payload.chosen_index = raw.chosenIndex;
+    }
+    if (
+      payload.response_payload &&
+      typeof payload.response_payload === "object" &&
+      !Array.isArray(payload.response_payload)
+    ) {
+      if ("awarded_score" in payload.response_payload) {
+        delete payload.response_payload.awarded_score;
+      }
+      if ("is_correct" in payload.response_payload) {
+        delete payload.response_payload.is_correct;
+      }
     }
     return payload;
   }
@@ -112,7 +114,8 @@
     );
     var normaliseVersion = keyMap().normaliseActivityVersion || String;
     var activityVersion = normaliseVersion(
-      result.activityVersion || result.activity_version || result.version || "1.0"
+      result.activityVersion || result.activity_version || result.version || "1.0",
+      activityKey
     );
     var responses = Array.isArray(result.responses) ? result.responses : [];
     if (!activityKey || !activityVersion || responses.length === 0) {

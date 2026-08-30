@@ -307,7 +307,30 @@ if (existsAt("js/core/question-key-aliases.js")) {
   const aliases = read("js/core/question-key-aliases.js");
   record(
     "question-aliases-cover-ocr-and-mtm",
-    /W2OCR-Q01/.test(aliases) && /MAP1/.test(aliases) && /MOTKC1/.test(aliases)
+    /W2OCR-Q01/.test(aliases) &&
+      /W2OCR-Q08/.test(aliases) &&
+      /MAP1MOT/.test(aliases) &&
+      /MOTKC1/.test(aliases)
+  );
+}
+
+if (existsAt("week-2/ocr-practice/app.js")) {
+  const ocrApp = read("week-2/ocr-practice/app.js");
+  record(
+    "week2-ocr-submits-local-ids-for-alias-layer",
+    /evidence\.structured\(q\.id/.test(ocrApp) &&
+      /evidence\.freeText\(q\.id/.test(ocrApp) &&
+      !/skip the 7th MCQ/.test(ocrApp)
+  );
+}
+
+if (existsAt("js/core/activity-key-map.js")) {
+  const keyMap = read("js/core/activity-key-map.js");
+  record(
+    "key-map-targets-batch-b-versions",
+    /week2-ocr-question-practice/.test(keyMap) &&
+      /1\.2\.0/.test(keyMap) &&
+      /WEEK5_MARKING_V1/.test(keyMap)
   );
 }
 
