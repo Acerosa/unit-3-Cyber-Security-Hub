@@ -79,13 +79,11 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>Stakeholder debate preparation</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>Stakeholder debate preparation</h2>' +
       '<p class="w6-scenario">' +
       data.scenario +
       '</p>' +
-      '<p class="panel-note">Completion checks that fields are present. The hub does not auto-score argument quality.</p>';
+      '<p class="panel-note">Completion checks that fields are present. The hub does not auto-score argument quality.</p>');
 
     var part = document.createElement('fieldset');
     part.className = 'w6-pair-fieldset';
@@ -149,13 +147,11 @@
         return;
       }
       var score = computeScore();
-      if (progress) progress.markCompleted(ACTIVITY_ID, score, data.total);
-      status.innerHTML =
-        '<p class="message message-success">Debate preparation completed (' +
+      if (progress) progress.markCompleted(ACTIVITY_ID, score, data.total);setAuthoredHtml(status, '<p class="message message-success">Debate preparation completed (' +
         score +
         ' / ' +
         data.total +
-        ').</p>';
+        ').</p>');
       window.Unit3Week6Submit.renderSubmitPanel({
         activityId: ACTIVITY_ID,
         hostId: 'w6-submit-host',

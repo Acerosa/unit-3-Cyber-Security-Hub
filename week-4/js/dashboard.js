@@ -49,15 +49,13 @@
     description.textContent = item.description;
     article.appendChild(description);
     var meta = document.createElement('ul');
-    meta.className = 'activity-meta';
-    meta.innerHTML =
-      '<li>Type: ' +
+    meta.className = 'activity-meta';setAuthoredHtml(meta, '<li>Type: ' +
       item.type +
       '</li><li>About ' +
       item.estimatedMinutes +
       ' minutes</li><li>Total: ' +
       item.total +
-      '</li>';
+      '</li>');
     article.appendChild(meta);
     if (state.status === 'completed' && state.score != null) {
       var score = document.createElement('p');
@@ -87,24 +85,20 @@
     var host = document.getElementById('w4-thm-cards');
     var access = document.getElementById('w4-thm-access');
     if (!data || !host) return;
-    if (access) {
-      access.innerHTML = '';
+    if (access) {setAuthoredHtml(access, '');
       var note = document.createElement('p');
       note.className = 'w4-callout';
-      note.setAttribute('role', 'note');
-      note.innerHTML = '<strong>Access:</strong> ' + data.accessNotice;
+      note.setAttribute('role', 'note');setAuthoredHtml(note, '<strong>Access:</strong> ' + data.accessNotice);
       access.appendChild(note);
       var safety = document.createElement('div');
       safety.className = 'w4-thm-safety';
-      safety.setAttribute('role', 'note');
-      safety.innerHTML =
-        '<h3>Ethical and safety notice</h3><ul class="section-list">' +
+      safety.setAttribute('role', 'note');setAuthoredHtml(safety, '<h3>Ethical and safety notice</h3><ul class="section-list">' +
         (data.ethicalNotice || [])
           .map(function (item) {
             return '<li>' + item + '</li>';
           })
           .join('') +
-        '</ul>';
+        '</ul>');
       access.appendChild(safety);
     }
     host.textContent = '';

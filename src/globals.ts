@@ -1,5 +1,6 @@
 import inventory from "../test/fixtures/route-inventory.json";
 import { APP_CONFIG } from "./config";
+import { setAuthoredHtml } from "@learning-platform/core";
 
 declare global {
   interface Window {
@@ -28,6 +29,7 @@ declare global {
     Unit3Week2Submit?: {
       renderSubmitPanel?: (options: Record<string, unknown>) => void;
     };
+    setAuthoredHtml?: typeof setAuthoredHtml;
   }
 }
 
@@ -39,5 +41,6 @@ export type WeekProgress = {
 };
 
 window.APP_CONFIG = APP_CONFIG;
+window.setAuthoredHtml = setAuthoredHtml;
 
 export const SHARED_ADAPTERS = inventory.sharedAdapters;

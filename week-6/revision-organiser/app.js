@@ -112,15 +112,12 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>LO2 revision organiser</h2>' +
-      '<p class="panel-note">Work across sections 2.1 to 2.6. Weakest topics prefill from your LO2 diagnostic draft when available.</p>';
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>LO2 revision organiser</h2>' +
+      '<p class="panel-note">Work across sections 2.1 to 2.6. Weakest topics prefill from your LO2 diagnostic draft when available.</p>');
 
     data.sections.forEach(function (section) {
       var card = document.createElement('section');
-      card.className = 'w6-review-item';
-      card.innerHTML = '<h3>Section ' + section.code + ': ' + section.title + '</h3>';
+      card.className = 'w6-review-item';setAuthoredHtml(card, '<h3>Section ' + section.code + ': ' + section.title + '</h3>');
       section.fields.forEach(function (field) {
         var inputId = section.id + '-' + field.id;
         textFields.mount(card, {
@@ -140,8 +137,7 @@
     });
 
     var diagnosticBlock = document.createElement('section');
-    diagnosticBlock.className = 'w6-review-item';
-    diagnosticBlock.innerHTML = '<h3>Diagnostic revision priorities</h3>';
+    diagnosticBlock.className = 'w6-review-item';setAuthoredHtml(diagnosticBlock, '<h3>Diagnostic revision priorities</h3>');
     data.weakestFields.forEach(function (field) {
       textFields.mount(diagnosticBlock, {
         wrapClass: 'w6-reflection-field',
@@ -199,13 +195,11 @@
         return;
       }
       var score = computeScore();
-      if (progress) progress.markCompleted(ACTIVITY_ID, score, data.total);
-      status.innerHTML =
-        '<p class="message message-success">Revision organiser completed (' +
+      if (progress) progress.markCompleted(ACTIVITY_ID, score, data.total);setAuthoredHtml(status, '<p class="message message-success">Revision organiser completed (' +
         score +
         ' / ' +
         data.total +
-        ' sections).</p>';
+        ' sections).</p>');
       window.Unit3Week6Submit.renderSubmitPanel({
         activityId: ACTIVITY_ID,
         hostId: 'w6-submit-host',

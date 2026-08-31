@@ -62,9 +62,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>' +
       data.title +
       '</h2>' +
       '<h3>TryHackMe: ' +
@@ -82,7 +80,7 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
 
     field(panel, 'taken', 'What was taken in the breach', 'taken', 3);
     field(panel, 'investigators', 'How investigators established what had happened', 'investigators', 3);
@@ -90,9 +88,7 @@
     field(panel, 'evidence', 'Evidence supporting the classification', 'evidence', 3);
 
     var real = document.createElement('section');
-    real.className = 'w5-review-item';
-    real.innerHTML =
-      '<h3>' +
+    real.className = 'w5-review-item';setAuthoredHtml(real, '<h3>' +
       data.realIncidentGrid.title +
       '</h3><ul class="section-list">' +
       data.realIncidentGrid.requirements
@@ -100,16 +96,14 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
     field(real, 'source', 'Source / reference for the real incident', 'source', 2);
     field(real, 'mostAffected', 'Stakeholder most seriously affected', 'mostAffected', 2);
     field(real, 'justification', 'Justification', 'justification', 4);
     panel.appendChild(real);
 
     var challenge = document.createElement('section');
-    challenge.className = 'w5-review-item';
-    challenge.innerHTML =
-      '<h3>' +
+    challenge.className = 'w5-review-item';setAuthoredHtml(challenge, '<h3>' +
       data.decisionChallenge.title +
       '</h3><ul class="section-list">' +
       data.decisionChallenge.requirements
@@ -117,7 +111,7 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
     field(challenge, 'challenge-decision', 'Decision you would now challenge', 'challengeDecision', 2);
     field(challenge, 'challenge-why', 'Two sentences explaining why', 'challengeWhy', 3);
     panel.appendChild(challenge);

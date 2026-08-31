@@ -46,8 +46,7 @@
     description.textContent = item.description;
     article.appendChild(description);
     var meta = document.createElement('ul');
-    meta.className = 'activity-meta';
-    meta.innerHTML = '<li>Type: ' + item.type + '</li><li>About ' + item.estimatedMinutes + ' minutes</li><li>Total: ' + item.total + '</li>';
+    meta.className = 'activity-meta';setAuthoredHtml(meta, '<li>Type: ' + item.type + '</li><li>About ' + item.estimatedMinutes + ' minutes</li><li>Total: ' + item.total + '</li>');
     article.appendChild(meta);
     var link = document.createElement('a');
     link.className = 'card-link';
@@ -71,12 +70,10 @@
     var host = document.getElementById('w3-thm-cards');
     var access = document.getElementById('w3-thm-access');
     if (!data || !host) return;
-    if (access) {
-      access.innerHTML = '';
+    if (access) {setAuthoredHtml(access, '');
       var note = document.createElement('p');
       note.className = 'w3-callout';
-      note.setAttribute('role', 'note');
-      note.innerHTML = '<strong>Access:</strong> ' + data.accessNotice;
+      note.setAttribute('role', 'note');setAuthoredHtml(note, '<strong>Access:</strong> ' + data.accessNotice);
       access.appendChild(note);
       var vocab = document.createElement('p');
       vocab.className = 'panel-note';

@@ -90,9 +90,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>OCR-style question practice (' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>OCR-style question practice (' +
       data.total +
       ' marks)</h2>' +
       '<p class="panel-note">' +
@@ -106,24 +104,20 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
 
     var timer = document.createElement('div');
     timer.className = 'w4-timer-bar';
     timer.setAttribute('role', 'status');
-    timer.setAttribute('aria-live', 'polite');
-    timer.innerHTML =
-      '<span class="w4-timer-item"><strong>Timer:</strong> <span id="w4-timer-display">' +
+    timer.setAttribute('aria-live', 'polite');setAuthoredHtml(timer, '<span class="w4-timer-item"><strong>Timer:</strong> <span id="w4-timer-display">' +
       formatTime(remainingSeconds) +
       '</span></span>' +
-      '<span class="w4-timer-item">Pause or ignore the timer if your tutor prefers untimed practice.</span>';
+      '<span class="w4-timer-item">Pause or ignore the timer if your tutor prefers untimed practice.</span>');
     panel.appendChild(timer);
 
     data.questions.forEach(function (q, index) {
       var block = document.createElement('section');
-      block.className = 'w4-review-item';
-      block.innerHTML =
-        '<h3>' +
+      block.className = 'w4-review-item';setAuthoredHtml(block, '<h3>' +
         (index + 1) +
         '. ' +
         q.commandWord +
@@ -137,7 +131,7 @@
         '</p>' +
         '<p class="panel-note">' +
         q.guidance +
-        '</p>';
+        '</p>');
 
       if (q.responseType === 'mcq') {
         var fieldset = document.createElement('fieldset');
@@ -203,9 +197,7 @@
 
       if (review) {
         var scheme = document.createElement('div');
-        scheme.className = 'w4-callout';
-        scheme.innerHTML =
-          '<p><strong>Mark scheme:</strong> ' +
+        scheme.className = 'w4-callout';setAuthoredHtml(scheme, '<p><strong>Mark scheme:</strong> ' +
           q.markScheme +
           '</p>' +
           '<p><strong>Indicative content:</strong> ' +
@@ -216,7 +208,7 @@
           '</p>' +
           '<p><strong>Common mistakes:</strong> ' +
           (q.commonMistakes || []).join('; ') +
-          '</p>';
+          '</p>');
         block.appendChild(scheme);
       }
       panel.appendChild(block);

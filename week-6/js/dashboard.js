@@ -49,15 +49,13 @@
     description.textContent = item.description;
     article.appendChild(description);
     var meta = document.createElement('ul');
-    meta.className = 'activity-meta';
-    meta.innerHTML =
-      '<li>Type: ' +
+    meta.className = 'activity-meta';setAuthoredHtml(meta, '<li>Type: ' +
       item.type +
       '</li><li>About ' +
       item.estimatedMinutes +
       ' minutes</li><li>Total: ' +
       item.total +
-      '</li>';
+      '</li>');
     article.appendChild(meta);
     if (state.status === 'completed' && state.score != null) {
       var score = document.createElement('p');

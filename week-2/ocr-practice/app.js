@@ -235,9 +235,7 @@
     bar.setAttribute('role', 'status');
 
     var elapsedLabel = document.createElement('span');
-    elapsedLabel.className = 'w2-timer-item';
-    elapsedLabel.innerHTML =
-      '<strong>Elapsed:</strong> <span id="w2-elapsed-display">0:00</span>';
+    elapsedLabel.className = 'w2-timer-item';setAuthoredHtml(elapsedLabel, '<strong>Elapsed:</strong> <span id="w2-elapsed-display">0:00</span>');
     bar.appendChild(elapsedLabel);
 
     var sr = document.createElement('span');
@@ -247,9 +245,7 @@
     bar.appendChild(sr);
 
     var marksLabel = document.createElement('span');
-    marksLabel.className = 'w2-timer-item';
-    marksLabel.innerHTML =
-      '<strong>Overall marks:</strong> ' + totalMarksAvailable();
+    marksLabel.className = 'w2-timer-item';setAuthoredHtml(marksLabel, '<strong>Overall marks:</strong> ' + totalMarksAvailable());
     bar.appendChild(marksLabel);
 
     if (q) {
@@ -272,12 +268,10 @@
 
     var scoreSoFar = document.createElement('span');
     scoreSoFar.className = 'w2-timer-item';
-    scoreSoFar.id = 'w2-score-so-far';
-    scoreSoFar.innerHTML =
-      '<strong>Score so far:</strong> ' +
+    scoreSoFar.id = 'w2-score-so-far';setAuthoredHtml(scoreSoFar, '<strong>Score so far:</strong> ' +
       (finished ? totalScore() : objectiveScore() + (extendedText.trim().length >= EXTENDED_MIN_CHARS ? extendedScore() : 0)) +
       ' / ' +
-      data.total;
+      data.total);
     bar.appendChild(scoreSoFar);
 
     return bar;

@@ -102,8 +102,7 @@
     if (!pack) return;
     var note = document.createElement('p');
     note.className = 'w2-callout w2-thm-access-notice';
-    note.setAttribute('role', 'note');
-    note.innerHTML = '<strong>Access:</strong> ' + pack.accessNotice;
+    note.setAttribute('role', 'note');setAuthoredHtml(note, '<strong>Access:</strong> ' + pack.accessNotice);
     host.appendChild(note);
   }
 
@@ -135,13 +134,11 @@
     details.id = 'w2-thm-how-to-use';
 
     var summary = document.createElement('summary');
-    summary.className = 'session-disclosure__summary';
-    summary.innerHTML =
-      '<span class="session-disclosure__text">' +
+    summary.className = 'session-disclosure__summary';setAuthoredHtml(summary, '<span class="session-disclosure__text">' +
       '<h2 class="session-disclosure__heading">How to use TryHackMe</h2>' +
       '<span class="session-disclosure__meta">Learner guide</span>' +
       '<span class="visually-hidden">. Show or hide the TryHackMe guide</span>' +
-      '</span><span class="session-disclosure__icon" aria-hidden="true"></span>';
+      '</span><span class="session-disclosure__icon" aria-hidden="true"></span>');
     details.appendChild(summary);
 
     var content = document.createElement('div');
@@ -175,13 +172,11 @@
     details.id = 'w2-thm-troubleshooting';
 
     var summary = document.createElement('summary');
-    summary.className = 'session-disclosure__summary';
-    summary.innerHTML =
-      '<span class="session-disclosure__text">' +
+    summary.className = 'session-disclosure__summary';setAuthoredHtml(summary, '<span class="session-disclosure__text">' +
       '<h2 class="session-disclosure__heading">TryHackMe troubleshooting</h2>' +
       '<span class="session-disclosure__meta">Common issues</span>' +
       '<span class="visually-hidden">. Show or hide troubleshooting guidance</span>' +
-      '</span><span class="session-disclosure__icon" aria-hidden="true"></span>';
+      '</span><span class="session-disclosure__icon" aria-hidden="true"></span>');
     details.appendChild(summary);
 
     var content = document.createElement('div');
@@ -212,13 +207,11 @@
     details.id = 'w2-thm-tutor-notes';
 
     var summary = document.createElement('summary');
-    summary.className = 'session-disclosure__summary';
-    summary.innerHTML =
-      '<span class="session-disclosure__text">' +
+    summary.className = 'session-disclosure__summary';setAuthoredHtml(summary, '<span class="session-disclosure__text">' +
       '<h2 class="session-disclosure__heading">Tutor notes</h2>' +
       '<span class="session-disclosure__meta">Staff checklist</span>' +
       '<span class="visually-hidden">. Show or hide tutor notes</span>' +
-      '</span><span class="session-disclosure__icon" aria-hidden="true"></span>';
+      '</span><span class="session-disclosure__icon" aria-hidden="true"></span>');
     details.appendChild(summary);
 
     var content = document.createElement('div');

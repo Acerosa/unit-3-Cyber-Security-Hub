@@ -84,9 +84,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>From describe to analyse</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>From describe to analyse</h2>' +
       '<div class="w4-two-col">' +
       '<article class="w4-def-card"><h3>Describe</h3><p>' +
       data.commandWords.describe +
@@ -99,24 +97,20 @@
       data.connectives.join('; ') +
       '. ' +
       data.connectiveWarning +
-      '</p>';
+      '</p>');
 
     var weak = document.createElement('blockquote');
-    weak.className = 'w4-scenario w4-weak-response';
-    weak.innerHTML =
-      '<strong>' +
+    weak.className = 'w4-scenario w4-weak-response';setAuthoredHtml(weak, '<strong>' +
       data.weakResponse.label +
       ':</strong> ' +
       data.weakResponse.text +
       '<br><em class="w4-annotation">' +
       data.weakResponse.problem +
-      '</em>';
+      '</em>');
     panel.appendChild(weak);
 
     var improved = document.createElement('blockquote');
-    improved.className = 'w4-scenario w4-improved-response';
-    improved.innerHTML =
-      '<strong>' +
+    improved.className = 'w4-scenario w4-improved-response';setAuthoredHtml(improved, '<strong>' +
       data.improvedResponse.label +
       ':</strong> ' +
       data.improvedResponse.text +
@@ -126,19 +120,17 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
     panel.appendChild(improved);
 
     var planBox = document.createElement('section');
-    planBox.className = 'w4-review-item';
-    planBox.innerHTML =
-      '<h3>Planning task</h3>' +
+    planBox.className = 'w4-review-item';setAuthoredHtml(planBox, '<h3>Planning task</h3>' +
       '<p><strong>' +
       data.planningQuestion +
       '</strong></p>' +
       '<p class="panel-note">' +
       data.planningGuidance +
-      '</p>';
+      '</p>');
 
     var templates = document.createElement('fieldset');
     templates.className = 'w4-options';

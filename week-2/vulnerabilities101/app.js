@@ -227,8 +227,7 @@
     }
 
     var ocr = document.getElementById('w2-v101-ocr-guidance');
-    if (ocr && resource.ocrGuidance) {
-      ocr.innerHTML = '<strong>OCR guidance:</strong> ' + resource.ocrGuidance;
+    if (ocr && resource.ocrGuidance) {setAuthoredHtml(ocr, '<strong>OCR guidance:</strong> ' + resource.ocrGuidance);
     }
 
     var actionsHost = document.getElementById('w2-v101-actions-host');

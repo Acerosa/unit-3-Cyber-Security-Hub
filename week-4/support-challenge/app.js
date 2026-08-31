@@ -21,13 +21,11 @@
   textFields.destroyAll();
   host.textContent = '';
   var panel = document.createElement('section');
-  panel.className = 'panel';
-  panel.innerHTML = '<h2>' + data.title + '</h2>';
+  panel.className = 'panel';setAuthoredHtml(panel, '<h2>' + data.title + '</h2>');
 
   function addSupportBlock(block) {
     var section = document.createElement('section');
-    section.className = 'w4-review-item';
-    section.innerHTML = '<h3>' + block.title + '</h3>';
+    section.className = 'w4-review-item';setAuthoredHtml(section, '<h3>' + block.title + '</h3>');
     if (block.points) {
       var list = document.createElement('ul');
       list.className = 'section-list';
@@ -59,23 +57,19 @@
   addSupportBlock(data.readability);
 
   var formats = document.createElement('section');
-  formats.className = 'w4-review-item';
-  formats.innerHTML =
-    '<h3>Multiple ways to respond</h3><ul class="section-list">' +
+  formats.className = 'w4-review-item';setAuthoredHtml(formats, '<h3>Multiple ways to respond</h3><ul class="section-list">' +
     data.responseFormats
       .map(function (item) {
         return '<li>' + item + '</li>';
       })
       .join('') +
-    '</ul>';
+    '</ul>');
   panel.appendChild(formats);
 
-  var challenges = document.createElement('section');
-  challenges.innerHTML = '<h3>Challenge activities</h3>';
+  var challenges = document.createElement('section');setAuthoredHtml(challenges, '<h3>Challenge activities</h3>');
   data.challenges.forEach(function (challenge) {
     var block = document.createElement('article');
-    block.className = 'w4-review-item';
-    block.innerHTML = '<h4>' + challenge.title + '</h4><p>' + challenge.prompt + '</p>';
+    block.className = 'w4-review-item';setAuthoredHtml(block, '<h4>' + challenge.title + '</h4><p>' + challenge.prompt + '</p>');
     textFields.mount(block, {
       wrapClass: 'w4-reflection-field',
       id: challenge.id,

@@ -117,9 +117,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>Marking and answer improvement</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>Marking and answer improvement</h2>' +
       '<p><strong>Question (' +
       data.question.marks +
       ' marks · ' +
@@ -129,7 +127,7 @@
       '</p>' +
       '<p class="w7-callout" role="note"><strong>Common Week 7 slip:</strong> ' +
       data.commonError +
-      '</p>';
+      '</p>');
 
     var sample = document.createElement('blockquote');
     sample.className = 'w7-scenario w7-weak-response';

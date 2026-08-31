@@ -147,9 +147,7 @@
 
   function renderScenarioForm(parent, scenario, index) {
     var block = document.createElement('section');
-    block.className = 'w4-review-item';
-    block.innerHTML =
-      '<h3>' +
+    block.className = 'w4-review-item';setAuthoredHtml(block, '<h3>' +
       (index + 1) +
       '. ' +
       scenario.title +
@@ -162,7 +160,7 @@
       '<p class="panel-note">' +
       scenario.hint +
       (scenario.ambiguousNote ? ' ' + scenario.ambiguousNote : '') +
-      '</p>';
+      '</p>');
     var row = responses[scenario.id];
     selectField(
       block,
@@ -245,21 +243,17 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>Motivation, target and method mapping</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>Motivation, target and method mapping</h2>' +
       '<p class="w4-formula" role="note">Why = motivation · What = target · How = method</p>' +
       '<p class="panel-note">Motivation bank: ' +
       data.motivationBank.join('; ') +
       '.</p>' +
       '<h3>Worked examples</h3>' +
-      '<p class="panel-note">These rows model the difference between listing facts and explaining the connection.</p>';
+      '<p class="panel-note">These rows model the difference between listing facts and explaining the connection.</p>');
 
     data.workedRows.forEach(function (row) {
       var worked = document.createElement('article');
-      worked.className = 'w4-review-item w4-improved-response';
-      worked.innerHTML =
-        '<h4>' +
+      worked.className = 'w4-review-item w4-improved-response';setAuthoredHtml(worked, '<h4>' +
         row.theme +
         '</h4>' +
         '<p class="w4-scenario">' +
@@ -289,7 +283,7 @@
         '</ul>' +
         '<p class="w4-annotation">' +
         row.teachingNote +
-        '</p>';
+        '</p>');
       panel.appendChild(worked);
     });
 
@@ -301,9 +295,7 @@
     });
 
     var present = document.createElement('section');
-    present.className = 'w4-review-item';
-    present.innerHTML =
-      '<h3>Two-minute explanation preparation</h3>' +
+    present.className = 'w4-review-item';setAuthoredHtml(present, '<h3>Two-minute explanation preparation</h3>' +
       '<p class="panel-note">Prepare a short explanation covering motivation, target, method, why the target was logical, and why the method suited the target.</p>' +
       '<ul class="section-list">' +
       data.presentationChecklist
@@ -311,7 +303,7 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
     var fieldset = document.createElement('fieldset');
     fieldset.className = 'w4-options';
     var legend = document.createElement('legend');

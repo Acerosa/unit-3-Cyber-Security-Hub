@@ -60,9 +60,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>Peer marking and answer improvement</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>Peer marking and answer improvement</h2>' +
       '<p><strong>Question (' +
       data.question.marks +
       ' marks):</strong> ' +
@@ -76,7 +74,7 @@
         return '<li>' + item + '</li>';
       }).join('') +
       '</ul>' +
-      '<p class="panel-note">Do not collect another learner’s name or identifiable work. Use the anonymised samples only.</p>';
+      '<p class="panel-note">Do not collect another learner’s name or identifiable work. Use the anonymised samples only.</p>');
 
     var sampleField = document.createElement('fieldset');
     sampleField.className = 'w3-options';
@@ -173,12 +171,10 @@
     field('rewrite', 'Rewrite the weakest sentence', 'rewrite', 4);
 
     var exemplar = document.createElement('details');
-    exemplar.className = 'session-disclosure';
-    exemplar.innerHTML =
-      '<summary class="session-disclosure__summary"><span class="session-disclosure__text"><h3 class="session-disclosure__heading">Compare with exemplar</h3></span><span class="session-disclosure__icon" aria-hidden="true"></span></summary>' +
+    exemplar.className = 'session-disclosure';setAuthoredHtml(exemplar, '<summary class="session-disclosure__summary"><span class="session-disclosure__text"><h3 class="session-disclosure__heading">Compare with exemplar</h3></span><span class="session-disclosure__icon" aria-hidden="true"></span></summary>' +
       '<div class="session-disclosure__content"><p>' +
       data.exemplar +
-      '</p></div>';
+      '</p></div>');
     panel.appendChild(exemplar);
 
     var actions = document.createElement('div');

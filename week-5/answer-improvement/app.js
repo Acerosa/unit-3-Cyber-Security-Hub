@@ -102,9 +102,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>Marking and answer improvement</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>Marking and answer improvement</h2>' +
       '<p><strong>Question (' +
       data.question.marks +
       ' marks · ' +
@@ -114,7 +112,7 @@
       '</p>' +
       '<p class="w5-callout" role="note"><strong>Dominant Week 5 error:</strong> ' +
       data.commonError +
-      '</p>';
+      '</p>');
 
     var sample = document.createElement('blockquote');
     sample.className = 'w5-scenario w5-weak-response';
