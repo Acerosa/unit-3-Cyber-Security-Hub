@@ -1,4 +1,5 @@
 import react from "@vitejs/plugin-react";
+import { learnerSafeContentPlugin, writeLearnerSafeJsonFile } from "@learning-platform/content/learner-safe";
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { defineConfig } from "vite";
@@ -40,6 +41,11 @@ function copyRuntimeFiles() {
     if (!existsSync(from)) return;
     const to = join(dist, file);
     mkdirSync(dirname(to), { recursive: true });
+    const rel = file.replace(/\\/g, "/");
+    if ((rel.includes("/content/") || rel.startsWith("content/")) && rel.endsWith(".json")) {
+      writeLearnerSafeJsonFile(from, to);
+      return;
+    }
     cpSync(from, to);
   });
   writeFileSync(join(dist, ".nojekyll"), "");
@@ -57,7 +63,7 @@ function copyStaticAssets() {
 export default defineConfig({
   base: "./",
   resolve: platformResolve,
-  plugins: [react(), copyStaticAssets()],
+  plugins: [react(), learnerSafeContentPlugin(), copyStaticAssets()],
   build: {
     sourcemap: true,
     rollupOptions: {

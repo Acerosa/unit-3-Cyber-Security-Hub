@@ -42,4 +42,11 @@ test("the Vite production build preserves every inventoried public route", funct
   assert.ok(jsTotal < 900 * 1024, "learner JS should stay under 900KB uncompressed, got " + jsTotal);
   assert.ok(cssTotal < 200 * 1024, "learner CSS should stay under 200KB, got " + cssTotal);
   assert.ok(gzipTotal < 300 * 1024, "learner JS gzip should stay under 300KB, got " + gzipTotal);
+  const authoring = fs.readFileSync(path.resolve(__dirname, "../../content/unit-3-cyber-security/package.json"), "utf8");
+  const bundled = fs.readFileSync(path.join(dist, "content/unit-3-cyber-security/package.json"), "utf8");
+  assert.match(authoring, /"correctOptionId"/);
+  assert.doesNotMatch(bundled, /"correctOptionId"\s*:/);
+  packageJs.forEach(function (name) {
+    assert.doesNotMatch(fs.readFileSync(path.join(assets, name), "utf8"), /"correctOptionId"\s*:/);
+  });
 });
