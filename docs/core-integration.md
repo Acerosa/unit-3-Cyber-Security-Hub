@@ -28,7 +28,8 @@ question keys remain normalized by the Cyber adapter, including uppercase
 Week 1 aliases and catalogue version `1.2.0` for `u3-w01-*`. Shared-backend
 payloads never include a browser-selected learner, group, enrolment,
 assignment or attempt number. Typed name / Student ID on the Week 1 form is
-display-only and is not sent as identity.
+display-only and is not sent as identity. This hub conforms to Hub Security
+Baseline v1 (see `learning-platform-core` `docs/hub-security-baseline-v1.md`).
 
 Backend completion returned by Core progress services is authoritative in
 Supabase mode. Local storage remains for drafts, unsent completed work and
