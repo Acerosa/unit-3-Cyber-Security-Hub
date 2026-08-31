@@ -11,7 +11,8 @@
  *   - lower-case activity stable keys (u3-w01-baseline etc.)
  *   - catalogue question stable keys (W2OCR-Q01, S1-Q1, MAP1MOT)
  *   - Batch B versions (1.2.0 Week 1 + Week 2 OCR; 1.0.0 four Week 5
- *     activities; 1.1.0 everything else in Weeks 2–7)
+ *     activities; 1.2.0 week6-legislation-matching; 1.1.0 everything
+ *     else in Weeks 2–7)
  *
  * This module is the single source of truth for:
  *   1. question ID aliasing
@@ -88,6 +89,7 @@
     }
     if (key.indexOf("u3-w01-") === 0) return "1.2.0";
     if (key === "week2-ocr-question-practice") return "1.2.0";
+    if (key === "week6-legislation-matching") return "1.2.0";
     if (WEEK5_MARKING_V1[key]) return "1.0.0";
     if (/^week[2-7]-/.test(key)) return "1.1.0";
     return "";
