@@ -235,6 +235,12 @@
       );
       assertEquals(
         results,
+        "catalogue-version-week6-legislation",
+        keyMap.catalogueVersionFor("week6-legislation-matching"),
+        "1.2.0"
+      );
+      assertEquals(
+        results,
         "activity-version-uses-catalogue-when-activity-known",
         keyMap.normaliseActivityVersion("1.0", "week2-session1-retrieval"),
         "1.1.0"
