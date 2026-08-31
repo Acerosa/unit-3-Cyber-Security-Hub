@@ -327,39 +327,30 @@
 
   function renderScoringGuide(parent) {
     var guide = document.createElement('section');
-    guide.className = 'w7-review-item';
-    guide.innerHTML = '<h3>' + data.scoringGuide.title + '</h3>';
-    var lik = document.createElement('p');
-    lik.innerHTML =
-      '<strong>Likelihood:</strong> Low - ' +
+    guide.className = 'w7-review-item';setAuthoredHtml(guide, '<h3>' + data.scoringGuide.title + '</h3>');
+    var lik = document.createElement('p');setAuthoredHtml(lik, '<strong>Likelihood:</strong> Low - ' +
       data.scoringGuide.likelihood.Low +
       ' Medium - ' +
       data.scoringGuide.likelihood.Medium +
       ' High - ' +
-      data.scoringGuide.likelihood.High;
+      data.scoringGuide.likelihood.High);
     guide.appendChild(lik);
-    var imp = document.createElement('p');
-    imp.innerHTML =
-      '<strong>Impact:</strong> Low - ' +
+    var imp = document.createElement('p');setAuthoredHtml(imp, '<strong>Impact:</strong> Low - ' +
       data.scoringGuide.impact.Low +
       ' Medium - ' +
       data.scoringGuide.impact.Medium +
       ' High - ' +
-      data.scoringGuide.impact.High;
+      data.scoringGuide.impact.High);
     guide.appendChild(imp);
 
     var wrap = document.createElement('div');
     wrap.className = 'w7-thm-table-wrap';
     var table = document.createElement('table');
-    table.className = 'w7-matrix';
-    table.innerHTML =
-      '<caption>Likelihood × Impact to risk rating (text labels)</caption>' +
-      '<thead><tr><th scope="col">Likelihood</th><th scope="col">Impact</th><th scope="col">Risk rating</th><th scope="col">Numeric helper</th></tr></thead>';
+    table.className = 'w7-matrix';setAuthoredHtml(table, '<caption>Likelihood × Impact to risk rating (text labels)</caption>' +
+      '<thead><tr><th scope="col">Likelihood</th><th scope="col">Impact</th><th scope="col">Risk rating</th><th scope="col">Numeric helper</th></tr></thead>');
     var tbody = document.createElement('tbody');
     data.scoringGuide.matrix.forEach(function (row) {
-      var tr = document.createElement('tr');
-      tr.innerHTML =
-        '<td>' +
+      var tr = document.createElement('tr');setAuthoredHtml(tr, '<td>' +
         row.likelihood +
         '</td><td>' +
         row.impact +
@@ -369,7 +360,7 @@
         row.risk +
         ' risk</span></td><td>' +
         row.numeric +
-        '</td>';
+        '</td>');
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
@@ -384,9 +375,7 @@
 
   function renderEntryForm(parent, entry, index) {
     var block = document.createElement('section');
-    block.className = 'w7-review-item';
-    block.innerHTML =
-      '<h3>Register entry ' +
+    block.className = 'w7-review-item';setAuthoredHtml(block, '<h3>Register entry ' +
       (index + 1) +
       ' of ' +
       data.entryCount +
@@ -397,7 +386,7 @@
           '">Risk rating: ' +
           entry.riskScore +
           '</span></p>'
-        : '');
+        : ''));
 
     data.fields.forEach(function (field) {
       if (field.type === 'select' || field.type === 'decision') {
@@ -473,8 +462,7 @@
         entry.justification
       ].forEach(function (cell, cellIndex) {
         var td = document.createElement('td');
-        if (cellIndex === 5 && cell) {
-          td.innerHTML = '<span class="' + riskClass(cell) + '">' + cell + ' risk</span>';
+        if (cellIndex === 5 && cell) {setAuthoredHtml(td, '<span class="' + riskClass(cell) + '">' + cell + ' risk</span>');
         } else {
           td.textContent = cell || '-';
         }
@@ -512,9 +500,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>' +
       data.activityName +
       '</h2>' +
       '<p><strong>Organisation:</strong> ' +
@@ -522,7 +508,7 @@
       '</p>' +
       '<p class="panel-note">' +
       data.intro +
-      '</p>';
+      '</p>');
 
     if (!week2Available) {
       var miss = document.createElement('p');
@@ -585,27 +571,22 @@
 
     if (showStarters) {
       var starters = document.createElement('aside');
-      starters.className = 'w7-support-toggle';
-      starters.innerHTML =
-        '<strong>Optional sentence starters</strong><ul class="section-list">' +
+      starters.className = 'w7-support-toggle';setAuthoredHtml(starters, '<strong>Optional sentence starters</strong><ul class="section-list">' +
         data.sentenceStarters
           .map(function (item) {
             return '<li>' + item + '</li>';
           })
           .join('') +
-        '</ul>';
+        '</ul>');
       panel.appendChild(starters);
     }
 
     if (showSamples) {
       var samples = document.createElement('section');
-      samples.className = 'w7-review-item';
-      samples.innerHTML = '<h3>Partially completed sample rows (worked examples)</h3>';
+      samples.className = 'w7-review-item';setAuthoredHtml(samples, '<h3>Partially completed sample rows (worked examples)</h3>');
       data.sampleRows.forEach(function (row, index) {
         var ex = document.createElement('article');
-        ex.className = 'w7-def-card';
-        ex.innerHTML =
-          '<h4>Sample ' +
+        ex.className = 'w7-def-card';setAuthoredHtml(ex, '<h4>Sample ' +
           (index + 1) +
           ': ' +
           row.asset +
@@ -629,7 +610,7 @@
           row.decision +
           ' - ' +
           row.justification +
-          '</p>';
+          '</p>');
         samples.appendChild(ex);
       });
       panel.appendChild(samples);
@@ -665,8 +646,7 @@
     }
 
     var meta = document.createElement('section');
-    meta.className = 'w7-review-item';
-    meta.innerHTML = '<h3>Required register decisions</h3>';
+    meta.className = 'w7-review-item';setAuthoredHtml(meta, '<h3>Required register decisions</h3>');
     (function renderAddressFirst() {
       var wrap = document.createElement('div');
       wrap.className = 'w7-reflection-field';

@@ -40,9 +40,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>' +
       data.title +
       '</h2>' +
       '<h3>Clear definitions</h3>' +
@@ -85,7 +83,7 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
 
     var challengeHeading = document.createElement('h3');
     challengeHeading.textContent = 'Optional challenge tasks';
@@ -93,8 +91,7 @@
 
     data.challenges.forEach(function (item) {
       var block = document.createElement('section');
-      block.className = 'w5-review-item';
-      block.innerHTML = '<h4>' + item.title + '</h4><p>' + item.prompt + '</p>';
+      block.className = 'w5-review-item';setAuthoredHtml(block, '<h4>' + item.title + '</h4><p>' + item.prompt + '</p>');
       textFields.mount(block, {
         wrapClass: 'w5-reflection-field',
         id: item.id,

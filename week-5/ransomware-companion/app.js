@@ -109,10 +109,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-
-    panel.innerHTML =
-      '<h2>Introduction to NCSC Exercise in a Box</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>Introduction to NCSC Exercise in a Box</h2>' +
       '<p><strong>' +
       data.ncsc.productName +
       '</strong> is produced by the ' +
@@ -140,7 +137,7 @@
       '<a class="btn btn-secondary" href="' +
       data.ncsc.exerciseUrl +
       '" target="_blank" rel="noopener noreferrer">NCSC ransomware exercise page <span aria-hidden="true">↗</span></a>' +
-      '</div>';
+      '</div>');
 
     var roleHeading = document.createElement('h2');
     roleHeading.textContent = 'Northbank role workspace';
@@ -204,8 +201,7 @@
 
     state.decisions.forEach(function (row, index) {
       var block = document.createElement('section');
-      block.className = 'w5-review-item';
-      block.innerHTML = '<h3>Decision ' + (index + 1) + '</h3>';
+      block.className = 'w5-review-item';setAuthoredHtml(block, '<h3>Decision ' + (index + 1) + '</h3>');
       data.decisionRecord.fields.forEach(function (meta) {
         if (meta.id === 'impactCategory') {
           var wrap = document.createElement('div');
@@ -296,13 +292,11 @@
         return;
       }
       var score = computeScore();
-      if (progress) progress.markCompleted(ACTIVITY_ID, score, data.total, { companion: true });
-      status.innerHTML =
-        '<p class="message message-success">Companion workspace completed (' +
+      if (progress) progress.markCompleted(ACTIVITY_ID, score, data.total, { companion: true });setAuthoredHtml(status, '<p class="message message-success">Companion workspace completed (' +
         score +
         ' / ' +
         data.total +
-        '). Continue to the debrief after the facilitated exercise.</p>';
+        '). Continue to the debrief after the facilitated exercise.</p>');
       window.Unit3Week5Submit.renderSubmitPanel({
         activityId: ACTIVITY_ID,
         hostId: 'w5-submit-host',

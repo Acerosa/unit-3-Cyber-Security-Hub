@@ -30,9 +30,7 @@
   textFields.destroyAll();
   host.textContent = '';
   var panel = document.createElement('section');
-  panel.className = 'panel';
-  panel.innerHTML =
-    '<h2>' +
+  panel.className = 'panel';setAuthoredHtml(panel, '<h2>' +
     data.title +
     '</h2>' +
     '<div class="w4-thm-safety" role="note"><h3>Safety restrictions</h3><ul class="section-list">' +
@@ -62,12 +60,10 @@
         return '<li>' + task + '</li>';
       })
       .join('') +
-    '</ul>';
+    '</ul>');
 
   if (room) {
-    var thmBlock = document.createElement('div');
-    thmBlock.innerHTML =
-      '<h3>TryHackMe: Google Dorking</h3>' +
+    var thmBlock = document.createElement('div');setAuthoredHtml(thmBlock, '<h3>TryHackMe: Google Dorking</h3>' +
       '<p>' +
       room.purpose +
       '</p>' +
@@ -77,7 +73,7 @@
           return '<li>' + task + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
     var open = document.createElement('a');
     open.className = 'btn btn-primary';
     open.href = room.url;
@@ -86,8 +82,7 @@
     open.textContent = 'Open TryHackMe room (opens in a new tab)';
     thmBlock.appendChild(open);
 
-    var techWrap = document.createElement('div');
-    techWrap.innerHTML = '<h4>Three search techniques (local notes)</h4>';
+    var techWrap = document.createElement('div');setAuthoredHtml(techWrap, '<h4>Three search techniques (local notes)</h4>');
     for (var i = 1; i <= 3; i += 1) {
       var id = 'dork-' + i;
       textFields.mount(techWrap, {
@@ -109,9 +104,7 @@
     panel.appendChild(thmBlock);
   }
 
-  var analysis = document.createElement('section');
-  analysis.innerHTML =
-    '<h3>' +
+  var analysis = document.createElement('section');setAuthoredHtml(analysis, '<h3>' +
     data.writtenAnalysis.title +
     '</h3>' +
     '<ul class="section-list">' +
@@ -123,7 +116,7 @@
     '</ul>' +
     '<p class="panel-note">' +
     data.writtenAnalysis.submissionNote +
-    '</p>';
+    '</p>');
 
   data.writtenAnalysis.planningFields.forEach(function (field, index) {
     var id = 'analysis-' + index;
@@ -166,15 +159,13 @@
   analysis.appendChild(checklist);
   panel.appendChild(analysis);
 
-  var evidence = document.createElement('section');
-  evidence.innerHTML =
-    '<h3>Evidence requirements</h3><ul class="section-list">' +
+  var evidence = document.createElement('section');setAuthoredHtml(evidence, '<h3>Evidence requirements</h3><ul class="section-list">' +
     data.evidenceRequirements
       .map(function (item) {
         return '<li>' + item + '</li>';
       })
       .join('') +
-    '</ul>';
+    '</ul>');
   panel.appendChild(evidence);
 
   var actions = document.createElement('div');

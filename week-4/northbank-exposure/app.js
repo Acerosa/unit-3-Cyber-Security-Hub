@@ -100,9 +100,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>Northbank passive-exposure reflection</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>Northbank passive-exposure reflection</h2>' +
       '<p class="w4-thm-safety" role="note"><strong>Do not investigate a real organisation.</strong> ' +
       data.fictionalNotice +
       '</p>' +
@@ -121,12 +119,11 @@
       '</p>' +
       '<p class="panel-note">Motivation bank: ' +
       data.motivationBank.join('; ') +
-      '.</p>';
+      '.</p>');
 
     data.prompts.forEach(function (prompt, index) {
       var block = document.createElement('section');
-      block.className = 'w4-review-item';
-      block.innerHTML = '<h3>' + prompt.label + '</h3>';
+      block.className = 'w4-review-item';setAuthoredHtml(block, '<h3>' + prompt.label + '</h3>');
       var row = state.exposures[prompt.id];
       prompt.fields.forEach(function (f) {
         field(
@@ -144,8 +141,7 @@
     });
 
     var review = document.createElement('section');
-    review.className = 'w4-review-item';
-    review.innerHTML = '<h3>' + data.session1Review.title + '</h3>';
+    review.className = 'w4-review-item';setAuthoredHtml(review, '<h3>' + data.session1Review.title + '</h3>');
     data.session1Review.fields.forEach(function (f) {
       field(
         review,

@@ -27,9 +27,7 @@
   textFields.destroyAll();
   host.textContent = '';
   var panel = document.createElement('section');
-  panel.className = 'panel';
-  panel.innerHTML =
-    '<h2>' +
+  panel.className = 'panel';setAuthoredHtml(panel, '<h2>' +
     data.title +
     '</h2>' +
     '<p class="w3-thm-safety" role="note">' +
@@ -46,15 +44,13 @@
         return '<li>' + task + '</li>';
       })
       .join('') +
-    '</ul>';
+    '</ul>');
 
   if (room) {
-    var thmBlock = document.createElement('div');
-    thmBlock.innerHTML =
-      '<h3>TryHackMe: The Hacker Methodology</h3>' +
+    var thmBlock = document.createElement('div');setAuthoredHtml(thmBlock, '<h3>TryHackMe: The Hacker Methodology</h3>' +
       '<p>' +
       room.purpose +
-      '</p>';
+      '</p>');
     var open = document.createElement('a');
     open.className = 'btn btn-primary';
     open.href = room.url;
@@ -65,10 +61,8 @@
     panel.appendChild(thmBlock);
   }
 
-  var form = document.createElement('section');
-  form.innerHTML =
-    '<h3>Attacker research profile template</h3>' +
-    '<p class="panel-note">Printable/local notes only. This directed-study resource is not a scored API submission.</p>';
+  var form = document.createElement('section');setAuthoredHtml(form, '<h3>Attacker research profile template</h3>' +
+    '<p class="panel-note">Printable/local notes only. This directed-study resource is not a scored API submission.</p>');
   fields.forEach(function (field, index) {
     var id = 'research-' + index;
     textFields.mount(form, {

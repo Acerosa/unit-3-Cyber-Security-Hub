@@ -62,19 +62,15 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>' +
       data.title +
       '</h2>' +
       '<p class="w6-callout" role="note">' +
       data.leavingHubNotice +
-      '</p>';
+      '</p>');
 
     var cisco = document.createElement('section');
-    cisco.className = 'w6-review-item';
-    cisco.innerHTML =
-      '<h3>' +
+    cisco.className = 'w6-review-item';setAuthoredHtml(cisco, '<h3>' +
       data.ciscoTask.title +
       '</h3><ul class="section-list">' +
       data.ciscoTask.instructions
@@ -82,7 +78,7 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
     field(
       cisco,
       'cisco-framework',
@@ -94,9 +90,7 @@
     panel.appendChild(cisco);
 
     var iso = document.createElement('section');
-    iso.className = 'w6-review-item w6-thm-section';
-    iso.innerHTML =
-      '<h3>TryHackMe: ' +
+    iso.className = 'w6-review-item w6-thm-section';setAuthoredHtml(iso, '<h3>TryHackMe: ' +
       data.tryhackmeIso.room +
       '</h3>' +
       '<p class="panel-note">' +
@@ -113,15 +107,13 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
     field(iso, 'iso-concept', data.tryhackmeIso.recordFields[0], 'isoConcept', 3);
     field(iso, 'iso-standard', data.tryhackmeIso.recordFields[1], 'isoStandard', 3);
     panel.appendChild(iso);
 
     var legal = document.createElement('section');
-    legal.className = 'w6-review-item w6-thm-section';
-    legal.innerHTML =
-      '<h3>TryHackMe: ' +
+    legal.className = 'w6-review-item w6-thm-section';setAuthoredHtml(legal, '<h3>TryHackMe: ' +
       data.tryhackmeLegal.room +
       '</h3>' +
       '<p class="panel-note">' +
@@ -138,13 +130,12 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
     field(legal, 'legal-constraints', data.tryhackmeLegal.recordFields[0], 'legalConstraints', 4);
     panel.appendChild(legal);
 
     var ncsc = document.createElement('section');
-    ncsc.className = 'w6-review-item';
-    ncsc.innerHTML = '<h3>' + data.ncscResearch.title + '</h3>';
+    ncsc.className = 'w6-review-item';setAuthoredHtml(ncsc, '<h3>' + data.ncscResearch.title + '</h3>');
     data.ncscResearch.links.forEach(function (link) {
       var p = document.createElement('p');
       var a = document.createElement('a');
@@ -159,8 +150,7 @@
     panel.appendChild(ncsc);
 
     var lo2 = document.createElement('section');
-    lo2.className = 'w6-review-item';
-    lo2.innerHTML = '<h3>LO2 checklist self-assessment</h3>';
+    lo2.className = 'w6-review-item';setAuthoredHtml(lo2, '<h3>LO2 checklist self-assessment</h3>');
     data.lo2Checklist.forEach(function (item, index) {
       var label = document.createElement('label');
       label.className = 'w6-checkbox-label';
@@ -178,8 +168,7 @@
     panel.appendChild(lo2);
 
     var priorities = document.createElement('section');
-    priorities.className = 'w6-review-item';
-    priorities.innerHTML = '<h3>Two revision priorities</h3>';
+    priorities.className = 'w6-review-item';setAuthoredHtml(priorities, '<h3>Two revision priorities</h3>');
     field(priorities, 'priority-1', data.revisionPriorities[0], 'priority1', 2);
     field(priorities, 'priority-2', data.revisionPriorities[1], 'priority2', 2);
     panel.appendChild(priorities);

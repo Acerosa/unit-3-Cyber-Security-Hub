@@ -86,9 +86,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>Marking and answer improvement</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>Marking and answer improvement</h2>' +
       '<p><strong>Question (' +
       data.question.marks +
       ' marks · ' +
@@ -98,7 +96,7 @@
       '</p>' +
       '<p class="w4-callout" role="note"><strong>Dominant error to target:</strong> ' +
       data.commonError +
-      '</p>';
+      '</p>');
 
     var sample = document.createElement('blockquote');
     sample.className = 'w4-scenario w4-weak-response';
@@ -162,16 +160,14 @@
     field('improvement', data.improvementActionPrompt, 'improvement', 3, 10);
 
     var exemplar = document.createElement('details');
-    exemplar.className = 'session-disclosure';
-    exemplar.innerHTML =
-      '<summary class="session-disclosure__summary"><span class="session-disclosure__text"><h3 class="session-disclosure__heading">Model improved sentence and response</h3></span><span class="session-disclosure__icon" aria-hidden="true"></span></summary>' +
+    exemplar.className = 'session-disclosure';setAuthoredHtml(exemplar, '<summary class="session-disclosure__summary"><span class="session-disclosure__text"><h3 class="session-disclosure__heading">Model improved sentence and response</h3></span><span class="session-disclosure__icon" aria-hidden="true"></span></summary>' +
       '<div class="session-disclosure__content">' +
       '<p><strong>Improved sentence:</strong> ' +
       data.modelImprovedSentence +
       '</p>' +
       '<p><strong>Model response:</strong> ' +
       data.modelResponse +
-      '</p></div>';
+      '</p></div>');
     panel.appendChild(exemplar);
 
     var feedback = document.createElement('div');

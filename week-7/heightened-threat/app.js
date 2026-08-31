@@ -227,9 +227,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>' +
       data.activityName +
       '</h2>' +
       '<p><strong>Organisation:</strong> ' +
@@ -243,7 +241,7 @@
       '" target="_blank" rel="noopener noreferrer">Open NCSC Heightened cyber threat page <span aria-hidden="true">↗</span></a></p>' +
       '<p class="w7-callout" role="note">' +
       data.collaborationNote +
-      '</p>';
+      '</p>');
 
     field(panel, 'exercise-title', 'Exercise title', 'exerciseTitle', 1, 20);
     field(
@@ -261,9 +259,7 @@
     state.entries.forEach(function (entry, index) {
       if (editingIndex === index) return;
       var block = document.createElement('article');
-      block.className = 'w7-review-item';
-      block.innerHTML =
-        '<h3>Decision ' +
+      block.className = 'w7-review-item';setAuthoredHtml(block, '<h3>Decision ' +
         (index + 1) +
         '</h3>' +
         '<p><strong>Register ref:</strong> ' +
@@ -276,7 +272,7 @@
         (entry.costAccepted || '-') +
         ' / ' +
         (entry.benefitGained || '-') +
-        '</p>';
+        '</p>');
       var editBtn = document.createElement('button');
       editBtn.type = 'button';
       editBtn.className = 'btn btn-secondary';

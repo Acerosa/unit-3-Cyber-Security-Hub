@@ -36,7 +36,6 @@
     "vitest": "3.2.4"
   },
   "learningPlatform": {
-    "securityBaseline": "1.0",
-    "exceptions": ["HSB-11"]
+    "securityBaseline": "1.0"
   }
 }

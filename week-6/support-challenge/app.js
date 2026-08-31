@@ -40,8 +40,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML = '<h2>' + data.title + '</h2>';
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>' + data.title + '</h2>');
 
     var legHeading = document.createElement('h3');
     legHeading.textContent = 'Plain-language legislation cards';
@@ -50,8 +49,7 @@
     legGrid.className = 'w6-two-col';
     data.legislationCards.forEach(function (card) {
       var article = document.createElement('article');
-      article.className = 'w6-def-card';
-      article.innerHTML = '<h4>' + card.title + '</h4><p>' + card.summary + '</p>';
+      article.className = 'w6-def-card';setAuthoredHtml(article, '<h4>' + card.title + '</h4><p>' + card.summary + '</p>');
       legGrid.appendChild(article);
     });
     panel.appendChild(legGrid);
@@ -61,12 +59,9 @@
     panel.appendChild(rolesHeading);
     data.roleCards.forEach(function (card) {
       var block = document.createElement('section');
-      block.className = 'w6-review-item';
-      block.innerHTML = '<h4>' + card.role + '</h4><ul class="section-list">';
-      card.prompts.forEach(function (prompt) {
-        block.innerHTML += '<li>' + prompt + '</li>';
-      });
-      block.innerHTML += '</ul>';
+      block.className = 'w6-review-item';setAuthoredHtml(block, '<h4>' + card.role + '</h4><ul class="section-list">');
+      card.prompts.forEach(function (prompt) {setAuthoredHtml(block, (block.innerHTML || "") + ('<li>' + prompt + '</li>'));
+      });setAuthoredHtml(block, (block.innerHTML || "") + ('</ul>'));
       panel.appendChild(block);
     });
 
@@ -76,9 +71,7 @@
     panel.appendChild(recorder);
 
     var grid = document.createElement('section');
-    grid.className = 'w6-review-item';
-    grid.innerHTML =
-      '<h3>' +
+    grid.className = 'w6-review-item';setAuthoredHtml(grid, '<h3>' +
       data.plannerGrid.title +
       '</h3><ul class="section-list">' +
       data.plannerGrid.columns
@@ -86,13 +79,11 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
     panel.appendChild(grid);
 
     var starters = document.createElement('p');
-    starters.className = 'panel-note';
-    starters.innerHTML =
-      '<strong>Sentence starters:</strong> ' + data.sentenceStarters.join(' ');
+    starters.className = 'panel-note';setAuthoredHtml(starters, '<strong>Sentence starters:</strong> ' + data.sentenceStarters.join(' '));
     panel.appendChild(starters);
 
     var examplesHeading = document.createElement('h3');
@@ -100,8 +91,7 @@
     panel.appendChild(examplesHeading);
     data.workedExamples.forEach(function (item) {
       var ex = document.createElement('blockquote');
-      ex.className = 'w6-scenario';
-      ex.innerHTML = '<strong>' + item.title + ':</strong> ' + item.text;
+      ex.className = 'w6-scenario';setAuthoredHtml(ex, '<strong>' + item.title + ':</strong> ' + item.text);
       panel.appendChild(ex);
     });
 
@@ -140,8 +130,7 @@
 
     data.challenges.forEach(function (item) {
       var block = document.createElement('section');
-      block.className = 'w6-review-item';
-      block.innerHTML = '<h4>' + item.title + '</h4><p>' + item.prompt + '</p>';
+      block.className = 'w6-review-item';setAuthoredHtml(block, '<h4>' + item.title + '</h4><p>' + item.prompt + '</p>');
       textFields.mount(block, {
         wrapClass: 'w6-reflection-field',
         id: item.id,

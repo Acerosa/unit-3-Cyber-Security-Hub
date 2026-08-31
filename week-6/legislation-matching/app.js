@@ -93,21 +93,17 @@
     if (!host) return;
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>Match legislation and duty or offence</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>Match legislation and duty or offence</h2>' +
       '<p class="panel-note">Select both the most relevant legislation and the relevant duty or offence. ' +
-      'Feedback corrects the common misconception of using Computer Misuse Act 1990 for every data protection scenario.</p>';
+      'Feedback corrects the common misconception of using Computer Misuse Act 1990 for every data protection scenario.</p>');
 
     data.scenarios.forEach(function (scenario, index) {
       var block = document.createElement('section');
-      block.className = 'w6-review-item w6-legal';
-      block.innerHTML =
-        '<h3>Scenario ' +
+      block.className = 'w6-review-item w6-legal';setAuthoredHtml(block, '<h3>Scenario ' +
         (index + 1) +
         '</h3><p class="w6-scenario">' +
         scenario.text +
-        '</p>';
+        '</p>');
 
       renderSelect(
         block,

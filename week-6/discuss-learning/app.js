@@ -26,27 +26,22 @@
   function renderLearn() {
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>Balanced Discuss response structure</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>Balanced Discuss response structure</h2>' +
       '<p class="w6-formula" role="note">Issue · Supported consideration · Competing consideration · Concession · Justified conclusion</p>' +
       '<p class="w6-scenario">' +
       data.scenario +
-      '</p>';
+      '</p>');
 
     var list = document.createElement('ol');
     list.className = 'section-list';
     data.structure.forEach(function (item) {
-      var li = document.createElement('li');
-      li.innerHTML = '<strong>' + item.label + ':</strong> ' + item.description;
+      var li = document.createElement('li');setAuthoredHtml(li, '<strong>' + item.label + ':</strong> ' + item.description);
       list.appendChild(li);
     });
     panel.appendChild(list);
 
     var weak = document.createElement('blockquote');
-    weak.className = 'w6-scenario w6-weak-response';
-    weak.innerHTML =
-      '<strong>' +
+    weak.className = 'w6-scenario w6-weak-response';setAuthoredHtml(weak, '<strong>' +
       data.weakResponse.label +
       ':</strong> ' +
       data.weakResponse.text +
@@ -56,13 +51,11 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
     panel.appendChild(weak);
 
     var strong = document.createElement('blockquote');
-    strong.className = 'w6-scenario w6-improved-response';
-    strong.innerHTML =
-      '<strong>' +
+    strong.className = 'w6-scenario w6-improved-response';setAuthoredHtml(strong, '<strong>' +
       data.strongResponse.label +
       ':</strong> ' +
       data.strongResponse.text +
@@ -72,7 +65,7 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
     panel.appendChild(strong);
 
     var note = document.createElement('p');
@@ -106,16 +99,14 @@
     var q = data.knowledgeChecks[checkIndex];
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'activity-panel';
-    panel.innerHTML =
-      '<p class="panel-note">Knowledge check ' +
+    panel.className = 'activity-panel';setAuthoredHtml(panel, '<p class="panel-note">Knowledge check ' +
       (checkIndex + 1) +
       ' of ' +
       data.knowledgeChecks.length +
       '</p>' +
       '<h2>' +
       q.prompt +
-      '</h2>';
+      '</h2>');
 
     var fieldset = document.createElement('fieldset');
     fieldset.className = 'w6-options';
@@ -194,14 +185,12 @@
     if (progress) progress.markCompleted(ACTIVITY_ID, score, data.total);
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>Knowledge checks complete</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>Knowledge checks complete</h2>' +
       '<p aria-live="polite">Your score: ' +
       score +
       ' / ' +
       data.total +
-      '.</p>';
+      '.</p>');
     host.appendChild(panel);
     window.Unit3Week6Submit.renderSubmitPanel({
       activityId: ACTIVITY_ID,

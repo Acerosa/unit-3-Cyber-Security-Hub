@@ -66,13 +66,11 @@
     article.appendChild(description);
 
     var meta = document.createElement('ul');
-    meta.className = 'activity-meta';
-    meta.innerHTML =
-      '<li>Type: ' +
+    meta.className = 'activity-meta';setAuthoredHtml(meta, '<li>Type: ' +
       item.type +
       '</li><li>About ' +
       item.estimatedMinutes +
-      ' minutes</li>';
+      ' minutes</li>');
     article.appendChild(meta);
 
     if (state.status === 'completed' && typeof state.score === 'number') {

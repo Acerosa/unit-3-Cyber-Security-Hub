@@ -1,6 +1,7 @@
 import globals from "./runtime-globals.json";
 import { activityFromPackage, type ContentPackage } from "./from-package";
 import { runtimeContentPackage } from "./runtime-weeks";
+import { setAuthoredHtml } from "@learning-platform/core";
 
 export type CurriculumRuntime = {
   source?: string;
@@ -35,7 +36,7 @@ export function applyUnit3Curriculum(
     target.document.body.dataset.publicationState = runtime.state?.state || "ERROR";
   }
   if (runtime.state && target.document && typeof renderStatus === "function") {
-    bannerHost(target.document).innerHTML = renderStatus(runtime.state);
+    setAuthoredHtml(bannerHost(target.document), renderStatus(runtime.state));
   }
   if (source !== "published") {
     console.warn("UNIT3_CURRICULUM_FALLBACK", source, runtime.state?.state || "ERROR");

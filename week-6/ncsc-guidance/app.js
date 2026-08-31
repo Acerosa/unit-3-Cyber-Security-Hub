@@ -43,9 +43,7 @@
     if (!host) return;
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>NCSC Exercise in a Box guidance</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>NCSC Exercise in a Box guidance</h2>' +
       '<p><strong>Organisation:</strong> ' +
       data.organisation +
       '</p>' +
@@ -57,13 +55,12 @@
       '</p>' +
       '<p class="w6-callout" role="note">' +
       data.completionNote +
-      '</p>';
+      '</p>');
 
     var list = document.createElement('ul');
     list.className = 'section-list';
     data.guidanceSections.forEach(function (section) {
-      var li = document.createElement('li');
-      li.innerHTML = '<strong>' + section.title + ':</strong> ' + section.text;
+      var li = document.createElement('li');setAuthoredHtml(li, '<strong>' + section.title + ':</strong> ' + section.text);
       list.appendChild(li);
     });
     panel.appendChild(list);

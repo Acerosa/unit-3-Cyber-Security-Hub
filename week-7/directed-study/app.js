@@ -78,19 +78,15 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>' +
       data.title +
       '</h2>' +
       '<p class="w7-callout" role="note">' +
       data.leavingHubNotice +
-      '</p>';
+      '</p>');
 
     var cisco = document.createElement('section');
-    cisco.className = 'w7-review-item w7-platform-section';
-    cisco.innerHTML =
-      '<h3>' +
+    cisco.className = 'w7-review-item w7-platform-section';setAuthoredHtml(cisco, '<h3>' +
       data.ciscoTask.title +
       '</h3><ul class="section-list">' +
       data.ciscoTask.instructions
@@ -98,7 +94,7 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
     data.ciscoTask.recordFields.forEach(function (labelText, index) {
       textField(
         cisco,
@@ -116,9 +112,7 @@
     panel.appendChild(cisco);
 
     var openvas = document.createElement('section');
-    openvas.className = 'w7-review-item w7-platform-section';
-    openvas.innerHTML =
-      '<h3>TryHackMe: ' +
+    openvas.className = 'w7-review-item w7-platform-section';setAuthoredHtml(openvas, '<h3>TryHackMe: ' +
       data.tryhackmeOpenvas.room +
       '</h3>' +
       '<p class="panel-note">' +
@@ -128,7 +122,7 @@
       data.tryhackmeOpenvas.url +
       '" target="_blank" rel="noopener noreferrer">Open ' +
       data.tryhackmeOpenvas.room +
-      ' on TryHackMe <span aria-hidden="true">↗</span></a></p>';
+      ' on TryHackMe <span aria-hidden="true">↗</span></a></p>');
     data.tryhackmeOpenvas.recordFields.forEach(function (labelText, index) {
       textField(
         openvas,
@@ -146,9 +140,7 @@
     panel.appendChild(openvas);
 
     var logs = document.createElement('section');
-    logs.className = 'w7-review-item w7-platform-section';
-    logs.innerHTML =
-      '<h3>TryHackMe: ' +
+    logs.className = 'w7-review-item w7-platform-section';setAuthoredHtml(logs, '<h3>TryHackMe: ' +
       data.tryhackmeLogs.room +
       '</h3>' +
       '<p class="panel-note">' +
@@ -158,7 +150,7 @@
       data.tryhackmeLogs.url +
       '" target="_blank" rel="noopener noreferrer">Open ' +
       data.tryhackmeLogs.room +
-      ' on TryHackMe <span aria-hidden="true">↗</span></a></p>';
+      ' on TryHackMe <span aria-hidden="true">↗</span></a></p>');
     data.tryhackmeLogs.recordFields.forEach(function (labelText, index) {
       textField(
         logs,
@@ -176,13 +168,11 @@
     panel.appendChild(logs);
 
     var research = document.createElement('section');
-    research.className = 'w7-review-item w7-platform-section';
-    research.innerHTML =
-      '<h3>' +
+    research.className = 'w7-review-item w7-platform-section';setAuthoredHtml(research, '<h3>' +
       data.industryResearch.title +
       '</h3><p class="panel-note">' +
       data.industryResearch.prompt +
-      '</p>';
+      '</p>');
     data.industryResearch.fields.forEach(function (fieldDef) {
       textField(
         research,

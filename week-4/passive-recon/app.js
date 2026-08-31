@@ -17,9 +17,7 @@
   textFields.destroyAll();
   host.textContent = '';
   var panel = document.createElement('section');
-  panel.className = 'panel';
-  panel.innerHTML =
-    '<h2>Passive reconnaissance practical guidance</h2>' +
+  panel.className = 'panel';setAuthoredHtml(panel, '<h2>Passive reconnaissance practical guidance</h2>' +
     '<p class="panel-note">' +
     data.accessNotice +
     '</p>' +
@@ -37,13 +35,11 @@
     '<li>Record what each technique reveals without touching the target.</li>' +
     '<li>Connect each lookup or finding to a possible attacker motivation (why).</li>' +
     '<li>Treat the rooms as examples of how an attacker may choose a target.</li>' +
-    '</ol>';
+    '</ol>');
 
   rooms.forEach(function (room) {
     var block = document.createElement('article');
-    block.className = 'w4-review-item';
-    block.innerHTML =
-      '<h3>' +
+    block.className = 'w4-review-item';setAuthoredHtml(block, '<h3>' +
       room.title +
       '</h3>' +
       '<p>' +
@@ -60,7 +56,7 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
     if (room.pairedWorkingGuidance) {
       var pair = document.createElement('p');
       pair.className = 'w4-callout';
@@ -93,8 +89,7 @@
     panel.appendChild(block);
   });
 
-  var reflection = document.createElement('section');
-  reflection.innerHTML = '<h3>Reflection notes (local only)</h3>';
+  var reflection = document.createElement('section');setAuthoredHtml(reflection, '<h3>Reflection notes (local only)</h3>');
   ['Technique / finding', 'What it revealed (read-only)', 'Possible motivation (why)'].forEach(
     function (labelText, index) {
       textFields.mount(reflection, {

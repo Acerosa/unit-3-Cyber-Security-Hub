@@ -156,9 +156,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>Exercise decision record</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>Exercise decision record</h2>' +
       '<p><strong>Organisation:</strong> ' +
       data.organisation +
       '</p>' +
@@ -170,14 +168,12 @@
       '</p>' +
       '<p class="w6-callout" role="note">' +
       data.reviseNote +
-      '</p>';
+      '</p>');
 
     entries.forEach(function (entry, index) {
       if (editingIndex === index) return;
       var block = document.createElement('article');
-      block.className = 'w6-review-item';
-      block.innerHTML =
-        '<h3>' +
+      block.className = 'w6-review-item';setAuthoredHtml(block, '<h3>' +
         (entry.title || 'Untitled decision') +
         '</h3>' +
         '<p><strong>Decision:</strong> ' +
@@ -194,7 +190,7 @@
         '</p>' +
         '<p><strong>Type:</strong> ' +
         (entry.type || 'Not set') +
-        '</p>';
+        '</p>');
 
       var editBtn = document.createElement('button');
       editBtn.type = 'button';

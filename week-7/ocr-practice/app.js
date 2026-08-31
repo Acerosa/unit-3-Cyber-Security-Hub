@@ -103,9 +103,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>OCR-style practice questions (' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>OCR-style practice questions (' +
       data.total +
       ' marks)</h2>' +
       '<p class="message message-warning" role="note"><strong>Not official OCR exam questions.</strong> ' +
@@ -122,16 +120,14 @@
       '</ul>' +
       '<p class="w7-scenario">' +
       data.northbankScenario +
-      '</p>';
+      '</p>');
 
     var timer = document.createElement('div');
     timer.className = 'w7-timer-bar';
     timer.setAttribute('role', 'status');
-    timer.setAttribute('aria-live', 'polite');
-    timer.innerHTML =
-      '<span class="w7-timer-item"><strong>Timer:</strong> <span id="w7-timer-display">' +
+    timer.setAttribute('aria-live', 'polite');setAuthoredHtml(timer, '<span class="w7-timer-item"><strong>Timer:</strong> <span id="w7-timer-display">' +
       (untimed ? 'Untimed mode' : formatTime(remainingSeconds)) +
-      '</span></span>';
+      '</span></span>');
     panel.appendChild(timer);
 
     var modeLabel = document.createElement('label');
@@ -156,9 +152,7 @@
 
     data.questions.forEach(function (q, index) {
       var block = document.createElement('section');
-      block.className = 'w7-review-item';
-      block.innerHTML =
-        '<h3>' +
+      block.className = 'w7-review-item';setAuthoredHtml(block, '<h3>' +
         (index + 1) +
         '. ' +
         q.commandWord +
@@ -172,7 +166,7 @@
         '</p>' +
         '<p class="panel-note">' +
         q.guidance +
-        '</p>';
+        '</p>');
 
       if (q.responseType === 'mcq') {
         var fieldset = document.createElement('fieldset');
@@ -238,12 +232,10 @@
 
       if (review) {
         var scheme = document.createElement('div');
-        scheme.className = 'w7-callout';
-        scheme.innerHTML =
-          '<p><strong>Mark scheme / guidance:</strong> ' +
+        scheme.className = 'w7-callout';setAuthoredHtml(scheme, '<p><strong>Mark scheme / guidance:</strong> ' +
           schemeText(q) +
           '</p>' +
-          '<p class="panel-note">This is formative OCR-style guidance, not an official OCR mark scheme.</p>';
+          '<p class="panel-note">This is formative OCR-style guidance, not an official OCR mark scheme.</p>');
         block.appendChild(scheme);
       }
       panel.appendChild(block);

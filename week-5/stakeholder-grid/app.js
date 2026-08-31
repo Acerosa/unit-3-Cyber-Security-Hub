@@ -165,9 +165,7 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>Stakeholder impact grid</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>Stakeholder impact grid</h2>' +
       '<p class="w5-scenario">' +
       data.scenario +
       '</p>' +
@@ -180,7 +178,7 @@
       '<p class="panel-note"><strong>Optional starters:</strong> ' +
       data.sentenceStarters.join(' ') +
       '</p>' +
-      '<p id="w5-grid-completion" class="panel-note" aria-live="polite"></p>';
+      '<p id="w5-grid-completion" class="panel-note" aria-live="polite"></p>');
 
     data.stakeholders.forEach(function (stakeholder) {
       var block = document.createElement('section');
@@ -215,8 +213,7 @@
     });
 
     var ref = document.createElement('section');
-    ref.className = 'w5-review-item';
-    ref.innerHTML = '<h3>Comparison and reflection</h3>';
+    ref.className = 'w5-review-item';setAuthoredHtml(ref, '<h3>Comparison and reflection</h3>');
     textCell(
       ref,
       'ref-overlooked',
@@ -279,13 +276,11 @@
         return;
       }
       var score = computeScore();
-      if (progress) progress.markCompleted(ACTIVITY_ID, score, data.total);
-      status.innerHTML =
-        '<p class="message message-success">Grid completed (' +
+      if (progress) progress.markCompleted(ACTIVITY_ID, score, data.total);setAuthoredHtml(status, '<p class="message message-success">Grid completed (' +
         score +
         ' / ' +
         data.total +
-        ').</p>';
+        ').</p>');
       window.Unit3Week5Submit.renderSubmitPanel({
         activityId: ACTIVITY_ID,
         hostId: 'w5-submit-host',

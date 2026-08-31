@@ -90,20 +90,16 @@
     textFields.destroyAll();
     host.textContent = '';
     var panel = document.createElement('section');
-    panel.className = 'panel';
-    panel.innerHTML =
-      '<h2>Analysing rather than listing impacts</h2>' +
+    panel.className = 'panel';setAuthoredHtml(panel, '<h2>Analysing rather than listing impacts</h2>' +
       '<p class="panel-note">' +
       data.teachingPoint +
       '</p>' +
       '<p class="w5-scenario">' +
       data.scenario +
-      '</p>';
+      '</p>');
 
     var weak = document.createElement('blockquote');
-    weak.className = 'w5-scenario w5-weak-response';
-    weak.innerHTML =
-      '<strong>' +
+    weak.className = 'w5-scenario w5-weak-response';setAuthoredHtml(weak, '<strong>' +
       data.weakResponse.label +
       ':</strong> ' +
       data.weakResponse.text +
@@ -113,7 +109,7 @@
           return '<li>' + item + '</li>';
         })
         .join('') +
-      '</ul>';
+      '</ul>');
     panel.appendChild(weak);
 
     if (!state.revealedStrong) {
@@ -134,9 +130,7 @@
       panel.appendChild(hideNote);
     } else {
       var strong = document.createElement('blockquote');
-      strong.className = 'w5-scenario w5-improved-response';
-      strong.innerHTML =
-        '<strong>' + data.strongResponse.label + ':</strong> ' + data.strongResponse.text;
+      strong.className = 'w5-scenario w5-improved-response';setAuthoredHtml(strong, '<strong>' + data.strongResponse.label + ':</strong> ' + data.strongResponse.text);
       panel.appendChild(strong);
 
       var annHeading = document.createElement('h3');
@@ -213,13 +207,11 @@
         return;
       }
       var score = computeScore();
-      if (progress) progress.markCompleted(ACTIVITY_ID, score, data.total);
-      status.innerHTML =
-        '<p class="message message-success">Analysis practice completed (' +
+      if (progress) progress.markCompleted(ACTIVITY_ID, score, data.total);setAuthoredHtml(status, '<p class="message message-success">Analysis practice completed (' +
         score +
         ' / ' +
         data.total +
-        '). Structured feedback: stronger credit comes from named stakeholders, scenario evidence, timescale and connections — not lists.</p>';
+        '). Structured feedback: stronger credit comes from named stakeholders, scenario evidence, timescale and connections — not lists.</p>');
       window.Unit3Week5Submit.renderSubmitPanel({
         activityId: ACTIVITY_ID,
         hostId: 'w5-submit-host',

@@ -42,13 +42,11 @@
     grid.className = 'w6-def-grid';
     data.initiatives.forEach(function (item) {
       var card = document.createElement('article');
-      card.className = 'w6-def-card';
-      card.innerHTML =
-        '<h3>' +
+      card.className = 'w6-def-card';setAuthoredHtml(card, '<h3>' +
         escapeText(item.name) +
         '</h3><p><strong>Purpose:</strong> ' +
         escapeText(item.purpose) +
-        '</p>';
+        '</p>');
       grid.appendChild(card);
     });
     panel.appendChild(grid);
