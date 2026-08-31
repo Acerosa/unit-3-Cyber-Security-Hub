@@ -117,7 +117,7 @@ test("GitHub Pages consumes reviewed UI 0.1.6 for catalogue chrome", function ()
   assert.match(workflow, /Check out reviewed UI/);
   assert.match(workflow, /Acerosa\/Acerosa-learning-platform-ui/);
   assert.match(workflow, /ref:\s*v0\.1\.6/);
-  assert.match(workflow, /ref:\s*v0\.2\.1/);
+  assert.match(workflow, /ref:\s*v0\.2\.2/);
 });
 
 test("Week 2 lists activities on the week page and links each activity to the next", function () {
