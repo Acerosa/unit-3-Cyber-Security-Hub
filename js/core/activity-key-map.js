@@ -113,6 +113,7 @@
 
   function optionLetterCase(activityKey) {
     var key = normaliseActivityKey(activityKey);
+    if (key.indexOf("u3-w01-") === 0) return "upper";
     if (key === "week2-ocr-question-practice") return "lower";
     if (key.indexOf("week2-") === 0 || key.indexOf("week3-") === 0) {
       return "upper";

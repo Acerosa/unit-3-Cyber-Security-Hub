@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "npm run test:node && npm run test:app && npm run build && node --test test/post-build/build.test.js",
-    "test:node": "node --test tests/core-integration.test.js tests/backend-progress.test.js tests/curriculum-runtime.test.js tests/package-exports.test.js test/site-integrity.test.js test/academic-integrity.test.js test/learning-text-host-mounts.test.js && node tests/supabase/run-all.js",
+    "test:node": "node --test tests/core-integration.test.js tests/backend-progress.test.js tests/curriculum-runtime.test.js tests/package-exports.test.js tests/week1-final-submission.test.js test/site-integrity.test.js test/academic-integrity.test.js test/learning-text-host-mounts.test.js && node tests/supabase/run-all.js",
     "test:app": "vitest run",
     "check": "npm run typecheck && npm test"
   },

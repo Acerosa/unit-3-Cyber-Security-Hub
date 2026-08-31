@@ -14,18 +14,19 @@
  *   - "SUPABASE"     -> api.submit_attempt on the shared Supabase project
  *   - "APPS_SCRIPT"  -> existing Google Apps Script /exec endpoints (rollback)
  *
- * Default is SUPABASE for Weeks 2–7 after hosted backend activation. There is
+ * Default is SUPABASE for Weeks 1–7 after hosted backend activation. There is
  * NO silent fallback: a Supabase failure remains visible to the learner and
  * the tutor. Query string (`?backend=`) and localStorage
- * (`unit3.backendMode`) overrides are ignored by Unit3BackendMode.getMode().
+ * (`unit3.backendMode`) overrides are ignored by Unit3BackendMode.
  * Support rollback is an explicit `backendMode` change in this file, not a
  * learner-controlled switch. There is no backend-selection UI.
  *
- * Week 1 override (deterministic, not an error fallback):
- *   Activity API pages under /activities/activity.html, /week-1/, and
- *   activity keys matching U3-W01-* are forced to APPS_SCRIPT because
- *   Week 1 still depends on the legacy markSection workflow and there is
- *   no safe Supabase equivalent in the current backend contract.
+ * Week 1 split (deterministic, not an error fallback):
+ *   Content/formative (getActivity, markSection) remain on Apps Script
+ *   because there is no safe Supabase equivalent. Final submission for
+ *   U3-W01-* uses authenticated api.submit_attempt via the shared adapter.
+ *   GAS submitAttempt is ROLLBACK_ONLY and is not called after a Supabase
+ *   failure.
  */
 (function () {
   "use strict";

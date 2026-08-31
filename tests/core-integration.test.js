@@ -209,15 +209,29 @@ test("backend progress overrides completion while retaining local pending work",
   assert.match(progress, /localCompleted:\s*true/);
 });
 
-test("Week 1 remains an explicit Apps Script marking exception", () => {
+test("Week 1 splits Apps Script formative from Supabase final submission", () => {
   const mode = read("js/core/backend-mode.js");
   const config = read("js/activity-engine-config.js");
   const supabaseConfig = read("js/config/supabase-config.js");
+  const engine = read("js/activity-engine.js");
+  const api = read("js/activity-api.js");
   assert.match(supabaseConfig, /backendMode:\s*"SUPABASE"/);
-  assert.match(mode, /week1-forced-apps-script/);
+  assert.match(mode, /week1-formative-apps-script/);
   assert.match(mode, /isWeek1ActivityApiPage/);
-  assert.match(mode, /return MODE\.APPS_SCRIPT/);
+  assert.match(mode, /getSubmissionProvider/);
+  assert.match(mode, /getFormativeProvider/);
   assert.match(config, /markSection/);
+  assert.match(api, /ROLLBACK_ONLY/);
+  assert.match(engine, /usesSupabaseFinalSubmit/);
+  assert.match(engine, /handleSupabaseFinalSubmit/);
+  assert.match(engine, /Unit3Week1FinalSubmit/);
+  const supabaseFn = engine.match(
+    /function handleSupabaseFinalSubmit\(\) \{[\s\S]*?\n  function handleAppsScriptRollbackSubmit/
+  );
+  assert.ok(supabaseFn, "Supabase final submit handler must be extractable");
+  assert.doesNotMatch(supabaseFn[0], /submitAttempt/);
+  assert.match(engine, /api\s*\.\s*getActivity/);
+  assert.match(engine, /api\s*\.\s*markSection/);
 });
 
 test("Weeks 2–7 default to shared Supabase without query override", () => {

@@ -4,18 +4,20 @@ Generic learner activity engine for API-driven activities.
 
 ## Endpoint ownership
 
-| Activity ID | Service | Module |
+| Activity ID | Content / formative | Final evidence |
 | --- | --- | --- |
-| `U3-W01-BASELINE` | Activity API only | `js/activity-api.js` |
-| `U3-W01-CIA` | Activity API only | `js/activity-api.js` |
-| `U3-W01-INCIDENTS` | Activity API only | `js/activity-api.js` |
-| `U3-W01-GLOSSARY` | Activity API only | `js/activity-api.js` |
-| `U3-W01-RETRIEVAL` | Activity API only | `js/activity-api.js` |
-| `U3-W01-COMMAND-WORDS` | Activity API only | `js/activity-api.js` |
-| `U3-W01-OCR-PRACTICE` | Activity API only | `js/activity-api.js` |
-| `U3-W01-PEER-IMPROVEMENT` | Activity API only | `js/activity-api.js` |
+| `U3-W01-BASELINE` | Activity API `getActivity` / `markSection` | authenticated `api.submit_attempt` |
+| `U3-W01-CIA` | Activity API `getActivity` / `markSection` | authenticated `api.submit_attempt` |
+| `U3-W01-INCIDENTS` | Activity API `getActivity` / `markSection` | authenticated `api.submit_attempt` |
+| `U3-W01-GLOSSARY` | Activity API `getActivity` / `markSection` | authenticated `api.submit_attempt` |
+| `U3-W01-RETRIEVAL` | Activity API `getActivity` / `markSection` | authenticated `api.submit_attempt` |
+| `U3-W01-COMMAND-WORDS` | Activity API `getActivity` / `markSection` | authenticated `api.submit_attempt` |
+| `U3-W01-OCR-PRACTICE` | Activity API `getActivity` / `markSection` | authenticated `api.submit_attempt` |
+| `U3-W01-PEER-IMPROVEMENT` | Activity API `getActivity` / `markSection` | authenticated `api.submit_attempt` |
 
-All current Week 1 formative activities use the generic Activity API engine only.
+All current Week 1 formative activities use the generic Activity API engine for
+content and section checks. Final evidence is recorded through authenticated
+`api.submit_attempt`, not GAS `submitAttempt`.
 Former Collector-based activity pages have been removed or reduced to lightweight redirects.
 
 Routing is defined in `js/activity-engine-config.js` as `SUBMISSION_ROUTING`.
@@ -56,6 +58,7 @@ LIVE is sent only when both `submissionMode: 'LIVE'` and `allowLiveSubmissions: 
 - `js/activity-state.js`
 - `js/activity-renderer.js`
 - `js/activity-engine.js`
+- `js/core/week1-final-submit.js`
 - `css/activity-engine.css`
 - `activities/activity.html`
 
@@ -79,8 +82,9 @@ LIVE is sent only when both `submissionMode: 'LIVE'` and `allowLiveSubmissions: 
 8. Progress reaches 4 of 4 assessment sections for Peer Marking.
 9. Final learner form appears only after all assessment sections are checked.
 10. Optional partner fields appear; self-marking works without a partner.
-11. TEST `submitAttempt` records successfully.
-12. Retry of the same attempt is treated as a duplicate.
-12. Refresh before submission restores Attempt ID and responses.
-13. Network panel shows Activity API `/exec` only (no Collector URL).
-14. Existing Collector activities still load and still use `js/submissions.js`.
+11. Authenticated `api.submit_attempt` records the final result. GAS `submitAttempt` is rollback-only and must not run on the default path.
+12. A Supabase failure stays visible and does not write to GAS.
+13. Retry of the same attempt is treated as a duplicate.
+14. Refresh before submission restores Attempt ID and responses.
+15. Network panel shows Activity API `/exec` for `getActivity` / `markSection` and Supabase for final submit (no Collector URL).
+16. Existing Collector activities still load and still use `js/submissions.js`.

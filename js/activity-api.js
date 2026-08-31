@@ -198,6 +198,13 @@
     });
   }
 
+  /**
+   * ROLLBACK_ONLY. Week 1 final learner submission uses authenticated
+   * api.submit_attempt. Do not call this from the activity engine except
+   * when Unit3BackendMode.getSubmissionProvider() is explicitly APPS_SCRIPT.
+   * Historical Google Sheet rows must not be rewritten. SAFE_TO_REMOVE_LATER
+   * only after the GAS rollback path itself is retired.
+   */
   function submitAttempt(payload) {
     return request(
       'POST',

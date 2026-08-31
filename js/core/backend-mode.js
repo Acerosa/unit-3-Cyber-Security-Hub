@@ -1,22 +1,31 @@
 /**
  * Central Unit 3 backend-mode selector.
  *
- * Exposes the runtime submission transport in one place so no week script
- * has to make transport decisions on its own. Modes:
+ * Two independent providers are resolved so Week 1 can keep Apps Script
+ * content/formative marking without making Apps Script authoritative for
+ * final evidence:
  *
+ *   content / formative  -> getActivity + markSection (Week 1 still Apps Script)
+ *   submission           -> final evidence, score, identity, progress
+ *
+ * Modes:
  *   APPS_SCRIPT  -> existing Google Apps Script /exec endpoints (rollback)
  *   SUPABASE     -> api.submit_attempt on the shared Supabase project
  *
- * There is no automatic fallback. If Supabase fails, the failure remains
- * visible to the learner. Switching to Apps Script must be an explicit,
- * observable configuration change.
+ * There is no automatic fallback. If Supabase final submission fails, the
+ * failure remains visible to the learner. Switching to Apps Script must be
+ * an explicit, observable configuration change in SUPABASE_CONFIG.
  *
- * Resolution order (first match wins):
- *   1. Week 1 Activity API pages are forced to APPS_SCRIPT (no markSection RPC)
- *   2. SUPABASE_CONFIG.backendMode (default SUPABASE for Weeks 2–7)
+ * Resolution order for the submission provider (first match wins):
+ *   1. SUPABASE_CONFIG.backendMode
+ *   2. default SUPABASE
+ *
+ * Week 1 Activity API pages keep Apps Script as the content/formative
+ * provider regardless of the global default. That is a deterministic
+ * compatibility route, not an error fallback.
  *
  * Learners cannot switch transport via query string or localStorage.
- * Those were previously support overrides and are ignored in getMode().
+ * Those were previously support overrides and are ignored.
  */
 (function () {
   "use strict";
@@ -78,11 +87,9 @@
   }
 
   /**
-   * Week 1 still depends on the legacy Activity API markSection workflow.
-   * There is no Supabase equivalent in the current backend contract, so
-   * these pages remain explicitly on Apps Script even when the global
-   * default is SUPABASE. This is a deterministic override, not a silent
-   * error fallback.
+   * Week 1 still depends on the legacy Activity API getActivity/markSection
+   * workflow. There is no Supabase equivalent in the current backend
+   * contract, so content and formative marking remain on Apps Script.
    */
   function isWeek1ActivityApiPage() {
     try {
@@ -116,10 +123,7 @@
     }
   }
 
-  function getMode() {
-    if (isWeek1ActivityApiPage()) {
-      return MODE.APPS_SCRIPT;
-    }
+  function configuredSubmissionMode() {
     var resolved = fromConfig();
     if (resolved && isSupported(resolved)) {
       return resolved;
@@ -127,12 +131,42 @@
     return MODE.SUPABASE;
   }
 
+  function getContentProvider() {
+    if (isWeek1ActivityApiPage()) return MODE.APPS_SCRIPT;
+    return configuredSubmissionMode();
+  }
+
+  function getFormativeProvider() {
+    return getContentProvider();
+  }
+
+  function getSubmissionProvider() {
+    return configuredSubmissionMode();
+  }
+
+  /**
+   * Compatibility alias for Weeks 2–7 submit scripts. Returns the
+   * authoritative submission provider. Query/localStorage overrides are
+   * ignored. Week 1 final evidence now uses this same provider.
+   */
+  function getMode() {
+    return getSubmissionProvider();
+  }
+
   function isSupabase() {
-    return getMode() === MODE.SUPABASE;
+    return getSubmissionProvider() === MODE.SUPABASE;
   }
 
   function isAppsScript() {
-    return getMode() === MODE.APPS_SCRIPT;
+    return getSubmissionProvider() === MODE.APPS_SCRIPT;
+  }
+
+  function usesAppsScriptContent() {
+    return getContentProvider() === MODE.APPS_SCRIPT;
+  }
+
+  function usesAppsScriptFormative() {
+    return getFormativeProvider() === MODE.APPS_SCRIPT;
   }
 
   function setMode(mode) {
@@ -157,7 +191,11 @@
   }
 
   function describeSource() {
-    if (isWeek1ActivityApiPage()) return "week1-forced-apps-script";
+    if (isWeek1ActivityApiPage()) {
+      return getSubmissionProvider() === MODE.SUPABASE
+        ? "week1-formative-apps-script"
+        : "week1-rollback-apps-script";
+    }
     if (fromConfig()) return "supabase-config";
     return "default-supabase";
   }
@@ -165,13 +203,20 @@
   window.Unit3BackendMode = Object.freeze({
     MODE: MODE,
     getMode: getMode,
+    getContentProvider: getContentProvider,
+    getFormativeProvider: getFormativeProvider,
+    getSubmissionProvider: getSubmissionProvider,
     isSupabase: isSupabase,
     isAppsScript: isAppsScript,
+    usesAppsScriptContent: usesAppsScriptContent,
+    usesAppsScriptFormative: usesAppsScriptFormative,
     isWeek1ActivityApiPage: isWeek1ActivityApiPage,
     setMode: setMode,
     clearOverride: clearOverride,
     describeSource: describeSource,
     STORAGE_KEY: STORAGE_KEY,
-    QUERY_PARAMETER: QUERY_PARAMETER
+    QUERY_PARAMETER: QUERY_PARAMETER,
+    fromQuery: fromQuery,
+    fromStorage: fromStorage
   });
 })();

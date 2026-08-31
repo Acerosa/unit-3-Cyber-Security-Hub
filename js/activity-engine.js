@@ -1,6 +1,7 @@
 /**
  * Generic Activity API engine controller.
- * Pilot: U3-W01-COMMAND-WORDS via Activity API only (never Collector v3).
+ * Week 1 content/formative checks use GAS getActivity + markSection.
+ * Final evidence uses authenticated api.submit_attempt (no GAS submitAttempt).
  */
 
 (function () {
@@ -456,16 +457,107 @@
     }
   }
 
-  function handleSubmit() {
-    if (!allAssessmentsMarked()) {
+  function week1FinalSubmit() {
+    return window.Unit3Week1FinalSubmit || null;
+  }
+
+  function usesSupabaseFinalSubmit() {
+    var helper = week1FinalSubmit();
+    return Boolean(
+      helper &&
+        typeof helper.usesSupabaseFinalSubmit === 'function' &&
+        helper.usesSupabaseFinalSubmit()
+    );
+  }
+
+  function applyServerSubmission(submission) {
+    var data = {
+      recorded: true,
+      duplicate: Boolean(submission && submission.duplicate),
+      score: submission ? submission.score : null,
+      maximumScore: submission ? submission.maxScore : null,
+      percentage: submission ? submission.percentage : null,
+      attemptNumber: submission ? submission.attemptNumber : null
+    };
+    stateApi.setFinalSubmission(state, data);
+    showSubmissionResult(data, true);
+    var another = document.getElementById('ae-btn-start-another');
+    if (another) another.hidden = false;
+  }
+
+  function handleSupabaseFinalSubmit() {
+    var helper = week1FinalSubmit();
+    if (!helper) {
       setStatusMessage(
         'ae-submit-status',
-        'Check every assessment section before submitting.',
+        'The learner service is not available on this device. Contact your tutor.',
+        'error'
+      );
+      return;
+    }
+    if (typeof helper.isSignedIn === 'function' && !helper.isSignedIn()) {
+      setStatusMessage(
+        'ae-submit-status',
+        'Sign in to your learner account before submitting.',
         'error'
       );
       return;
     }
 
+    var mapped;
+    try {
+      helper.assertLiveBankMatchesCatalogue(
+        activityData.activity.activityId,
+        activityData
+      );
+      mapped = helper.mapCollectedResponses(
+        activityData.activity.activityId,
+        collectAllResponses(),
+        helper.collectLiveQuestions(activityData)
+      );
+    } catch (err) {
+      setStatusMessage(
+        'ae-submit-status',
+        (err && err.learnerMessage) ||
+          (err && err.message) ||
+          'This activity could not be submitted. Refresh the page and try again.',
+        'error'
+      );
+      return;
+    }
+
+    document.getElementById('ae-btn-submit').disabled = true;
+    helper
+      .submitFinal({
+        activityId: activityData.activity.activityId,
+        getResponses: function () {
+          return mapped;
+        },
+        getStartedAt: function () {
+          return state && state.startedAt
+            ? new Date(state.startedAt).toISOString()
+            : null;
+        },
+        statusHostId: 'ae-submit-status',
+        submitLabel: 'Submit your result',
+        onSubmitted: function (result) {
+          applyServerSubmission(result && result.submission);
+        }
+      })
+      .catch(function (err) {
+        document.getElementById('ae-btn-submit').disabled = false;
+        setStatusMessage(
+          'ae-submit-status',
+          (helper.learnerFacingError && helper.learnerFacingError(err)) ||
+            (err && err.learnerMessage) ||
+            (err && err.message) ||
+            'Your result was not saved. Check your connection and try again.',
+          'error'
+        );
+      });
+  }
+
+  function handleAppsScriptRollbackSubmit() {
     var validation = learnerDetails.validateLearnerDetails
       ? learnerDetails.validateLearnerDetails({
           showPartner: Boolean(activityData.activity.allowsPartner)
@@ -548,6 +640,24 @@
       });
   }
 
+  function handleSubmit() {
+    if (!allAssessmentsMarked()) {
+      setStatusMessage(
+        'ae-submit-status',
+        'Check every assessment section before submitting.',
+        'error'
+      );
+      return;
+    }
+
+    if (usesSupabaseFinalSubmit()) {
+      handleSupabaseFinalSubmit();
+      return;
+    }
+
+    handleAppsScriptRollbackSubmit();
+  }
+
   function handleStartAnother() {
     if (
       !window.confirm(
@@ -557,6 +667,23 @@
       return;
     }
     state = stateApi.beginNewAttempt(activityData.activity.activityId);
+    if (
+      usesSupabaseFinalSubmit() &&
+      window.Unit3SupabaseAdapter &&
+      typeof window.Unit3SupabaseAdapter.beginNewClientAttempt === 'function' &&
+      window.Unit3ActivityKeyMap &&
+      typeof window.Unit3ActivityKeyMap.normaliseActivityKey === 'function'
+    ) {
+      try {
+        window.Unit3SupabaseAdapter.beginNewClientAttempt(
+          window.Unit3ActivityKeyMap.normaliseActivityKey(
+            activityData.activity.activityId
+          )
+        );
+      } catch (ignored) {
+        /* sessionStorage may be unavailable */
+      }
+    }
     document.getElementById('ae-btn-submit').disabled = false;
     document.getElementById('ae-btn-start-another').hidden = true;
     showPanel('ae-result-panel', false);

@@ -12,6 +12,7 @@ const path = require("node:path");
 const scripts = [
   path.join(__dirname, "..", "core-integration.test.js"),
   path.join(__dirname, "..", "backend-progress.test.js"),
+  path.join(__dirname, "..", "week1-final-submission.test.js"),
   path.join(__dirname, "run-node.js"),
   path.join(__dirname, "validate-onboarding.js"),
   path.join(__dirname, "run-static-checks.js"),
