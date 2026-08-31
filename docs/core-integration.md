@@ -21,12 +21,14 @@ they delegate shared concerns to `window.LearningPlatform.platform`.
 
 ## Default submission behaviour
 
-Weeks 2–7 default to the shared Supabase backend (`api.submit_attempt`) via
-`SUPABASE_CONFIG.backendMode = "SUPABASE"`. Learners do not need
-`?backend=supabase` for normal operation. Activity and question keys remain
-normalized by the Cyber adapter, including uppercase Week 1 aliases and the
-`1.0` to `1.0.0` activity version mapping. Shared-backend payloads never include
-a browser-selected learner, group, enrolment, assignment or attempt number.
+Weeks 1–7 share the same authoritative evidence boundary:
+authenticated `api.submit_attempt` via `SUPABASE_CONFIG.backendMode = "SUPABASE"`.
+Learners do not need `?backend=supabase` for normal operation. Activity and
+question keys remain normalized by the Cyber adapter, including uppercase
+Week 1 aliases and catalogue version `1.2.0` for `u3-w01-*`. Shared-backend
+payloads never include a browser-selected learner, group, enrolment,
+assignment or attempt number. Typed name / Student ID on the Week 1 form is
+display-only and is not sent as identity.
 
 Backend completion returned by Core progress services is authoritative in
 Supabase mode. Local storage remains for drafts, unsent completed work and
@@ -34,26 +36,35 @@ immediate continuity. A local completion without a corresponding backend
 attempt is displayed as pending/in progress after reconciliation rather than
 as an authoritative completion.
 
-## Week 1 compatibility exception
+## Week 1 content and formative compatibility
 
-Week 1 continues to use the existing Apps Script Activity API. Its
-`markSection` operation returns section-level marking and feedback used by the
-generic Week 1 engine before final submission. Neither Core 0.2.0 nor learner
-API/submission contract 0.1.0 provides an equivalent operation. Week 1 pages
-are therefore forced to `APPS_SCRIPT` regardless of the global default; this is
-an explicit compatibility route, not an error fallback.
+Week 1 still uses the existing Apps Script Activity API for `getActivity`
+and `markSection`. `markSection` returns section-level marking and feedback
+used by the generic Week 1 engine before final submission. Neither Core 0.2.0
+nor learner API/submission contract 0.1.0 provides an equivalent operation.
+
+That is a split of providers, not a second evidence path:
+
+- content / formative provider: Apps Script (`getActivity`, `markSection`)
+- authoritative submission provider: authenticated `api.submit_attempt`
+
+GAS `submitAttempt` remains implemented for health checks and explicit
+`backendMode: "APPS_SCRIPT"` rollback only. The browser does not call it
+for learner final submission. There is no silent downgrade from a Supabase
+failure to GAS authoritative submit.
 
 Core still owns Week 1 account/session/platform behavior because the shared
 foundation is loaded on the Week 1 routes.
 
 ## Controlled Apps Script rollback
 
-Apps Script implementations remain in the repository for Week 1 (required) and
-Weeks 2–7 (rollback-only). `Unit3BackendMode.getMode()` does **not** honour
+Apps Script implementations remain in the repository for Week 1
+content/formative support (required) and Weeks 2–7 (rollback-only).
+`Unit3BackendMode.getMode()` / `getSubmissionProvider()` do **not** honour
 `?backend=` or `localStorage['unit3.backendMode']`. Learners cannot switch
 transport.
 
-Support rollback for Weeks 2–7 is an explicit `backendMode` change in
+Support rollback for final evidence is an explicit `backendMode` change in
 `js/config/supabase-config.js`, not a query-string or browser-storage switch.
 
 There is no silent transport fallback. If Supabase fails, the failure stays
@@ -61,13 +72,15 @@ visible.
 
 ## Backend activation prerequisites
 
-Shared-backend submission for Weeks 2–7 requires the hosted backend to have:
+Shared-backend submission for Weeks 1–7 requires the hosted backend to have:
 
-1. published the grounded Weeks 2–7 activity versions;
+1. published the grounded activity versions used by `api.submit_attempt`
+   (Week 1 catalogue `1.2.0`; Weeks 2–7 Batch B);
 2. an open Cyber registration group with a registration key;
 3. active assignments for those published versions;
 4. verified onboarding and `api.submit_attempt` smoke coverage.
 
 Those prerequisites are satisfied on the hosted Learning Platform backend for
-the synthetic `CYBER-TEST-A` delivery. Week 1 remains unpublished on purpose
-and must stay on Apps Script until a proven `markSection` replacement exists.
+the synthetic `CYBER-TEST-A` delivery. Curriculum publication of hub package
+`0.2.10` is a separate later step and is not required for the Week 1
+submission cutover itself.

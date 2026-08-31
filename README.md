@@ -8,7 +8,7 @@ This repository is the central learner-facing website for Unit 3. It is a
 **current-generation** hub in the Contract-First Modular Hub Architecture
 (see `learning-platform-backend` `docs/architecture.md`): Core `0.2.0` with a
 React / `@learning-platform/ui` shell wrapping classic week engines
-and Week 1 Apps Script compatibility. Classic activity engines are retained.
+and Week 1 Apps Script content/formative compatibility. Classic activity engines are retained.
 Do not migrate it to the Unit 14 content-package model solely for visual consistency.
 
 It will eventually contain:
@@ -687,5 +687,7 @@ account, session, learner, onboarding and progress concerns; this repository
 continues to own Cyber curriculum, rendering, evidence and local draft recovery.
 
 See [`docs/core-integration.md`](docs/core-integration.md) for submission
-readiness, backend-authoritative progress and the explicit Week 1 `markSection`
-compatibility exception.
+readiness, backend-authoritative progress and the Week 1 split: Apps Script
+`getActivity` / `markSection` remain for content and formative checks; final
+Week 1 evidence uses authenticated `api.submit_attempt`. GAS `submitAttempt`
+is rollback-only.

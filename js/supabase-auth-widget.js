@@ -9,9 +9,11 @@
   var mounted = false;
 
   function mode() {
-    return window.Unit3BackendMode && window.Unit3BackendMode.getMode
-      ? window.Unit3BackendMode.getMode()
-      : "SUPABASE";
+    var backend = window.Unit3BackendMode;
+    if (backend && typeof backend.getSubmissionProvider === "function") {
+      return backend.getSubmissionProvider();
+    }
+    return backend && backend.getMode ? backend.getMode() : "SUPABASE";
   }
 
   function ensureHost() {

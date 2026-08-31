@@ -173,6 +173,7 @@ const modules = [
   "js/core/supabase-submission-adapter.js",
   "js/core/supabase-evidence.js",
   "js/core/unit3-supabase-submit-runner.js",
+  "js/core/week1-final-submit.js",
   "tests/supabase/validate-supabase-modules.js"
 ];
 

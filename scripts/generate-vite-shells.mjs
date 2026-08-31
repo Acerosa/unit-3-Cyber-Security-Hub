@@ -30,6 +30,7 @@ const SHARED_ADAPTERS = [
   "js/core/supabase-submission-adapter.js",
   "js/core/supabase-evidence.js",
   "js/core/unit3-supabase-submit-runner.js",
+  "js/core/week1-final-submit.js",
   "js/activity-utils.js",
   "js/course-context.js",
   "js/activity-engine-config.js",

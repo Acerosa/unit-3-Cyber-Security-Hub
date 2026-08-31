@@ -659,13 +659,42 @@
       var originalSearch = global.location && global.location.search;
       if (global.location) {
         global.location.pathname = "/activities/activity.html";
-        global.location.search = "?activityId=U3-W01-BASELINE";
+        global.location.search = "?activityId=U3-W01-BASELINE&backend=APPS_SCRIPT";
+      }
+      try {
+        global.localStorage.setItem("unit3.backendMode", "APPS_SCRIPT");
+      } catch (ignored) {
+        /* ignore */
       }
       assertEquals(
         results,
-        "week1-activity-api-forced-apps-script",
+        "week1-final-submission-is-supabase",
         backendMode.getMode(),
+        "SUPABASE"
+      );
+      assertEquals(
+        results,
+        "week1-formative-provider-apps-script",
+        backendMode.getFormativeProvider(),
         "APPS_SCRIPT"
+      );
+      assertEquals(
+        results,
+        "week1-content-provider-apps-script",
+        backendMode.getContentProvider(),
+        "APPS_SCRIPT"
+      );
+      assertEquals(
+        results,
+        "week1-submission-provider-supabase",
+        backendMode.getSubmissionProvider(),
+        "SUPABASE"
+      );
+      assertEquals(
+        results,
+        "week1-describe-source-split",
+        backendMode.describeSource(),
+        "week1-formative-apps-script"
       );
       assertTruthy(
         results,
@@ -1105,6 +1134,344 @@
             : "mapped " + unique.join(",")
         );
       });
+    }
+
+    var week1Submit = global.Unit3Week1FinalSubmit;
+    assertTruthy(results, "week1-final-submit-module-present", week1Submit);
+    if (week1Submit && adapter && keyMap) {
+      assertEquals(
+        results,
+        "week1-catalogue-version-baseline",
+        keyMap.normaliseActivityVersion("1.0", "U3-W01-BASELINE"),
+        "1.2.0"
+      );
+      assertEquals(
+        results,
+        "week1-option-letter-case-upper",
+        keyMap.optionLetterCase("u3-w01-baseline"),
+        "upper"
+      );
+
+      var liveBanks = {
+        "U3-W01-BASELINE": [
+          "BAS-Q01",
+          "BAS-Q02",
+          "BAS-Q03",
+          "BAS-Q04",
+          "BAS-Q05",
+          "BAS-Q06",
+          "BAS-Q07",
+          "BAS-Q08",
+          "BAS-Q09",
+          "BAS-Q10"
+        ],
+        "U3-W01-CIA": [
+          "CIA-Q01",
+          "CIA-Q02",
+          "CIA-Q03",
+          "CIA-Q04",
+          "CIA-Q05",
+          "CIA-Q06",
+          "CIA-Q07",
+          "CIA-Q08",
+          "CIA-Q09",
+          "CIA-Q10",
+          "CIA-Q11",
+          "CIA-Q12"
+        ],
+        "U3-W01-INCIDENTS": [
+          "INC-Q01",
+          "INC-Q02",
+          "INC-Q03",
+          "INC-Q04",
+          "INC-Q05",
+          "INC-Q06",
+          "INC-Q07",
+          "INC-Q08",
+          "INC-Q09",
+          "INC-Q10",
+          "INC-Q11",
+          "INC-Q12"
+        ],
+        "U3-W01-GLOSSARY": [
+          "GLO-Q01",
+          "GLO-Q02",
+          "GLO-Q03",
+          "GLO-Q04",
+          "GLO-Q05",
+          "GLO-Q06",
+          "GLO-Q07",
+          "GLO-Q08",
+          "GLO-Q09",
+          "GLO-Q10",
+          "GLO-Q11",
+          "GLO-Q12"
+        ],
+        "U3-W01-RETRIEVAL": [
+          "RET-Q01",
+          "RET-Q02A",
+          "RET-Q02B",
+          "RET-Q02C",
+          "RET-Q03",
+          "RET-Q04",
+          "RET-Q05",
+          "RET-Q06",
+          "RET-Q07",
+          "RET-Q08",
+          "RET-Q09",
+          "RET-Q10"
+        ],
+        "U3-W01-COMMAND-WORDS": [
+          "Q001",
+          "Q002",
+          "Q003",
+          "Q004",
+          "Q005",
+          "Q006"
+        ],
+        "U3-W01-OCR-PRACTICE": [
+          "OCR-Q01",
+          "OCR-Q02A",
+          "OCR-Q02B",
+          "OCR-Q03A",
+          "OCR-Q03B",
+          "OCR-Q03C",
+          "OCR-Q03D",
+          "OCR-Q03E",
+          "OCR-Q03F",
+          "OCR-Q04",
+          "OCR-Q05"
+        ],
+        "U3-W01-PEER-IMPROVEMENT": [
+          "PM-Q01",
+          "PM-Q02",
+          "PM-Q03",
+          "PM-Q04",
+          "PM-Q05",
+          "PM-Q06",
+          "PM-Q07"
+        ]
+      };
+
+      Object.keys(liveBanks).forEach(function (activityId) {
+        var ids = liveBanks[activityId];
+        var payload = {
+          activity: { activityId: activityId },
+          sections: [
+            {
+              questions: ids.map(function (id) {
+                return {
+                  questionId: id,
+                  questionType:
+                    activityId === "U3-W01-INCIDENTS"
+                      ? "classification"
+                      : activityId.indexOf("RETRIEVAL") !== -1 ||
+                          activityId.indexOf("OCR") !== -1
+                        ? "short-response"
+                        : activityId.indexOf("PEER") !== -1
+                          ? "reflection"
+                          : "single-choice"
+                };
+              })
+            }
+          ]
+        };
+        var questions;
+        try {
+          questions = week1Submit.assertLiveBankMatchesCatalogue(
+            activityId,
+            payload
+          );
+        } catch (err) {
+          questions = null;
+          record(
+            results,
+            "week1-live-bank-" + activityId.toLowerCase(),
+            false,
+            String(err && err.message)
+          );
+        }
+        if (questions) {
+          assertEquals(
+            results,
+            "week1-live-count-" + activityId.toLowerCase(),
+            questions.length,
+            week1Submit.EXPECTED_QUESTION_COUNTS[
+              keyMap.normaliseActivityKey(activityId)
+            ]
+          );
+        }
+      });
+
+      var incidentsPayload = {
+        activity: { activityId: "U3-W01-INCIDENTS" },
+        sections: [
+          {
+            questions: liveBanks["U3-W01-INCIDENTS"].map(function (id) {
+              return { questionId: id, questionType: "classification" };
+            })
+          }
+        ]
+      };
+      var incidentsMapped = week1Submit.mapCollectedResponses(
+        "U3-W01-INCIDENTS",
+        [
+          {
+            questionId: "INC-Q01",
+            value: {
+              incidentType: "phishing",
+              ciaAim: "Confidentiality",
+              evidence: "Fake invoice email."
+            }
+          }
+        ],
+        week1Submit.collectLiveQuestions(incidentsPayload)
+      );
+      assertEquals(results, "week1-incidents-map-count", incidentsMapped.length, 1);
+      assertDeepEqual(
+        results,
+        "week1-incidents-structured-response",
+        incidentsMapped[0].response,
+        {
+          incidentType: "phishing",
+          ciaAim: "Confidentiality",
+          evidence: "Fake invoice email."
+        }
+      );
+
+      var retrievalPayload = {
+        activity: { activityId: "U3-W01-RETRIEVAL" },
+        sections: [
+          {
+            questions: liveBanks["U3-W01-RETRIEVAL"].map(function (id) {
+              return { questionId: id, questionType: "short-response" };
+            })
+          }
+        ]
+      };
+      var retrievalMapped = week1Submit.mapCollectedResponses(
+        "U3-W01-RETRIEVAL",
+        liveBanks["U3-W01-RETRIEVAL"].map(function (id, index) {
+          return { questionId: id, value: "answer-" + (index + 1) };
+        }),
+        week1Submit.collectLiveQuestions(retrievalPayload)
+      );
+      assertEquals(results, "week1-retrieval-12-keys", retrievalMapped.length, 12);
+      assertEquals(
+        results,
+        "week1-retrieval-split-key",
+        retrievalMapped[1].questionId,
+        "RET-Q02A"
+      );
+
+      var ocrPayload = {
+        activity: { activityId: "U3-W01-OCR-PRACTICE" },
+        sections: [
+          {
+            questions: liveBanks["U3-W01-OCR-PRACTICE"].map(function (id) {
+              return { questionId: id, questionType: "short-response" };
+            })
+          }
+        ]
+      };
+      var ocrMapped = week1Submit.mapCollectedResponses(
+        "U3-W01-OCR-PRACTICE",
+        liveBanks["U3-W01-OCR-PRACTICE"].map(function (id) {
+          return { questionId: id, value: "practice" };
+        }),
+        week1Submit.collectLiveQuestions(ocrPayload)
+      );
+      assertEquals(results, "week1-ocr-11-keys", ocrMapped.length, 11);
+
+      var omitted = week1Submit.mapCollectedResponses(
+        "U3-W01-BASELINE",
+        [{ questionId: "BAS-Q01", value: "C" }],
+        week1Submit.collectLiveQuestions({
+          sections: [
+            {
+              questions: liveBanks["U3-W01-BASELINE"].map(function (id) {
+                return { questionId: id, questionType: "single-choice" };
+              })
+            }
+          ]
+        })
+      );
+      assertEquals(results, "week1-omitted-responses-not-fabricated", omitted.length, 1);
+
+      var unknownThrew = false;
+      try {
+        week1Submit.mapCollectedResponses(
+          "U3-W01-BASELINE",
+          [{ questionId: "b-q1", value: "A" }],
+          week1Submit.collectLiveQuestions({
+            sections: [
+              {
+                questions: liveBanks["U3-W01-BASELINE"].map(function (id) {
+                  return { questionId: id, questionType: "single-choice" };
+                })
+              }
+            ]
+          })
+        );
+      } catch (err) {
+        unknownThrew = /UNKNOWN_QUESTION/.test(String(err && err.message));
+      }
+      record(
+        results,
+        "week1-unknown-key-fails-closed",
+        unknownThrew,
+        unknownThrew ? "" : "unknown live question IDs must fail closed"
+      );
+
+      var rpc = adapter.buildRpcPayload({
+        activityId: "U3-W01-BASELINE",
+        activityVersion: "1.0",
+        clientAttemptId: "week1-attempt-1",
+        responses: omitted,
+        sourcePage: "/activities/activity.html"
+      });
+      assertEquals(results, "week1-rpc-activity-key", rpc.p_activity_key, "u3-w01-baseline");
+      assertEquals(results, "week1-rpc-version", rpc.p_activity_version, "1.2.0");
+      assertEquals(results, "week1-rpc-option-id", rpc.p_responses[0].response_payload.optionId, "C");
+      record(
+        results,
+        "week1-rpc-no-awarded-score",
+        JSON.stringify(rpc).indexOf("awarded_score") === -1 &&
+          JSON.stringify(rpc).indexOf("is_correct") === -1
+      );
+      record(
+        results,
+        "week1-rpc-no-typed-identity",
+        JSON.stringify(rpc).indexOf("student_id") === -1 &&
+          JSON.stringify(rpc).indexOf("learner_id") === -1 &&
+          JSON.stringify(rpc).indexOf("studentId") === -1
+      );
+
+      var identityThrew = false;
+      try {
+        adapter.buildRpcPayload({
+          activityId: "U3-W01-CIA",
+          activityVersion: "1.2.0",
+          clientAttemptId: "week1-attempt-2",
+          studentId: "AB123456",
+          responses: omitted
+        });
+      } catch (err) {
+        identityThrew = /studentId/.test(String(err && err.message));
+      }
+      record(
+        results,
+        "week1-typed-identity-not-authoritative",
+        identityThrew,
+        identityThrew ? "" : "typed studentId must be rejected"
+      );
+
+      assertEquals(
+        results,
+        "week1-auth-required-when-signed-out",
+        week1Submit.isSignedIn(),
+        false
+      );
     }
 
     return results;

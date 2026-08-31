@@ -64,7 +64,8 @@ const REQUIRED_ADAPTERS = [
   "js/core/question-key-aliases.js",
   "js/core/supabase-submission-adapter.js",
   "js/core/supabase-evidence.js",
-  "js/core/unit3-supabase-submit-runner.js"
+  "js/core/unit3-supabase-submit-runner.js",
+  "js/core/week1-final-submit.js"
 ];
 
 function assertScriptOrder(html, label) {
@@ -298,8 +299,11 @@ if (existsAt("js/learner-session-summary.js")) {
 if (existsAt("js/core/backend-mode.js")) {
   const mode = read("js/core/backend-mode.js");
   record(
-    "week1-forced-apps-script-override",
-    /isWeek1ActivityApiPage/.test(mode) && /week1-forced-apps-script/.test(mode)
+    "week1-split-providers",
+    /isWeek1ActivityApiPage/.test(mode) &&
+      /getSubmissionProvider/.test(mode) &&
+      /getFormativeProvider/.test(mode) &&
+      /week1-formative-apps-script/.test(mode)
   );
 }
 

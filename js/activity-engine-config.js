@@ -45,6 +45,8 @@
       'health',
       'getActivity',
       'markSection',
+      // submitAttempt remains advertised for GAS health/rollback only.
+      // Browser final submission uses authenticated api.submit_attempt.
       'submitAttempt'
     ]),
     expectedBuildPrefix: 'UNIT3-ACTIVITY-API'
