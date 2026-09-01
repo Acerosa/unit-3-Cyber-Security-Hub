@@ -98,29 +98,48 @@ export function resolveFormativeRpcQuestionId(
   return mapper.normaliseQuestionKey(raw, activityKey);
 }
 
-export function installFormativeRpcNormalizer(
-  client: { rpc: (...args: unknown[]) => Promise<unknown> },
-  mapperLoader: () => Promise<KeyMap>
+export type FormativeContractInput = {
+  activityKey: string;
+  activityVersion: string;
+  responses: ReadonlyArray<{
+    question_id: string;
+    response_type: string;
+    response_payload: unknown;
+  }>;
+};
+
+export type FormativeContractResult = {
+  activityKey: string;
+  activityVersion: string;
+  responses: Array<{
+    question_id: string;
+    response_type: string;
+    response_payload: unknown;
+  }>;
+};
+
+export function createUnit3FormativeContractResolver(
+  mapperLoader: () => Promise<KeyMap> = ensureFormativeMapper
 ) {
-  const originalRpc = client.rpc.bind(client);
-  client.rpc = (async (fn: string, params?: Record<string, unknown>, options?: unknown) => {
-    if (fn === "mark_formative_response" && params && Array.isArray(params.p_responses)) {
-      const mapper = await mapperLoader();
-      const activityKey = String(params.p_activity_key || "").trim();
-      const packageVersion = String(params.p_activity_version || "").trim();
-      params = {
-        ...params,
-        p_activity_version: resolveFormativeActivityVersion(mapper, activityKey, packageVersion),
-        p_responses: (params.p_responses as Array<Record<string, unknown>>).map((item) => ({
-          ...item,
-          question_id: resolveFormativeRpcQuestionId(
-            mapper,
-            activityKey,
-            String(item.question_id || "")
-          )
-        }))
-      };
-    }
-    return originalRpc(fn, params, options);
-  }) as typeof client.rpc;
+  return async function resolveFormativeContract(
+    input: FormativeContractInput
+  ): Promise<FormativeContractResult> {
+    const mapper = await mapperLoader();
+    return {
+      activityKey: input.activityKey,
+      activityVersion: resolveFormativeActivityVersion(
+        mapper,
+        input.activityKey,
+        input.activityVersion
+      ),
+      responses: input.responses.map((item) => ({
+        ...item,
+        question_id: resolveFormativeRpcQuestionId(
+          mapper,
+          input.activityKey,
+          item.question_id
+        )
+      }))
+    };
+  };
 }

@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import vm from "node:vm";
 import fs from "node:fs";
 import path from "node:path";
 import {
+  createUnit3FormativeContractResolver,
   localQuestionId,
   resolveFormativeActivityVersion,
   resolveFormativeRpcQuestionId
@@ -22,6 +23,7 @@ function loadMapper() {
 
 describe("formative contract mapping", () => {
   const mapper = loadMapper();
+  const resolveFormativeContract = createUnit3FormativeContractResolver(async () => mapper);
 
   it("maps week2-malware-symptoms hosted ids to MW-Q1", () => {
     const block = {
@@ -46,24 +48,48 @@ describe("formative contract mapping", () => {
     expect(resolveFormativeActivityVersion(mapper, "week2-malware-symptoms", "1.0.0")).toBe("1.1.0");
   });
 
-  it("normalises RPC payloads via installFormativeRpcNormalizer", async () => {
-    const mapperLoader = vi.fn(async () => mapper);
-    const calls: unknown[] = [];
-    const client = {
-      rpc: vi.fn(async (fn: string, params: unknown) => {
-        calls.push({ fn, params });
-        return { data: [], error: null };
-      })
-    };
-    const { installFormativeRpcNormalizer } = await import("./formative-contract");
-    installFormativeRpcNormalizer(client, mapperLoader);
-    await client.rpc("mark_formative_response", {
-      p_activity_key: "week2-malware-symptoms",
-      p_activity_version: "1.0.0",
-      p_responses: [{ question_id: "week2-malware-symptoms:mw-q1", response_payload: { optionId: "b" } }]
+  it("normalises the reported production payload through resolveFormativeContract", async () => {
+    const result = await resolveFormativeContract({
+      activityKey: "week2-malware-symptoms",
+      activityVersion: "1.0.0",
+      responses: [{
+        question_id: "week2-malware-symptoms:mw-q1",
+        response_type: "single-choice",
+        response_payload: { optionId: "a" }
+      }]
     });
-    const payload = calls[0] as { params: { p_activity_version: string; p_responses: Array<{ question_id: string }> } };
-    expect(payload.params.p_activity_version).toBe("1.1.0");
-    expect(payload.params.p_responses[0].question_id).toBe("MW-Q1");
+    expect(result.activityKey).toBe("week2-malware-symptoms");
+    expect(result.activityVersion).toBe("1.1.0");
+    expect(result.responses[0].question_id).toBe("MW-Q1");
+  });
+
+  it("maps Week 6 legislation retrieval aliases", async () => {
+    const result = await resolveFormativeContract({
+      activityKey: "week6-legislation-retrieval",
+      activityVersion: "1.0.0",
+      responses: [{
+        question_id: "week6-legislation-retrieval:lrq1",
+        response_type: "written",
+        response_payload: { text: "answer" }
+      }]
+    });
+    expect(result.responses[0].question_id).toBe("LR1");
+  });
+
+  it("maps Week 7 session 1 retrieval aliases", async () => {
+    const result = await resolveFormativeContract({
+      activityKey: "week7-session1-retrieval",
+      activityVersion: "1.0.0",
+      responses: [{
+        question_id: "week7-session1-retrieval:s1r-1",
+        response_type: "written",
+        response_payload: { text: "answer" }
+      }]
+    });
+    expect(result.responses[0].question_id).toBe("S1R1");
+  });
+
+  it("fails closed for unknown closed-pattern question ids", () => {
+    expect(() => mapper.normaliseQuestionKey("ocr-q999", "week2-ocr-question-practice")).toThrow(/unknown/i);
   });
 });
