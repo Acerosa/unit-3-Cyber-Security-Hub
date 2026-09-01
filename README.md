@@ -6,7 +6,7 @@ Interactive learning, revision and formative assessment resources for **OCR Leve
 
 This repository is the central learner-facing website for Unit 3. It is a
 **current-generation** hub in the Contract-First Modular Hub Architecture
-(see `learning-platform-backend` `docs/architecture.md`): Core `0.2.0` with a
+(see `learning-platform-backend` `docs/architecture.md`): Core **v0.2.5** with a
 React / `@learning-platform/ui` shell wrapping classic week engines
 and Week 1 Apps Script content/formative compatibility. Classic activity engines are retained.
 Do not migrate it to the Unit 14 content-package model solely for visual consistency.
@@ -681,7 +681,7 @@ Before release, confirm:
 
 ## 25. Shared Learning Platform integration
 
-The hub consumes reviewed Learning Platform Core **0.2.0** (Vite
+The hub consumes reviewed Learning Platform Core **v0.2.5** (Vite
 `@learning-platform/core`, plus vendored IIFE for Node tests). Core owns shared
 account, session, learner, onboarding and progress concerns; this repository
 continues to own Cyber curriculum, rendering, evidence and local draft recovery.
