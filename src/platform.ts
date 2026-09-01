@@ -2,6 +2,7 @@ import { createPlatform } from "@learning-platform/core";
 import { createClient } from "@supabase/supabase-js";
 import { validatePackage } from "@learning-platform/content";
 import { APP_CONFIG } from "./config";
+import { ensureFormativeMapper, installFormativeRpcNormalizer } from "./formative-contract";
 import { createSitePath } from "./paths";
 import { configureBundledPackage } from "./curriculum/runtime-weeks";
 
@@ -29,6 +30,7 @@ export function createHubPlatform(root: string, createPlatformFn = createPlatfor
       detectSessionInUrl: true
     }
   });
+  installFormativeRpcNormalizer(client, ensureFormativeMapper);
   const platform = createPlatformFn({
     hubCode: APP_CONFIG.hubId,
     courseKey: APP_CONFIG.courseKey,

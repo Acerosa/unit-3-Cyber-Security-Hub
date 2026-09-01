@@ -36,6 +36,18 @@
       "ocr-q7": "W2OCR-Q07",
       "ocr-q8": "W2OCR-Q08"
     },
+    "week2-malware-symptoms": {
+      "mw-q1": "MW-Q1",
+      "mw-q2": "MW-Q2",
+      "mw-q3": "MW-Q3",
+      "mw-q4": "MW-Q4",
+      "mw-q5": "MW-Q5",
+      "mw-q6": "MW-Q6",
+      "mw-q7": "MW-Q7",
+      "mw-q8": "MW-Q8",
+      "mw-q9": "MW-Q9",
+      "mw-q10": "MW-Q10"
+    },
     "week2-vulnerabilities101-reflection": {
       "notes": "W2V101-Q01",
       "purpose": "W2V101-Q02",
@@ -168,6 +180,88 @@
       "a4": "IA4",
       "a5": "IA5",
       "a6": "IA6"
+    },
+    "week6-legislation-retrieval": {
+      "lrq1": "LR1",
+      "lrq2": "LR2",
+      "lrq3": "LR3",
+      "lrq4": "LR4",
+      "lrq5": "LR5",
+      "lrq6": "LR6",
+      "lrq7": "LR7",
+      "lrq8": "LR8",
+      "lrq9": "LR9",
+      "lrq10": "LR10"
+    },
+    "week6-ocr-question-practice": {
+      "ocr6-1": "OCR6_1",
+      "ocr6-2": "OCR6_2",
+      "ocr6-3": "OCR6_3",
+      "ocr6-4": "OCR6_4",
+      "ocr6-5": "OCR6_5",
+      "ocr6-6": "OCR6_6",
+      "ocr6-7": "OCR6_7"
+    },
+    "week7-session1-retrieval": {
+      "s1r-1": "S1R1",
+      "s1r-2": "S1R2",
+      "s1r-3": "S1R3",
+      "s1r-4": "S1R4",
+      "s1r-5": "S1R5",
+      "s1r-6": "S1R6"
+    },
+    "week7-session2-retrieval": {
+      "s2-1": "S2R1",
+      "s2-2": "S2R2",
+      "s2-3": "S2R3",
+      "s2-4": "S2R4",
+      "s2-5": "S2R5",
+      "s2-6": "S2R6",
+      "s2-7": "S2R7",
+      "s2-8": "S2R8",
+      "s2-9": "S2R9",
+      "s2-10": "S2R10"
+    },
+    "week7-risk-management-learning": {
+      "rm-1": "RM1",
+      "rm-2": "RM2",
+      "rm-3": "RM3",
+      "rm-4": "RM4",
+      "rm-5": "RM5",
+      "rm-6": "RM6",
+      "rm-7": "RM7",
+      "rm-8": "RM8"
+    },
+    "week7-testing-methods": {
+      "tm-1": "TM1",
+      "tm-2": "TM2",
+      "tm-3": "TM3",
+      "tm-4": "TM4",
+      "tm-5": "TM5",
+      "tm-6": "TM6",
+      "tm-7": "TM7",
+      "tm-8": "TM8"
+    },
+    "week7-detection-prevention": {
+      "dp-1": "DP1",
+      "dp-2": "DP2",
+      "dp-3": "DP3",
+      "dp-4": "DP4",
+      "dp-5": "DP5",
+      "dp-6": "DP6",
+      "dp-7": "DP7",
+      "dp-8": "DP8"
+    },
+    "week7-ocr-question-practice": {
+      "ocr7-1": "OCR7_1",
+      "ocr7-2": "OCR7_2",
+      "ocr7-3": "OCR7_3",
+      "ocr7-4": "OCR7_4",
+      "ocr7-5": "OCR7_5",
+      "ocr7-6": "OCR7_6",
+      "ocr7-7": "OCR7_7",
+      "ocr7-8": "OCR7_8",
+      "ocr7-9": "OCR7_9"
     }
   });
 
