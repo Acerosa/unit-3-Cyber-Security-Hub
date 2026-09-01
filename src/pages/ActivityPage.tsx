@@ -3,17 +3,20 @@ import {
   Callout,
   InteractiveActivity,
   PracticeProgressPanel,
+  aggregatePracticeProgress,
+  applyPracticeResult,
+  emptyPracticeProgress,
+  isCatalogueReactType,
   questionIdFor,
   type ActivityBlockDocument,
   type ActivityDocument,
   type ActivityResult,
-  type ActivityScore
+  type PracticeProgressAggregate
 } from "@learning-platform/ui";
 import { loadPageScripts } from "../adapters/load-hub-adapters";
 import { renderCatalogueFallback } from "../catalogue/fallback";
 import {
   CATALOGUE_PROGRESS_SCRIPTS,
-  activityScoreFromResults,
   blockScorableTotal,
   catalogueActivity,
   catalogueActivityIdFromLegacyId,
@@ -22,10 +25,8 @@ import {
   catalogueReflectionActivity,
   catalogueSequence,
   isCatalogueWeek,
-  isScorableReactBlock,
   neighboursInSequence,
-  scorableBlocks,
-  sumScores
+  scorableBlocks
 } from "../catalogue/week-activities";
 import { activeContentPackage } from "../curriculum/apply-runtime";
 import { weekPageFromPackage } from "../curriculum/from-package";
@@ -43,13 +44,8 @@ function activityHref(root: string, week: number, slug: string) {
   return createSitePath(root, `week-${week}/${slug}/`);
 }
 
-function isTextReactBlock(block: ActivityBlockDocument): boolean {
-  const type = String(block.type || "").toLowerCase();
-  return type === "reflection" || type === "short-response";
-}
-
-function textBlocks(activity: ActivityDocument | null | undefined): ActivityBlockDocument[] {
-  return (activity?.blocks || []).filter((block) => isTextReactBlock(block));
+function requiredBlocks(activity: ActivityDocument | null | undefined): ActivityBlockDocument[] {
+  return (activity?.blocks || []).filter((block) => isCatalogueReactType(block.type));
 }
 
 function persistableResponse(block: ActivityBlockDocument, result: ActivityResult): unknown {
@@ -73,11 +69,13 @@ function persistableResponse(block: ActivityBlockDocument, result: ActivityResul
 export function ActivityPage({
   context,
   contentReady,
-  adaptersReady
+  adaptersReady,
+  platform
 }: {
   context: PageContext;
   contentReady: boolean;
   adaptersReady: boolean;
+  platform?: unknown;
 }) {
   const route = findRoute(context);
   const week = context.week
@@ -96,14 +94,14 @@ export function ActivityPage({
     ? catalogueReflectionActivity(activity)
     : activity;
   const { previous, next } = neighboursInSequence(sequence, activityId);
-  const scoresRef = useRef<Record<string, ActivityScore>>({});
-  const activityResultsRef = useRef<Record<string, ActivityResult>>({});
-  const [practiceScore, setPracticeScore] = useState<ActivityScore>({ correct: 0, total: 0 });
+  const progressRef = useRef(emptyPracticeProgress());
+  const [practice, setPractice] = useState<PracticeProgressAggregate>(
+    aggregatePracticeProgress(emptyPracticeProgress(), { requiredBlocks: 0, scorableTotal: 0 })
+  );
 
   useEffect(() => {
-    scoresRef.current = {};
-    activityResultsRef.current = {};
-    setPracticeScore({ correct: 0, total: 0 });
+    progressRef.current = emptyPracticeProgress();
+    setPractice(aggregatePracticeProgress(emptyPracticeProgress(), { requiredBlocks: 0, scorableTotal: 0 }));
   }, [activityId]);
 
   useEffect(() => {
@@ -136,32 +134,31 @@ export function ActivityPage({
 
     if (!result.completed) return;
 
-    if (isScorableReactBlock(block) && result.score && result.score.total > 0) {
-      const blockId = questionIdFor(block);
-      scoresRef.current = { ...scoresRef.current, [blockId]: result.score };
-      activityResultsRef.current = { ...activityResultsRef.current, [blockId]: result };
-      setPracticeScore(sumScores(scoresRef.current));
-      const blocks = scorableBlocks(document);
-      const finished = blocks.every((item) => activityResultsRef.current[questionIdFor(item)]?.completed);
-      if (!finished) return;
-      const score = activityScoreFromResults(blocks, activityResultsRef.current);
-      progressStore(week)?.markCompleted?.(document.id, score.correct, score.total);
+    progressRef.current = applyPracticeResult(progressRef.current, questionIdFor(block), result);
+    const required = requiredBlocks(document);
+    const scorable = scorableBlocks(document);
+    const aggregate = aggregatePracticeProgress(progressRef.current, {
+      requiredBlocks: required.length,
+      scorableTotal: scorable.reduce((total, item) => total + blockScorableTotal(item), 0)
+    });
+    setPractice(aggregate);
+    const scorableDone = scorable.length > 0
+      && scorable.every((item) => progressRef.current.completed[questionIdFor(item)]);
+    if (scorableDone) {
+      progressStore(week)?.markCompleted?.(document.id, aggregate.score.correct, aggregate.score.total);
       return;
     }
-
-    // Text-only catalogue activities (e.g. Week 1 reflections): complete when all text blocks are saved.
-    if (!isTextReactBlock(block)) return;
-    if (scorableBlocks(document).length > 0) return;
-    const blockId = questionIdFor(block);
-    activityResultsRef.current = { ...activityResultsRef.current, [blockId]: result };
-    const blocks = textBlocks(document);
-    if (!blocks.length) return;
-    const finished = blocks.every((item) => activityResultsRef.current[questionIdFor(item)]?.completed);
-    if (finished) progressStore(week)?.markCompleted?.(document.id);
+    if (aggregate.complete) {
+      progressStore(week)?.markCompleted?.(document.id);
+    }
   }, [week]);
 
   const scorableTotal = useMemo(
     () => scorableBlocks(catalogueActivityDocument).reduce((total, block) => total + blockScorableTotal(block), 0),
+    [catalogueActivityDocument]
+  );
+  const requiredTotal = useMemo(
+    () => requiredBlocks(catalogueActivityDocument).length,
     [catalogueActivityDocument]
   );
 
@@ -183,6 +180,7 @@ export function ActivityPage({
   const cataloguePlayer = playerMode !== "host" && catalogueActivityDocument ? (
     <InteractiveActivity
       activity={catalogueActivityDocument}
+      platform={platform}
       renderFallback={renderCatalogueFallback}
       onResult={(result, block) => recordPracticeResult(catalogueActivityDocument, result, block)}
     />
@@ -204,17 +202,17 @@ export function ActivityPage({
       ) : null}
       {cataloguePlayer}
       {nav}
-      {playerMode === "catalogue" && scorableTotal > 0 ? (
+      {playerMode === "catalogue" && requiredTotal > 0 ? (
         <PracticeProgressPanel
           title={activity?.metadata?.title || route?.heading || `Week ${week} activity`}
           badge={`Week ${week}`}
-          score={{
-            correct: practiceScore.correct,
-            total: Math.max(scorableTotal, practiceScore.total, 1)
-          }}
-          progress={scorableTotal > 0 ? practiceScore.total / Math.max(scorableTotal, 1) : 0}
-          completed={scorableTotal > 0 && practiceScore.total >= scorableTotal}
-          message="Check scored items to update. This is practice feedback, not a qualification grade."
+          score={scorableTotal > 0 ? {
+            correct: practice.score.correct,
+            total: Math.max(scorableTotal, practice.score.total, 1)
+          } : undefined}
+          progress={practice.completion}
+          completed={practice.complete}
+          message="Check items to update progress. Scores update only when the server returns a mark. This is practice feedback, not a qualification grade."
           defaultCollapsed
         />
       ) : null}
