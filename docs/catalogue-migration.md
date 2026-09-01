@@ -1,6 +1,6 @@
 # Catalogue migration (Weeks 1–7)
 
-Cyber learner activities render through `@learning-platform/ui` **v0.1.5** where the exercise fits shared components. Pages CI pins that UI tag. This hub keeps classic per-activity `app.js` only for worksheets the library cannot express cleanly.
+Cyber learner activities render through `@learning-platform/ui` **v0.1.8** where the exercise fits shared components. Pages CI pins that UI tag. This hub keeps classic per-activity `app.js` only for worksheets the library cannot express cleanly.
 
 ## Player modes
 

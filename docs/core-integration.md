@@ -1,9 +1,9 @@
 # Shared Learning Platform integration
 
-The hub vendors the reviewed `learning-platform-core` 0.2.0 browser build from
-commit `f59614ee`. Vite production uses `@learning-platform/core` 0.2.0
-(`createPlatform` in `src/platform.ts`). Pages CI pins
-`@learning-platform/ui` **v0.1.5** for catalogue chrome (`InteractiveActivity`,
+The hub keeps a legacy `vendor/learning-platform-core/0.2.0/` IIFE snapshot for
+Node tests only. GitHub Pages production builds Core from immutable CI tag
+**v0.2.5** via Vite (`createPlatform` in `src/platform.ts`). Pages CI pins
+`@learning-platform/ui` **v0.1.8** for catalogue chrome (`InteractiveActivity`,
 `ShortResponse`, `Reflection`). `js/core/platform.js` remains a
 compatibility composition root for Node tests. Core owns
 the Supabase client, Auth session, learner context, onboarding, profile,
@@ -41,8 +41,8 @@ as an authoritative completion.
 
 Week 1 still uses the existing Apps Script Activity API for `getActivity`
 and `markSection`. `markSection` returns section-level marking and feedback
-used by the generic Week 1 engine before final submission. Neither Core 0.2.0
-nor learner API/submission contract 0.1.0 provides an equivalent operation.
+used by the generic Week 1 engine before final submission. Neither the current
+Core release nor learner API/submission contract 0.1.0 provides an equivalent operation.
 
 That is a split of providers, not a second evidence path:
 
