@@ -35,6 +35,7 @@ export function createHubPlatform(root: string, createPlatformFn = createPlatfor
     hubName: APP_CONFIG.siteName,
     platformVersion: APP_CONFIG.coreVersion,
     accountPath: createSitePath(root, "account/"),
+    hubRootPath: createSitePath(root),
     supabase: {
       projectUrl: config.projectUrl,
       publishableKey: config.publishableKey
