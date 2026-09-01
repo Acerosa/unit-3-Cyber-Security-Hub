@@ -5,7 +5,7 @@ export const APP_CONFIG = Object.freeze({
   siteName: "Unit 3 Cyber Security Hub",
   shortName: "Cyber Security Hub",
   qualification: "OCR Level 3 IT",
-  coreVersion: "0.2.5",
+  coreVersion: "0.2.6",
   learnerApiContractVersion: "0.1.0",
   submissionContractVersion: "0.1.0",
   navigation: Object.freeze([

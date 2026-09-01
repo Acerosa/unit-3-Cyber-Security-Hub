@@ -7,7 +7,7 @@
     hubVersion: "0.2.0",
     siteName: "Unit 3 Cyber Security Hub",
     shortName: "Cyber Security Hub",
-    coreVersion: "0.2.5",
+    coreVersion: "0.2.6",
     learnerApiContractVersion: "0.1.0",
     submissionContractVersion: "0.1.0",
     navigation: Object.freeze([
