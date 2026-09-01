@@ -22,11 +22,13 @@ function RouteRedirect({ root, to }: { root: string; to: string }) {
 function PageBody({
   context,
   contentReady,
-  adaptersReady
+  adaptersReady,
+  platform
 }: {
   context: PageContext;
   contentReady: boolean;
   adaptersReady: boolean;
+  platform?: unknown;
 }) {
   const route = findRoute(context);
   const scripts = route?.scripts || [];
@@ -43,7 +45,7 @@ function PageBody({
     return <WeekPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} />;
   }
   if (context.view === "activity" || context.view === "week1-activity") {
-    return <ActivityPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} />;
+    return <ActivityPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} platform={platform} />;
   }
   return <PageHost root={context.root} scripts={scripts} adaptersReady={adaptersReady} />;
 }
@@ -110,7 +112,7 @@ export function App({ context }: { context: PageContext }) {
         ]
       }}
     >
-      <PageBody context={context} contentReady={contentReady} adaptersReady={adaptersReady} />
+      <PageBody context={context} contentReady={contentReady} adaptersReady={adaptersReady} platform={platform} />
     </Unit3HubShell>
   );
 }
