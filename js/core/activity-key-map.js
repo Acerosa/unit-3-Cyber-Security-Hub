@@ -33,6 +33,16 @@
     "week5-secure-rewrite": true
   });
 
+  /*
+   * Catalogue classification blocks whose hosted marking specs are single-choice.
+   * Do not use this for genuine classification activities (correctCategoryId).
+   */
+  var FORMATIVE_CLASSIFICATION_OPTION_ACTIVITIES = Object.freeze({
+    "week2-threat-vulnerability-sort": true,
+    "week3-attacker-case-matching": true,
+    "week4-targets-methods": true
+  });
+
   var FORBIDDEN_EVIDENCE_FIELDS = Object.freeze([
     "awarded_score",
     "awardedScore",
@@ -327,6 +337,29 @@
     return out;
   }
 
+  function isFormativeClassificationOptionActivity(activityKey) {
+    return Boolean(FORMATIVE_CLASSIFICATION_OPTION_ACTIVITIES[normaliseActivityKey(activityKey)]);
+  }
+
+  /**
+   * Activity-scoped classification → hosted single-choice optionId.
+   * Returns null when the activity is not allowlisted or the category has no alias.
+   */
+  function normaliseFormativeClassificationResponse(activityKey, responseType, payload) {
+    if (String(responseType || "").trim().toLowerCase() !== "classification") return null;
+    if (!isFormativeClassificationOptionActivity(activityKey)) return null;
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) return null;
+    var categorySource = payload.categoryId || payload.category || payload.category_id || "";
+    var mapped = aliases().resolveCategoryOption
+      ? aliases().resolveCategoryOption(activityKey, categorySource)
+      : "";
+    if (!mapped) return null;
+    return {
+      response_type: "single-choice",
+      response_payload: { optionId: mapped }
+    };
+  }
+
   function assertNoLearnerIdentity(payload) {
     if (!payload || typeof payload !== "object") return;
     for (var i = 0; i < FORBIDDEN_FIELDS.length; i += 1) {
@@ -348,6 +381,8 @@
     normaliseOptionId: normaliseOptionId,
     normaliseCategoryId: normaliseCategoryId,
     normaliseResponsePayload: normaliseResponsePayload,
+    isFormativeClassificationOptionActivity: isFormativeClassificationOptionActivity,
+    normaliseFormativeClassificationResponse: normaliseFormativeClassificationResponse,
     assertNoLearnerIdentity: assertNoLearnerIdentity,
     FORBIDDEN_FIELDS: FORBIDDEN_FIELDS,
     WEEK5_MARKING_V1: WEEK5_MARKING_V1
