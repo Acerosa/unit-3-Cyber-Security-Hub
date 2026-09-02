@@ -8,6 +8,7 @@ type KeyMap = {
   catalogueVersionFor: (activityKey: string) => string;
   normaliseQuestionKey: (questionId: string, activityKey: string) => string;
   normaliseActivityVersion: (version: string, activityKey: string) => string;
+  normaliseOptionId: (value: string, activityKey: string) => string;
 };
 
 declare global {
@@ -118,6 +119,25 @@ export type FormativeContractResult = {
   }>;
 };
 
+/**
+ * Canonicalise single-choice optionId only. Does not map categoryId or other fields.
+ */
+export function canonicaliseFormativeResponsePayload(
+  mapper: KeyMap,
+  activityKey: string,
+  responseType: string,
+  payload: unknown
+): unknown {
+  if (responseType !== "single-choice") return payload;
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) return payload;
+  const record = payload as Record<string, unknown>;
+  const raw = typeof record.optionId === "string" ? record.optionId.trim() : "";
+  if (!raw) return payload;
+  const canonical = mapper.normaliseOptionId(raw, activityKey);
+  if (canonical === raw) return payload;
+  return { ...record, optionId: canonical };
+}
+
 export function createUnit3FormativeContractResolver(
   mapperLoader: () => Promise<KeyMap> = ensureFormativeMapper
 ) {
@@ -138,6 +158,12 @@ export function createUnit3FormativeContractResolver(
           mapper,
           input.activityKey,
           item.question_id
+        ),
+        response_payload: canonicaliseFormativeResponsePayload(
+          mapper,
+          input.activityKey,
+          item.response_type,
+          item.response_payload
         )
       }))
     };
