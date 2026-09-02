@@ -298,6 +298,21 @@
     "week2-threat-vulnerability-sort": {
       threat: "A",
       vulnerability: "B"
+    },
+    "week3-attacker-case-matching": {
+      hacktivist: "hacktivist",
+      "cyber-criminal": "cyber-criminal",
+      insider: "insider",
+      "script-kiddie": "script-kiddie",
+      "vulnerability-broker": "vulnerability-broker",
+      scammer: "scammer",
+      phisher: "phisher",
+      "cyber-terrorist": "cyber-terrorist"
+    },
+    "week4-targets-methods": {
+      motivation: "motivation",
+      target: "target",
+      method: "method"
     }
   });
 

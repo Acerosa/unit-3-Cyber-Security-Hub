@@ -9,6 +9,12 @@ type KeyMap = {
   normaliseQuestionKey: (questionId: string, activityKey: string) => string;
   normaliseActivityVersion: (version: string, activityKey: string) => string;
   normaliseOptionId: (value: string, activityKey: string) => string;
+  isFormativeClassificationOptionActivity?: (activityKey: string) => boolean;
+  normaliseFormativeClassificationResponse?: (
+    activityKey: string,
+    responseType: string,
+    payload: unknown
+  ) => { response_type: string; response_payload: unknown } | null;
 };
 
 declare global {
@@ -138,6 +144,37 @@ export function canonicaliseFormativeResponsePayload(
   return { ...record, optionId: canonical };
 }
 
+/**
+ * Activity-scoped classification → hosted single-choice optionId.
+ * Only the three proven Batch-B classification/single-choice drift activities.
+ */
+export function canonicaliseFormativeClassificationResponse(
+  mapper: KeyMap,
+  activityKey: string,
+  responseType: string,
+  payload: unknown
+): { response_type: string; response_payload: unknown } {
+  const unchanged = { response_type: responseType, response_payload: payload };
+  if (typeof mapper.normaliseFormativeClassificationResponse !== "function") {
+    return unchanged;
+  }
+  const mapped = mapper.normaliseFormativeClassificationResponse(
+    activityKey,
+    responseType,
+    payload
+  );
+  if (!mapped || mapped.response_type !== "single-choice") return unchanged;
+  return {
+    response_type: mapped.response_type,
+    response_payload: canonicaliseFormativeResponsePayload(
+      mapper,
+      activityKey,
+      mapped.response_type,
+      mapped.response_payload
+    )
+  };
+}
+
 export function createUnit3FormativeContractResolver(
   mapperLoader: () => Promise<KeyMap> = ensureFormativeMapper
 ) {
@@ -152,20 +189,31 @@ export function createUnit3FormativeContractResolver(
         input.activityKey,
         input.activityVersion
       ),
-      responses: input.responses.map((item) => ({
-        ...item,
-        question_id: resolveFormativeRpcQuestionId(
-          mapper,
-          input.activityKey,
-          item.question_id
-        ),
-        response_payload: canonicaliseFormativeResponsePayload(
+      responses: input.responses.map((item) => {
+        const classified = canonicaliseFormativeClassificationResponse(
           mapper,
           input.activityKey,
           item.response_type,
           item.response_payload
-        )
-      }))
+        );
+        return {
+          ...item,
+          question_id: resolveFormativeRpcQuestionId(
+            mapper,
+            input.activityKey,
+            item.question_id
+          ),
+          response_type: classified.response_type,
+          response_payload: classified.response_type === item.response_type
+            ? canonicaliseFormativeResponsePayload(
+              mapper,
+              input.activityKey,
+              item.response_type,
+              item.response_payload
+            )
+            : classified.response_payload
+        };
+      })
     };
   };
 }
