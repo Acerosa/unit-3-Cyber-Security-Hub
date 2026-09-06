@@ -1,7 +1,7 @@
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { activityFromPackage, weekPageFromPackage } from "./from-package";
 import { applyUnit3Curriculum } from "./apply-runtime";
-import { configureBundledPackage } from "./runtime-weeks";
+import { configureBundledPackage, runtimeContentPackage } from "./runtime-weeks";
 import {
   CATALOGUE_WEEKS,
   catalogueActivity,
@@ -127,6 +127,17 @@ describe("Unit 3 package hydration", () => {
     const sequence = catalogueSequence(page, 2);
     expect(sequence.some((item) => item.id === "week2-session2-retrieval")).toBe(false);
     expect(sequence.some((item) => item.id === "week2-session1-retrieval")).toBe(true);
+  });
+
+  it("keeps bundled available sessions when live publication omits session status", () => {
+    const live = structuredClone(pkg);
+    for (const session of live.sessions || []) {
+      if (session.metadata) delete session.metadata.status;
+    }
+    const page = weekPageFromPackage(runtimeContentPackage(live), "week-2");
+    expect(page?.sessions.length).toBeGreaterThan(1);
+    expect(page?.sessions.every((session) => session.accessible)).toBe(true);
+    expect(page?.sessions[1].activities.length).toBeGreaterThan(0);
   });
 
   it("keeps a planned week closed even when a session is available", () => {
