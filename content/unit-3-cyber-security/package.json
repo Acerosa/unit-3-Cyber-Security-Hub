@@ -233,7 +233,8 @@
       "metadata": {
         "title": "Session 1",
         "kind": "session",
-        "sortOrder": 1
+        "sortOrder": 1,
+        "status": "available"
       },
       "relationships": {
         "week": "week-1",
@@ -253,7 +254,8 @@
       "metadata": {
         "title": "Session 2",
         "kind": "retrieval",
-        "sortOrder": 2
+        "sortOrder": 2,
+        "status": "available"
       },
       "relationships": {
         "week": "week-1",
@@ -273,7 +275,8 @@
       "metadata": {
         "title": "Session 1",
         "kind": "session",
-        "sortOrder": 1
+        "sortOrder": 1,
+        "status": "available"
       },
       "relationships": {
         "week": "week-2",
@@ -294,7 +297,8 @@
       "metadata": {
         "title": "Session 2",
         "kind": "retrieval",
-        "sortOrder": 2
+        "sortOrder": 2,
+        "status": "available"
       },
       "relationships": {
         "week": "week-2",
@@ -316,7 +320,8 @@
       "metadata": {
         "title": "Session 1",
         "kind": "session",
-        "sortOrder": 1
+        "sortOrder": 1,
+        "status": "available"
       },
       "relationships": {
         "week": "week-3",
@@ -336,7 +341,8 @@
       "metadata": {
         "title": "Session 2",
         "kind": "retrieval",
-        "sortOrder": 2
+        "sortOrder": 2,
+        "status": "available"
       },
       "relationships": {
         "week": "week-3",
@@ -355,7 +361,8 @@
       "metadata": {
         "title": "Session 1",
         "kind": "session",
-        "sortOrder": 1
+        "sortOrder": 1,
+        "status": "available"
       },
       "relationships": {
         "week": "week-4",
@@ -375,7 +382,8 @@
       "metadata": {
         "title": "Session 2",
         "kind": "retrieval",
-        "sortOrder": 2
+        "sortOrder": 2,
+        "status": "available"
       },
       "relationships": {
         "week": "week-4",
@@ -397,7 +405,8 @@
       "metadata": {
         "title": "Session 1",
         "kind": "session",
-        "sortOrder": 1
+        "sortOrder": 1,
+        "status": "available"
       },
       "relationships": {
         "week": "week-5",
@@ -420,7 +429,8 @@
       "metadata": {
         "title": "Session 2",
         "kind": "retrieval",
-        "sortOrder": 2
+        "sortOrder": 2,
+        "status": "available"
       },
       "relationships": {
         "week": "week-5",
@@ -443,7 +453,8 @@
       "metadata": {
         "title": "Session 1",
         "kind": "session",
-        "sortOrder": 1
+        "sortOrder": 1,
+        "status": "available"
       },
       "relationships": {
         "week": "week-6",
@@ -469,7 +480,8 @@
       "metadata": {
         "title": "Session 2",
         "kind": "retrieval",
-        "sortOrder": 2
+        "sortOrder": 2,
+        "status": "available"
       },
       "relationships": {
         "week": "week-6",
@@ -493,7 +505,8 @@
       "metadata": {
         "title": "Session 1",
         "kind": "session",
-        "sortOrder": 1
+        "sortOrder": 1,
+        "status": "available"
       },
       "relationships": {
         "week": "week-7",
@@ -516,7 +529,8 @@
       "metadata": {
         "title": "Session 2",
         "kind": "retrieval",
-        "sortOrder": 2
+        "sortOrder": 2,
+        "status": "available"
       },
       "relationships": {
         "week": "week-7",

@@ -1,3 +1,4 @@
+import { isSessionAccessible, SESSION_NOT_RELEASED_COPY } from "@learning-platform/core/curriculum-runtime";
 import { normalizeActivityQuestions, normalizeMcqQuestionIfNeeded } from "./options";
 
 type ContentBlock = {
@@ -29,7 +30,7 @@ type ContentWeek = {
 
 type ContentSession = {
   id: string;
-  metadata?: { title?: string; kind?: string; summary?: string; defaultOpen?: boolean };
+  metadata?: { title?: string; kind?: string; summary?: string; defaultOpen?: boolean; status?: string };
   relationships?: { activities?: string[]; week?: string };
 };
 
@@ -63,6 +64,7 @@ export type WeekPageModel = {
     kind: string;
     summary: string;
     defaultOpen: boolean;
+    accessible: boolean;
     activities: Array<{ id: string; title: string }>;
   }>;
 };
@@ -71,21 +73,26 @@ export function weekPageFromPackage(pkg: ContentPackage, weekId: string): WeekPa
   const week = (pkg.weeks || []).find((item) => item.id === weekId);
   if (!week) return null;
   const teachingWeek = Number(week.metadata?.teachingWeek || 0);
+  const weekStatus = String(week.metadata?.status ?? "");
   const sessions = (week.relationships?.sessions || []).map((sessionId, index) => {
     const session = (pkg.sessions || []).find((item) => item.id === sessionId);
+    const accessible = isSessionAccessible(weekStatus, session?.metadata?.status);
     return {
       id: sessionId,
       title: session?.metadata?.title || sessionId,
       kind: session?.metadata?.kind || "session",
-      summary: session?.metadata?.summary || "",
-      defaultOpen: session?.metadata?.defaultOpen === true || index === 0,
-      activities: (session?.relationships?.activities || []).map((activityId) => {
-        const activity = (pkg.activities || []).find((item) => item.id === activityId);
-        return {
-          id: activityId,
-          title: activity?.metadata?.title || activityId
-        };
-      })
+      summary: accessible ? (session?.metadata?.summary || "") : SESSION_NOT_RELEASED_COPY,
+      defaultOpen: accessible && (session?.metadata?.defaultOpen === true || index === 0),
+      accessible,
+      activities: accessible
+        ? (session?.relationships?.activities || []).map((activityId) => {
+          const activity = (pkg.activities || []).find((item) => item.id === activityId);
+          return {
+            id: activityId,
+            title: activity?.metadata?.title || activityId
+          };
+        })
+        : []
     };
   });
   const learningOutcomes = (week.relationships?.learningOutcomes || []).map((outcomeId) => {

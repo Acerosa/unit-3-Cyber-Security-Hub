@@ -79,7 +79,7 @@ export function WeekPage({
     () => (isCatalogueWeek(week) && content ? weekPageFromPackage(content, weekId) : null),
     [content, week, weekId]
   );
-  const useCatalogue = Boolean(model?.sessions.some((session) => session.activities.length));
+  const useCatalogue = Boolean(model);
   const [legacyProgress, setLegacyProgress] = useState<{ completed: number; total: number } | null>(null);
 
   useEffect(() => {

@@ -166,6 +166,28 @@ describe("Unit 3 shared week visibility", () => {
     expect(within(nav).getByRole("link", { name: "Week 3" })).toBeTruthy();
   });
 
+  it("planned sessions keep placeholders and do not fall back to classic week HTML", () => {
+    const live = structuredClone(bundled);
+    for (const session of live.sessions || []) {
+      if (session.relationships?.week === "week-2" && session.metadata) {
+        session.metadata.status = "planned";
+      }
+    }
+    applyLiveCurriculum(live);
+
+    render(
+      <WeekPage
+        context={{ page: "week-2", section: "week-2", root: "..", view: "week", week: 2 }}
+        contentReady
+        adaptersReady={false}
+      />
+    );
+    expect(screen.getAllByText("Not released yet").length).toBeGreaterThan(0);
+    expect(screen.queryByText("Learning this week")).toBeNull();
+    expect(screen.queryByText("Loading Unit 3 materials...")).toBeNull();
+    expect(document.querySelector("[data-unit3-host]")).toBeNull();
+  });
+
   it("F — live publication status overrides bundled fallback both ways", () => {
     const bundledAvailable = withWeekStatus(bundled, { "week-4": "available" });
     const livePlanned = withWeekStatus(bundled, { "week-4": "planned" });
