@@ -114,6 +114,31 @@ describe("Unit 3 package hydration", () => {
     expect(cataloguePlayerMode(3, "week3-peer-marking", catalogueActivity(pkg, "week3-peer-marking"))).toBe("host");
   });
 
+  it("filters planned session activities before rendering", () => {
+    const edited = structuredClone(pkg);
+    const session = edited.sessions.find((item) => item.id === "week-2-session-2");
+    if (!session?.metadata) throw new Error("missing week-2-session-2");
+    session.metadata.status = "planned";
+    const page = weekPageFromPackage(edited, "week-2");
+    expect(page?.sessions[0].accessible).toBe(true);
+    expect(page?.sessions[1].accessible).toBe(false);
+    expect(page?.sessions[1].activities).toEqual([]);
+    expect(page?.sessions[1].summary).toBe("Not released yet");
+    const sequence = catalogueSequence(page, 2);
+    expect(sequence.some((item) => item.id === "week2-session2-retrieval")).toBe(false);
+    expect(sequence.some((item) => item.id === "week2-session1-retrieval")).toBe(true);
+  });
+
+  it("keeps a planned week closed even when a session is available", () => {
+    const edited = structuredClone(pkg);
+    const week = edited.weeks.find((item) => item.id === "week-2");
+    if (!week?.metadata) throw new Error("missing week-2");
+    week.metadata.status = "planned";
+    const page = weekPageFromPackage(edited, "week-2");
+    expect(page?.sessions.every((session) => session.accessible === false)).toBe(true);
+    expect(page?.sessions.flatMap((session) => session.activities)).toEqual([]);
+  });
+
   it("restores Week 3 case matching as classification with case registry fields", () => {
     const activity = catalogueActivity(pkg, "week3-attacker-case-matching");
     const blocks = activity?.blocks || [];
