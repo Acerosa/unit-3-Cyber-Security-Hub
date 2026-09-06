@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Callout,
+  EmptyState,
   InteractiveActivity,
   PracticeProgressPanel,
+  WeekAccessGuard,
   aggregatePracticeProgress,
   applyPracticeResult,
   emptyPracticeProgress,
@@ -13,6 +15,7 @@ import {
   type ActivityResult,
   type PracticeProgressAggregate
 } from "@learning-platform/ui";
+import { isSessionAccessible, SESSION_NOT_RELEASED_COPY } from "@learning-platform/core/curriculum-runtime";
 import { loadPageScripts } from "../adapters/load-hub-adapters";
 import { renderCatalogueFallback } from "../catalogue/fallback";
 import {
@@ -28,8 +31,9 @@ import {
   neighboursInSequence,
   scorableBlocks
 } from "../catalogue/week-activities";
-import { activeContentPackage } from "../curriculum/apply-runtime";
+import { activeContentPackage, liveContentPackage } from "../curriculum/apply-runtime";
 import { weekPageFromPackage } from "../curriculum/from-package";
+import { runtimeWeekForTeachingWeek } from "../curriculum/runtime-weeks";
 import { createSitePath } from "../paths";
 import type { PageContext } from "../page-context";
 import { findRoute } from "../page-copy";
@@ -88,7 +92,16 @@ export function ActivityPage({
   const sequence = useMemo(() => catalogueSequence(model, week), [model, week]);
   const activityId = catalogueActivityIdFromSlug(week, context.activity)
     || catalogueActivityIdFromLegacyId(context.activityId);
-  const activity = content && activityId ? catalogueActivity(content, activityId) : null;
+  const livePackage = contentReady ? liveContentPackage() : null;
+  const runtimeWeek = runtimeWeekForTeachingWeek(livePackage, week);
+  const sessionForActivity = content && activityId
+    ? (content.sessions || []).find((session) => (session.relationships?.activities || []).includes(activityId))
+    : undefined;
+  const sessionAccessible = isSessionAccessible(
+    model?.week.status || runtimeWeek?.status,
+    sessionForActivity?.metadata?.status
+  );
+  const activity = content && activityId && sessionAccessible ? catalogueActivity(content, activityId) : null;
   const playerMode = cataloguePlayerMode(week, activityId, activity);
   const catalogueActivityDocument = playerMode === "hybrid" && activity
     ? catalogueReflectionActivity(activity)
@@ -111,9 +124,9 @@ export function ActivityPage({
   }, [adaptersReady, context.root, playerMode, week]);
 
   useEffect(() => {
-    if (!adaptersReady || playerMode === "host" || !activityId) return;
+    if (!adaptersReady || playerMode === "host" || !activityId || !sessionAccessible) return;
     progressStore(week)?.markStarted?.(activityId);
-  }, [activityId, adaptersReady, playerMode, week]);
+  }, [activityId, adaptersReady, playerMode, sessionAccessible, week]);
 
   const recordPracticeResult = useCallback((
     document: ActivityDocument,
@@ -185,6 +198,26 @@ export function ActivityPage({
       onResult={(result, block) => recordPracticeResult(catalogueActivityDocument, result, block)}
     />
   ) : null;
+
+  if (contentReady && activityId && !sessionAccessible) {
+    const guardWeek = runtimeWeek || {
+      id: `week-${week}`,
+      teachingWeek: week,
+      status: model?.week.status || "",
+      available: false,
+      title: `Week ${week}`
+    };
+    if (!guardWeek.available) {
+      return <WeekAccessGuard week={guardWeek}><div /></WeekAccessGuard>;
+    }
+    return (
+      <EmptyState
+        heading={SESSION_NOT_RELEASED_COPY}
+        message="This session is not available yet."
+        action={{ label: `Back to week ${week}`, href: createSitePath(context.root, `week-${week}/`) }}
+      />
+    );
+  }
 
   return (
     <div data-lp-week-page="">

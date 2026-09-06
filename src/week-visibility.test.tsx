@@ -5,6 +5,7 @@ import pkg from "../content/unit-3-cyber-security/package.json";
 import { Unit3Navigation } from "./components/Unit3Navigation";
 import type { ContentPackage } from "./curriculum/from-package";
 import { configureBundledPackage, runtimeContentPackage } from "./curriculum/runtime-weeks";
+import { ActivityPage } from "./pages/ActivityPage";
 import { HomePage } from "./pages/HomePage";
 import { WeekPage } from "./pages/WeekPage";
 import { buildUnit3Navigation } from "./paths";
@@ -186,6 +187,31 @@ describe("Unit 3 shared week visibility", () => {
     expect(screen.queryByText("Learning this week")).toBeNull();
     expect(screen.queryByText("Loading Unit 3 materials...")).toBeNull();
     expect(document.querySelector("[data-unit3-host]")).toBeNull();
+  });
+
+  it("blocks a direct activity route when the session is planned", () => {
+    const live = structuredClone(bundled);
+    const session = live.sessions?.find((item) => item.id === "week-2-session-2");
+    if (!session?.metadata) throw new Error("missing week-2-session-2");
+    session.metadata.status = "planned";
+    applyLiveCurriculum(live);
+
+    render(
+      <ActivityPage
+        context={{
+          page: "week-2-session2-retrieval",
+          section: "week-2",
+          root: "..",
+          view: "activity",
+          week: 2,
+          activity: "session2-retrieval"
+        }}
+        contentReady
+        adaptersReady={false}
+      />
+    );
+    expect(screen.getByRole("heading", { name: "Not released yet" })).toBeTruthy();
+    expect(document.querySelector("[data-lp-activity]")).toBeNull();
   });
 
   it("F — live publication status overrides bundled fallback both ways", () => {
