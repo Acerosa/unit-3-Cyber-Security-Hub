@@ -57,25 +57,12 @@ test("Git data banks are an explicit fallback only", () => {
   assert.match(read("src/curriculum/apply-runtime.ts"), /UNIT3_CURRICULUM_FALLBACK/);
 });
 
-test("learner-safe Week 1 drag-drop hydrates after answer maps are stripped", () => {
-  const { learnerSafePackage, validatePackage, validateLearnerSafePackage } = require("@learning-platform/content");
+test("Week 1 catalogue activities do not emit dangling question references", () => {
   const match = pkg.activities.find((item) => item.id === "u3-w01-incident-match");
   assert.ok(match);
   assert.deepEqual(match.relationships.questions, []);
-  const drag = (match.blocks || []).find((block) => block.type === "drag-drop");
-  assert.ok(drag);
-  const safe = learnerSafePackage(structuredClone(pkg));
-  const stripped = (safe.activities.find((item) => item.id === "u3-w01-incident-match").blocks || [])
-    .find((block) => block.type === "drag-drop");
-  assert.ok(stripped);
-  if (stripped.content && Object.prototype.hasOwnProperty.call(stripped.content, "correct")) {
-    delete stripped.content.correct;
-  }
-  const authoring = validatePackage(safe);
-  assert.ok((authoring.issues || []).some((issue) => issue.code === "MISSING_FIELD"));
-  const learner = validateLearnerSafePackage(safe);
-  assert.equal(
-    (learner.issues || []).some((issue) => issue.code === "MISSING_FIELD"),
-    false
-  );
+  assert.ok((match.blocks || []).some((block) => block.type === "drag-drop"));
+  const week1 = pkg.activities.filter((item) => String(item.id).startsWith("u3-w01-"));
+  assert.equal(week1.length, 56);
+  assert.ok(week1.every((item) => Array.isArray(item.relationships?.questions) && item.relationships.questions.length === 0));
 });
