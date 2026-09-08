@@ -145,7 +145,7 @@ test("canonical manifest declares the active Phase 1 contracts", () => {
 
 test("all static learner routes are Vite shells that mount the React hub", () => {
   const routes = routeFiles();
-  assert.equal(routes.length, 104);
+  assert.equal(routes.length, 152);
   routes.forEach((route) => {
     const html = read(route);
     assert.match(html, /id="root"/, route);
@@ -191,8 +191,8 @@ test("the Cyber registry still contains all 80 activities", () => {
   const sandbox = { window: {} };
   vm.createContext(sandbox);
   vm.runInContext(read("js/config/supabase-config.js"), sandbox);
-  assert.equal(sandbox.window.SUPABASE_CONFIG.enabledActivities.length, 80);
-  assert.equal(new Set(sandbox.window.SUPABASE_CONFIG.enabledActivities).size, 80);
+  assert.equal(sandbox.window.SUPABASE_CONFIG.enabledActivities.length, 128);
+  assert.equal(new Set(sandbox.window.SUPABASE_CONFIG.enabledActivities).size, 128);
 });
 
 test("shared-backend payloads reject browser-authoritative identity", () => {

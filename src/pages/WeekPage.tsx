@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { PracticeProgressPanel, WeekAccessGuard, WeekView, LoadingState } from "@learning-platform/ui";
 import { loadPageScripts } from "../adapters/load-hub-adapters";
 import {
@@ -99,26 +99,57 @@ export function WeekPage({
 
   const catalogueSessions = useMemo(() => {
     if (!useCatalogue || !model || !content) return [];
-    return model.sessions.map((session) => ({
-      id: session.id,
-      title: session.title,
-      kind: session.kind,
-      summary: session.summary,
-      defaultOpen: session.defaultOpen,
-      activities: session.activities.map((item) => {
-        const published = (content.activities || []).find((entry) => entry.id === item.id);
-        const slug = slugForCatalogueActivity(week, item.id);
-        return {
-          title: item.title,
-          description: published?.metadata?.summary || "",
-          activityType: published?.metadata?.activityType || "Activity",
-          href: createSitePath(context.root, `week-${week}/${slug}/`),
-          headingLevel: 3 as const,
-          actionLabel: "Open activity",
-          status: "Available"
-        };
-      })
-    }));
+    return model.sessions.map((session) => {
+      const count = session.activities.length;
+      return {
+        id: session.id,
+        title: session.title,
+        kind: session.kind === "retrieval" && week === 1 ? "session" : session.kind,
+        summary: session.summary,
+        defaultOpen: session.defaultOpen,
+        meta: `${count} ${count === 1 ? "activity" : "activities"}`,
+        activities: (() => {
+          const list: Array<
+            | { children: ReactNode }
+            | {
+              title: string;
+              description: string;
+              activityType: string;
+              href: string;
+              headingLevel: 3;
+              actionLabel: string;
+              status: string;
+            }
+          > = [];
+          let lastGroup = "";
+          for (const item of session.activities) {
+            const published = (content.activities || []).find((entry) => entry.id === item.id);
+            const slug = slugForCatalogueActivity(week, item.id);
+            const group = String(published?.metadata?.group || "").trim();
+            if (group && group !== lastGroup) {
+              list.push({
+                children: (
+                  <h3 className="lp-session-group-label">
+                    {group}
+                  </h3>
+                )
+              });
+              lastGroup = group;
+            }
+            list.push({
+              title: item.title,
+              description: published?.metadata?.summary || "",
+              activityType: published?.metadata?.activityType || "Activity",
+              href: createSitePath(context.root, `week-${week}/${slug}/`),
+              headingLevel: 3,
+              actionLabel: "Open activity",
+              status: "Available"
+            });
+          }
+          return list;
+        })()
+      };
+    });
   }, [content, context.root, model, useCatalogue, week]);
 
   const panel = legacyProgress

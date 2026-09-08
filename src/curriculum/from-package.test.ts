@@ -114,6 +114,85 @@ describe("Unit 3 package hydration", () => {
     expect(cataloguePlayerMode(3, "week3-peer-marking", catalogueActivity(pkg, "week3-peer-marking"))).toBe("host");
   });
 
+  it("expands Week 1 sessions to 28 activities each while keeping existing IDs", () => {
+    const page = weekPageFromPackage(pkg, "week-1");
+    const session1 = page?.sessions[0].activities.map((item) => item.id) || [];
+    const session2 = page?.sessions[1].activities.map((item) => item.id) || [];
+    expect(session1).toHaveLength(28);
+    expect(session2).toHaveLength(28);
+    expect(new Set([...session1, ...session2]).size).toBe(56);
+    for (const id of [
+      "u3-w01-baseline",
+      "u3-w01-cia",
+      "u3-w01-incidents",
+      "u3-w01-glossary",
+      "u3-w01-retrieval",
+      "u3-w01-command-words",
+      "u3-w01-ocr-practice",
+      "u3-w01-peer-improvement"
+    ]) {
+      expect([...session1, ...session2]).toContain(id);
+    }
+    expect(session1[0]).toBe("u3-w01-baseline");
+    expect(session1[session1.length - 1]).toBe("u3-w01-session1-review");
+    expect(session2[0]).toBe("u3-w01-retrieval");
+    expect(session2[session2.length - 1]).toBe("u3-w01-improvement-action");
+    expect(catalogueSequence(page, 1)).toHaveLength(56);
+    expect(WEEK_ACTIVITY_SLUGS[1]?.["u3-w01-incident-match"]).toBe("incident-match");
+    expect(cataloguePlayerMode(1, "u3-w01-misconceptions", catalogueActivity(pkg, "u3-w01-misconceptions"))).toBe("catalogue");
+    expect(cataloguePlayerMode(1, "u3-w01-ocr-practice", catalogueActivity(pkg, "u3-w01-ocr-practice"))).toBe("catalogue");
+  });
+
+  it("fills live-missing Week 1 activities from the bundled package", () => {
+    const live = structuredClone(pkg);
+    live.activities = (live.activities || []).filter((item) => {
+      if (!String(item.id).startsWith("u3-w01-")) return true;
+      return [
+        "u3-w01-baseline",
+        "u3-w01-cia",
+        "u3-w01-incidents",
+        "u3-w01-glossary",
+        "u3-w01-retrieval",
+        "u3-w01-command-words",
+        "u3-w01-ocr-practice",
+        "u3-w01-peer-improvement"
+      ].includes(item.id);
+    });
+    const merged = runtimeContentPackage(live);
+    expect(merged.activities?.find((item) => item.id === "u3-w01-misconceptions")?.metadata?.title)
+      .toBe("Spotting Week 1 misconceptions");
+    expect(merged.activities?.find((item) => item.id === "u3-w01-baseline")?.metadata?.title)
+      .toBe("Baseline Knowledge Check");
+    const page = weekPageFromPackage(merged, "week-1");
+    expect(page?.sessions[0].activities).toHaveLength(28);
+    expect(page?.sessions[1].activities).toHaveLength(28);
+    expect(page?.sessions[0].activities[1].title).toBe("Spotting Week 1 misconceptions");
+  });
+
+  it("uses a mix of Week 1 catalogue interaction types rather than only multiple choice", () => {
+    const ids = Object.keys(WEEK_ACTIVITY_SLUGS[1] || {});
+    const types = new Map<string, number>();
+    for (const id of ids) {
+      const activity = catalogueActivity(pkg, id);
+      const seen = new Set<string>();
+      for (const block of activity?.blocks || []) {
+        const type = String(block.type || "").toLowerCase();
+        if (!type || type === "heading" || type === "paragraph" || type === "callout" || type === "markdown") continue;
+        seen.add(type);
+      }
+      for (const type of seen) types.set(type, (types.get(type) || 0) + 1);
+    }
+    expect(types.get("single-choice") || 0).toBeGreaterThan(0);
+    expect(types.get("classification") || 0).toBeGreaterThan(0);
+    expect(types.get("drag-drop") || 0).toBeGreaterThan(0);
+    expect(types.get("fill-gap") || 0).toBeGreaterThan(0);
+    expect(types.get("ordering") || 0).toBeGreaterThan(0);
+    expect(types.get("short-response") || 0).toBeGreaterThan(0);
+    expect(types.get("reflection") || 0).toBeGreaterThan(0);
+    const interactiveActivities = ids.length;
+    expect((types.get("single-choice") || 0) / interactiveActivities).toBeLessThan(0.85);
+  });
+
   it("filters planned session activities before rendering", () => {
     const edited = structuredClone(pkg);
     const session = edited.sessions.find((item) => item.id === "week-2-session-2");

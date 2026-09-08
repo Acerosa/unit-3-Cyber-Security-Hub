@@ -10,7 +10,11 @@
       "summary": "Formative diagnostic on cyber security, the CIA triad and common threats.",
       "href": null,
       "activityType": "Diagnostic",
-      "runtimeGlobal": null
+      "runtimeGlobal": null,
+      "group": "Diagnostic and misconceptions",
+      "topics": [
+        "Diagnostic and misconceptions"
+      ]
     },
     "relationships": {
       "learningOutcomes": [
@@ -282,6 +286,621 @@
   {
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
+    "id": "u3-w01-misconceptions",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Spotting Week 1 misconceptions",
+      "status": "available",
+      "summary": "Check common Week 1 misconceptions before the main teaching sequence.",
+      "href": null,
+      "activityType": "Diagnostic",
+      "group": "Diagnostic and misconceptions",
+      "topics": [
+        "Diagnostic and misconceptions"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-misconceptions-q-m1",
+        "u3-w01-misconceptions-q-m2",
+        "u3-w01-misconceptions-q-m3"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-misconceptions-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Spotting Week 1 misconceptions",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-misconceptions-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Decide whether each statement is true or false. Use specification language, not everyday guesses."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-misconceptions-q-m1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-misconceptions:m1",
+          "sourceQuestionId": "m1",
+          "prompt": "Cyber security is only about installing antivirus software.",
+          "options": [
+            {
+              "id": "true",
+              "label": "True"
+            },
+            {
+              "id": "false",
+              "label": "False"
+            }
+          ],
+          "correctOptionId": "false",
+          "feedback": {
+            "correct": "Cyber security protects information systems, networks and data. Antivirus can be one control, but it is not the whole meaning.",
+            "incorrect": "Cyber security protects information systems, networks and data. Antivirus can be one control, but it is not the whole meaning."
+          },
+          "sourceType": "single",
+          "presentation": "true-false"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-misconceptions-q-m2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-misconceptions:m2",
+          "sourceQuestionId": "m2",
+          "prompt": "Confidentiality, integrity and availability are the three cyber security aims used in this unit.",
+          "options": [
+            {
+              "id": "true",
+              "label": "True"
+            },
+            {
+              "id": "false",
+              "label": "False"
+            }
+          ],
+          "correctOptionId": "true",
+          "feedback": {
+            "correct": "Week 1 uses the CIA triad: confidentiality, integrity and availability.",
+            "incorrect": "Week 1 uses the CIA triad: confidentiality, integrity and availability."
+          },
+          "sourceType": "single",
+          "presentation": "true-false"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-misconceptions-q-m3",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-misconceptions:m3",
+          "sourceQuestionId": "m3",
+          "prompt": "A phishing message is the same incident type as a virus.",
+          "options": [
+            {
+              "id": "true",
+              "label": "True"
+            },
+            {
+              "id": "false",
+              "label": "False"
+            }
+          ],
+          "correctOptionId": "false",
+          "feedback": {
+            "correct": "Phishing is a specification incident type that uses deception. A virus is malware that infects systems. Keep the names separate.",
+            "incorrect": "Phishing is a specification incident type that uses deception. A virus is malware that infects systems. Keep the names separate."
+          },
+          "sourceType": "single",
+          "presentation": "true-false"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-confidence",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Confidence before teaching",
+      "status": "available",
+      "summary": "Record how confident you feel about Week 1 terms before teaching.",
+      "href": null,
+      "activityType": "Self-assessment",
+      "group": "Diagnostic and misconceptions",
+      "topics": [
+        "Diagnostic and misconceptions"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-confidence-note"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-confidence-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Confidence before teaching",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-confidence-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "This is a diagnostic note, not a grade. Name the Week 1 ideas you already feel sure about and those you want to watch during the lesson."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-confidence-note",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "reflection",
+        "content": {
+          "formative": true,
+          "questionId": "u3-w01-confidence:note",
+          "sourceQuestionId": "note",
+          "prompt": "In your own words, list: one CIA aim you can already explain; one incident type you are less sure about; and one question you want this week to answer. Use the terms confidentiality, integrity, availability where you can.",
+          "guidance": "Saved. Revisit this note at the end of Session 1."
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-definition-choice",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "What cyber security means",
+      "status": "available",
+      "summary": "Choose the definition that matches Unit 3 cyber security.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "Meaning of cyber security",
+      "topics": [
+        "Meaning of cyber security"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-definition-choice-q-d1",
+        "u3-w01-definition-choice-q-d2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-definition-choice-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "What cyber security means",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-definition-choice-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Cyber security aims to protect information. Pick the statement that uses that idea accurately."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-definition-choice-q-d1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-definition-choice:d1",
+          "sourceQuestionId": "d1",
+          "prompt": "Which statement best defines cyber security for this unit?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Protecting information systems, networks and data from unauthorised access, damage or disruption"
+            },
+            {
+              "id": "b",
+              "label": "Making clinic websites look modern"
+            },
+            {
+              "id": "c",
+              "label": "Printing every patient letter so nothing is stored digitally"
+            },
+            {
+              "id": "d",
+              "label": "Only blocking social media on staff phones"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "The unit definition is about protecting systems, networks and data — not appearance, paper-only working or one control.",
+            "incorrect": "The unit definition is about protecting systems, networks and data — not appearance, paper-only working or one control."
+          },
+          "sourceType": "single",
+          "presentation": "option-cards"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-definition-choice-q-d2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-definition-choice:d2",
+          "sourceQuestionId": "d2",
+          "prompt": "What is the purpose of cyber security aims such as confidentiality?",
+          "options": [
+            {
+              "id": "a",
+              "label": "To protect information so the right people can use it safely and it stays trustworthy"
+            },
+            {
+              "id": "b",
+              "label": "To make every system slower so attackers lose interest"
+            },
+            {
+              "id": "c",
+              "label": "To replace staff training"
+            },
+            {
+              "id": "d",
+              "label": "To guarantee that no incident can ever happen"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "CIA aims describe how information should be protected. They do not promise that incidents are impossible.",
+            "incorrect": "CIA aims describe how information should be protected. They do not promise that incidents are impossible."
+          },
+          "sourceType": "single",
+          "presentation": "option-cards"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-what-it-protects",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "What cyber security protects",
+      "status": "available",
+      "summary": "Sort what cyber security primarily protects from what it does not.",
+      "href": null,
+      "activityType": "Classification",
+      "group": "Meaning of cyber security",
+      "topics": [
+        "Meaning of cyber security"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-what-it-protects-q-sort"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-what-it-protects-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "What cyber security protects",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-what-it-protects-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Cyber security protects information. Sort each item according to whether it is a primary protection target in this unit."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-what-it-protects-q-sort",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "classification",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-what-it-protects:sort",
+          "sourceQuestionId": "sort",
+          "prompt": "Does cyber security primarily protect this?",
+          "categories": [
+            {
+              "id": "Primarily protects",
+              "label": "Primarily protects"
+            },
+            {
+              "id": "Not the primary target",
+              "label": "Not the primary target"
+            }
+          ],
+          "items": [
+            {
+              "id": "systems",
+              "label": "Information systems",
+              "correctCategoryId": "Primarily protects"
+            },
+            {
+              "id": "networks",
+              "label": "Networks",
+              "correctCategoryId": "Primarily protects"
+            },
+            {
+              "id": "data",
+              "label": "Data, including patient records",
+              "correctCategoryId": "Primarily protects"
+            },
+            {
+              "id": "paint",
+              "label": "The colour of a clinic waiting-room wall",
+              "correctCategoryId": "Not the primary target"
+            },
+            {
+              "id": "menus",
+              "label": "Printed cafeteria menus with no personal data",
+              "correctCategoryId": "Not the primary target"
+            }
+          ],
+          "feedback": {
+            "correct": "Cyber security is about information systems, networks and data. Everyday objects with no information role are not the unit’s primary target.",
+            "incorrect": "Cyber security is about information systems, networks and data. Everyday objects with no information role are not the unit’s primary target."
+          }
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-definition-gap",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Complete the cyber security definition",
+      "status": "available",
+      "summary": "Complete a specification-style definition of cyber security.",
+      "href": null,
+      "activityType": "Phrase completion",
+      "group": "Meaning of cyber security",
+      "topics": [
+        "Meaning of cyber security"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-definition-gap-q-g1",
+        "u3-w01-definition-gap-q-g2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-definition-gap-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Complete the cyber security definition",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-definition-gap-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Complete each sentence with the missing specification term."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-definition-gap-q-g1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "fill-gap",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-definition-gap:g1",
+          "sourceQuestionId": "g1",
+          "prompt": "Cyber security aims to protect {blank} from unauthorised access, damage or disruption.",
+          "gaps": [
+            {
+              "id": "blank",
+              "label": "missing term",
+              "correctOptionId": "information"
+            }
+          ],
+          "options": [
+            {
+              "id": "information",
+              "label": "information"
+            },
+            {
+              "id": "furniture",
+              "label": "furniture"
+            },
+            {
+              "id": "weather",
+              "label": "weather"
+            }
+          ],
+          "feedback": {
+            "correct": "The teaching content is that cyber security aims to protect information.",
+            "incorrect": "The teaching content is that cyber security aims to protect information."
+          }
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-definition-gap-q-g2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "fill-gap",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-definition-gap:g2",
+          "sourceQuestionId": "g2",
+          "prompt": "Unauthorised viewing of records mainly threatens {blank}.",
+          "gaps": [
+            {
+              "id": "blank",
+              "label": "CIA aim",
+              "correctOptionId": "confidentiality"
+            }
+          ],
+          "options": [
+            {
+              "id": "confidentiality",
+              "label": "confidentiality"
+            },
+            {
+              "id": "availability",
+              "label": "availability"
+            },
+            {
+              "id": "integrity",
+              "label": "integrity"
+            }
+          ],
+          "feedback": {
+            "correct": "Unauthorised viewing is a confidentiality issue.",
+            "incorrect": "Unauthorised viewing is a confidentiality issue."
+          }
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
     "id": "u3-w01-cia",
     "version": "1.0.0",
     "metadata": {
@@ -290,7 +909,11 @@
       "summary": "Learn and check the Confidentiality, Integrity and Availability triad.",
       "href": null,
       "activityType": "Guided learning",
-      "runtimeGlobal": null
+      "runtimeGlobal": null,
+      "group": "CIA triad",
+      "topics": [
+        "CIA triad"
+      ]
     },
     "relationships": {
       "learningOutcomes": [
@@ -522,6 +1145,990 @@
   {
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
+    "id": "u3-w01-cia-confidentiality",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Confidentiality in practice",
+      "status": "available",
+      "summary": "Recognise confidentiality: information is viewed only by those authorised to see it.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "CIA triad",
+      "topics": [
+        "CIA triad"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-cia-confidentiality-q-c1",
+        "u3-w01-cia-confidentiality-q-c2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-confidentiality-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Confidentiality in practice",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-confidentiality-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Confidentiality means information is not disclosed to anyone who is not authorised to see it. Patient records at Northbank are a typical example."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-confidentiality-q-c1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-cia-confidentiality:c1",
+          "sourceQuestionId": "c1",
+          "prompt": "Which situation is mainly a confidentiality problem?",
+          "options": [
+            {
+              "id": "a",
+              "label": "A receptionist reads a patient record with no clinical need"
+            },
+            {
+              "id": "b",
+              "label": "The booking website is offline so appointments cannot be made"
+            },
+            {
+              "id": "c",
+              "label": "A clinic letter is saved with the wrong clinic date"
+            },
+            {
+              "id": "d",
+              "label": "A printer runs out of paper in reception"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Unauthorised viewing of a patient record is confidentiality. Downtime is availability; a wrong date is integrity.",
+            "incorrect": "Unauthorised viewing of a patient record is confidentiality. Downtime is availability; a wrong date is integrity."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-confidentiality-q-c2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-cia-confidentiality:c2",
+          "sourceQuestionId": "c2",
+          "prompt": "Which wording best describes confidentiality?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Only authorised people can view the information"
+            },
+            {
+              "id": "b",
+              "label": "The information can be used whenever staff need it"
+            },
+            {
+              "id": "c",
+              "label": "The information has not been changed in an unauthorised way"
+            },
+            {
+              "id": "d",
+              "label": "The information is stored on paper"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Confidentiality is about authorised viewing. Availability is about being able to use the information; integrity is about it remaining accurate and unaltered without authorisation.",
+            "incorrect": "Confidentiality is about authorised viewing. Availability is about being able to use the information; integrity is about it remaining accurate and unaltered without authorisation."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-cia-integrity",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Integrity in practice",
+      "status": "available",
+      "summary": "Recognise integrity: information remains accurate and is not changed without authorisation.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "CIA triad",
+      "topics": [
+        "CIA triad"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-cia-integrity-q-i1",
+        "u3-w01-cia-integrity-q-i2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-integrity-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Integrity in practice",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-integrity-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Integrity means information is complete, accurate and has not been altered without authorisation."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-integrity-q-i1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-cia-integrity:i1",
+          "sourceQuestionId": "i1",
+          "prompt": "Which situation is mainly an integrity problem?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Someone changes a clinic appointment time without permission"
+            },
+            {
+              "id": "b",
+              "label": "Staff cannot open the booking system at 9am"
+            },
+            {
+              "id": "c",
+              "label": "A visitor photographs a patient list on a screen"
+            },
+            {
+              "id": "d",
+              "label": "The clinic Wi-Fi password is written on a poster"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Unauthorised change to an appointment record is integrity. Being unable to open the system is availability; photographing a list is confidentiality.",
+            "incorrect": "Unauthorised change to an appointment record is integrity. Being unable to open the system is availability; photographing a list is confidentiality."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-integrity-q-i2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-cia-integrity:i2",
+          "sourceQuestionId": "i2",
+          "prompt": "Which wording best describes integrity?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Information remains accurate and is not altered without authorisation"
+            },
+            {
+              "id": "b",
+              "label": "Information is hidden from every member of staff"
+            },
+            {
+              "id": "c",
+              "label": "Systems are always faster than paper"
+            },
+            {
+              "id": "d",
+              "label": "Backups are stored in another country"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Integrity is about authorised, accurate information — not hiding data from all staff or where backups are stored.",
+            "incorrect": "Integrity is about authorised, accurate information — not hiding data from all staff or where backups are stored."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-cia-availability",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Availability in practice",
+      "status": "available",
+      "summary": "Recognise availability: authorised people can use systems and data when they need them.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "CIA triad",
+      "topics": [
+        "CIA triad"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-cia-availability-q-a1",
+        "u3-w01-cia-availability-q-a2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-availability-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Availability in practice",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-availability-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Availability means authorised users can access systems and information when they need to. Northbank’s booking website is a typical example."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-availability-q-a1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-cia-availability:a1",
+          "sourceQuestionId": "a1",
+          "prompt": "Which situation is mainly an availability problem?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Attackers flood the booking website so patients cannot book"
+            },
+            {
+              "id": "b",
+              "label": "A staff member emails a patient contact list to a personal account"
+            },
+            {
+              "id": "c",
+              "label": "A dosage field in a record is overwritten with the wrong number"
+            },
+            {
+              "id": "d",
+              "label": "A policy document uses everyday language instead of specification terms"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "A flood that stops booking is availability (and matches denial of service). Sending a contact list is confidentiality; a wrong dosage is integrity.",
+            "incorrect": "A flood that stops booking is availability (and matches denial of service). Sending a contact list is confidentiality; a wrong dosage is integrity."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-availability-q-a2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-cia-availability:a2",
+          "sourceQuestionId": "a2",
+          "prompt": "Which wording best describes availability?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Authorised people can use the system or data when they need it"
+            },
+            {
+              "id": "b",
+              "label": "Nobody except the attacker can see the data"
+            },
+            {
+              "id": "c",
+              "label": "The data has been secretly changed"
+            },
+            {
+              "id": "d",
+              "label": "The organisation has printed a poster about passwords"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Availability is about authorised use at the time of need.",
+            "incorrect": "Availability is about authorised use at the time of need."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-cia-distinguish",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Distinguishing CIA aims",
+      "status": "available",
+      "summary": "Sort short cases into confidentiality, integrity or availability.",
+      "href": null,
+      "activityType": "Classification",
+      "group": "CIA triad",
+      "topics": [
+        "CIA triad"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-cia-distinguish-q-sort"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-distinguish-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Distinguishing CIA aims",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-distinguish-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Similar-looking problems can affect different CIA aims. Classify each case."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-distinguish-q-sort",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "classification",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-cia-distinguish:sort",
+          "sourceQuestionId": "sort",
+          "prompt": "Which CIA aim is mainly affected?",
+          "categories": [
+            {
+              "id": "Confidentiality",
+              "label": "Confidentiality"
+            },
+            {
+              "id": "Integrity",
+              "label": "Integrity"
+            },
+            {
+              "id": "Availability",
+              "label": "Availability"
+            }
+          ],
+          "items": [
+            {
+              "id": "view",
+              "label": "A visitor reads patient names on an unlocked screen",
+              "correctCategoryId": "Confidentiality"
+            },
+            {
+              "id": "edit",
+              "label": "An appointment note is changed to the wrong clinic",
+              "correctCategoryId": "Integrity"
+            },
+            {
+              "id": "down",
+              "label": "The booking website will not load for a morning",
+              "correctCategoryId": "Availability"
+            },
+            {
+              "id": "copy",
+              "label": "Staff copy a patient contact list without a work need",
+              "correctCategoryId": "Confidentiality"
+            },
+            {
+              "id": "flood",
+              "label": "The booking service is flooded with fake requests",
+              "correctCategoryId": "Availability"
+            }
+          ],
+          "feedback": {
+            "correct": "Viewing or copying without authorisation is confidentiality. Unauthorised change is integrity. Not being able to use the service is availability.",
+            "incorrect": "Viewing or copying without authorisation is confidentiality. Unauthorised change is integrity. Not being able to use the service is availability."
+          }
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-cia-combined",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "When more than one CIA aim is affected",
+      "status": "available",
+      "summary": "Spot when one incident can affect more than one CIA aim.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "CIA triad",
+      "topics": [
+        "CIA triad"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-cia-combined-q-x1",
+        "u3-w01-cia-combined-q-x2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-combined-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "When more than one CIA aim is affected",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-combined-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "One incident can threaten more than one aim. Name the aims that are clearly affected."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-combined-q-x1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-cia-combined:x1",
+          "sourceQuestionId": "x1",
+          "prompt": "Ransomware encrypts clinic files so staff cannot open them, and a ransom note is left on screen. Which aims are clearly affected?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Integrity and availability of the files"
+            },
+            {
+              "id": "b",
+              "label": "Only the colour of the desktop wallpaper"
+            },
+            {
+              "id": "c",
+              "label": "Confidentiality of a public waiting-room poster"
+            },
+            {
+              "id": "d",
+              "label": "None of the CIA aims"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Encrypting files changes them without authorisation (integrity) and stops staff using them (availability).",
+            "incorrect": "Encrypting files changes them without authorisation (integrity) and stops staff using them (availability)."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-combined-q-x2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-cia-combined:x2",
+          "sourceQuestionId": "x2",
+          "prompt": "A stolen clinic laptop still contains a patient contact list. Which aim is the first concern?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Confidentiality of the contact list"
+            },
+            {
+              "id": "b",
+              "label": "The laptop’s battery life"
+            },
+            {
+              "id": "c",
+              "label": "Whether the clinic logo looks professional"
+            },
+            {
+              "id": "d",
+              "label": "Availability of the cafeteria till"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "The contact list on a stolen device is a confidentiality concern. Other CIA aims may also be discussed later, but the list being readable by someone unauthorised is the first specification point.",
+            "incorrect": "The contact list on a stolen device is a confidentiality concern. Other CIA aims may also be discussed later, but the list being readable by someone unauthorised is the first specification point."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-incident-definitions",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Six incident types: definitions",
+      "status": "available",
+      "summary": "Match each of the six specification incident types to its meaning.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "Six incident types",
+      "topics": [
+        "Six incident types"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-incident-definitions-q-t1",
+        "u3-w01-incident-definitions-q-t2",
+        "u3-w01-incident-definitions-q-t3"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-definitions-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Six incident types: definitions",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-definitions-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "The specification names six incident types: hacking, virus, denial of service (DoS), phishing, identity theft, and data interception and theft. Use those names — do not substitute looser everyday labels."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-definitions-note",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "callout",
+        "content": {
+          "text": "Keyword bank: hacking · virus · denial of service (DoS) · phishing · identity theft · data interception and theft"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-definitions-q-t1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-incident-definitions:t1",
+          "sourceQuestionId": "t1",
+          "prompt": "Which incident type is unauthorised access to a system or account?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Hacking"
+            },
+            {
+              "id": "b",
+              "label": "Denial of service (DoS)"
+            },
+            {
+              "id": "c",
+              "label": "Virus"
+            },
+            {
+              "id": "d",
+              "label": "Phishing"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Hacking is unauthorised access. DoS stops a service; a virus infects; phishing deceives a person.",
+            "incorrect": "Hacking is unauthorised access. DoS stops a service; a virus infects; phishing deceives a person."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-definitions-q-t2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-incident-definitions:t2",
+          "sourceQuestionId": "t2",
+          "prompt": "Which incident type uses a deceptive message to trick a person into giving information or access?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Phishing"
+            },
+            {
+              "id": "b",
+              "label": "Virus"
+            },
+            {
+              "id": "c",
+              "label": "Denial of service (DoS)"
+            },
+            {
+              "id": "d",
+              "label": "Data interception and theft"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Phishing is deception aimed at a person. A virus is malware; DoS floods a service; interception captures data in transit.",
+            "incorrect": "Phishing is deception aimed at a person. A virus is malware; DoS floods a service; interception captures data in transit."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-definitions-q-t3",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-incident-definitions:t3",
+          "sourceQuestionId": "t3",
+          "prompt": "Which incident type captures or steals data as it is transmitted or stored?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Data interception and theft"
+            },
+            {
+              "id": "b",
+              "label": "Denial of service (DoS)"
+            },
+            {
+              "id": "c",
+              "label": "Virus"
+            },
+            {
+              "id": "d",
+              "label": "Hacking"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Data interception and theft is about capturing or stealing the data itself. Hacking is unauthorised access; DoS is disruption; a virus is malware.",
+            "incorrect": "Data interception and theft is about capturing or stealing the data itself. Hacking is unauthorised access; DoS is disruption; a virus is malware."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-incident-match",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Match the incident type",
+      "status": "available",
+      "summary": "Place each short description on the matching specification incident type.",
+      "href": null,
+      "activityType": "Drag and drop",
+      "group": "Six incident types",
+      "topics": [
+        "Six incident types"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-incident-match-q-map"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-match-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Match the incident type",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-match-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Drag each description onto the specification incident type it names."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-match-q-map",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "drag-drop",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-incident-match:map",
+          "sourceQuestionId": "map",
+          "prompt": "Match each description to an incident type.",
+          "items": [
+            {
+              "id": "hack",
+              "label": "Unauthorised access to a system"
+            },
+            {
+              "id": "virus",
+              "label": "Malware that infects files or systems"
+            },
+            {
+              "id": "dos",
+              "label": "Flooding a service so legitimate users cannot use it"
+            },
+            {
+              "id": "phish",
+              "label": "A deceptive message that tricks a person"
+            },
+            {
+              "id": "id",
+              "label": "Misuse of someone’s identity details"
+            },
+            {
+              "id": "intercept",
+              "label": "Capturing or stealing data in transit or storage"
+            }
+          ],
+          "targets": [
+            {
+              "id": "Hacking",
+              "label": "Hacking"
+            },
+            {
+              "id": "Virus",
+              "label": "Virus"
+            },
+            {
+              "id": "Denial of service (DoS)",
+              "label": "Denial of service (DoS)"
+            },
+            {
+              "id": "Phishing",
+              "label": "Phishing"
+            },
+            {
+              "id": "Identity theft",
+              "label": "Identity theft"
+            },
+            {
+              "id": "Data interception and theft",
+              "label": "Data interception and theft"
+            }
+          ],
+          "correct": {
+            "hack": "Hacking",
+            "virus": "Virus",
+            "dos": "Denial of service (DoS)",
+            "phish": "Phishing",
+            "id": "Identity theft",
+            "intercept": "Data interception and theft"
+          },
+          "feedback": {
+            "correct": "Each description matches one specification incident type.",
+            "incorrect": "Each description matches one specification incident type."
+          }
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
     "id": "u3-w01-incidents",
     "version": "1.0.0",
     "metadata": {
@@ -530,7 +2137,11 @@
       "summary": "Classify short Northbank scenarios into cyber security incident types.",
       "href": null,
       "activityType": "Classification",
-      "runtimeGlobal": null
+      "runtimeGlobal": null,
+      "group": "Six incident types",
+      "topics": [
+        "Six incident types"
+      ]
     },
     "relationships": {
       "learningOutcomes": [
@@ -683,6 +2294,1504 @@
   {
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
+    "id": "u3-w01-incident-recognise",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Recognise the incident from the scenario",
+      "status": "available",
+      "summary": "Name the specification incident type from a short scenario.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "Six incident types",
+      "topics": [
+        "Six incident types"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-incident-recognise-q-r1",
+        "u3-w01-incident-recognise-q-r2",
+        "u3-w01-incident-recognise-q-r3"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-recognise-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Recognise the incident from the scenario",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-recognise-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Read the evidence in the scenario, then name the incident type. Do not invent extra facts."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-recognise-q-r1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-incident-recognise:r1",
+          "sourceQuestionId": "r1",
+          "prompt": "Staff open an email attachment. Clinic files will not open and a payment demand appears. Which incident type is this?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Virus"
+            },
+            {
+              "id": "b",
+              "label": "Phishing"
+            },
+            {
+              "id": "c",
+              "label": "Denial of service (DoS)"
+            },
+            {
+              "id": "d",
+              "label": "Identity theft"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Malware that infects files is a virus incident. The payment demand describes ransomware behaviour, which is still malware/virus in this unit’s incident list — not phishing by itself.",
+            "incorrect": "Malware that infects files is a virus incident. The payment demand describes ransomware behaviour, which is still malware/virus in this unit’s incident list — not phishing by itself."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-recognise-q-r2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-incident-recognise:r2",
+          "sourceQuestionId": "r2",
+          "prompt": "A message claiming to be from IT asks reception to confirm a password on a fake login page. Which incident type is this?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Phishing"
+            },
+            {
+              "id": "b",
+              "label": "Denial of service (DoS)"
+            },
+            {
+              "id": "c",
+              "label": "Virus"
+            },
+            {
+              "id": "d",
+              "label": "Hacking"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "A deceptive message asking for a password is phishing. Hacking would be the unauthorised access that might follow if the password is used.",
+            "incorrect": "A deceptive message asking for a password is phishing. Hacking would be the unauthorised access that might follow if the password is used."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-recognise-q-r3",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-incident-recognise:r3",
+          "sourceQuestionId": "r3",
+          "prompt": "Attackers flood Northbank’s booking website so patients cannot book. Which incident type is this?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Denial of service (DoS)"
+            },
+            {
+              "id": "b",
+              "label": "Phishing"
+            },
+            {
+              "id": "c",
+              "label": "Identity theft"
+            },
+            {
+              "id": "d",
+              "label": "Virus"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Flooding a service so legitimate users cannot use it is denial of service.",
+            "incorrect": "Flooding a service so legitimate users cannot use it is denial of service."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-incident-distinguish",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Tell similar incidents apart",
+      "status": "available",
+      "summary": "Separate incident types that learners often mix up.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "Six incident types",
+      "topics": [
+        "Six incident types"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-incident-distinguish-q-s1",
+        "u3-w01-incident-distinguish-q-s2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-distinguish-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Tell similar incidents apart",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-distinguish-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Phishing is not the same as hacking. Identity theft is not the same as data interception. Choose the precise type."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-distinguish-q-s1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-incident-distinguish:s1",
+          "sourceQuestionId": "s1",
+          "prompt": "Someone uses stolen credentials to open a staff mailbox. Which incident type is this mainly?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Hacking"
+            },
+            {
+              "id": "b",
+              "label": "Phishing"
+            },
+            {
+              "id": "c",
+              "label": "Denial of service (DoS)"
+            },
+            {
+              "id": "d",
+              "label": "Virus"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Using stolen credentials to open a mailbox is unauthorised access — hacking. Phishing would be the deceptive message that obtained the credentials, if that was what the scenario described.",
+            "incorrect": "Using stolen credentials to open a mailbox is unauthorised access — hacking. Phishing would be the deceptive message that obtained the credentials, if that was what the scenario described."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-distinguish-q-s2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-incident-distinguish:s2",
+          "sourceQuestionId": "s2",
+          "prompt": "Criminals open a credit account using a patient’s name and date of birth copied from a list. Which incident type is this mainly?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Identity theft"
+            },
+            {
+              "id": "b",
+              "label": "Denial of service (DoS)"
+            },
+            {
+              "id": "c",
+              "label": "Virus"
+            },
+            {
+              "id": "d",
+              "label": "Hacking"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Misuse of identity details is identity theft. The copying of the list could also be data theft, but the question asks what happens when those details are used as someone else’s identity.",
+            "incorrect": "Misuse of identity details is identity theft. The copying of the list could also be data theft, but the question asks what happens when those details are used as someone else’s identity."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-incident-evidence",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Evidence for a classification",
+      "status": "available",
+      "summary": "Choose the evidence that justifies an incident classification.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "Six incident types",
+      "topics": [
+        "Six incident types"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-incident-evidence-q-e1",
+        "u3-w01-incident-evidence-q-e2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-evidence-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Evidence for a classification",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-evidence-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "A classification is only as strong as the evidence in the scenario. Pick the phrase that actually justifies the type."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-evidence-q-e1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-incident-evidence:e1",
+          "sourceQuestionId": "e1",
+          "prompt": "You classify a case as phishing. Which evidence best supports that?",
+          "options": [
+            {
+              "id": "a",
+              "label": "The message pretends to be from IT and asks staff to enter a password on a fake page"
+            },
+            {
+              "id": "b",
+              "label": "The booking website is slow on Monday mornings"
+            },
+            {
+              "id": "c",
+              "label": "A laptop charger is missing from a drawer"
+            },
+            {
+              "id": "d",
+              "label": "The clinic uses email"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Phishing needs evidence of deception aimed at a person. Using email, or a slow website, is not enough.",
+            "incorrect": "Phishing needs evidence of deception aimed at a person. Using email, or a slow website, is not enough."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-incident-evidence-q-e2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-incident-evidence:e2",
+          "sourceQuestionId": "e2",
+          "prompt": "You classify a case as denial of service. Which evidence best supports that?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Legitimate patients cannot use the booking site because it is flooded with fake requests"
+            },
+            {
+              "id": "b",
+              "label": "A staff member opened one attachment"
+            },
+            {
+              "id": "c",
+              "label": "A password was typed on a fake page"
+            },
+            {
+              "id": "d",
+              "label": "A contact list was emailed to a personal account"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "DoS evidence is that the service cannot be used by legitimate users because of flood or disruption — not deception or data copying.",
+            "incorrect": "DoS evidence is that the service cannot be used by legitimate users because of flood or disruption — not deception or data copying."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-cia-incident-pair",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Incident type and CIA aim",
+      "status": "available",
+      "summary": "For each scenario, name the incident type and the CIA aim mainly compromised.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "CIA and incident reasoning",
+      "topics": [
+        "CIA and incident reasoning"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-cia-incident-pair-q-p1",
+        "u3-w01-cia-incident-pair-q-p2",
+        "u3-w01-cia-incident-pair-q-p3"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-incident-pair-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Incident type and CIA aim",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-incident-pair-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Each question asks for a pair: incident type and CIA aim. Use specification names."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-incident-pair-q-p1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-cia-incident-pair:p1",
+          "sourceQuestionId": "p1",
+          "prompt": "A fake payroll email harvests a reception password. Which pair is best?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Phishing; confidentiality"
+            },
+            {
+              "id": "b",
+              "label": "Denial of service (DoS); availability"
+            },
+            {
+              "id": "c",
+              "label": "Virus; integrity"
+            },
+            {
+              "id": "d",
+              "label": "Hacking; availability"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "The deceptive email is phishing. The password, if used, exposes accounts and data — confidentiality.",
+            "incorrect": "The deceptive email is phishing. The password, if used, exposes accounts and data — confidentiality."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-incident-pair-q-p2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-cia-incident-pair:p2",
+          "sourceQuestionId": "p2",
+          "prompt": "The booking website is flooded and patients cannot book. Which pair is best?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Denial of service (DoS); availability"
+            },
+            {
+              "id": "b",
+              "label": "Phishing; confidentiality"
+            },
+            {
+              "id": "c",
+              "label": "Identity theft; integrity"
+            },
+            {
+              "id": "d",
+              "label": "Virus; confidentiality"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Flooding the service is DoS. Patients cannot use booking — availability.",
+            "incorrect": "Flooding the service is DoS. Patients cannot use booking — availability."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-incident-pair-q-p3",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-cia-incident-pair:p3",
+          "sourceQuestionId": "p3",
+          "prompt": "Malware changes clinic files so they will not open. Which pair is best?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Virus; integrity and availability"
+            },
+            {
+              "id": "b",
+              "label": "Phishing; confidentiality only"
+            },
+            {
+              "id": "c",
+              "label": "Identity theft; confidentiality only"
+            },
+            {
+              "id": "d",
+              "label": "Denial of service (DoS); confidentiality"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Infecting and altering files is a virus incident. Files that will not open have lost integrity and availability.",
+            "incorrect": "Infecting and altering files is a virus incident. Files that will not open have lost integrity and availability."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-cia-incident-justify",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Justify a paired classification",
+      "status": "available",
+      "summary": "Write a short justification that names the incident type, CIA aim and evidence.",
+      "href": null,
+      "activityType": "Justified identification",
+      "group": "CIA and incident reasoning",
+      "topics": [
+        "CIA and incident reasoning"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-cia-incident-justify-q-j1",
+        "u3-w01-cia-incident-justify-justify"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-incident-justify-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Justify a paired classification",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-incident-justify-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Sentence starters: The incident type is… because… The CIA aim mainly affected is… because the evidence shows…"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-incident-justify-scenario",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "callout",
+        "content": {
+          "text": "Scenario: A courier asks reception to ‘hold the door’ and then photographs a patient list on an unlocked screen in the staff room."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-incident-justify-q-j1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-cia-incident-justify:j1",
+          "sourceQuestionId": "j1",
+          "prompt": "Which incident type best fits this evidence?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Data interception and theft"
+            },
+            {
+              "id": "b",
+              "label": "Denial of service (DoS)"
+            },
+            {
+              "id": "c",
+              "label": "Virus"
+            },
+            {
+              "id": "d",
+              "label": "Phishing"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Photographing the list is taking data. That is data theft. It is not a flood, malware or a deceptive email.",
+            "incorrect": "Photographing the list is taking data. That is data theft. It is not a flood, malware or a deceptive email."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-incident-justify-justify",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "formative": true,
+          "questionId": "u3-w01-cia-incident-justify:justify",
+          "sourceQuestionId": "justify",
+          "prompt": "Justify your classification. Name the incident type, the CIA aim mainly compromised, and the evidence in the scenario. Do not add facts that are not there.",
+          "minChars": 80,
+          "guidance": "Name type, aim and evidence. Keep to the scenario."
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-cia-incident-challenge",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Challenge: more than one CIA aim",
+      "status": "available",
+      "summary": "Optional challenge: explain how one incident can breach more than one CIA aim.",
+      "href": null,
+      "activityType": "Challenge",
+      "group": "CIA and incident reasoning",
+      "topics": [
+        "CIA and incident reasoning"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-cia-incident-challenge-q-rank",
+        "u3-w01-cia-incident-challenge-explain"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-incident-challenge-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Challenge: more than one CIA aim",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-incident-challenge-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "This challenge does not block the rest of the session. Arrange the incident types from most to least disruptive for a clinic booking service, then defend the ranking. There is no single official order."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-incident-challenge-q-rank",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "ordering",
+        "content": {
+          "formative": true,
+          "questionId": "u3-w01-cia-incident-challenge:rank",
+          "sourceQuestionId": "rank",
+          "prompt": "Drag the six incident types into the order you would defend for disruption to booking.",
+          "items": [
+            {
+              "id": "Hacking",
+              "label": "Hacking"
+            },
+            {
+              "id": "Virus",
+              "label": "Virus"
+            },
+            {
+              "id": "Denial of service (DoS)",
+              "label": "Denial of service (DoS)"
+            },
+            {
+              "id": "Phishing",
+              "label": "Phishing"
+            },
+            {
+              "id": "Identity theft",
+              "label": "Identity theft"
+            },
+            {
+              "id": "Data interception and theft",
+              "label": "Data interception and theft"
+            }
+          ]
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-incident-challenge-explain",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "formative": true,
+          "questionId": "u3-w01-cia-incident-challenge:explain",
+          "sourceQuestionId": "explain",
+          "prompt": "Defend your top-ranked type. Explain how that incident could affect more than one CIA aim at Northbank. Use specification terms.",
+          "minChars": 100,
+          "guidance": "Name more than one CIA aim and link each to evidence a clinic would notice."
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-northbank-cia",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Northbank and the CIA triad",
+      "status": "available",
+      "summary": "Apply confidentiality, integrity and availability to Northbank Community Health Partnership.",
+      "href": null,
+      "activityType": "Scenario analysis",
+      "group": "Northbank application",
+      "topics": [
+        "Northbank application"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-northbank-cia-q-n1",
+        "u3-w01-northbank-cia-q-n2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-northbank-cia-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Northbank and the CIA triad",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-northbank-cia-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Northbank Community Health Partnership is a fictional health organisation used in this unit. It holds patient records, runs clinic booking systems and has reception staff. Do not invent extra buildings or systems."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-northbank-cia-q-n1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-northbank-cia:n1",
+          "sourceQuestionId": "n1",
+          "prompt": "Patient records at Northbank must not be read without a work need. Which CIA aim is that?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Confidentiality"
+            },
+            {
+              "id": "b",
+              "label": "Availability"
+            },
+            {
+              "id": "c",
+              "label": "Integrity"
+            },
+            {
+              "id": "d",
+              "label": "Usability"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Restricting viewing of patient records is confidentiality.",
+            "incorrect": "Restricting viewing of patient records is confidentiality."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-northbank-cia-q-n2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-northbank-cia:n2",
+          "sourceQuestionId": "n2",
+          "prompt": "Reception must be able to open the booking system at the start of clinic. Which CIA aim is that?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Availability"
+            },
+            {
+              "id": "b",
+              "label": "Confidentiality"
+            },
+            {
+              "id": "c",
+              "label": "Integrity"
+            },
+            {
+              "id": "d",
+              "label": "Privacy branding"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Being able to use the booking system when needed is availability.",
+            "incorrect": "Being able to use the booking system when needed is availability."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-northbank-incidents",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Northbank incident recognition",
+      "status": "available",
+      "summary": "Classify Northbank scenarios using specification incident types.",
+      "href": null,
+      "activityType": "Classification",
+      "group": "Northbank application",
+      "topics": [
+        "Northbank application"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-northbank-incidents-q-sort"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-northbank-incidents-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Northbank incident recognition",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-northbank-incidents-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Use only Northbank facts already taught: patient records, booking website, reception, staff room, clinic files and patient contact lists."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-northbank-incidents-q-sort",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "classification",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-northbank-incidents:sort",
+          "sourceQuestionId": "sort",
+          "prompt": "Classify each Northbank scenario.",
+          "categories": [
+            {
+              "id": "Hacking",
+              "label": "Hacking"
+            },
+            {
+              "id": "Virus",
+              "label": "Virus"
+            },
+            {
+              "id": "Denial of service (DoS)",
+              "label": "Denial of service (DoS)"
+            },
+            {
+              "id": "Phishing",
+              "label": "Phishing"
+            },
+            {
+              "id": "Identity theft",
+              "label": "Identity theft"
+            },
+            {
+              "id": "Data interception and theft",
+              "label": "Data interception and theft"
+            }
+          ],
+          "items": [
+            {
+              "id": "nb1",
+              "label": "An attachment encrypts clinic files",
+              "correctCategoryId": "Virus"
+            },
+            {
+              "id": "nb2",
+              "label": "A fake IT email asks for a reception password",
+              "correctCategoryId": "Phishing"
+            },
+            {
+              "id": "nb3",
+              "label": "The booking website is flooded and will not load",
+              "correctCategoryId": "Denial of service (DoS)"
+            },
+            {
+              "id": "nb4",
+              "label": "Someone logs into a staff mailbox without permission",
+              "correctCategoryId": "Hacking"
+            }
+          ],
+          "feedback": {
+            "correct": "Match the evidence: malware on files; deceptive email; flooded service; unauthorised access.",
+            "incorrect": "Match the evidence: malware on files; deceptive email; flooded service; unauthorised access."
+          }
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-northbank-consequences",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Consequences for Northbank",
+      "status": "available",
+      "summary": "Link a Northbank incident to who is affected and why protection matters.",
+      "href": null,
+      "activityType": "Scenario analysis",
+      "group": "Northbank application",
+      "topics": [
+        "Northbank application"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-northbank-consequences-q-q1",
+        "u3-w01-northbank-consequences-write"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-northbank-consequences-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Consequences for Northbank",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-northbank-consequences-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Protection is not only a technical idea. Patients, staff and the organisation can be harmed."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-northbank-consequences-q-q1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-northbank-consequences:q1",
+          "sourceQuestionId": "q1",
+          "prompt": "If patient contact lists are copied without authorisation, who is most directly harmed?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Patients whose details were copied, and Northbank’s duty to protect them"
+            },
+            {
+              "id": "b",
+              "label": "Only a nearby café’s Wi-Fi customers"
+            },
+            {
+              "id": "c",
+              "label": "Only the printer manufacturer"
+            },
+            {
+              "id": "d",
+              "label": "Nobody, because contact lists are never personal data"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Contact lists are personal data. Patients and the organisation that holds the list are affected.",
+            "incorrect": "Contact lists are personal data. Patients and the organisation that holds the list are affected."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-northbank-consequences-write",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "formative": true,
+          "questionId": "u3-w01-northbank-consequences:write",
+          "sourceQuestionId": "write",
+          "prompt": "In two sentences, explain why Northbank must protect patient records. Name one CIA aim and one group who would be harmed if protection failed.",
+          "minChars": 70,
+          "guidance": "Name an aim (confidentiality, integrity or availability) and who is harmed."
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-thm-prep",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "TryHackMe: Principles of Security preparation",
+      "status": "available",
+      "summary": "Prepare terminology for TryHackMe Principles of Security. Opening the room does not complete this activity.",
+      "href": null,
+      "activityType": "Practical preparation",
+      "group": "Practical consolidation",
+      "topics": [
+        "Practical consolidation"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-thm-prep-q-p1",
+        "u3-w01-thm-prep-q-p2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-thm-prep-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "TryHackMe: Principles of Security preparation",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-thm-prep-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Session 1 includes TryHackMe Principles of Security. This hub does not recreate the room. Use these checks before you go in. Opening TryHackMe does not mark this activity complete."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-thm-prep-note",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "callout",
+        "content": {
+          "text": "Follow your tutor’s access instructions. Do not treat a room completion badge as Unit 3 evidence unless your tutor says so."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-thm-prep-q-p1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-thm-prep:p1",
+          "sourceQuestionId": "p1",
+          "prompt": "Which three aims should you expect Principles of Security to use?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Confidentiality, integrity and availability"
+            },
+            {
+              "id": "b",
+              "label": "Speed, colour and font"
+            },
+            {
+              "id": "c",
+              "label": "Hacking, phishing and DoS only"
+            },
+            {
+              "id": "d",
+              "label": "Cisco module titles 1.1 to 1.3"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "The room is preparation for CIA language already used in this session. Cisco Module 1 is directed study, not the TryHackMe room.",
+            "incorrect": "The room is preparation for CIA language already used in this session. Cisco Module 1 is directed study, not the TryHackMe room."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-thm-prep-q-p2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-thm-prep:p2",
+          "sourceQuestionId": "p2",
+          "prompt": "What should you do if a room task is unclear?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Ask your tutor and keep using specification terms in your notes"
+            },
+            {
+              "id": "b",
+              "label": "Skip the rest of Week 1"
+            },
+            {
+              "id": "c",
+              "label": "Invent a new incident type name"
+            },
+            {
+              "id": "d",
+              "label": "Paste the room contents into this hub"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "The hub must not copy the room. Ask your tutor and keep Unit 3 terminology accurate.",
+            "incorrect": "The hub must not copy the room. Ask your tutor and keep Unit 3 terminology accurate."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-thm-retrieval",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "After Principles of Security",
+      "status": "available",
+      "summary": "Retrieve CIA terminology after the Principles of Security practical.",
+      "href": null,
+      "activityType": "Retrieval",
+      "group": "Practical consolidation",
+      "topics": [
+        "Practical consolidation"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-thm-retrieval-q-r1",
+        "u3-w01-thm-retrieval-note"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-thm-retrieval-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "After Principles of Security",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-thm-retrieval-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "After the room, check that you can still use Unit 3 names. Do not paste room walkthroughs here."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-thm-retrieval-q-r1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-thm-retrieval:r1",
+          "sourceQuestionId": "r1",
+          "prompt": "If a principle is about stopping unauthorised viewing, which CIA aim is that?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Confidentiality"
+            },
+            {
+              "id": "b",
+              "label": "Availability"
+            },
+            {
+              "id": "c",
+              "label": "Integrity"
+            },
+            {
+              "id": "d",
+              "label": "Usability"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Unauthorised viewing maps to confidentiality.",
+            "incorrect": "Unauthorised viewing maps to confidentiality."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-thm-retrieval-note",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "formative": true,
+          "questionId": "u3-w01-thm-retrieval:note",
+          "sourceQuestionId": "note",
+          "prompt": "Write one sentence linking a Principles of Security idea to Northbank. Name one CIA aim. Do not copy room text.",
+          "minChars": 40,
+          "guidance": "One CIA aim plus a Northbank information example (records, booking, reception)."
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
     "id": "u3-w01-glossary",
     "version": "1.0.0",
     "metadata": {
@@ -691,7 +3800,11 @@
       "summary": "Build your Week 1 cyber security glossary in your own words.",
       "href": null,
       "activityType": "Reflection",
-      "runtimeGlobal": null
+      "runtimeGlobal": null,
+      "group": "Practical consolidation",
+      "topics": [
+        "Practical consolidation"
+      ]
     },
     "relationships": {
       "learningOutcomes": [
@@ -763,6 +3876,89 @@
   {
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
+    "id": "u3-w01-session1-review",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Session 1 review and directed study",
+      "status": "available",
+      "summary": "Consolidate Session 1 and prepare directed independent study.",
+      "href": null,
+      "activityType": "Reflection",
+      "group": "Practical consolidation",
+      "topics": [
+        "Practical consolidation"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-session1-review-note"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-session1-review-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Session 1 review and directed study",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-session1-review-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Directed independent study this week includes Cisco Introduction to Cybersecurity Module 1 topics 1.1–1.3, reading the Northbank briefing, listing three data holdings Northbank would least want to lose, and a half-page summary of one recent incident (incident type, aim compromised, who was affected, source). Those tasks are not all completed inside this activity."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-session1-review-cisco",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "callout",
+        "content": {
+          "text": "Cisco 1.1 The World of Cybersecurity, 1.2 Organizational Data and 1.3 What Was Taken stay on the Cisco platform. This hub does not embed that content."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-session1-review-note",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "reflection",
+        "content": {
+          "formative": true,
+          "questionId": "u3-w01-session1-review:note",
+          "sourceQuestionId": "note",
+          "prompt": "List: one CIA aim you can now explain; one of the six incident types you will revise; and the first directed-study task you will complete (Cisco 1.1–1.3, Northbank briefing, three data holdings, or the incident summary). Use specification terms.",
+          "guidance": "Saved. Bring this list to Session 2 retrieval."
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
     "id": "u3-w01-retrieval",
     "version": "1.0.0",
     "metadata": {
@@ -771,7 +3967,11 @@
       "summary": "Retrieve Week 1 CIA, protection reasons and basic threat vocabulary.",
       "href": null,
       "activityType": "Retrieval quiz",
-      "runtimeGlobal": null
+      "runtimeGlobal": null,
+      "group": "Retrieval",
+      "topics": [
+        "Retrieval"
+      ]
     },
     "relationships": {
       "learningOutcomes": [
@@ -1083,6 +4283,1403 @@
   {
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
+    "id": "u3-w01-retrieval-cia",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Retrieval: CIA aims",
+      "status": "available",
+      "summary": "Retrieve confidentiality, integrity and availability with a different format from the Session 2 quiz.",
+      "href": null,
+      "activityType": "Retrieval quiz",
+      "group": "Retrieval",
+      "topics": [
+        "Retrieval"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-retrieval-cia-q-c1",
+        "u3-w01-retrieval-cia-q-c2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-retrieval-cia-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Retrieval: CIA aims",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-retrieval-cia-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Warm up with CIA only. Keep the three aims distinct."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-retrieval-cia-q-c1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-retrieval-cia:c1",
+          "sourceQuestionId": "c1",
+          "prompt": "Which aim is mainly about authorised viewing?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Confidentiality"
+            },
+            {
+              "id": "b",
+              "label": "Integrity"
+            },
+            {
+              "id": "c",
+              "label": "Availability"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Authorised viewing is confidentiality.",
+            "incorrect": "Authorised viewing is confidentiality."
+          },
+          "sourceType": "single",
+          "presentation": "option-cards"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-retrieval-cia-q-c2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-retrieval-cia:c2",
+          "sourceQuestionId": "c2",
+          "prompt": "Which aim is mainly about authorised people being able to use a system when they need it?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Availability"
+            },
+            {
+              "id": "b",
+              "label": "Confidentiality"
+            },
+            {
+              "id": "c",
+              "label": "Integrity"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Use when needed is availability.",
+            "incorrect": "Use when needed is availability."
+          },
+          "sourceType": "single",
+          "presentation": "option-cards"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-retrieval-incidents",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Retrieval: six incident types",
+      "status": "available",
+      "summary": "Retrieve the six specification incident types.",
+      "href": null,
+      "activityType": "Classification",
+      "group": "Retrieval",
+      "topics": [
+        "Retrieval"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-retrieval-incidents-q-sort"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-retrieval-incidents-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Retrieval: six incident types",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-retrieval-incidents-q-sort",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "classification",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-retrieval-incidents:sort",
+          "sourceQuestionId": "sort",
+          "prompt": "Match each clue to an incident type.",
+          "categories": [
+            {
+              "id": "Hacking",
+              "label": "Hacking"
+            },
+            {
+              "id": "Virus",
+              "label": "Virus"
+            },
+            {
+              "id": "Denial of service (DoS)",
+              "label": "Denial of service (DoS)"
+            },
+            {
+              "id": "Phishing",
+              "label": "Phishing"
+            },
+            {
+              "id": "Identity theft",
+              "label": "Identity theft"
+            },
+            {
+              "id": "Data interception and theft",
+              "label": "Data interception and theft"
+            }
+          ],
+          "items": [
+            {
+              "id": "h",
+              "label": "Unauthorised access to a mailbox",
+              "correctCategoryId": "Hacking"
+            },
+            {
+              "id": "v",
+              "label": "Malware infects clinic files",
+              "correctCategoryId": "Virus"
+            },
+            {
+              "id": "d",
+              "label": "Booking site flooded",
+              "correctCategoryId": "Denial of service (DoS)"
+            },
+            {
+              "id": "p",
+              "label": "Fake IT email asks for a password",
+              "correctCategoryId": "Phishing"
+            },
+            {
+              "id": "i",
+              "label": "A credit account opened in a patient’s name",
+              "correctCategoryId": "Identity theft"
+            },
+            {
+              "id": "t",
+              "label": "Data captured as it is sent across a network",
+              "correctCategoryId": "Data interception and theft"
+            }
+          ],
+          "feedback": {
+            "correct": "Use the six specification names, not everyday substitutes.",
+            "incorrect": "Use the six specification names, not everyday substitutes."
+          }
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-retrieval-terms",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Retrieval: precise terminology",
+      "status": "available",
+      "summary": "Choose precise terminology instead of loose everyday language.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "Retrieval",
+      "topics": [
+        "Retrieval"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-retrieval-terms-q-t1",
+        "u3-w01-retrieval-terms-q-t2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-retrieval-terms-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Retrieval: precise terminology",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-retrieval-terms-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Examination answers lose marks for vague words such as ‘hacked’ used for every incident."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-retrieval-terms-q-t1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-retrieval-terms:t1",
+          "sourceQuestionId": "t1",
+          "prompt": "A learner writes: ‘The website got hacked so nobody could book.’ Which specification type is more accurate if the site was flooded?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Denial of service (DoS)"
+            },
+            {
+              "id": "b",
+              "label": "Phishing"
+            },
+            {
+              "id": "c",
+              "label": "Identity theft"
+            },
+            {
+              "id": "d",
+              "label": "Virus"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Flooding so nobody can book is DoS. ‘Hacked’ is too loose here.",
+            "incorrect": "Flooding so nobody can book is DoS. ‘Hacked’ is too loose here."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-retrieval-terms-q-t2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-retrieval-terms:t2",
+          "sourceQuestionId": "t2",
+          "prompt": "Which sentence uses specification language?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Confidentiality was compromised because an unauthorised person viewed patient records."
+            },
+            {
+              "id": "b",
+              "label": "The computers went a bit weird."
+            },
+            {
+              "id": "c",
+              "label": "Someone did a cyber."
+            },
+            {
+              "id": "d",
+              "label": "IT stuff happened."
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Name the aim and the evidence. Avoid empty everyday phrases.",
+            "incorrect": "Name the aim and the evidence. Avoid empty everyday phrases."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-retrieval-tf",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Retrieval: true or false",
+      "status": "available",
+      "summary": "True or false retrieval on CIA, incidents and why data is protected.",
+      "href": null,
+      "activityType": "Retrieval quiz",
+      "group": "Retrieval",
+      "topics": [
+        "Retrieval"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-retrieval-tf-q-t1",
+        "u3-w01-retrieval-tf-q-t2",
+        "u3-w01-retrieval-tf-q-t3"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-retrieval-tf-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Retrieval: true or false",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-retrieval-tf-q-t1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-retrieval-tf:t1",
+          "sourceQuestionId": "t1",
+          "prompt": "Integrity is mainly about keeping systems online.",
+          "options": [
+            {
+              "id": "true",
+              "label": "True"
+            },
+            {
+              "id": "false",
+              "label": "False"
+            }
+          ],
+          "correctOptionId": "false",
+          "feedback": {
+            "correct": "Keeping systems usable is availability. Integrity is about information remaining accurate and unaltered without authorisation.",
+            "incorrect": "Keeping systems usable is availability. Integrity is about information remaining accurate and unaltered without authorisation."
+          },
+          "sourceType": "single",
+          "presentation": "true-false"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-retrieval-tf-q-t2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-retrieval-tf:t2",
+          "sourceQuestionId": "t2",
+          "prompt": "Phishing is one of the six specification incident types.",
+          "options": [
+            {
+              "id": "true",
+              "label": "True"
+            },
+            {
+              "id": "false",
+              "label": "False"
+            }
+          ],
+          "correctOptionId": "true",
+          "feedback": {
+            "correct": "Phishing is named in the specification list.",
+            "incorrect": "Phishing is named in the specification list."
+          },
+          "sourceType": "single",
+          "presentation": "true-false"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-retrieval-tf-q-t3",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-retrieval-tf:t3",
+          "sourceQuestionId": "t3",
+          "prompt": "Only state secrets need protection; personal clinic data does not.",
+          "options": [
+            {
+              "id": "true",
+              "label": "True"
+            },
+            {
+              "id": "false",
+              "label": "False"
+            }
+          ],
+          "correctOptionId": "false",
+          "feedback": {
+            "correct": "Personal, organisational and state data all need protection. Patient records are personal data.",
+            "incorrect": "Personal, organisational and state data all need protection. Patient records are personal data."
+          },
+          "sourceType": "single",
+          "presentation": "true-false"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-personal-data",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Why personal data must be protected",
+      "status": "available",
+      "summary": "Explain why personal data must be protected.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "Why data must be protected",
+      "topics": [
+        "Why data must be protected"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-personal-data-q-p1",
+        "u3-w01-personal-data-write"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-personal-data-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Why personal data must be protected",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-personal-data-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Personal data identifies a living person, such as a name with a health record or contact details."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-personal-data-q-p1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-personal-data:p1",
+          "sourceQuestionId": "p1",
+          "prompt": "Why must personal data be protected?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Because unauthorised use can harm the person and break trust"
+            },
+            {
+              "id": "b",
+              "label": "Because personal data is never stored digitally"
+            },
+            {
+              "id": "c",
+              "label": "Because only governments hold personal data"
+            },
+            {
+              "id": "d",
+              "label": "Because availability does not apply to people"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Personal data needs protection because people can be harmed and organisations lose trust if it is misused.",
+            "incorrect": "Personal data needs protection because people can be harmed and organisations lose trust if it is misused."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-personal-data-write",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "formative": true,
+          "questionId": "u3-w01-personal-data:write",
+          "sourceQuestionId": "write",
+          "prompt": "Give one personal-data example from a health setting and name the CIA aim most clearly threatened if it is disclosed.",
+          "minChars": 50,
+          "guidance": "Example plus confidentiality (typical for disclosure)."
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-organisational-data",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Why organisational data must be protected",
+      "status": "available",
+      "summary": "Explain why organisational data must be protected.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "Why data must be protected",
+      "topics": [
+        "Why data must be protected"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-organisational-data-q-o1"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-organisational-data-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Why organisational data must be protected",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-organisational-data-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Organisational data includes information the organisation needs in order to operate, such as booking records, staff rotas or finance files."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-organisational-data-q-o1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-organisational-data:o1",
+          "sourceQuestionId": "o1",
+          "prompt": "Which example is organisational data in the Northbank setting?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Clinic booking records needed to run appointments"
+            },
+            {
+              "id": "b",
+              "label": "A national defence plan"
+            },
+            {
+              "id": "c",
+              "label": "A patient’s childhood nickname used only at home"
+            },
+            {
+              "id": "d",
+              "label": "The weather forecast"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Booking records belong to how Northbank runs. National defence is state data. A home nickname is not a Northbank holding.",
+            "incorrect": "Booking records belong to how Northbank runs. National defence is state data. A home nickname is not a Northbank holding."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-state-data",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Why state data must be protected",
+      "status": "available",
+      "summary": "Explain why state data must be protected, including national security examples.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "Why data must be protected",
+      "topics": [
+        "Why data must be protected"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-state-data-q-s1"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-state-data-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Why state data must be protected",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-state-data-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "State data is information held for government or national functions. A health partnership is not the state, but learners must still recognise why state data needs protection."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-state-data-q-s1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-state-data:s1",
+          "sourceQuestionId": "s1",
+          "prompt": "Why must state data be protected?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Because compromise can harm national security and public services"
+            },
+            {
+              "id": "b",
+              "label": "Because state data is the same as a clinic poster"
+            },
+            {
+              "id": "c",
+              "label": "Because only phishing can affect the state"
+            },
+            {
+              "id": "d",
+              "label": "Because CIA aims do not apply outside health"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "State data needs protection because public services and national security can be harmed. CIA aims still apply.",
+            "incorrect": "State data needs protection because public services and national security can be harmed. CIA aims still apply."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-who-is-harmed",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Who is harmed when protection fails",
+      "status": "available",
+      "summary": "Identify who is harmed when protection fails.",
+      "href": null,
+      "activityType": "Classification",
+      "group": "Why data must be protected",
+      "topics": [
+        "Why data must be protected"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-who-is-harmed-q-sort"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-who-is-harmed-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Who is harmed when protection fails",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-who-is-harmed-q-sort",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "classification",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-who-is-harmed:sort",
+          "sourceQuestionId": "sort",
+          "prompt": "Who is most directly harmed?",
+          "categories": [
+            {
+              "id": "Person",
+              "label": "Person"
+            },
+            {
+              "id": "Organisation",
+              "label": "Organisation"
+            },
+            {
+              "id": "State",
+              "label": "State"
+            }
+          ],
+          "items": [
+            {
+              "id": "p",
+              "label": "A patient’s contact details are published",
+              "correctCategoryId": "Person"
+            },
+            {
+              "id": "o",
+              "label": "Northbank cannot run clinics because booking is down",
+              "correctCategoryId": "Organisation"
+            },
+            {
+              "id": "s",
+              "label": "A government service is disrupted by a cyber incident",
+              "correctCategoryId": "State"
+            }
+          ],
+          "feedback": {
+            "correct": "Match the stakeholder to the harm described. One incident can affect more than one group in real life; classify the main harm in each statement.",
+            "incorrect": "Match the stakeholder to the harm described. One incident can affect more than one group in real life; classify the main harm in each statement."
+          }
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-cia-threatened",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Which CIA aim is threatened",
+      "status": "available",
+      "summary": "Link protection failures to the CIA aim that is threatened.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "Why data must be protected",
+      "topics": [
+        "Why data must be protected"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-cia-threatened-q-h1",
+        "u3-w01-cia-threatened-q-h2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-threatened-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Which CIA aim is threatened",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-threatened-q-h1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-cia-threatened:h1",
+          "sourceQuestionId": "h1",
+          "prompt": "A finance file is changed so invoice amounts are wrong. Which aim is threatened?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Integrity"
+            },
+            {
+              "id": "b",
+              "label": "Confidentiality"
+            },
+            {
+              "id": "c",
+              "label": "Availability"
+            },
+            {
+              "id": "d",
+              "label": "Branding"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Unauthorised or incorrect change is integrity. Finance files are organisational data.",
+            "incorrect": "Unauthorised or incorrect change is integrity. Finance files are organisational data."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-cia-threatened-q-h2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-cia-threatened:h2",
+          "sourceQuestionId": "h2",
+          "prompt": "Health records are disclosed to people who should not see them. Which aim is threatened?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Confidentiality"
+            },
+            {
+              "id": "b",
+              "label": "Availability"
+            },
+            {
+              "id": "c",
+              "label": "Integrity"
+            },
+            {
+              "id": "d",
+              "label": "Typography"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Disclosure of health records is confidentiality. This is a personal-data example.",
+            "incorrect": "Disclosure of health records is confidentiality. This is a personal-data example."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-nb-data-holdings",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Northbank data holdings",
+      "status": "available",
+      "summary": "Classify Northbank holdings using only established facts.",
+      "href": null,
+      "activityType": "Classification",
+      "group": "Northbank application",
+      "topics": [
+        "Northbank application"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-nb-data-holdings-q-sort"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-nb-data-holdings-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Northbank data holdings",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-nb-data-holdings-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Use the Northbank briefing facts already taught. Do not invent a data centre or extra clinics."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-nb-data-holdings-q-sort",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "classification",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-nb-data-holdings:sort",
+          "sourceQuestionId": "sort",
+          "prompt": "What kind of data is this holding?",
+          "categories": [
+            {
+              "id": "Personal",
+              "label": "Personal"
+            },
+            {
+              "id": "Organisational",
+              "label": "Organisational"
+            }
+          ],
+          "items": [
+            {
+              "id": "records",
+              "label": "Patient records",
+              "correctCategoryId": "Personal"
+            },
+            {
+              "id": "contacts",
+              "label": "Patient contact lists",
+              "correctCategoryId": "Personal"
+            },
+            {
+              "id": "booking",
+              "label": "Clinic booking records",
+              "correctCategoryId": "Organisational"
+            },
+            {
+              "id": "files",
+              "label": "Clinic files used to run the service",
+              "correctCategoryId": "Organisational"
+            }
+          ],
+          "feedback": {
+            "correct": "Records and contact lists identify people. Booking and clinic files are needed to operate the organisation, though they may also contain personal data — classify the main teaching point given in the label.",
+            "incorrect": "Records and contact lists identify people. Booking and clinic files are needed to operate the organisation, though they may also contain personal data — classify the main teaching point given in the label."
+          }
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-nb-stakeholders",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Northbank stakeholders",
+      "status": "available",
+      "summary": "Name who is affected in a Northbank incident.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "Northbank application",
+      "topics": [
+        "Northbank application"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-nb-stakeholders-q-s1"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-nb-stakeholders-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Northbank stakeholders",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-nb-stakeholders-q-s1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-nb-stakeholders:s1",
+          "sourceQuestionId": "s1",
+          "prompt": "Booking is unavailable for a morning. Who is affected?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Patients who cannot book, and staff who cannot run the clinic list"
+            },
+            {
+              "id": "b",
+              "label": "Only a neighbouring supermarket"
+            },
+            {
+              "id": "c",
+              "label": "Only the national census office"
+            },
+            {
+              "id": "d",
+              "label": "Nobody, because availability is optional"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Patients and Northbank staff are the stakeholders established in Week 1.",
+            "incorrect": "Patients and Northbank staff are the stakeholders established in Week 1."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-nb-consequences",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Northbank protection consequences",
+      "status": "available",
+      "summary": "Connect a Northbank incident to CIA and consequence.",
+      "href": null,
+      "activityType": "Knowledge check",
+      "group": "Northbank application",
+      "topics": [
+        "Northbank application"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-nb-consequences-q-c1"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-nb-consequences-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Northbank protection consequences",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-nb-consequences-q-c1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-nb-consequences:c1",
+          "sourceQuestionId": "c1",
+          "prompt": "A stolen clinic laptop still holds a patient contact list. What is the main consequence to explain?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Unauthorised people may view personal data, harming confidentiality and patient trust"
+            },
+            {
+              "id": "b",
+              "label": "The laptop colour no longer matches the brand"
+            },
+            {
+              "id": "c",
+              "label": "The cafeteria till is encrypted"
+            },
+            {
+              "id": "d",
+              "label": "State secrets are automatically published"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "The established holding is a patient contact list. That is personal data and confidentiality.",
+            "incorrect": "The established holding is a patient contact list. That is personal data and confidentiality."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-nb-importance",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Why Northbank must protect information",
+      "status": "available",
+      "summary": "Explain why protection matters for Northbank using a structured prompt.",
+      "href": null,
+      "activityType": "Short response",
+      "group": "Northbank application",
+      "topics": [
+        "Northbank application"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-nb-importance-write"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-nb-importance-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Why Northbank must protect information",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-nb-importance-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Sentence starters: Northbank must protect… because… The CIA aim is… The people affected are…"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-nb-importance-write",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "formative": true,
+          "questionId": "u3-w01-nb-importance:write",
+          "sourceQuestionId": "write",
+          "prompt": "Explain why Northbank must protect patient records. Name the data type (personal), one CIA aim, and who is harmed if protection fails.",
+          "minChars": 80,
+          "guidance": "Personal data, a named CIA aim, and patients or the organisation."
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
     "id": "u3-w01-command-words",
     "version": "1.0.0",
     "metadata": {
@@ -1091,7 +5688,11 @@
       "summary": "Match OCR command words to what examiners expect.",
       "href": null,
       "activityType": "Guided learning",
-      "runtimeGlobal": null
+      "runtimeGlobal": null,
+      "group": "OCR command words",
+      "topics": [
+        "OCR command words"
+      ]
     },
     "relationships": {
       "learningOutcomes": [
@@ -1323,6 +5924,936 @@
   {
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
+    "id": "u3-w01-identify-vs-describe",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Identify, describe or explain",
+      "status": "available",
+      "summary": "Distinguish OCR command words identify, describe and explain.",
+      "href": null,
+      "activityType": "Exam skills",
+      "group": "OCR command words",
+      "topics": [
+        "OCR command words"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-identify-vs-describe-q-c1",
+        "u3-w01-identify-vs-describe-q-c2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-identify-vs-describe-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Identify, describe or explain",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-identify-vs-describe-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Identify names. Describe says what it is like. Explain says how or why, with a reason."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-identify-vs-describe-q-c1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-identify-vs-describe:c1",
+          "sourceQuestionId": "c1",
+          "prompt": "A question says ‘Identify one CIA aim.’ What depth is enough?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Name the aim, for example confidentiality"
+            },
+            {
+              "id": "b",
+              "label": "Write a full paragraph with three worked Northbank stories"
+            },
+            {
+              "id": "c",
+              "label": "Ignore the command word and discuss malware"
+            },
+            {
+              "id": "d",
+              "label": "Give no answer because identify is not used in Unit 3"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Identify asks you to name. Extra stories may not earn more marks if the question only asks to identify.",
+            "incorrect": "Identify asks you to name. Extra stories may not earn more marks if the question only asks to identify."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-identify-vs-describe-q-c2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-identify-vs-describe:c2",
+          "sourceQuestionId": "c2",
+          "prompt": "A question says ‘Explain why availability matters for a booking system.’ What must the answer include?",
+          "options": [
+            {
+              "id": "a",
+              "label": "A reason: how or why booking being usable matters"
+            },
+            {
+              "id": "b",
+              "label": "Only the word availability"
+            },
+            {
+              "id": "c",
+              "label": "A drawing of a server"
+            },
+            {
+              "id": "d",
+              "label": "A list of six incident types with no reason"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Explain needs a reason — how or why.",
+            "incorrect": "Explain needs a reason — how or why."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-command-spot-weak",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Answers that miss the command word",
+      "status": "available",
+      "summary": "Spot answers that do not meet the command word.",
+      "href": null,
+      "activityType": "Error spotting",
+      "group": "OCR command words",
+      "topics": [
+        "OCR command words"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-command-spot-weak-q-w1",
+        "u3-w01-command-spot-weak-q-w2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-command-spot-weak-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Answers that miss the command word",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-command-spot-weak-q-w1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-command-spot-weak:w1",
+          "sourceQuestionId": "w1",
+          "prompt": "Command word: identify. Learner answer: ‘Cyber security is important because lots of things can go wrong and people should be careful.’ What is the main problem?",
+          "options": [
+            {
+              "id": "a",
+              "label": "It does not name a specific required item"
+            },
+            {
+              "id": "b",
+              "label": "It is too short to be English"
+            },
+            {
+              "id": "c",
+              "label": "It uses the word confidentiality too many times"
+            },
+            {
+              "id": "d",
+              "label": "It names six incident types"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Identify needs a named item. A vague paragraph does not identify.",
+            "incorrect": "Identify needs a named item. A vague paragraph does not identify."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-command-spot-weak-q-w2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-command-spot-weak:w2",
+          "sourceQuestionId": "w2",
+          "prompt": "Command word: explain. Learner answer: ‘Confidentiality.’ What is the main problem?",
+          "options": [
+            {
+              "id": "a",
+              "label": "It identifies but does not explain how or why"
+            },
+            {
+              "id": "b",
+              "label": "Confidentiality is not a Unit 3 term"
+            },
+            {
+              "id": "c",
+              "label": "The answer is too technical"
+            },
+            {
+              "id": "d",
+              "label": "It lists too many incident types"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "A single term can identify. Explain needs a reason.",
+            "incorrect": "A single term can identify. Explain needs a reason."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-command-improve",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Improve a command-word answer",
+      "status": "available",
+      "summary": "Choose an improved answer that matches the command word.",
+      "href": null,
+      "activityType": "Answer improvement",
+      "group": "OCR command words",
+      "topics": [
+        "OCR command words"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-command-improve-q-i1"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-command-improve-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Improve a command-word answer",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-command-improve-q-i1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-command-improve:i1",
+          "sourceQuestionId": "i1",
+          "prompt": "Question: Explain why confidentiality matters for patient records. Which improved answer meets the command word?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Confidentiality matters because only authorised people should view patient records; if records are disclosed, patients can be harmed and trust is lost."
+            },
+            {
+              "id": "b",
+              "label": "Confidentiality."
+            },
+            {
+              "id": "c",
+              "label": "There are six incident types."
+            },
+            {
+              "id": "d",
+              "label": "Booking websites should be fast."
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Explain needs a named aim and a reason linked to patient records.",
+            "incorrect": "Explain needs a named aim and a reason linked to patient records."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-marks-depth",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "How marks signal depth",
+      "status": "available",
+      "summary": "Match 1, 2 and 4 mark questions to the depth they need.",
+      "href": null,
+      "activityType": "Exam skills",
+      "group": "Mark allocation",
+      "topics": [
+        "Mark allocation"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-marks-depth-q-m1",
+        "u3-w01-marks-depth-q-m2"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-marks-depth-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "How marks signal depth",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-marks-depth-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Mark allocation signals depth. One mark often matches identify. More marks usually need description or explanation with reasons."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-marks-depth-q-m1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-marks-depth:m1",
+          "sourceQuestionId": "m1",
+          "prompt": "Which response depth best matches a 1-mark identify question?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Name the required term"
+            },
+            {
+              "id": "b",
+              "label": "Write a half-page with three worked examples"
+            },
+            {
+              "id": "c",
+              "label": "Ignore the question and discuss Cisco"
+            },
+            {
+              "id": "d",
+              "label": "List every CIA aim and every incident type"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "One mark for identify is earned by naming. Extra pages may waste time.",
+            "incorrect": "One mark for identify is earned by naming. Extra pages may waste time."
+          },
+          "sourceType": "single"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-marks-depth-q-m2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-marks-depth:m2",
+          "sourceQuestionId": "m2",
+          "prompt": "A 4-mark explain question usually needs:",
+          "options": [
+            {
+              "id": "a",
+              "label": "Linked reasons or developed points, not a single word"
+            },
+            {
+              "id": "b",
+              "label": "Only a tick"
+            },
+            {
+              "id": "c",
+              "label": "A screenshot of TryHackMe"
+            },
+            {
+              "id": "d",
+              "label": "The same one-word answer as a 1-mark identify"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "More marks need more developed explanation.",
+            "incorrect": "More marks need more developed explanation."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-marks-earned",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Where marks were earned",
+      "status": "available",
+      "summary": "Decide where marks were earned in a short sample answer.",
+      "href": null,
+      "activityType": "Exam skills",
+      "group": "Mark allocation",
+      "topics": [
+        "Mark allocation"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-marks-earned-q-e1"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-marks-earned-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Where marks were earned",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-marks-earned-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Question (2 marks): Describe confidentiality. Sample: ‘Confidentiality means only authorised people can view information, for example patient records.’"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-marks-earned-q-e1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-marks-earned:e1",
+          "sourceQuestionId": "e1",
+          "prompt": "Where were marks earned?",
+          "options": [
+            {
+              "id": "a",
+              "label": "The term is named and what it means is stated with a suitable example"
+            },
+            {
+              "id": "b",
+              "label": "Only because the word patient appears"
+            },
+            {
+              "id": "c",
+              "label": "Only because the answer is long"
+            },
+            {
+              "id": "d",
+              "label": "No marks, because describe is not used in Unit 3"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Describe needs what the term means. A clear meaning plus an example is the right depth for a short describe.",
+            "incorrect": "Describe needs what the term means. A clear meaning plus an example is the right depth for a short describe."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-marks-missing",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "What is missing for the marks",
+      "status": "available",
+      "summary": "Identify what is missing for the remaining marks.",
+      "href": null,
+      "activityType": "Exam skills",
+      "group": "Mark allocation",
+      "topics": [
+        "Mark allocation"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-marks-missing-q-m1"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-marks-missing-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "What is missing for the marks",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-marks-missing-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Question (4 marks): Explain why Northbank must protect patient records. Sample: ‘Patient records are important.’"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-marks-missing-q-m1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-marks-missing:m1",
+          "sourceQuestionId": "m1",
+          "prompt": "What is missing for the marks?",
+          "options": [
+            {
+              "id": "a",
+              "label": "A CIA aim, a reason, and who is harmed"
+            },
+            {
+              "id": "b",
+              "label": "A list of Cisco module codes"
+            },
+            {
+              "id": "c",
+              "label": "A TryHackMe room ID"
+            },
+            {
+              "id": "d",
+              "label": "The colour of the Northbank logo"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Explain at this mark depth needs reasons: the aim, why records matter, and consequence for people or the organisation.",
+            "incorrect": "Explain at this mark depth needs reasons: the aim, why records matter, and consequence for people or the organisation."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-ocr-recognise",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Recognise a credit-worthy answer",
+      "status": "available",
+      "summary": "Recognise a correct-style answer before writing independently.",
+      "href": null,
+      "activityType": "Exam skills",
+      "group": "OCR-style practice",
+      "topics": [
+        "OCR-style practice"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-ocr-recognise-q-r1"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-ocr-recognise-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Recognise a credit-worthy answer",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-ocr-recognise-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "These are OCR-style practice questions, not live examination questions."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-ocr-recognise-q-r1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-ocr-recognise:r1",
+          "sourceQuestionId": "r1",
+          "prompt": "Identify one type of cyber security incident. Which answer would earn the identify mark?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Phishing"
+            },
+            {
+              "id": "b",
+              "label": "Computers can be annoying"
+            },
+            {
+              "id": "c",
+              "label": "Everything is cyber"
+            },
+            {
+              "id": "d",
+              "label": "Northbank has a booking website"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Identify is earned by naming a specification incident type.",
+            "incorrect": "Identify is earned by naming a specification incident type."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-ocr-evidence",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Select the evidence the question needs",
+      "status": "available",
+      "summary": "Select the evidence a describe or explain question needs.",
+      "href": null,
+      "activityType": "Exam skills",
+      "group": "OCR-style practice",
+      "topics": [
+        "OCR-style practice"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-ocr-evidence-q-e1"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-ocr-evidence-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Select the evidence the question needs",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-ocr-evidence-q-e1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-ocr-evidence:e1",
+          "sourceQuestionId": "e1",
+          "prompt": "Question: Describe phishing. Which evidence belongs in the answer?",
+          "options": [
+            {
+              "id": "a",
+              "label": "It is a deceptive message that tricks a person into giving information or access"
+            },
+            {
+              "id": "b",
+              "label": "It is the same as denial of service"
+            },
+            {
+              "id": "c",
+              "label": "It is a CIA aim"
+            },
+            {
+              "id": "d",
+              "label": "It is a Cisco module name"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "Describe phishing by saying what it is: deception aimed at a person.",
+            "incorrect": "Describe phishing by saying what it is: deception aimed at a person."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-ocr-select-better",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Choose the stronger written answer",
+      "status": "available",
+      "summary": "Select an improved answer before writing independently.",
+      "href": null,
+      "activityType": "Exam skills",
+      "group": "OCR-style practice",
+      "topics": [
+        "OCR-style practice"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-ocr-select-better-q-b1"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-ocr-select-better-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Choose the stronger written answer",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-ocr-select-better-q-b1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-ocr-select-better:b1",
+          "sourceQuestionId": "b1",
+          "prompt": "Explain how a phishing incident could affect confidentiality at Northbank. Which answer is stronger?",
+          "options": [
+            {
+              "id": "a",
+              "label": "A deceptive email could trick reception into giving a password, so an unauthorised person could view patient or staff information, compromising confidentiality."
+            },
+            {
+              "id": "b",
+              "label": "Phishing is bad."
+            },
+            {
+              "id": "c",
+              "label": "Availability is when systems work."
+            },
+            {
+              "id": "d",
+              "label": "There are six types."
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "The stronger answer names phishing, the mechanism, Northbank, and confidentiality.",
+            "incorrect": "The stronger answer names phishing, the mechanism, Northbank, and confidentiality."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
     "id": "u3-w01-ocr-practice",
     "version": "1.0.0",
     "metadata": {
@@ -1331,7 +6862,11 @@
       "summary": "Prepare for OCR-style questions using Week 1 ideas (catalogue writing checkpoint).",
       "href": null,
       "activityType": "Exam skills",
-      "runtimeGlobal": null
+      "runtimeGlobal": null,
+      "group": "OCR-style practice",
+      "topics": [
+        "OCR-style practice"
+      ]
     },
     "relationships": {
       "learningOutcomes": [
@@ -1403,6 +6938,101 @@
   {
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
+    "id": "u3-w01-weak-answer-spot",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Spot missing marks in a weak response",
+      "status": "available",
+      "summary": "Find missing marks in a weak sample before peer marking.",
+      "href": null,
+      "activityType": "Peer marking",
+      "group": "Peer marking and improvement",
+      "topics": [
+        "Peer marking and improvement"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-weak-answer-spot-q-w1"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-weak-answer-spot-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Spot missing marks in a weak response",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-weak-answer-spot-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Question (6 marks): Explain how a phishing attack could lead to a cyber security incident at Northbank. Refer to confidentiality. Weak sample: ‘Emails can be dangerous and Northbank should be careful.’"
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-weak-answer-spot-q-w1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "single-choice",
+        "content": {
+          "formative": true,
+          "retry": true,
+          "questionId": "u3-w01-weak-answer-spot:w1",
+          "sourceQuestionId": "w1",
+          "prompt": "Which marks are missing?",
+          "options": [
+            {
+              "id": "a",
+              "label": "Incident type named as phishing, a mechanism, Northbank application, and confidentiality with a reason"
+            },
+            {
+              "id": "b",
+              "label": "A drawing"
+            },
+            {
+              "id": "c",
+              "label": "A Cisco screenshot"
+            },
+            {
+              "id": "d",
+              "label": "The word availability used six times"
+            }
+          ],
+          "correctOptionId": "a",
+          "feedback": {
+            "correct": "The weak sample never names phishing, never explains the mechanism, and never uses confidentiality with a reason.",
+            "incorrect": "The weak sample never names phishing, never explains the mechanism, and never uses confidentiality with a reason."
+          },
+          "sourceType": "single"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
     "id": "u3-w01-peer-improvement",
     "version": "1.0.0",
     "metadata": {
@@ -1411,7 +7041,11 @@
       "summary": "Note what you will improve after peer discussion (catalogue writing checkpoint).",
       "href": null,
       "activityType": "Reflection",
-      "runtimeGlobal": null
+      "runtimeGlobal": null,
+      "group": "Peer marking and improvement",
+      "topics": [
+        "Peer marking and improvement"
+      ]
     },
     "relationships": {
       "learningOutcomes": [
@@ -1476,6 +7110,77 @@
         "content": {
           "text": "```json\n{\n  \"weekNumber\": 1,\n  \"sessionNumber\": 2,\n  \"note\": \"Catalogue writing checkpoint (D3c). Richer Activity API content may remain external.\"\n}\n```",
           "format": "application/json"
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-w01-improvement-action",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Record one improvement action",
+      "status": "available",
+      "summary": "Record one specific improvement action after peer marking.",
+      "href": null,
+      "activityType": "Reflection",
+      "group": "Peer marking and improvement",
+      "topics": [
+        "Peer marking and improvement"
+      ],
+      "runtimeGlobal": null
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [
+        "u3-w01-improvement-action-note"
+      ],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-improvement-action-title",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "heading",
+        "content": {
+          "text": "Record one improvement action",
+          "level": 2
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-improvement-action-intro",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "After the existing Peer Marking and Answer Improvement activity, write one action you will use on the next OCR-style question."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-w01-improvement-action-note",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "reflection",
+        "content": {
+          "formative": true,
+          "questionId": "u3-w01-improvement-action:note",
+          "sourceQuestionId": "note",
+          "prompt": "Write one specific improvement action. Example stems: I will name the command word first… I will include a CIA aim and a reason… I will apply the point to Northbank by…",
+          "guidance": "Saved. Use this on the next written question."
         }
       }
     ]
