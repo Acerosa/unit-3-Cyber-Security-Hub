@@ -40,6 +40,9 @@
         savedAt: new Date().toISOString()
       });
     }
+    if (window.Unit3RemoteLearnerWork) {
+      window.Unit3RemoteLearnerWork.persistStorageKey('unit3-week6-directed-study', 'week6-revision-organiser', state);
+    }
   }
 
   function field(parent, id, labelText, key, rows) {
@@ -207,5 +210,12 @@
     host.appendChild(panel);
   }
 
-  render();
+  if (window.Unit3RemoteLearnerWork) {
+    window.Unit3RemoteLearnerWork.restoreStorageKey('unit3-week6-directed-study', 'week6-revision-organiser').then(function (restored) {
+      if (restored && typeof restored === 'object') state = Object.assign(state, restored);
+      render();
+    });
+  } else {
+    render();
+  }
 })();

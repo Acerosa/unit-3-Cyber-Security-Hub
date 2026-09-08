@@ -33,6 +33,9 @@
         savedAt: new Date().toISOString()
       });
     }
+    if (window.Unit3RemoteLearnerWork) {
+      window.Unit3RemoteLearnerWork.persistStorageKey('unit3-week7-support-challenge', 'week7-heightened-threat', responses);
+    }
   }
 
   function render() {
@@ -125,5 +128,12 @@
     host.appendChild(panel);
   }
 
-  render();
+  if (window.Unit3RemoteLearnerWork) {
+    window.Unit3RemoteLearnerWork.restoreStorageKey('unit3-week7-support-challenge', 'week7-heightened-threat').then(function (restored) {
+      if (restored && typeof restored === 'object') responses = Object.assign(responses, restored);
+      render();
+    });
+  } else {
+    render();
+  }
 })();

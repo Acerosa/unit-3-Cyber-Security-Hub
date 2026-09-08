@@ -51,6 +51,9 @@
     } catch (err) {
       /* localStorage may be unavailable */
     }
+    if (global.Unit3RemoteLearnerWork && typeof global.Unit3RemoteLearnerWork.persistStorageKey === 'function') {
+      global.Unit3RemoteLearnerWork.persistStorageKey(key, 'week2-northbank-vulnerability-register', value);
+    }
   }
 
   function trackExtra(activityId, patch) {
@@ -389,6 +392,13 @@
   function renderLessonNotes(hostId, resource) {
     var host = typeof hostId === 'string' ? document.getElementById(hostId) : hostId;
     if (!host || !resource || !resource.notePrompts) return;
+    if (global.Unit3RemoteLearnerWork && !resource.__notesHydrated) {
+      resource.__notesHydrated = true;
+      global.Unit3RemoteLearnerWork.restoreStorageKey(resource.notesStorageKey, 'week2-northbank-vulnerability-register').then(function () {
+        renderLessonNotes(hostId, resource);
+      });
+      return;
+    }
     host.textContent = '';
 
     var saved = readJson(resource.notesStorageKey, { answers: [] }) || { answers: [] };
@@ -496,6 +506,13 @@
   function renderMalwareTable(hostId, resource) {
     var host = typeof hostId === 'string' ? document.getElementById(hostId) : hostId;
     if (!host || !resource) return;
+    if (global.Unit3RemoteLearnerWork && !resource.__tableHydrated) {
+      resource.__tableHydrated = true;
+      global.Unit3RemoteLearnerWork.restoreStorageKey(resource.notesStorageKey, 'week2-northbank-vulnerability-register').then(function () {
+        renderMalwareTable(hostId, resource);
+      });
+      return;
+    }
     host.textContent = '';
 
     var saved = readJson(resource.notesStorageKey, null);

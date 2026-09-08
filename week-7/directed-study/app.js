@@ -56,6 +56,9 @@
         savedAt: new Date().toISOString()
       });
     }
+    if (window.Unit3RemoteLearnerWork) {
+      window.Unit3RemoteLearnerWork.persistStorageKey('unit3-week7-directed-study', 'week7-heightened-threat', state);
+    }
   }
 
   function textField(parent, id, labelText, getter, setter, rows) {
@@ -223,5 +226,28 @@
     host.appendChild(panel);
   }
 
-  render();
+  if (window.Unit3RemoteLearnerWork) {
+    window.Unit3RemoteLearnerWork.restoreStorageKey('unit3-week7-directed-study', 'week7-heightened-threat').then(function (restored) {
+      if (restored && typeof restored === 'object') {
+        state = Object.assign(state, restored);
+        state.cisco = state.cisco || ['', ''];
+        state.openvas = state.openvas || ['', '', ''];
+        state.logs = state.logs || ['', '', ''];
+        state.product = Object.assign(
+          {
+            productName: '',
+            monitors: '',
+            detectionType: '',
+            strength: '',
+            limitation: '',
+            sources: ''
+          },
+          state.product || {}
+        );
+      }
+      render();
+    });
+  } else {
+    render();
+  }
 })();

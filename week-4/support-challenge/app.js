@@ -18,6 +18,15 @@
     values = {};
   }
 
+  function persist() {
+    localStorage.setItem(key, JSON.stringify(values));
+    if (window.Unit3RemoteLearnerWork) {
+      window.Unit3RemoteLearnerWork.persistStorageKey(key, 'week4-analyse-practice', values);
+    }
+  }
+
+  function render(nextValues) {
+    values = nextValues && typeof nextValues === 'object' ? nextValues : values;
   textFields.destroyAll();
   host.textContent = '';
   var panel = document.createElement('section');
@@ -79,11 +88,18 @@
       rows: 5,
       onChange: function (next) {
         values[challenge.id] = next;
-        localStorage.setItem(key, JSON.stringify(values));
+        persist();
       }
     });
     challenges.appendChild(block);
   });
   panel.appendChild(challenges);
   host.appendChild(panel);
+  }
+
+  if (window.Unit3RemoteLearnerWork) {
+    window.Unit3RemoteLearnerWork.restoreStorageKey(key, 'week4-analyse-practice').then(render);
+  } else {
+    render(values);
+  }
 })();

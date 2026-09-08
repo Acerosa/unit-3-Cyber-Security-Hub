@@ -63,6 +63,7 @@
   function wrap(progress) {
     if (!progress || wrapped.indexOf(progress) !== -1) return;
     wrapped.push(progress);
+    progress.__lpGetActivityState = progress.getActivityState;
     var getActivityState = progress.getActivityState;
     var markCompleted = progress.markCompleted;
     var markSubmitted = progress.markSubmitted;
@@ -101,6 +102,58 @@
       reconcile();
       return progress.getActivityState(activityId);
     };
+    wrapPersist(progress);
+  }
+
+  function persistActivitySlice(progress, activityId) {
+    var remote = window.Unit3RemoteLearnerWork;
+    if (!remote || typeof remote.persistWeekRoot !== "function") return;
+    remote.persistWeekRoot(progress, activityId);
+  }
+
+  function wrapPersist(progress) {
+    if (!progress || progress.__lpRemotePersist) return;
+    progress.__lpRemotePersist = true;
+    progress.__lpUpdateActivity = progress.updateActivity;
+    progress.__lpSetDraft = progress.setDraft;
+    progress.__lpSaveRegister = progress.saveRegister;
+    if (typeof progress.__lpUpdateActivity === "function") {
+      progress.updateActivity = function (activityId, patch) {
+        var value = progress.__lpUpdateActivity(activityId, patch);
+        persistActivitySlice(progress, activityId);
+        return value;
+      };
+    }
+    if (typeof progress.__lpSetDraft === "function") {
+      progress.setDraft = function (key, value) {
+        var stored = progress.__lpSetDraft(key, value);
+        persistActivitySlice(progress, key);
+        return stored;
+      };
+    }
+    if (typeof progress.__lpSaveRegister === "function" && progress.REGISTER_KEY) {
+      progress.saveRegister = function (register) {
+        var stored = progress.__lpSaveRegister(register);
+        var remote = window.Unit3RemoteLearnerWork;
+        if (remote) {
+          remote.persistStorageKey(
+            progress.REGISTER_KEY,
+            "week2-northbank-vulnerability-register",
+            register || {}
+          );
+        }
+        return stored;
+      };
+    }
+  }
+
+  function hydrateProgressDrafts(progress) {
+    var remote = window.Unit3RemoteLearnerWork;
+    if (!remote || !progress) return Promise.resolve();
+    if (typeof remote.hydrateWeekRoot === "function") {
+      return remote.hydrateWeekRoot(progress).catch(function () {});
+    }
+    return Promise.resolve();
   }
 
   function wrapAvailableWeeks() {
@@ -133,8 +186,14 @@
       (Array.isArray(result) ? result : []).forEach(function (row) {
         if (row && row.activity_key) rows.set(normalise(row.activity_key), row);
       });
-      dispatch();
-      return result;
+      var hydrations = [];
+      for (var week = 2; week <= 7; week += 1) {
+        hydrations.push(hydrateProgressDrafts(window["Unit3Week" + week + "Progress"]));
+      }
+      return Promise.all(hydrations).then(function () {
+        dispatch();
+        return result;
+      });
     }).catch(function (error) {
       console.warn("[Unit3BackendProgress] Progress refresh failed", error);
       throw error;

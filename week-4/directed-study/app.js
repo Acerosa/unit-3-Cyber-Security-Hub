@@ -25,8 +25,13 @@
 
   function persist() {
     localStorage.setItem(key, JSON.stringify(values));
+    if (window.Unit3RemoteLearnerWork) {
+      window.Unit3RemoteLearnerWork.persistStorageKey(key, 'week4-analyse-practice', values);
+    }
   }
 
+  function render(nextValues) {
+    values = nextValues && typeof nextValues === 'object' ? nextValues : values;
   textFields.destroyAll();
   host.textContent = '';
   var panel = document.createElement('section');
@@ -180,4 +185,11 @@
   actions.appendChild(printBtn);
   panel.appendChild(actions);
   host.appendChild(panel);
+  }
+
+  if (window.Unit3RemoteLearnerWork) {
+    window.Unit3RemoteLearnerWork.restoreStorageKey(key, 'week4-analyse-practice').then(render);
+  } else {
+    render(values);
+  }
 })();
