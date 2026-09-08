@@ -57,6 +57,13 @@ export function resolveFormativeActivityVersion(
   activityKey: string,
   packageVersion: string
 ): string {
+  const activity = String(activityKey || "").trim().toLowerCase();
+  const published = String(packageVersion || "").trim();
+  // React catalogue Check must use the activity document version. Do not remap
+  // u3-w01-* onto the legacy GAS catalogue at 1.2.0, and do not invent 0.1.0.
+  if (activity.startsWith("u3-w01-")) {
+    return /^\d+\.\d+\.\d+/.test(published) ? published : "";
+  }
   return mapper.catalogueVersionFor(activityKey)
     || mapper.normaliseActivityVersion(packageVersion, activityKey)
     || packageVersion;
@@ -67,6 +74,9 @@ export function resolveFormativeQuestionId(
   activityKey: string,
   block: ActivityBlockDocument
 ): string {
+  const hosted = String(block.content?.questionId || block.id || "").trim();
+  const activity = String(activityKey || "").trim().toLowerCase();
+  if (activity.startsWith("u3-w01-")) return hosted;
   return mapper.normaliseQuestionKey(localQuestionId(block), activityKey);
 }
 
@@ -95,6 +105,11 @@ export function resolveFormativeRpcQuestionId(
 ): string {
   const raw = String(questionId || "").trim();
   if (!raw) return raw;
+  const activity = String(activityKey || "").trim().toLowerCase();
+  // Published Week 1 curriculum questions are package keys such as
+  // u3-w01-misconceptions:m1. Do not suffix-strip or uppercase them onto the
+  // legacy BAS-Q / CIA-Q catalogue.
+  if (activity.startsWith("u3-w01-")) return raw;
   const colon = raw.lastIndexOf(":");
   if (colon >= 0) {
     const suffix = raw.slice(colon + 1);
@@ -135,6 +150,8 @@ export function canonicaliseFormativeResponsePayload(
   payload: unknown
 ): unknown {
   if (responseType !== "single-choice") return payload;
+  const activity = String(activityKey || "").trim().toLowerCase();
+  if (activity.startsWith("u3-w01-")) return payload;
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) return payload;
   const record = payload as Record<string, unknown>;
   const raw = typeof record.optionId === "string" ? record.optionId.trim() : "";
