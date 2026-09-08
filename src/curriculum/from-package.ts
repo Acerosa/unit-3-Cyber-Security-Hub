@@ -14,6 +14,7 @@ type ContentActivity = {
     title?: string;
     summary?: string;
     activityType?: string;
+    group?: string;
     detail?: string;
     topics?: string[];
     href?: string | null;

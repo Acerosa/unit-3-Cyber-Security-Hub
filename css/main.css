@@ -780,6 +780,23 @@ html[data-theme="dark"] body {
   margin-top: 1rem;
 }
 
+.lp-session-group-label {
+  margin: 1.1rem 0 0.45rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-heading);
+  font-size: 0.92rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.lp-activity-list > .lp-session-group-label:first-child,
+.lp-activity-list > div:first-child .lp-session-group-label {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
 .week-summary-panel > .week-summary-disclosure {
   margin: 0.75rem 0 0;
   border: 1px solid var(--color-border);

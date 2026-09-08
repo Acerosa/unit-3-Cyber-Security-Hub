@@ -20,6 +20,29 @@ function requireBundled(): ContentPackage {
   return bundledPackage;
 }
 
+function mergeActivities(
+  bundled: ContentPackage["activities"],
+  live: ContentPackage["activities"]
+): ContentPackage["activities"] {
+  const bundledList = bundled || [];
+  const liveList = live || [];
+  if (!liveList.length) return bundledList;
+  const liveById = new Map(liveList.map((item) => [item.id, item]));
+  const seen = new Set<string>();
+  const merged: NonNullable<ContentPackage["activities"]> = [];
+  for (const item of liveList) {
+    if (!item?.id || seen.has(item.id)) continue;
+    seen.add(item.id);
+    merged.push(item);
+  }
+  for (const item of bundledList) {
+    if (!item?.id || seen.has(item.id)) continue;
+    seen.add(item.id);
+    merged.push(item);
+  }
+  return merged;
+}
+
 export function runtimeContentPackage(live?: ContentPackage | null): ContentPackage {
   const bundled = requireBundled();
   if (!live) return bundled;
@@ -28,7 +51,7 @@ export function runtimeContentPackage(live?: ContentPackage | null): ContentPack
     ...(live.version ? { version: live.version } : {}),
     ...(live.hub ? { hub: live.hub } : {}),
     ...(live.curriculum ? { curriculum: live.curriculum } : {}),
-    activities: live.activities?.length ? live.activities : bundled.activities,
+    activities: mergeActivities(bundled.activities, live.activities),
     sessions: bundled.sessions,
     learningOutcomes: live.learningOutcomes?.length ? live.learningOutcomes : bundled.learningOutcomes
   };

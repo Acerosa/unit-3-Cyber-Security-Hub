@@ -30,13 +30,61 @@ export const CATALOGUE_PROGRESS_SCRIPTS: Record<number, string[]> = {
 export const WEEK_ACTIVITY_SLUGS: Record<number, Record<string, string>> = {
   1: {
     "u3-w01-baseline": "baseline",
+    "u3-w01-misconceptions": "misconceptions",
+    "u3-w01-confidence": "confidence",
+    "u3-w01-definition-choice": "definition-choice",
+    "u3-w01-what-it-protects": "what-it-protects",
+    "u3-w01-definition-gap": "definition-gap",
     "u3-w01-cia": "cia",
+    "u3-w01-cia-confidentiality": "cia-confidentiality",
+    "u3-w01-cia-integrity": "cia-integrity",
+    "u3-w01-cia-availability": "cia-availability",
+    "u3-w01-cia-distinguish": "cia-distinguish",
+    "u3-w01-cia-combined": "cia-combined",
+    "u3-w01-incident-definitions": "incident-definitions",
+    "u3-w01-incident-match": "incident-match",
     "u3-w01-incidents": "incidents",
+    "u3-w01-incident-recognise": "incident-recognise",
+    "u3-w01-incident-distinguish": "incident-distinguish",
+    "u3-w01-incident-evidence": "incident-evidence",
+    "u3-w01-cia-incident-pair": "cia-incident-pair",
+    "u3-w01-cia-incident-justify": "cia-incident-justify",
+    "u3-w01-cia-incident-challenge": "cia-incident-challenge",
+    "u3-w01-northbank-cia": "northbank-cia",
+    "u3-w01-northbank-incidents": "northbank-incidents",
+    "u3-w01-northbank-consequences": "northbank-consequences",
+    "u3-w01-thm-prep": "thm-prep",
+    "u3-w01-thm-retrieval": "thm-retrieval",
     "u3-w01-glossary": "glossary",
+    "u3-w01-session1-review": "session1-review",
     "u3-w01-retrieval": "retrieval-quiz",
+    "u3-w01-retrieval-cia": "retrieval-cia",
+    "u3-w01-retrieval-incidents": "retrieval-incidents",
+    "u3-w01-retrieval-terms": "retrieval-terms",
+    "u3-w01-retrieval-tf": "retrieval-tf",
+    "u3-w01-personal-data": "personal-data",
+    "u3-w01-organisational-data": "organisational-data",
+    "u3-w01-state-data": "state-data",
+    "u3-w01-who-is-harmed": "who-is-harmed",
+    "u3-w01-cia-threatened": "cia-threatened",
+    "u3-w01-nb-data-holdings": "nb-data-holdings",
+    "u3-w01-nb-stakeholders": "nb-stakeholders",
+    "u3-w01-nb-consequences": "nb-consequences",
+    "u3-w01-nb-importance": "nb-importance",
     "u3-w01-command-words": "command-words",
+    "u3-w01-identify-vs-describe": "identify-vs-describe",
+    "u3-w01-command-spot-weak": "command-spot-weak",
+    "u3-w01-command-improve": "command-improve",
+    "u3-w01-marks-depth": "marks-depth",
+    "u3-w01-marks-earned": "marks-earned",
+    "u3-w01-marks-missing": "marks-missing",
+    "u3-w01-ocr-recognise": "ocr-recognise",
+    "u3-w01-ocr-evidence": "ocr-evidence",
+    "u3-w01-ocr-select-better": "ocr-select-better",
     "u3-w01-ocr-practice": "ocr-practice",
-    "u3-w01-peer-improvement": "peer-improvement"
+    "u3-w01-weak-answer-spot": "weak-answer-spot",
+    "u3-w01-peer-improvement": "peer-improvement",
+    "u3-w01-improvement-action": "improvement-action"
   },
   2: {
     "week2-session1-retrieval": "session1-retrieval",
@@ -229,6 +277,7 @@ function optionCount(block: ActivityBlockDocument): number {
 export function isScorableReactBlock(block: ActivityBlockDocument): boolean {
   const type = String(block.type || "").toLowerCase();
   if (type === "classification") return true;
+  if (type === "drag-drop" || type === "fill-gap" || type === "phrase-completion") return true;
   if (type === "single-choice" || type === "option-cards") return optionCount(block) > 0;
   return false;
 }
@@ -290,7 +339,13 @@ export function catalogueActivity(pkg: ContentPackage, activityId: string): Acti
 export function blockScorableTotal(block: ActivityBlockDocument): number {
   if (!isScorableReactBlock(block)) return 0;
   const type = String(block.type || "").toLowerCase();
-  if (type === "classification") return ((block.content && block.content.items) || []).length;
+  if (type === "classification" || type === "drag-drop") {
+    return ((block.content && block.content.items) || []).length;
+  }
+  if (type === "fill-gap" || type === "phrase-completion") {
+    const gaps = (block.content && block.content.gaps) || [];
+    return gaps.length || 1;
+  }
   return 1;
 }
 

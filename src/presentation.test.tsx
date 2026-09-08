@@ -160,6 +160,27 @@ describe("Unit 3 presentation", () => {
     expect(screen.getByRole("complementary", { name: "Week 2 progress" }).getAttribute("data-lp-docked")).toBe("left");
   });
 
+  it("groups Week 1 activities without inflating the session count", () => {
+    window.__lpPackage = pkg;
+    render(
+      <WeekPage
+        context={{ page: "week-1", section: "week-1", root: "..", view: "week", week: 1 }}
+        contentReady
+        adaptersReady
+      />
+    );
+
+    expect(screen.getAllByText("28 activities")).toHaveLength(2);
+    expect(screen.queryByText("35 activities")).toBeNull();
+    expect(screen.queryByText(/Retrieval ·/)).toBeNull();
+    expect(screen.getByRole("heading", { level: 3, name: "Diagnostic and misconceptions" })).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 3, name: "CIA triad" })).toBeTruthy();
+    expect(screen.getByRole("heading", { level: 3, name: "OCR command words" })).toBeTruthy();
+    expect(screen.getAllByRole("link", { name: "Open activity" })).toHaveLength(56);
+    expect(screen.getByRole("heading", { name: "Spotting Week 1 misconceptions" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Challenge: more than one CIA aim" })).toBeTruthy();
+  });
+
   it("renders a Week 2 activity with a link to the next activity", () => {
     window.__lpPackage = pkg;
     window.Unit3Week2Progress = { markStarted: vi.fn(), markCompleted: vi.fn() };

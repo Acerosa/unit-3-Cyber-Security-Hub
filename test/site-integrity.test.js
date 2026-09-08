@@ -12,7 +12,7 @@ function read(relativePath) {
 }
 
 test("the committed inventory lists every learner-facing public route", function () {
-  assert.equal(routeFiles.length, 104);
+  assert.equal(routeFiles.length, 152);
   assert.equal(inventory.routes.filter((route) => route.view === "week").length, 7);
   assert.equal(inventory.routes.filter((route) => route.view === "week1-activity").length, 1);
   assert.equal(inventory.routes.some((route) => route.route === "activities/activity.html"), true);
@@ -314,7 +314,8 @@ test("week pages keep docked catalogue progress chrome", function () {
   assert.match(weekPage, /PracticeProgressPanel/);
   assert.match(weekPage, /defaultCollapsed/);
   assert.match(weekPage, /showProgress:\s*false/);
-  assert.match(weekPage, /data-lp-week-page/);
+  assert.match(weekPage, /lp-session-group-label/);
+  assert.doesNotMatch(weekPage, /role="presentation"/);
   assert.match(read("src/pages/PageHost.tsx"), /unit3-page-body/);
   assert.match(read("src/pages/PageHost.tsx"), /loadPageScripts/);
 });
