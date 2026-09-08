@@ -37,6 +37,14 @@ import { runtimeWeekForTeachingWeek } from "../curriculum/runtime-weeks";
 import { createSitePath } from "../paths";
 import type { PageContext } from "../page-context";
 import { findRoute } from "../page-copy";
+import {
+  allCatalogueQuestionsChecked,
+  createCatalogueDraftStore,
+  emptyCatalogueDraft,
+  persistCatalogueDraft,
+  submitCatalogueDraft,
+  type CatalogueDraft
+} from "../catalogue/activity-draft";
 import { ActivitySequenceNav } from "./ActivitySequenceNav";
 import { PageHost } from "./PageHost";
 
@@ -108,14 +116,55 @@ export function ActivityPage({
     : activity;
   const { previous, next } = neighboursInSequence(sequence, activityId);
   const progressRef = useRef(emptyPracticeProgress());
+  const draftRef = useRef<CatalogueDraft>(emptyCatalogueDraft());
+  const finishInFlight = useRef(false);
   const [practice, setPractice] = useState<PracticeProgressAggregate>(
     aggregatePracticeProgress(emptyPracticeProgress(), { requiredBlocks: 0, scorableTotal: 0 })
   );
+  const [initialDraft, setInitialDraft] = useState<CatalogueDraft>(emptyCatalogueDraft());
+  const [readyToFinish, setReadyToFinish] = useState(false);
+  const [finishNotice, setFinishNotice] = useState("");
 
   useEffect(() => {
     progressRef.current = emptyPracticeProgress();
+    draftRef.current = emptyCatalogueDraft();
+    finishInFlight.current = false;
     setPractice(aggregatePracticeProgress(emptyPracticeProgress(), { requiredBlocks: 0, scorableTotal: 0 }));
+    setInitialDraft(emptyCatalogueDraft());
+    setReadyToFinish(false);
+    setFinishNotice("");
   }, [activityId]);
+
+  useEffect(() => {
+    if (!adaptersReady || !activity || playerMode === "host") return;
+    let cancelled = false;
+    const store = createCatalogueDraftStore(activity, platform as never);
+    const startedAt = new Date().toISOString();
+    void (store?.hydrate ? store.hydrate() : Promise.resolve(null)).then((resolved) => {
+      if (cancelled) return;
+      const responses = resolved?.responses && typeof resolved.responses === "object" ? resolved.responses : {};
+      const checked = resolved?.checked && typeof resolved.checked === "object" ? resolved.checked : {};
+      if (
+        !Object.keys(responses).length
+        && (Object.keys(draftRef.current.responses).length || Object.keys(draftRef.current.checked).length)
+      ) {
+        return;
+      }
+      const next: CatalogueDraft = {
+        responses,
+        checked,
+        startedAt: resolved?.startedAt || startedAt,
+        completed: false,
+        submission: resolved?.submission
+      };
+      draftRef.current = next;
+      setInitialDraft(next);
+      setReadyToFinish(
+        Boolean(activity && allCatalogueQuestionsChecked(activity, next) && next.submission?.status !== "submitted")
+      );
+    });
+    return () => { cancelled = true; };
+  }, [activity, adaptersReady, platform, playerMode]);
 
   useEffect(() => {
     if (!adaptersReady || playerMode !== "catalogue") return;
@@ -133,21 +182,52 @@ export function ActivityPage({
     result: ActivityResult,
     block: ActivityBlockDocument
   ) => {
+    const qid = questionIdFor(block);
+    const next: CatalogueDraft = {
+      ...draftRef.current,
+      responses: { ...draftRef.current.responses },
+      checked: { ...draftRef.current.checked },
+      startedAt: draftRef.current.startedAt || new Date().toISOString(),
+      completed: false
+    };
+    if (result.completed === false) {
+      next.checked[qid] = false;
+      draftRef.current = next;
+      persistCatalogueDraft(createCatalogueDraftStore(document, platform as never), next, { remote: false });
+      setReadyToFinish(false);
+      return;
+    }
+    next.responses[qid] = persistableResponse(block, result);
+    if (result.completed) next.checked[qid] = true;
+    draftRef.current = next;
+    persistCatalogueDraft(
+      createCatalogueDraftStore(document, platform as never),
+      next,
+      draftRef.current.submission?.status === "submitted"
+        ? { remote: false }
+        : result.completed ? { immediate: true } : { remote: false }
+    );
+    if (document) {
+      setReadyToFinish(
+        allCatalogueQuestionsChecked(document, next) && next.submission?.status !== "submitted"
+      );
+    }
+
     const host = typeof window !== "undefined"
       ? window.document.querySelector(`[data-lp-activity="${document.id}"]`)
       : null;
     host?.dispatchEvent(new CustomEvent("lp-block-result", {
       bubbles: true,
       detail: {
-        questionId: questionIdFor(block),
-        response: persistableResponse(block, result),
+        questionId: qid,
+        response: next.responses[qid],
         completed: result.completed
       }
     }));
 
     if (!result.completed) return;
 
-    progressRef.current = applyPracticeResult(progressRef.current, questionIdFor(block), result);
+    progressRef.current = applyPracticeResult(progressRef.current, qid, result);
     const required = requiredBlocks(document);
     const scorable = scorableBlocks(document);
     const aggregate = aggregatePracticeProgress(progressRef.current, {
@@ -164,7 +244,28 @@ export function ActivityPage({
     if (aggregate.complete) {
       progressStore(week)?.markCompleted?.(document.id);
     }
-  }, [week]);
+  }, [platform, week]);
+
+  const finishActivity = useCallback(async () => {
+    if (!catalogueActivityDocument || finishInFlight.current) return;
+    if (!allCatalogueQuestionsChecked(catalogueActivityDocument, draftRef.current)) return;
+    if (draftRef.current.submission?.status === "submitted") return;
+    finishInFlight.current = true;
+    const store = createCatalogueDraftStore(catalogueActivityDocument, platform as never);
+    persistCatalogueDraft(store, draftRef.current, { immediate: true });
+    const result = await submitCatalogueDraft(catalogueActivityDocument, draftRef.current, platform as never);
+    const next: CatalogueDraft = {
+      ...draftRef.current,
+      submission: { status: result.status }
+    };
+    draftRef.current = next;
+    persistCatalogueDraft(store, next, { remote: false });
+    setReadyToFinish(false);
+    setFinishNotice(result.reason || (result.status === "submitted"
+      ? "Saved to your learning record."
+      : "Your work is still saved on this device."));
+    if (result.status !== "submitted") finishInFlight.current = false;
+  }, [catalogueActivityDocument, platform]);
 
   const scorableTotal = useMemo(
     () => scorableBlocks(catalogueActivityDocument).reduce((total, block) => total + blockScorableTotal(block), 0),
@@ -190,13 +291,43 @@ export function ActivityPage({
     />
   ) : null;
 
+  const readyToSubmit = Boolean(
+    catalogueActivityDocument
+    && readyToFinish
+    && draftRef.current.submission?.status !== "submitted"
+  );
+
   const cataloguePlayer = playerMode !== "host" && catalogueActivityDocument ? (
-    <InteractiveActivity
-      activity={catalogueActivityDocument}
-      platform={platform}
-      renderFallback={renderCatalogueFallback}
-      onResult={(result, block) => recordPracticeResult(catalogueActivityDocument, result, block)}
-    />
+    <>
+      <InteractiveActivity
+        activity={catalogueActivityDocument}
+        platform={platform}
+        initialResponses={initialDraft.responses}
+        initialChecked={initialDraft.checked}
+        renderFallback={renderCatalogueFallback}
+        onResult={(result, block) => recordPracticeResult(catalogueActivityDocument, result, block)}
+      />
+      {readyToSubmit ? (
+        <p className="lp-activity-ready" data-lp-finish-ready="">
+          All questions checked. Finish the activity to save it to your learning record.
+        </p>
+      ) : null}
+      {readyToSubmit ? (
+        <button
+          type="button"
+          className="lp-button"
+          data-lp-finish-activity={catalogueActivityDocument.id}
+          onClick={() => { void finishActivity(); }}
+        >
+          Finish activity
+        </button>
+      ) : null}
+      {finishNotice ? (
+        <p className="lp-activity-status" data-lp-submit-state={draftRef.current.submission?.status || ""}>
+          {finishNotice}
+        </p>
+      ) : null}
+    </>
   ) : null;
 
   if (contentReady && activityId && !sessionAccessible) {

@@ -40,6 +40,9 @@
         savedAt: new Date().toISOString()
       });
     }
+    if (window.Unit3RemoteLearnerWork) {
+      window.Unit3RemoteLearnerWork.persistStorageKey('unit3-week5-directed-study', 'week5-impact-analysis', state);
+    }
   }
 
   function field(parent, id, labelText, key, rows) {
@@ -151,5 +154,12 @@
     host.appendChild(panel);
   }
 
-  render();
+  if (window.Unit3RemoteLearnerWork) {
+    window.Unit3RemoteLearnerWork.restoreStorageKey('unit3-week5-directed-study', 'week5-impact-analysis').then(function (restored) {
+      if (restored && typeof restored === 'object') state = Object.assign(state, restored);
+      render();
+    });
+  } else {
+    render();
+  }
 })();

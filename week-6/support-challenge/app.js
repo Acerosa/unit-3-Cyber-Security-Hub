@@ -33,6 +33,9 @@
         savedAt: new Date().toISOString()
       });
     }
+    if (window.Unit3RemoteLearnerWork) {
+      window.Unit3RemoteLearnerWork.persistStorageKey('unit3-week6-support-challenge', 'week6-revision-organiser', responses);
+    }
   }
 
   function render() {
@@ -149,5 +152,12 @@
     host.appendChild(panel);
   }
 
-  render();
+  if (window.Unit3RemoteLearnerWork) {
+    window.Unit3RemoteLearnerWork.restoreStorageKey('unit3-week6-support-challenge', 'week6-revision-organiser').then(function (restored) {
+      if (restored && typeof restored === 'object') responses = Object.assign(responses, restored);
+      render();
+    });
+  } else {
+    render();
+  }
 })();

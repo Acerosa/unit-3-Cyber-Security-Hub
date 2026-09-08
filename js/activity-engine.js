@@ -323,6 +323,9 @@
       questionId,
       normalizeResponseValue(question, value)
     );
+    if (typeof stateApi.setChecked === 'function') {
+      stateApi.setChecked(state, questionId, false);
+    }
     Object.keys(state.markedSections || {}).forEach(function (sectionId) {
       var section = sectionById(sectionId);
       if (!section) return;
@@ -395,6 +398,11 @@
       })
       .then(function (data) {
         stateApi.setMarkedSection(state, sectionId, data);
+        (collected.responses || []).forEach(function (item) {
+          if (item && item.questionId && typeof stateApi.setChecked === 'function') {
+            stateApi.setChecked(state, item.questionId, true);
+          }
+        });
         setStatusMessage(
           'section-status-' + sectionId,
           isCompletionActivity(activityData && activityData.activity)
@@ -727,6 +735,14 @@
           throw new Error('The loaded activity ID did not match the requested activity.');
         }
         state = stateApi.load(activityId);
+        state.activityVersion = activityData.activity.activityVersion;
+        if (window.Unit3ActivityKeyMap && typeof window.Unit3ActivityKeyMap.normaliseActivityKey === 'function') {
+          state.activityKey = window.Unit3ActivityKeyMap.normaliseActivityKey(activityId);
+        }
+        return stateApi.hydrate ? stateApi.hydrate(state) : state;
+      })
+      .then(function (resolved) {
+        state = resolved || state;
         showPanel('ae-loading', false);
         showPanel('ae-main', true);
         renderActivity();

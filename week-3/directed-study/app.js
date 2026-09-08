@@ -24,7 +24,19 @@
     values = {};
   }
 
-  textFields.destroyAll();
+  function persist() {
+    try {
+      localStorage.setItem(key, JSON.stringify(values));
+    } catch (err) { /* ignore */ }
+    if (window.Unit3RemoteLearnerWork) {
+      window.Unit3RemoteLearnerWork.persistStorageKey(key, 'week3-directed-study', values);
+    }
+  }
+
+  function render(nextValues) {
+    values = nextValues && typeof nextValues === 'object' ? nextValues : values;
+
+    textFields.destroyAll();
   host.textContent = '';
   var panel = document.createElement('section');
   panel.className = 'panel';setAuthoredHtml(panel, '<h2>' +
@@ -74,7 +86,7 @@
       rows: 2,
       onChange: function (next) {
         values[field] = next;
-        localStorage.setItem(key, JSON.stringify(values));
+        persist();
       }
     });
   });
@@ -91,4 +103,11 @@
   form.appendChild(actions);
   panel.appendChild(form);
   host.appendChild(panel);
+  }
+
+  if (window.Unit3RemoteLearnerWork) {
+    window.Unit3RemoteLearnerWork.restoreStorageKey(key, 'week3-directed-study').then(render);
+  } else {
+    render(values);
+  }
 })();

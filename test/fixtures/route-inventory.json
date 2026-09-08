@@ -6,6 +6,7 @@
     "js/core/supabase-onboarding.js",
     "js/core/backend-mode.js",
     "js/core/activity-key-map.js",
+    "js/core/remote-learner-work.js",
     "js/core/question-key-aliases.js",
     "js/core/supabase-submission-adapter.js",
     "js/core/supabase-evidence.js",

@@ -78,6 +78,16 @@ declare module "@learning-platform/core" {
   }
 
   export function createPlatform(options: Record<string, unknown>, dependencies?: Record<string, unknown>): PlatformFacade;
+  export function resolveActivityVersion(activity?: { version?: string; activityVersion?: string } | null): string;
+  export function setAuthoredHtml(target: Element | null | undefined, html: string): Element | null | undefined;
+  export const evidence: {
+    singleChoice: (key: string, optionId: string) => unknown;
+    written: (key: string, text: string) => unknown;
+    reflection: (key: string, text: string) => unknown;
+    classification: (key: string, categoryId: string, itemId?: string | null) => unknown;
+    ordering: (key: string, itemIds: string[]) => unknown;
+    matching: (key: string, pairs: Array<{ left: string; right: string }>) => unknown;
+  };
   export function createAccountDialog(options: {
     authService: unknown;
     learnerContext: unknown;

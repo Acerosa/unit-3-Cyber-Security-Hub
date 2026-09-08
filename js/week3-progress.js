@@ -243,6 +243,7 @@
     markStarted: markStarted,
     markCompleted: markCompleted,
     markSubmitted: markSubmitted,
+    getRoot: getRoot,
     setDraft: setDraft,
     getDraft: getDraft,
     getCompletionSummary: getCompletionSummary,

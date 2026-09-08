@@ -1,0 +1,171 @@
+import { evidence, resolveActivityVersion } from "@learning-platform/core";
+import {
+  isCatalogueReactType,
+  questionIdFor,
+  type ActivityBlockDocument,
+  type ActivityDocument
+} from "@learning-platform/ui";
+
+export type CatalogueDraft = {
+  responses: Record<string, unknown>;
+  checked: Record<string, boolean>;
+  startedAt?: string;
+  completed?: boolean;
+  submission?: { status?: string };
+};
+
+type ProgressStore = {
+  save: (state: unknown, options?: { immediate?: boolean; remote?: boolean }) => unknown;
+  hydrate?: (local?: unknown) => Promise<CatalogueDraft | null>;
+  clear?: (options?: { local?: boolean }) => unknown;
+};
+
+type HubPlatformLike = {
+  auth?: { isSignedIn?: () => boolean };
+  progress?: {
+    createStore?: (options: {
+      activityKey: string;
+      activityVersion: string;
+      storage?: Storage;
+    }) => ProgressStore;
+  };
+  submission?: {
+    submit?: (payload: {
+      activityKey: string;
+      activityVersion: string;
+      responses: unknown[];
+      sourcePage?: string;
+      startedAt?: string;
+      completedAt?: string;
+    }) => Promise<unknown>;
+  };
+};
+
+function signedIn(platform?: HubPlatformLike): boolean {
+  return Boolean(platform?.auth && typeof platform.auth.isSignedIn === "function" && platform.auth.isSignedIn());
+}
+
+export function requiredCatalogueBlocks(activity: ActivityDocument | null | undefined): ActivityBlockDocument[] {
+  return (activity?.blocks || []).filter((block) => isCatalogueReactType(block.type));
+}
+
+export function emptyCatalogueDraft(): CatalogueDraft {
+  return { responses: {}, checked: {}, completed: false };
+}
+
+export function createCatalogueDraftStore(
+  activity: ActivityDocument,
+  platform?: HubPlatformLike
+): ProgressStore | null {
+  if (!platform?.progress || typeof platform.progress.createStore !== "function") return null;
+  if (!signedIn(platform)) return null;
+  try {
+    return platform.progress.createStore({
+      activityKey: activity.id,
+      activityVersion: resolveActivityVersion(activity),
+      storage: typeof window !== "undefined" ? window.localStorage : undefined
+    });
+  } catch {
+    return null;
+  }
+}
+
+export function persistCatalogueDraft(
+  store: ProgressStore | null,
+  draft: CatalogueDraft,
+  options?: { immediate?: boolean; remote?: boolean }
+): CatalogueDraft {
+  const payload: CatalogueDraft = {
+    ...draft,
+    completed: false
+  };
+  if (payload.submission?.status === "submitted" && options?.remote !== false) {
+    return payload;
+  }
+  store?.save(payload, options);
+  return payload;
+}
+
+function evidenceFor(block: ActivityBlockDocument, response: unknown): unknown[] {
+  const questionId = questionIdFor(block);
+  const type = String(block.type || "").toLowerCase();
+  if (response == null || response === "") return [];
+  try {
+    if (type === "single-choice" || type === "option-cards") {
+      const optionId = typeof response === "string"
+        ? response
+        : response && typeof response === "object" && "optionId" in response
+          ? String((response as { optionId?: string }).optionId || "")
+          : "";
+      return optionId ? [evidence.singleChoice(questionId, optionId)] : [];
+    }
+    if (type === "short-response") {
+      const text = String(response).trim();
+      return text ? [evidence.written(questionId, text)] : [];
+    }
+    if (type === "reflection") {
+      const text = String(response).trim();
+      return text ? [evidence.reflection(questionId, text)] : [];
+    }
+    if (type === "classification" && response && typeof response === "object") {
+      return Object.entries(response as Record<string, string>).map(([itemId, categoryId]) => (
+        evidence.classification(`${questionId}:${itemId}`, String(categoryId), itemId)
+      ));
+    }
+    if ((type === "sequence" || type === "ordering") && Array.isArray(response)) {
+      return [evidence.ordering(questionId, response.map(String))];
+    }
+    if ((type === "drag-drop" || type === "phrase-completion") && response && typeof response === "object") {
+      return Object.entries(response as Record<string, string>).map(([itemId, targetId]) => (
+        evidence.matching(`${questionId}:${itemId}`, [{ left: itemId, right: String(targetId) }])
+      ));
+    }
+  } catch {
+    return [];
+  }
+  return [];
+}
+
+export function catalogueEvidence(activity: ActivityDocument, draft: CatalogueDraft): unknown[] {
+  const list: unknown[] = [];
+  requiredCatalogueBlocks(activity).forEach((block) => {
+    list.push(...evidenceFor(block, draft.responses[questionIdFor(block)]));
+  });
+  return list;
+}
+
+export function allCatalogueQuestionsChecked(activity: ActivityDocument, draft: CatalogueDraft): boolean {
+  const blocks = requiredCatalogueBlocks(activity);
+  return blocks.length > 0 && blocks.every((block) => Boolean(draft.checked[questionIdFor(block)]));
+}
+
+export async function submitCatalogueDraft(
+  activity: ActivityDocument,
+  draft: CatalogueDraft,
+  platform?: HubPlatformLike
+): Promise<{ status: "submitted" | "local"; failed?: boolean; reason?: string }> {
+  const responses = catalogueEvidence(activity, draft);
+  if (!platform?.submission || typeof platform.submission.submit !== "function") {
+    return { status: "local", failed: true, reason: "This activity could not be submitted from this page." };
+  }
+  if (!responses.length) {
+    return { status: "local", failed: true, reason: "Check every question before finishing the activity." };
+  }
+  try {
+    await platform.submission.submit({
+      activityKey: activity.id,
+      activityVersion: resolveActivityVersion(activity),
+      responses: responses as never[],
+      sourcePage: typeof window !== "undefined" ? window.location.pathname : undefined,
+      startedAt: draft.startedAt,
+      completedAt: new Date().toISOString()
+    });
+    return { status: "submitted", reason: "Saved to your learning record." };
+  } catch {
+    return {
+      status: "local",
+      failed: true,
+      reason: "Your work is still saved on this device. It has not been sent to your learning record yet."
+    };
+  }
+}
