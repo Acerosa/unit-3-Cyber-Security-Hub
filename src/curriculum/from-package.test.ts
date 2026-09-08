@@ -129,6 +129,53 @@ describe("Unit 3 package hydration", () => {
     expect(sequence.some((item) => item.id === "week2-session1-retrieval")).toBe(true);
   });
 
+  it("live planned week-2-session-1 overlays bundled available and hides those activities", () => {
+    const live = structuredClone(pkg);
+    const session = live.sessions.find((item) => item.id === "week-2-session-1");
+    if (!session?.metadata) throw new Error("missing week-2-session-1");
+    session.metadata.status = "planned";
+    const page = weekPageFromPackage(runtimeContentPackage(live), "week-2");
+    expect(page?.sessions[0].id).toBe("week-2-session-1");
+    expect(page?.sessions[0].accessible).toBe(false);
+    expect(page?.sessions[0].summary).toBe("Not released yet");
+    expect(page?.sessions[0].activities).toEqual([]);
+    const sequence = catalogueSequence(page, 2);
+    expect(sequence.some((item) => item.id === "week2-malware-symptoms")).toBe(false);
+    expect(sequence.some((item) => item.id === "week2-threat-vulnerability-sort")).toBe(false);
+  });
+
+  it("live available week-2-session-1 keeps malware and sort activities accessible", () => {
+    const live = structuredClone(pkg);
+    const session = live.sessions.find((item) => item.id === "week-2-session-1");
+    if (!session?.metadata) throw new Error("missing week-2-session-1");
+    session.metadata.status = "available";
+    const page = weekPageFromPackage(runtimeContentPackage(live), "week-2");
+    expect(page?.sessions[0].accessible).toBe(true);
+    const ids = page?.sessions[0].activities.map((item) => item.id) || [];
+    expect(ids).toContain("week2-malware-symptoms");
+    expect(ids).toContain("week2-threat-vulnerability-sort");
+    expect(ids).toContain("week2-session1-retrieval");
+    expect(ids).toContain("week2-threat-vulnerability-learning");
+    const sequence = catalogueSequence(page, 2);
+    expect(sequence.some((item) => item.id === "week2-malware-symptoms")).toBe(true);
+    expect(sequence.some((item) => item.id === "week2-threat-vulnerability-sort")).toBe(true);
+  });
+
+  it("keeps later planned weeks closed when only week 2 session 1 is posted", () => {
+    const live = structuredClone(pkg);
+    for (const week of live.weeks || []) {
+      if (week.id === "week-1" || week.id === "week-2") {
+        if (week.metadata) week.metadata.status = "available";
+      } else if (week.metadata) {
+        week.metadata.status = "planned";
+      }
+    }
+    const week3 = weekPageFromPackage(runtimeContentPackage(live), "week-3");
+    expect(week3?.week.status).toBe("planned");
+    expect(week3?.sessions.every((session) => session.accessible === false)).toBe(true);
+    expect(week3?.sessions.flatMap((session) => session.activities)).toEqual([]);
+  });
+
   it("keeps bundled available sessions when live publication omits session status", () => {
     const live = structuredClone(pkg);
     for (const session of live.sessions || []) {
