@@ -193,6 +193,34 @@ describe("Unit 3 package hydration", () => {
     expect((types.get("single-choice") || 0) / interactiveActivities).toBeLessThan(0.85);
   });
 
+  it("keeps Week 1 drag-drop catalogue IDs projectable", () => {
+    const catalogueId = /^[A-Za-z0-9._:-]+$/;
+    const ids = Object.keys(WEEK_ACTIVITY_SLUGS[1] || {});
+    for (const id of ids) {
+      const activity = catalogueActivity(pkg, id);
+      for (const block of activity?.blocks || []) {
+        if (String(block.type || "").toLowerCase() !== "drag-drop") continue;
+        const content = (block.content || {}) as {
+          questionId?: string;
+          items?: Array<{ id?: string }>;
+          targets?: Array<{ id?: string }>;
+          correct?: Record<string, string>;
+        };
+        expect(content.questionId, `${id} questionId`).toMatch(catalogueId);
+        for (const item of content.items || []) {
+          expect(item.id, `${id} item ${item.id}`).toMatch(catalogueId);
+        }
+        for (const target of content.targets || []) {
+          expect(target.id, `${id} target ${target.id}`).toMatch(catalogueId);
+        }
+        for (const [itemId, targetId] of Object.entries(content.correct || {})) {
+          expect(itemId, `${id} correct key ${itemId}`).toMatch(catalogueId);
+          expect(targetId, `${id} correct value ${targetId}`).toMatch(catalogueId);
+        }
+      }
+    }
+  });
+
   it("filters planned session activities before rendering", () => {
     const edited = structuredClone(pkg);
     const session = edited.sessions.find((item) => item.id === "week-2-session-2");

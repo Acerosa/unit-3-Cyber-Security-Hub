@@ -2086,37 +2086,37 @@
           ],
           "targets": [
             {
-              "id": "Hacking",
+              "id": "hacking",
               "label": "Hacking"
             },
             {
-              "id": "Virus",
+              "id": "virus",
               "label": "Virus"
             },
             {
-              "id": "Denial of service (DoS)",
+              "id": "denial-of-service",
               "label": "Denial of service (DoS)"
             },
             {
-              "id": "Phishing",
+              "id": "phishing",
               "label": "Phishing"
             },
             {
-              "id": "Identity theft",
+              "id": "identity-theft",
               "label": "Identity theft"
             },
             {
-              "id": "Data interception and theft",
+              "id": "data-interception",
               "label": "Data interception and theft"
             }
           ],
           "correct": {
-            "hack": "Hacking",
-            "virus": "Virus",
-            "dos": "Denial of service (DoS)",
-            "phish": "Phishing",
-            "id": "Identity theft",
-            "intercept": "Data interception and theft"
+            "hack": "hacking",
+            "virus": "virus",
+            "dos": "denial-of-service",
+            "phish": "phishing",
+            "id": "identity-theft",
+            "intercept": "data-interception"
           },
           "feedback": {
             "correct": "Each description matches one specification incident type.",

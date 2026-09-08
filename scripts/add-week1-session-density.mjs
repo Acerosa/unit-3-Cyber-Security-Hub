@@ -191,6 +191,16 @@ const SIX = [
   "Data interception and theft"
 ];
 
+/** Catalogue projection requires drag-drop target IDs to match ^[A-Za-z0-9._:-]+$ */
+const SIX_TARGETS = [
+  ["hacking", "Hacking"],
+  ["virus", "Virus"],
+  ["denial-of-service", "Denial of service (DoS)"],
+  ["phishing", "Phishing"],
+  ["identity-theft", "Identity theft"],
+  ["data-interception", "Data interception and theft"]
+];
+
 const SESSION_1_IDS = [
   "u3-w01-baseline",
   "u3-w01-misconceptions",
@@ -812,14 +822,14 @@ const NEW_ACTIVITIES = [
           ["id", "Misuse of someone’s identity details"],
           ["intercept", "Capturing or stealing data in transit or storage"]
         ],
-        SIX.map((label) => [label, label]),
+        SIX_TARGETS,
         {
-          hack: "Hacking",
-          virus: "Virus",
-          dos: "Denial of service (DoS)",
-          phish: "Phishing",
-          id: "Identity theft",
-          intercept: "Data interception and theft"
+          hack: "hacking",
+          virus: "virus",
+          dos: "denial-of-service",
+          phish: "phishing",
+          id: "identity-theft",
+          intercept: "data-interception"
         },
         "Each description matches one specification incident type."
       )
