@@ -39,7 +39,8 @@
     submissionMode: 'TEST',
     allowLiveSubmissions: false,
     requestTimeoutMs: 20000,
-    stateStorage: 'session',
+    // Browser cache only. Authenticated drafts persist through Core progress APIs.
+    stateStorage: 'local',
     showTechnicalErrors: false,
     requiredHealthActions: Object.freeze([
       'health',

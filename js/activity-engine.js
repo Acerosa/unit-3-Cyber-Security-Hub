@@ -727,6 +727,14 @@
           throw new Error('The loaded activity ID did not match the requested activity.');
         }
         state = stateApi.load(activityId);
+        state.activityVersion = activityData.activity.activityVersion;
+        if (window.Unit3ActivityKeyMap && typeof window.Unit3ActivityKeyMap.normaliseActivityKey === 'function') {
+          state.activityKey = window.Unit3ActivityKeyMap.normaliseActivityKey(activityId);
+        }
+        return stateApi.hydrate ? stateApi.hydrate(state) : state;
+      })
+      .then(function (resolved) {
+        state = resolved || state;
         showPanel('ae-loading', false);
         showPanel('ae-main', true);
         renderActivity();

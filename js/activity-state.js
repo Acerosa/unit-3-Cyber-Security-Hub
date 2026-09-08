@@ -28,8 +28,36 @@
     var mode =
       (configModule.ACTIVITY_ENGINE_CONFIG &&
         configModule.ACTIVITY_ENGINE_CONFIG.stateStorage) ||
-      'session';
-    return mode === 'local' ? global.localStorage : global.sessionStorage;
+      'local';
+    if (mode === 'session') return global.sessionStorage;
+    return global.localStorage;
+  }
+
+  function getRemote(state) {
+    var platform = global.LearningPlatform && global.LearningPlatform.platform;
+    var progress = platform && platform.progress;
+    var activityKey;
+    var activityVersion;
+    if (!progress || typeof progress.createStore !== 'function') return null;
+    if (!platform.auth || typeof platform.auth.isSignedIn !== 'function' || !platform.auth.isSignedIn()) {
+      return null;
+    }
+    activityKey = state && (state.activityKey || state.activityId);
+    activityVersion = state && state.activityVersion;
+    if (global.Unit3ActivityKeyMap && typeof global.Unit3ActivityKeyMap.normaliseActivityKey === 'function' && activityKey) {
+      activityKey = global.Unit3ActivityKeyMap.normaliseActivityKey(activityKey);
+    }
+    if (!activityKey || !activityVersion) return null;
+    try {
+      return progress.createStore({
+        activityKey: activityKey,
+        activityVersion: activityVersion,
+        storage: global.localStorage,
+        legacyKeys: [storageKey(state.activityId)]
+      });
+    } catch (err) {
+      return null;
+    }
   }
 
   function emptyState(activityId) {
@@ -54,6 +82,8 @@
       }
       return {
         activityId: activityId,
+        activityKey: parsed.activityKey || activityId,
+        activityVersion: parsed.activityVersion || null,
         attemptId: parsed.attemptId,
         startedAt: Number(parsed.startedAt) || Date.now(),
         responses: parsed.responses || {},
@@ -70,6 +100,8 @@
     if (!state || !state.activityId) return;
     var payload = {
       activityId: state.activityId,
+      activityKey: state.activityKey || state.activityId,
+      activityVersion: state.activityVersion || null,
       attemptId: state.attemptId,
       startedAt: state.startedAt,
       responses: state.responses || {},
@@ -82,6 +114,35 @@
     } catch (err) {
       /* storage may be unavailable */
     }
+    var remote = getRemote(payload);
+    if (remote && typeof remote.save === 'function') {
+      try { remote.save(payload); } catch (err) {}
+    }
+  }
+
+  function hydrate(state) {
+    var remote = getRemote(state);
+    if (!remote || typeof remote.hydrate !== 'function') {
+      return Promise.resolve(state);
+    }
+    return remote.hydrate(state).then(function (resolved) {
+      if (!resolved) return state;
+      var next = {
+        activityId: state.activityId,
+        activityKey: state.activityKey || resolved.activityKey,
+        activityVersion: state.activityVersion || resolved.activityVersion,
+        attemptId: resolved.attemptId || state.attemptId,
+        startedAt: resolved.startedAt || state.startedAt,
+        responses: resolved.responses || {},
+        markedSections: resolved.markedSections || {},
+        invalidatedSections: resolved.invalidatedSections || {},
+        finalSubmission: resolved.finalSubmission || null
+      };
+      save(next);
+      return next;
+    }).catch(function () {
+      return state;
+    });
   }
 
   function clear(activityId) {
@@ -125,8 +186,15 @@
   }
 
   function beginNewAttempt(activityId) {
+    var previous = load(activityId);
+    var remote = getRemote(previous);
     clear(activityId);
+    if (remote && typeof remote.clear === 'function') {
+      try { remote.clear({ local: false }); } catch (err) {}
+    }
     var state = emptyState(activityId);
+    state.activityVersion = previous.activityVersion || null;
+    state.activityKey = previous.activityKey || activityId;
     save(state);
     return state;
   }
@@ -136,6 +204,7 @@
     createAttemptId: createAttemptId,
     load: load,
     save: save,
+    hydrate: hydrate,
     clear: clear,
     setResponse: setResponse,
     setMarkedSection: setMarkedSection,
