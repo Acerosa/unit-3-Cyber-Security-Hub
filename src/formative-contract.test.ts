@@ -116,6 +116,98 @@ describe("formative contract mapping", () => {
     expect(resolveFormativeActivityVersion(mapper, "week2-malware-symptoms", "1.0.0")).toBe("1.1.0");
   });
 
+  it("keeps published Week 1 React versions instead of remapping to 1.2.0", () => {
+    expect(resolveFormativeActivityVersion(mapper, "u3-w01-misconceptions", "1.0.0")).toBe("1.0.0");
+    expect(resolveFormativeActivityVersion(mapper, "u3-w01-baseline", "1.3.0")).toBe("1.3.0");
+    expect(mapper.catalogueVersionFor("U3-W01-BASELINE")).toBe("1.2.0");
+  });
+
+  it("does not invent a Week 1 activity version when none is published", () => {
+    expect(resolveFormativeActivityVersion(mapper, "u3-w01-misconceptions", "")).toBe("");
+    expect(resolveFormativeActivityVersion(mapper, "u3-w01-misconceptions", "latest")).toBe("");
+  });
+
+  it("passes through published Week 1 package question IDs", () => {
+    expect(resolveFormativeRpcQuestionId(
+      mapper,
+      "u3-w01-misconceptions",
+      "u3-w01-misconceptions:m1"
+    )).toBe("u3-w01-misconceptions:m1");
+    expect(resolveFormativeRpcQuestionId(
+      mapper,
+      "u3-w01-incident-match",
+      "u3-w01-incident-match:map"
+    )).toBe("u3-w01-incident-match:map");
+  });
+
+  it("sends Week 1 Check payloads with package identity, not BAS-Q aliases", async () => {
+    const result = await resolveFormativeContract({
+      activityKey: "u3-w01-misconceptions",
+      activityVersion: "1.0.0",
+      responses: [{
+        question_id: "u3-w01-misconceptions:m1",
+        response_type: "single-choice",
+        response_payload: { optionId: "false" }
+      }]
+    });
+    expect(result.activityVersion).toBe("1.0.0");
+    expect(result.responses[0].question_id).toBe("u3-w01-misconceptions:m1");
+    expect(result.responses[0].response_payload).toEqual({ optionId: "false" });
+  });
+
+  it("marks Week 1 through mark_formative_response with published package identity", async () => {
+    const { client, calls } = fakeSupabaseRpc((payload) => ([{
+      question_id: (payload.p_responses as Array<{ question_id: string }>)[0].question_id,
+      awarded_score: 1,
+      max_score: 1,
+      is_correct: true,
+      requires_review: false,
+      marking_source: "server",
+      can_retry: true,
+      check_number: 1
+    }]));
+    const marking = createFormativeMarkingService({
+      auth: { isSignedIn: () => true },
+      api: {
+        markFormativeResponse: (payload: Record<string, unknown>) =>
+          client.schema("api").rpc("mark_formative_response", payload).then((r: { data: unknown }) => r.data)
+      },
+      resolveFormativeContract
+    });
+    const result = await marking.markBlock({
+      activityKey: "u3-w01-misconceptions",
+      activityVersion: "1.0.0",
+      block: {
+        id: "u3-w01-misconceptions-q-m1",
+        type: "single-choice",
+        content: {
+          formative: true,
+          questionId: "u3-w01-misconceptions:m1",
+          sourceQuestionId: "m1"
+        }
+      },
+      responses: { optionId: "false" }
+    });
+    expect(result.correct).toBe(true);
+    expect(calls).toHaveLength(1);
+    expect(calls[0].name).toBe("mark_formative_response");
+    expect(calls[0].payload.p_activity_key).toBe("u3-w01-misconceptions");
+    expect(calls[0].payload.p_activity_version).toBe("1.0.0");
+    expect(calls[0].payload.p_responses).toEqual([{
+      question_id: "u3-w01-misconceptions:m1",
+      response_type: "single-choice",
+      response_payload: { optionId: "false" }
+    }]);
+  });
+
+  it("fails closed on unknown Week 2 OCR local IDs", () => {
+    expect(() => resolveFormativeRpcQuestionId(
+      mapper,
+      "week2-ocr-question-practice",
+      "ocr-q99"
+    )).toThrow(/UNKNOWN_QUESTION/);
+  });
+
   it("canonicalises malware lowercase optionId to uppercase", async () => {
     const result = await resolveFormativeContract({
       activityKey: "week2-malware-symptoms",

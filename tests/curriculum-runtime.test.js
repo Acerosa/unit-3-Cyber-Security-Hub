@@ -31,7 +31,7 @@ test("the live hub loads teaching content through platform.curriculum.loadLatest
   assert.match(hook, /setContentReady/);
   assert.match(hook, /loadHubAdapters\(root\)/);
   assert.match(hook, /Promise\.all\(\[adapters, ready\]\)/);
-  assert.match(platform, /validatePackage/);
+  assert.match(platform, /validateLearnerSafePackage/);
   assert.match(platform, /loadBundled/);
   assert.match(platform, /import\("\.\.\/content\/unit-3-cyber-security\/package\.json"\)/);
   assert.doesNotMatch(platform, /fetch\(new URL/);
@@ -53,4 +53,44 @@ test("a published package change does not require the Git teaching snapshot", ()
 test("Git data banks are an explicit fallback only", () => {
   assert.match(read("week-2/data/threat-vulnerability-sort.js"), /__lpPublishedCurriculum/);
   assert.match(read("src/curriculum/apply-runtime.ts"), /UNIT3_CURRICULUM_FALLBACK/);
+});
+
+test("activities do not dangle question refs and Week 1 does not invent 0.1.0 versions", () => {
+  assert.ok(pkg.activities.every((item) => Array.isArray(item.relationships.questions) && item.relationships.questions.length === 0));
+  const week1 = pkg.activities.filter((item) => String(item.id).startsWith("u3-w01-"));
+  assert.equal(week1.length, 56);
+  for (const item of week1) {
+    assert.match(String(item.version), /^\d+\.\d+\.\d+$/);
+    assert.notEqual(item.version, "0.1.0");
+  }
+  assert.equal(week1.find((item) => item.id === "u3-w01-baseline")?.version, "1.3.0");
+  assert.equal(week1.find((item) => item.id === "u3-w01-misconceptions")?.version, "1.0.0");
+});
+
+test("learner-safe validation accepts the Unit 3 package after answer maps are stripped", () => {
+  const { createRequire } = require("node:module");
+  const requireFromHub = createRequire(path.join(root, "package.json"));
+  const content = requireFromHub("@learning-platform/content");
+  const learner = content.validateLearnerSafePackage(pkg);
+  assert.equal(learner.valid, true, content.formatIssues?.(learner.issues) || JSON.stringify(learner.issues));
+  const stripped = JSON.parse(JSON.stringify(pkg));
+  for (const activity of stripped.activities || []) {
+    for (const block of activity.blocks || []) {
+      if (block.content && Object.prototype.hasOwnProperty.call(block.content, "correct")) {
+        delete block.content.correct;
+      }
+      if (block.content && Object.prototype.hasOwnProperty.call(block.content, "correctOptionId")) {
+        delete block.content.correctOptionId;
+      }
+      if (block.content && Object.prototype.hasOwnProperty.call(block.content, "correctCategoryId")) {
+        delete block.content.correctCategoryId;
+      }
+    }
+  }
+  const strippedResult = content.validateLearnerSafePackage(stripped);
+  assert.equal(
+    strippedResult.valid,
+    true,
+    content.formatIssues?.(strippedResult.issues) || JSON.stringify(strippedResult.issues)
+  );
 });

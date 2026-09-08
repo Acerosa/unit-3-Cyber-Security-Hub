@@ -1,6 +1,6 @@
 import { createPlatform } from "@learning-platform/core";
 import { createClient } from "@supabase/supabase-js";
-import { validatePackage } from "@learning-platform/content";
+import { validateLearnerSafePackage } from "@learning-platform/content";
 import { APP_CONFIG } from "./config";
 import { createUnit3FormativeContractResolver } from "./formative-contract";
 import { createSitePath } from "./paths";
@@ -52,7 +52,9 @@ export function createHubPlatform(root: string, createPlatformFn = createPlatfor
   }, {
     supabaseClient: client,
     localStorage: typeof window !== "undefined" ? window.localStorage : undefined,
-    validatePackage,
+    // Published packages are learner-safe (answer maps stripped). Authoring
+    // validatePackage must not gate hydration — that rejects stripped drag-drop.
+    validatePackage: validateLearnerSafePackage,
     loadBundled: () => ensureBundledConfigured()
   });
 

@@ -2010,27 +2010,10 @@ function writeJson(file, value) {
   writeFileSync(file, JSON.stringify(value, null, 2) + "\n");
 }
 
-function questionsFor(item) {
-  return (item.blocks || [])
-    .filter((entry) =>
-      [
-        "single-choice",
-        "option-cards",
-        "classification",
-        "drag-drop",
-        "fill-gap",
-        "phrase-completion",
-        "ordering",
-        "sequence",
-        "short-response",
-        "reflection"
-      ].includes(entry.type)
-    )
-    .map((entry) => entry.id);
-}
-
 for (const item of NEW_ACTIVITIES) {
-  item.relationships.questions = questionsFor(item);
+  // Learner packages have no package.questions documents. T Level keeps this
+  // array empty so learner-safe validation does not report MISSING_REFERENCE.
+  item.relationships.questions = [];
 }
 
 const activitiesPath = join(contentDir, "activities.json");
