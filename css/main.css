@@ -897,6 +897,32 @@ a {
   display: none !important;
 }
 
+.join-class__form {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 32rem;
+}
+
+.join-class__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.join-class__status {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.join-class__status--error {
+  color: var(--color-danger);
+}
+
+.join-class__hint {
+  margin-bottom: 0;
+}
+
 /* Leave room for the docked practice progress panel (UI catalogue chrome). */
 [data-lp-week-page] {
   padding-bottom: 18rem;
