@@ -32,6 +32,8 @@ test("the live hub loads teaching content through platform.curriculum.loadLatest
   assert.match(hook, /loadHubAdapters\(root\)/);
   assert.match(hook, /Promise\.all\(\[adapters, ready\]\)/);
   assert.match(platform, /validateLearnerSafePackage/);
+  assert.match(platform, /validatePackage: validateLearnerSafePackage/);
+  assert.doesNotMatch(platform, /import\s*\{\s*validatePackage\s*\}/);
   assert.match(platform, /loadBundled/);
   assert.match(platform, /import\("\.\.\/content\/unit-3-cyber-security\/package\.json"\)/);
   assert.doesNotMatch(platform, /fetch\(new URL/);
@@ -67,12 +69,20 @@ test("activities do not dangle question refs and Week 1 does not invent 0.1.0 ve
   assert.equal(week1.find((item) => item.id === "u3-w01-misconceptions")?.version, "1.0.0");
 });
 
+test("CI pins the reviewed Content package that exports learner-safe validation", () => {
+  assert.match(read(".github/workflows/pages.yml"), /learning-platform-content[\s\S]*ref: v0\.1\.4/);
+});
+
 test("learner-safe validation accepts the Unit 3 package after answer maps are stripped", () => {
   const { createRequire } = require("node:module");
   const requireFromHub = createRequire(path.join(root, "package.json"));
-  const content = requireFromHub("@learning-platform/content");
-  const learner = content.validateLearnerSafePackage(pkg);
-  assert.equal(learner.valid, true, content.formatIssues?.(learner.issues) || JSON.stringify(learner.issues));
+  const {
+    validateLearnerSafePackage,
+    formatIssues
+  } = requireFromHub("@learning-platform/content");
+  assert.equal(typeof validateLearnerSafePackage, "function");
+  const learner = validateLearnerSafePackage(pkg);
+  assert.equal(learner.valid, true, formatIssues?.(learner.issues) || JSON.stringify(learner.issues));
   const stripped = JSON.parse(JSON.stringify(pkg));
   for (const activity of stripped.activities || []) {
     for (const block of activity.blocks || []) {
@@ -87,10 +97,10 @@ test("learner-safe validation accepts the Unit 3 package after answer maps are s
       }
     }
   }
-  const strippedResult = content.validateLearnerSafePackage(stripped);
+  const strippedResult = validateLearnerSafePackage(stripped);
   assert.equal(
     strippedResult.valid,
     true,
-    content.formatIssues?.(strippedResult.issues) || JSON.stringify(strippedResult.issues)
+    formatIssues?.(strippedResult.issues) || JSON.stringify(strippedResult.issues)
   );
 });
