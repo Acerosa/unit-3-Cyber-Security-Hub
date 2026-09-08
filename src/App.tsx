@@ -1,8 +1,15 @@
 import { LearnerHeader, LoadingState } from "@learning-platform/ui";
 import { useEffect, useMemo } from "react";
+import { JoinClassPanel } from "./components/JoinClassPanel";
 import { Unit3HubShell } from "./components/Unit3HubShell";
 import { APP_CONFIG } from "./config";
 import { liveContentPackage } from "./curriculum/apply-runtime";
+import {
+  JOIN_CLASS_PROMPT,
+  needsJoinClass,
+  withEnrolmentGuardedMarking,
+  type EnrolmentRow
+} from "./enrolment";
 import { useHubPlatform } from "./hooks/useHubPlatform";
 import { currentIds, type PageContext } from "./page-context";
 import { breadcrumbs, findRoute, pageHeader } from "./page-copy";
@@ -23,35 +30,87 @@ function PageBody({
   context,
   contentReady,
   adaptersReady,
-  platform
+  platform,
+  platformState,
+  accountDialog,
+  onJoined
 }: {
   context: PageContext;
   contentReady: boolean;
   adaptersReady: boolean;
   platform?: unknown;
+  platformState: string;
+  accountDialog?: { open: (trigger?: EventTarget | null) => void; showOnboarding?: () => void } | null;
+  onJoined?: () => void;
 }) {
   const route = findRoute(context);
   const scripts = route?.scripts || [];
+  const enrolments = (platform as {
+    learner?: { getState?: () => { context?: { enrolments?: EnrolmentRow[] } | null } };
+  })?.learner?.getState?.()?.context?.enrolments;
+  const joinGate = needsJoinClass(platformState, { enrolments }) || platformState === "signed-out";
+  const showJoin = joinGate && (
+    context.view === "home"
+    || context.view === "week"
+    || context.view === "activity"
+    || context.view === "week1-activity"
+  );
+  const joinPanel = showJoin ? (
+    <JoinClassPanel
+      compact
+      root={context.root}
+      platformState={platformState}
+      platform={platform as never}
+      onSignIn={(trigger) => accountDialog?.open(trigger)}
+      onJoined={onJoined}
+    />
+  ) : null;
+
   if (route?.redirectTo) {
     return <RouteRedirect root={context.root} to={route.redirectTo} />;
   }
   if (!contentReady) {
-    return <LoadingState message="Loading curriculum..." />;
+    return (
+      <>
+        {joinPanel}
+        <LoadingState message="Loading curriculum..." />
+      </>
+    );
   }
   if (context.view === "home") {
-    return <HomePage root={context.root} livePackage={liveContentPackage()} />;
+    return (
+      <>
+        {joinPanel}
+        <HomePage root={context.root} livePackage={liveContentPackage()} />
+      </>
+    );
   }
   if (context.view === "week") {
-    return <WeekPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} />;
+    return (
+      <>
+        {joinPanel}
+        <WeekPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} />
+      </>
+    );
   }
   if (context.view === "activity" || context.view === "week1-activity") {
-    return <ActivityPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} platform={platform} />;
+    return (
+      <>
+        {joinPanel}
+        <ActivityPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} platform={platform} />
+      </>
+    );
   }
-  return <PageHost root={context.root} scripts={scripts} adaptersReady={adaptersReady} />;
+  return (
+    <>
+      {joinPanel}
+      <PageHost root={context.root} scripts={scripts} adaptersReady={adaptersReady} />
+    </>
+  );
 }
 
 export function App({ context }: { context: PageContext }) {
-  const { learner, theme, accountDialog, platform, contentReady, adaptersReady } = useHubPlatform(context.root);
+  const { learner, theme, accountDialog, platform, contentReady, adaptersReady, platformState } = useHubPlatform(context.root);
   const header = pageHeader(context);
   const navigation = useMemo(
     () => (contentReady
@@ -59,6 +118,26 @@ export function App({ context }: { context: PageContext }) {
       : buildUnit3NavigationFallback(context.root)),
     [context.root, contentReady]
   );
+  const enrolments = (learner as { enrolments?: EnrolmentRow[] } | null)?.enrolments;
+  const joinNeeded = needsJoinClass(platformState, { enrolments });
+  const signedIn = Boolean(learner) || joinNeeded;
+  const guardedPlatform = useMemo(
+    () => withEnrolmentGuardedMarking(platform as never, () => platformState),
+    [platform, platformState]
+  );
+
+  function openAccount(trigger?: EventTarget | null) {
+    if (joinNeeded && typeof accountDialog?.showOnboarding === "function") {
+      accountDialog.showOnboarding();
+      return;
+    }
+    accountDialog?.open(trigger);
+  }
+
+  async function refreshAfterJoin() {
+    const learner = platform.learner as { refresh?: () => Promise<unknown> };
+    await learner.refresh?.();
+  }
 
   return (
     <Unit3HubShell
@@ -70,13 +149,25 @@ export function App({ context }: { context: PageContext }) {
       theme={theme}
       actions={(
         <div className="student-account" data-student-account="">
-          {learner ? (
+          {signedIn ? (
             <>
-              <span className="student-account__name">{learner.displayName || learner.fullName || "Learner"}</span>
+              <span className="student-account__name">
+                {learner?.displayName || learner?.fullName || (joinNeeded ? "Finish joining your class" : "Learner")}
+              </span>
+              {joinNeeded ? (
+                <button
+                  className="lp-button"
+                  type="button"
+                  data-join-class-open=""
+                  onClick={(event) => openAccount(event.currentTarget)}
+                >
+                  {JOIN_CLASS_PROMPT}
+                </button>
+              ) : null}
               <button
                 className="lp-button lp-button--secondary"
                 type="button"
-                onClick={(event) => accountDialog?.open(event.currentTarget)}
+                onClick={(event) => openAccount(event.currentTarget)}
               >
                 Account
               </button>
@@ -112,7 +203,15 @@ export function App({ context }: { context: PageContext }) {
         ]
       }}
     >
-      <PageBody context={context} contentReady={contentReady} adaptersReady={adaptersReady} platform={platform} />
+      <PageBody
+        context={context}
+        contentReady={contentReady}
+        adaptersReady={adaptersReady}
+        platform={guardedPlatform}
+        platformState={platformState}
+        accountDialog={accountDialog}
+        onJoined={() => { void refreshAfterJoin(); }}
+      />
     </Unit3HubShell>
   );
 }

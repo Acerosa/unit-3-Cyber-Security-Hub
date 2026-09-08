@@ -9,6 +9,7 @@ import { createHubPlatform, type HubPlatform } from "../platform";
 type AccountDialog = {
   element: HTMLElement;
   open: (trigger?: EventTarget | null) => void;
+  showOnboarding?: () => void;
   destroy?: () => void;
 };
 

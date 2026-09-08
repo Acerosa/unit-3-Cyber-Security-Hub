@@ -18,14 +18,14 @@
   }
 
   var LEARNER_MESSAGES = Object.freeze({
-    AUTH_REQUIRED: "Sign in to your learner account before submitting or viewing progress.",
-    AUTHENTICATION_REQUIRED: "Sign in to your learner account before submitting or viewing progress.",
+    AUTH_REQUIRED: "Sign in to continue.",
+    AUTHENTICATION_REQUIRED: "Sign in to continue.",
     PERMISSION_DENIED: "Your account does not have permission to submit this activity.",
     UNKNOWN_ACTIVITY: "This activity is not recognised by the learner service. Contact your tutor.",
     INVALID_ACTIVITY_VERSION: "This activity version is not published for learner submission.",
     VERSION_MISMATCH: "This activity version is out of date. Refresh the page and try again.",
-    ACTIVITY_NOT_ASSIGNED: "This activity is not assigned to you. Contact your tutor.",
-    ASSIGNMENT_NOT_FOUND: "This activity is not assigned to you. Contact your tutor.",
+    ACTIVITY_NOT_ASSIGNED: "You need to join your Cyber Security class before this activity can be checked.",
+    ASSIGNMENT_NOT_FOUND: "You need to join your Cyber Security class before this activity can be checked.",
     ACTIVITY_ASSIGNMENT_AMBIGUOUS: "This activity has conflicting assignments. Contact your tutor.",
     ATTEMPT_ID_CONFLICT: "This attempt was already submitted with different answers. Start a new attempt.",
     CLIENT_ATTEMPT_ID_CONFLICT: "This attempt was already submitted with different answers. Start a new attempt.",

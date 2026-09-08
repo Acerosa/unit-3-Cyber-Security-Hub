@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import pkg from "../../content/unit-3-cyber-security/package.json";
 import { configureBundledPackage } from "../curriculum/runtime-weeks";
+import { JOIN_CLASS_MESSAGE, withEnrolmentGuardedMarking } from "../enrolment";
 import { ActivityPage } from "../pages/ActivityPage";
 
 vi.mock("../adapters/load-hub-adapters", () => ({
@@ -62,5 +63,45 @@ describe("server-marked catalogue progress", () => {
     const payload = platform.marking.markBlock.mock.calls[0][0];
     expect(JSON.stringify(payload)).not.toMatch(/correctOptionId/);
     expect(payload.responses).toEqual(expect.objectContaining({ optionId: expect.any(String) }));
+  });
+
+  it("shows join-class feedback instead of a generic retry when other-course ready blocks marking", async () => {
+    window.__lpPackage = pkg;
+    window.Unit3Week5Progress = { markStarted: vi.fn(), markCompleted: vi.fn() };
+    const markBlock = vi.fn(async () => ({ completed: true, correct: true }));
+    const platform = withEnrolmentGuardedMarking(
+      {
+        marking: { markBlock },
+        learner: {
+          getState: () => ({
+            context: { enrolments: [{ status: "active", groupCode: "TLEVEL-DSD-Y2" }] }
+          })
+        }
+      },
+      () => "ready"
+    );
+
+    render(
+      <ActivityPage
+        context={{
+          page: "week-5-vulnerability-patterns",
+          section: "week-5",
+          root: "../..",
+          view: "activity",
+          week: 5,
+          activity: "vulnerability-patterns"
+        }}
+        contentReady
+        adaptersReady
+        platform={platform}
+      />
+    );
+
+    const first = document.querySelector('[data-lp-block="option-cards"]') as HTMLElement;
+    fireEvent.click(within(first).getByRole("radio", { name: /A threat actor’s motivation/ }));
+    fireEvent.click(within(first).getByRole("button", { name: "Check answer" }));
+
+    expect(await screen.findByText(JOIN_CLASS_MESSAGE)).toBeTruthy();
+    expect(markBlock).not.toHaveBeenCalled();
   });
 });
