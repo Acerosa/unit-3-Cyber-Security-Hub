@@ -31,7 +31,9 @@ test("the live hub loads teaching content through platform.curriculum.loadLatest
   assert.match(hook, /setContentReady/);
   assert.match(hook, /loadHubAdapters\(root\)/);
   assert.match(hook, /Promise\.all\(\[adapters, ready\]\)/);
-  assert.match(platform, /validatePackage/);
+  assert.match(platform, /validateLearnerSafePackage/);
+  assert.match(platform, /validatePackage: validateLearnerSafePackage/);
+  assert.doesNotMatch(platform, /import\s*\{\s*validatePackage\s*\}/);
   assert.match(platform, /loadBundled/);
   assert.match(platform, /import\("\.\.\/content\/unit-3-cyber-security\/package\.json"\)/);
   assert.doesNotMatch(platform, /fetch\(new URL/);
@@ -53,4 +55,31 @@ test("a published package change does not require the Git teaching snapshot", ()
 test("Git data banks are an explicit fallback only", () => {
   assert.match(read("week-2/data/threat-vulnerability-sort.js"), /__lpPublishedCurriculum/);
   assert.match(read("src/curriculum/apply-runtime.ts"), /UNIT3_CURRICULUM_FALLBACK/);
+});
+
+test("learner-safe Week 1 drag-drop hydrates after answer maps are stripped", () => {
+  const {
+    learnerSafePackage,
+    validatePackage,
+    validateLearnerSafePackage,
+    formatIssues
+  } = require("@learning-platform/content");
+  const match = pkg.activities.find((item) => item.id === "u3-w01-incident-match");
+  assert.ok(match);
+  assert.deepEqual(match.relationships.questions, []);
+  const safe = learnerSafePackage(structuredClone(pkg));
+  const stripped = (safe.activities.find((item) => item.id === "u3-w01-incident-match").blocks || [])
+    .find((block) => block.type === "drag-drop");
+  assert.ok(stripped);
+  assert.equal(Object.prototype.hasOwnProperty.call(stripped.content || {}, "correct"), false);
+  const authoringSafe = validatePackage(safe);
+  assert.equal(authoringSafe.valid, false);
+  assert.ok((authoringSafe.issues || []).some((issue) => issue.code === "MISSING_FIELD"));
+  // Full hub package still has legacy Week 2+ question refs; learner-safe
+  // validation is required so stripped drag-drop does not add a second failure.
+  const learnerCodes = {};
+  for (const issue of validateLearnerSafePackage(safe).issues || []) {
+    learnerCodes[issue.code] = (learnerCodes[issue.code] || 0) + 1;
+  }
+  assert.equal(learnerCodes.MISSING_FIELD, undefined, formatIssues(validateLearnerSafePackage(safe).issues));
 });

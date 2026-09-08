@@ -2030,7 +2030,9 @@ function questionsFor(item) {
 }
 
 for (const item of NEW_ACTIVITIES) {
-  item.relationships.questions = questionsFor(item);
+  // Catalogue delivery has an empty questions array. Question ids on the
+  // activity would fail published-package validation (MISSING_REFERENCE).
+  item.relationships.questions = [];
 }
 
 const activitiesPath = join(contentDir, "activities.json");
@@ -2052,6 +2054,7 @@ const others = activities.filter((item) => !String(item.id).startsWith("u3-w01-"
 const orderedWeek1 = [...SESSION_1_IDS, ...SESSION_2_IDS].map((id) => {
   const item = byId.get(id);
   if (!item) throw new Error(`missing activity ${id}`);
+  item.relationships = { ...item.relationships, questions: [] };
   return item;
 });
 const nextActivities = [...orderedWeek1, ...others];

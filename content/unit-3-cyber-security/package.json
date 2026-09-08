@@ -615,14 +615,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-baseline-q-b1",
-          "u3-w01-baseline-q-b2",
-          "u3-w01-baseline-q-b3",
-          "u3-w01-baseline-q-b4",
-          "u3-w01-baseline-q-b5",
-          "u3-w01-baseline-checkpoint"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -899,11 +892,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-misconceptions-q-m1",
-          "u3-w01-misconceptions-q-m2",
-          "u3-w01-misconceptions-q-m3"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -1055,9 +1044,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-confidence-note"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -1126,10 +1113,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-definition-choice-q-d1",
-          "u3-w01-definition-choice-q-d2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -1264,9 +1248,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-what-it-protects-q-sort"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -1376,10 +1358,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-definition-gap-q-g1",
-          "u3-w01-definition-gap-q-g2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -1514,13 +1493,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-cia-q-c1",
-          "u3-w01-cia-q-c2",
-          "u3-w01-cia-q-c3",
-          "u3-w01-cia-q-c4",
-          "u3-w01-cia-checkpoint"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -1758,10 +1731,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-cia-confidentiality-q-c1",
-          "u3-w01-cia-confidentiality-q-c2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -1894,10 +1864,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-cia-integrity-q-i1",
-          "u3-w01-cia-integrity-q-i2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -2030,10 +1997,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-cia-availability-q-a1",
-          "u3-w01-cia-availability-q-a2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -2166,9 +2130,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-cia-distinguish-q-sort"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -2282,10 +2244,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-cia-combined-q-x1",
-          "u3-w01-cia-combined-q-x2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -2418,11 +2377,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-incident-definitions-q-t1",
-          "u3-w01-incident-definitions-q-t2",
-          "u3-w01-incident-definitions-q-t3"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -2607,9 +2562,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-incident-match-q-map"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -2742,10 +2695,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-incidents-classification",
-          "u3-w01-incidents-justify"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -2907,11 +2857,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-incident-recognise-q-r1",
-          "u3-w01-incident-recognise-q-r2",
-          "u3-w01-incident-recognise-q-r3"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -3084,10 +3030,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-incident-distinguish-q-s1",
-          "u3-w01-incident-distinguish-q-s2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -3220,10 +3163,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-incident-evidence-q-e1",
-          "u3-w01-incident-evidence-q-e2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -3356,11 +3296,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-cia-incident-pair-q-p1",
-          "u3-w01-cia-incident-pair-q-p2",
-          "u3-w01-cia-incident-pair-q-p3"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -3533,10 +3469,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-cia-incident-justify-q-j1",
-          "u3-w01-cia-incident-justify-justify"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -3658,10 +3591,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-cia-incident-challenge-q-rank",
-          "u3-w01-cia-incident-challenge-explain"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -3772,10 +3702,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-northbank-cia-q-n1",
-          "u3-w01-northbank-cia-q-n2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -3908,9 +3835,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-northbank-incidents-q-sort"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -4031,10 +3956,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-northbank-consequences-q-q1",
-          "u3-w01-northbank-consequences-write"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -4144,10 +4066,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-thm-prep-q-p1",
-          "u3-w01-thm-prep-q-p2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -4292,10 +4211,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-thm-retrieval-q-r1",
-          "u3-w01-thm-retrieval-note"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -4405,9 +4321,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-glossary-terms"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -4489,9 +4403,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-session1-review-note"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -4572,15 +4484,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-retrieval-q-r1",
-          "u3-w01-retrieval-q-r2",
-          "u3-w01-retrieval-q-r3",
-          "u3-w01-retrieval-q-r4",
-          "u3-w01-retrieval-q-r5",
-          "u3-w01-retrieval-q-r6",
-          "u3-w01-retrieval-checkpoint"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -4896,10 +4800,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-retrieval-cia-q-c1",
-          "u3-w01-retrieval-cia-q-c2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -5026,9 +4927,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-retrieval-incidents-q-sort"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -5147,10 +5046,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-retrieval-terms-q-t1",
-          "u3-w01-retrieval-terms-q-t2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -5283,11 +5179,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-retrieval-tf-q-t1",
-          "u3-w01-retrieval-tf-q-t2",
-          "u3-w01-retrieval-tf-q-t3"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -5427,10 +5319,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-personal-data-q-p1",
-          "u3-w01-personal-data-write"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -5540,9 +5429,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-organisational-data-q-o1"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -5635,9 +5522,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-state-data-q-s1"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -5730,9 +5615,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-who-is-harmed-q-sort"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -5824,10 +5707,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-cia-threatened-q-h1",
-          "u3-w01-cia-threatened-q-h2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -5948,9 +5828,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-nb-data-holdings-q-sort"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -6055,9 +5933,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-nb-stakeholders-q-s1"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -6138,9 +6014,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-nb-consequences-q-c1"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -6221,9 +6095,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-nb-importance-write"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -6293,13 +6165,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-command-words-q-cw1",
-          "u3-w01-command-words-q-cw2",
-          "u3-w01-command-words-q-cw3",
-          "u3-w01-command-words-q-cw4",
-          "u3-w01-command-words-checkpoint"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -6537,10 +6403,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-identify-vs-describe-q-c1",
-          "u3-w01-identify-vs-describe-q-c2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -6673,10 +6536,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-command-spot-weak-q-w1",
-          "u3-w01-command-spot-weak-q-w2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -6797,9 +6657,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-command-improve-q-i1"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -6880,10 +6738,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-marks-depth-q-m1",
-          "u3-w01-marks-depth-q-m2"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -7016,9 +6871,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-marks-earned-q-e1"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -7111,9 +6964,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-marks-missing-q-m1"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -7206,9 +7057,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-ocr-recognise-q-r1"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -7301,9 +7150,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-ocr-evidence-q-e1"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -7384,9 +7231,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-ocr-select-better-q-b1"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -7467,9 +7312,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-ocr-practice-checkpoint"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -7551,9 +7394,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-weak-answer-spot-q-w1"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -7646,9 +7487,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-peer-improvement-checkpoint"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
@@ -7730,9 +7569,7 @@
           "LO1"
         ],
         "assignment": "formative-practice",
-        "questions": [
-          "u3-w01-improvement-action-note"
-        ],
+        "questions": [],
         "assets": []
       },
       "blocks": [
