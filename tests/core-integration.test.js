@@ -70,8 +70,8 @@ test("one composition root owns shared platform services", () => {
   assert.match(source, /supabaseClient:\s*client/);
   assert.match(source, /assignment:\s*platform\.assignments/);
   assert.match(source, /navigationMode:\s*"as-supplied"/);
-  assert.match(read("js/config/app-config.js"), /coreVersion:\s*"0\.2\.11"/);
-  assert.match(read("src/config.ts"), /coreVersion:\s*"0\.2\.11"/);
+  assert.match(read("js/config/app-config.js"), /coreVersion:\s*"0\.2\.12"/);
+  assert.match(read("src/config.ts"), /coreVersion:\s*"0\.2\.12"/);
   assert.match(source, /resolveFormativeContract:\s*createUnit3FormativeContractResolver\(\)/);
   assert.doesNotMatch(source, /installFormativeRpcNormalizer/);
 });
@@ -135,6 +135,45 @@ test("legacy getMyAssignments prefers hub-scoped Unit 3 assignments", async () =
   assert.deepEqual(rows, [{ activity_key: "week2-malware-symptoms" }]);
 });
 
+test("legacy getMyAssignments falls back when getHubAssignments is unavailable", async () => {
+  const source = read("js/core/supabase-learning-api.js");
+  const mixed = [
+    { activity_key: "week2-malware-symptoms" },
+    { activity_key: "foundations-requirements-classification" }
+  ];
+  const sandbox = {
+    window: {
+      SUPABASE_CONFIG: {},
+      LearningPlatform: {
+        platform: {
+          config: { hubCode: "unit-3-cyber-security" },
+          client: { schema() { return {}; } },
+          auth: { isSignedIn() { return true; } },
+          profile: { getProfile() { return Promise.resolve(null); } },
+          enrolment: { getEnrolments() { return Promise.resolve([]); } },
+          onboarding: {
+            getRegistrationOptions() { return Promise.resolve([]); },
+            complete() { return Promise.resolve(null); }
+          },
+          assignment: {
+            getAssignments() { return Promise.resolve(mixed); },
+            getCurriculumDelivery() { return Promise.resolve([]); }
+          },
+          progress: {
+            getAttempts() { return Promise.resolve([]); },
+            getResponses() { return Promise.resolve([]); },
+            getProgress() { return Promise.resolve([]); }
+          }
+        }
+      }
+    }
+  };
+  vm.createContext(sandbox);
+  vm.runInContext(source, sandbox, { filename: "js/core/supabase-learning-api.js" });
+  const rows = await sandbox.window.SupabaseLearningApi.getMyAssignments();
+  assert.deepEqual(rows, mixed);
+});
+
 test("Core Auth restores the SDK-owned session", async () => {
   const core = loadCore();
   const session = { user: { id: "learner-1" }, access_token: "sdk-owned" };
@@ -183,7 +222,7 @@ test("canonical manifest declares the active Phase 1 contracts", () => {
   assert.equal(manifest.hubId, "unit-3-cyber-security");
   assert.deepEqual(manifest.courses, ["ocr-level-3-it"]);
   assert.deepEqual(manifest.compatibility.required, {
-    coreVersion: "0.2.11",
+    coreVersion: "0.2.12",
     learnerApiContractVersion: "0.1.0",
     submissionContractVersion: "0.1.0"
   });

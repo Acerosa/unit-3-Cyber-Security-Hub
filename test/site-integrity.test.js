@@ -112,12 +112,12 @@ test("week 2 and 3 quiz engines use optionLabel instead of stringifying option o
   assert.match(read("src/curriculum/from-package.ts"), /normalizeActivityQuestions/);
 });
 
-test("GitHub Pages consumes reviewed Core 0.2.11, UI 0.1.10 and Content 0.1.4", function () {
+test("GitHub Pages consumes reviewed Core 0.2.12, UI 0.1.10 and Content 0.1.4", function () {
   const workflow = read(".github/workflows/pages.yml");
   assert.match(workflow, /Check out reviewed UI/);
   assert.match(workflow, /Acerosa\/Acerosa-learning-platform-ui/);
   assert.match(workflow, /ref:\s*v0\.1\.10/);
-  assert.match(workflow, /ref:\s*v0\.2\.11/);
+  assert.match(workflow, /ref:\s*v0\.2\.12/);
   assert.match(workflow, /ref:\s*v0\.1\.4/);
 });
 
