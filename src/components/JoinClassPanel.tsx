@@ -5,6 +5,7 @@ import {
   JOIN_CLASS_PROMPT,
   SIGN_IN_TO_CONTINUE,
   hasExpectedGroupEnrolment,
+  isAcceptedCyberGroupCode,
   isCyberRegistrationOption,
   needsJoinClass,
   normaliseRegistrationKey,
@@ -64,7 +65,7 @@ function profileFromPlatform(platform: JoinClassPanelProps["platform"]): Profile
 function cyberEnrolment(enrolments: EnrolmentRow[] | null | undefined) {
   return (enrolments || []).find((row) =>
     String(row?.status || "").toLowerCase() === "active"
-    && String(row?.groupCode || "").toUpperCase() === EXPECTED_GROUP_CODE
+    && isAcceptedCyberGroupCode(row?.groupCode)
   ) || null;
 }
 
@@ -80,7 +81,7 @@ export function JoinClassPanel({
   const enrolments = (context?.enrolments || null) as EnrolmentRow[] | null;
   const accessNeedsJoin = needsJoinClass(platformState, { enrolments });
   const enrolled = (platformState === "ready" || platformState === "no-assignments")
-    && hasExpectedGroupEnrolment(enrolments, EXPECTED_GROUP_CODE);
+    && hasExpectedGroupEnrolment(enrolments);
   const guest = platformState === "signed-out";
   const initial = profileFromPlatform(platform);
 

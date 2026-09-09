@@ -6,6 +6,8 @@ export const JOIN_CLASS_MESSAGE =
 export const JOIN_CLASS_PROMPT = "Join your class to continue";
 export const EXPECTED_REGISTRATION_KEY = "cyber-year-1-test";
 export const EXPECTED_GROUP_CODE = "CYBER-TEST-A";
+export const QA_GROUP_CODE = "CYBER-TEST-QA";
+export const ACCEPTED_GROUP_CODES = Object.freeze([EXPECTED_GROUP_CODE, QA_GROUP_CODE]);
 
 export type EnrolmentAccess =
   | "guest"
@@ -26,20 +28,28 @@ export type EnrolmentAccessOptions = {
   enrolments?: EnrolmentRow[] | null;
 };
 
+export function isAcceptedCyberGroupCode(groupCode: string | null | undefined): boolean {
+  const code = String(groupCode || "").trim().toUpperCase();
+  return (ACCEPTED_GROUP_CODES as readonly string[]).includes(code);
+}
+
 /**
- * True when the learner has an active enrolment in this hub's delivery group.
- * Other-course enrolments (e.g. T Level or L2E) must not unlock Cyber marking.
+ * True when the learner has an active enrolment in this hub's teaching group
+ * or the exclusive Unit 3 QA group. Other-course enrolments (e.g. T Level or
+ * L2E) must not unlock Cyber marking. Exclusive-smoke stays closed: it is not
+ * a join-class option.
  */
 export function hasExpectedGroupEnrolment(
   enrolments: EnrolmentRow[] | null | undefined,
-  groupCode: string = EXPECTED_GROUP_CODE
+  groupCode?: string
 ): boolean {
   if (!Array.isArray(enrolments) || enrolments.length === 0) return false;
   const expected = String(groupCode || "").trim().toUpperCase();
   return enrolments.some((row) => {
     const status = String(row?.status || "").trim().toLowerCase();
     const code = String(row?.groupCode || "").trim().toUpperCase();
-    return status === "active" && code === expected;
+    if (status !== "active") return false;
+    return expected ? code === expected : isAcceptedCyberGroupCode(code);
   });
 }
 
@@ -110,7 +120,7 @@ type GuardedPlatform = {
 
 /**
  * Prevents mark_formative_response from running until the learner is enrolled
- * in CYBER-TEST-A. Cross-hub enrolments alone are not enough.
+ * in CYBER-TEST-A or CYBER-TEST-QA. Cross-hub enrolments alone are not enough.
  */
 export function withEnrolmentGuardedMarking<T extends GuardedPlatform>(
   platform: T,
