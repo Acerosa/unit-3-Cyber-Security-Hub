@@ -1,17 +1,13 @@
 import { FormEvent, useEffect, useState } from "react";
 import {
   EXPECTED_GROUP_CODE,
-  EXPECTED_REGISTRATION_KEY,
   JOIN_CLASS_PROMPT,
   SIGN_IN_TO_CONTINUE,
   hasExpectedGroupEnrolment,
   isAcceptedCyberGroupCode,
-  isCyberRegistrationOption,
   needsJoinClass,
   normaliseRegistrationKey,
-  optionLabel,
-  type EnrolmentRow,
-  type RegistrationOption
+  type EnrolmentRow
 } from "../enrolment";
 import { createSitePath } from "../paths";
 
@@ -23,8 +19,8 @@ type ProfileFields = {
 
 type OnboardingService = {
   getPending?: () => Partial<ProfileFields> & { registrationKey?: string } | null;
-  getRegistrationOptions?: () => Promise<RegistrationOption[]>;
-  complete?: (details: ProfileFields, registrationKey: string) => Promise<unknown>;
+  complete?: (details: ProfileFields) => Promise<unknown>;
+  joinClass?: (classKey: string) => Promise<unknown>;
 };
 
 type JoinClassPanelProps = {
@@ -88,29 +84,10 @@ export function JoinClassPanel({
   const [firstName, setFirstName] = useState(initial.firstName);
   const [surname, setSurname] = useState(initial.surname);
   const [studentNumber, setStudentNumber] = useState(initial.studentNumber);
-  const [registrationKey, setRegistrationKey] = useState(
-    platform.onboarding?.getPending?.()?.registrationKey || EXPECTED_REGISTRATION_KEY
-  );
-  const [options, setOptions] = useState<RegistrationOption[]>([]);
+  const [registrationKey, setRegistrationKey] = useState("");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
-
-  useEffect(() => {
-    if (!accessNeedsJoin) return;
-    let cancelled = false;
-    void (async () => {
-      try {
-        const rows = await platform.onboarding?.getRegistrationOptions?.();
-        if (!cancelled && Array.isArray(rows)) {
-          setOptions(rows.filter(isCyberRegistrationOption));
-        }
-      } catch {
-        if (!cancelled) setOptions([]);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [accessNeedsJoin, platform]);
 
   useEffect(() => {
     const next = profileFromPlatform(platform);
@@ -184,12 +161,15 @@ export function JoinClassPanel({
           learnerMessage: "Enter the class registration key from your tutor."
         });
       }
-      if (typeof platform.onboarding?.complete !== "function") {
+      if (typeof platform.onboarding?.joinClass !== "function") {
         throw Object.assign(new Error("Join class is unavailable."), {
           learnerMessage: "Join class is unavailable right now. Try again shortly."
         });
       }
-      await platform.onboarding.complete(details, key);
+      if (needsProfileFields && typeof platform.onboarding?.complete === "function") {
+        await platform.onboarding.complete(details);
+      }
+      await platform.onboarding.joinClass(key);
       setStatus("You have joined your class.");
       onJoined?.();
     } catch (failure) {
@@ -258,29 +238,10 @@ export function JoinClassPanel({
             spellCheck={false}
             value={registrationKey}
             onChange={(event) => setRegistrationKey(event.target.value)}
-            placeholder={EXPECTED_REGISTRATION_KEY}
+            placeholder="Enter the key from your tutor"
             required
           />
         </label>
-        {options.length > 0 ? (
-          <label className="lp-form__field">
-            <span>Or choose an open class</span>
-            <select
-              data-join-class-option=""
-              value={options.some((item) => item.registrationKey === registrationKey) ? registrationKey : ""}
-              onChange={(event) => {
-                if (event.target.value) setRegistrationKey(event.target.value);
-              }}
-            >
-              <option value="">Choose a year and group</option>
-              {options.map((option) => (
-                <option key={option.registrationKey} value={option.registrationKey}>
-                  {optionLabel(option)}
-                </option>
-              ))}
-            </select>
-          </label>
-        ) : null}
         <p
           className={error ? "join-class__status join-class__status--error" : "join-class__status"}
           role={error ? "alert" : "status"}
