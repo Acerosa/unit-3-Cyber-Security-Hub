@@ -1,4 +1,5 @@
 import { createPlatform } from "@learning-platform/core";
+import { createSupabaseClient } from "@learning-platform/core/advanced";
 import { createClient } from "@supabase/supabase-js";
 import { validateLearnerSafePackage } from "@learning-platform/content";
 import { APP_CONFIG } from "./config";
@@ -23,13 +24,11 @@ export function ensureBundledConfigured() {
 export function createHubPlatform(root: string, createPlatformFn = createPlatform) {
   ensureBundledConfigured();
   const config = supabaseConfig();
-  const client = createClient(config.projectUrl, config.publishableKey, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
-  });
+  const client = createSupabaseClient({
+    projectUrl: config.projectUrl,
+    publishableKey: config.publishableKey,
+    hubCode: APP_CONFIG.hubId
+  }, { createClient });
   const platform = createPlatformFn({
     hubCode: APP_CONFIG.hubId,
     courseKey: APP_CONFIG.courseKey,
