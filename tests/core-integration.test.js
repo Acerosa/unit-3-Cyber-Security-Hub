@@ -72,8 +72,8 @@ test("one composition root owns shared platform services", () => {
   assert.match(source, /supabaseClient:\s*client/);
   assert.match(source, /assignment:\s*platform\.assignments/);
   assert.match(source, /navigationMode:\s*"as-supplied"/);
-  assert.match(read("js/config/app-config.js"), /coreVersion:\s*"0\.2\.13"/);
-  assert.match(read("src/config.ts"), /coreVersion:\s*"0\.2\.13"/);
+  assert.match(read("js/config/app-config.js"), /coreVersion:\s*"0\.2\.14"/);
+  assert.match(read("src/config.ts"), /coreVersion:\s*"0\.2\.14"/);
   assert.match(source, /resolveFormativeContract:\s*createUnit3FormativeContractResolver\(\)/);
   assert.doesNotMatch(source, /installFormativeRpcNormalizer/);
 });
@@ -240,7 +240,7 @@ test("canonical manifest declares the active Phase 1 contracts", () => {
   assert.equal(manifest.hubId, "unit-3-cyber-security");
   assert.deepEqual(manifest.courses, ["ocr-level-3-it"]);
   assert.deepEqual(manifest.compatibility.required, {
-    coreVersion: "0.2.13",
+    coreVersion: "0.2.14",
     learnerApiContractVersion: "0.1.0",
     submissionContractVersion: "0.1.0"
   });
@@ -353,10 +353,17 @@ test("Weeks 2–7 default to shared Supabase without query override", () => {
 test("Core account dialog is used on shared-backend activity pages", () => {
   const widget = read("js/supabase-auth-widget.js");
   const hook = read("src/hooks/useHubPlatform.ts");
+  const app = read("src/App.tsx");
+  const accountHtml = read("account/index.html");
   assert.match(widget, /core\.createAccountDialog/);
   assert.match(hook, /createAccountDialog/);
   assert.match(hook, /LearningPlatform = \{ platform, coreVersion: APP_CONFIG\.coreVersion, ready \}/);
   assert.match(hook, /authService:\s*platform\.auth/);
   assert.match(hook, /learnerContext:\s*platform\.learner/);
   assert.match(hook, /onboardingService:\s*platform\.onboarding/);
+  assert.match(app, /<AccountPage/);
+  assert.match(app, /mode: "register"/);
+  assert.doesNotMatch(accountHtml, /id="register-form"/);
+  assert.doesNotMatch(accountHtml, /Step 1 of 2/);
+  assert.equal(fs.existsSync(path.join(root, "account/app.js")), false);
 });

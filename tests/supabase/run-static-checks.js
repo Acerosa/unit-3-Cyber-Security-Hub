@@ -232,35 +232,22 @@ if (existsAt("js/core/unit3-supabase-submit-runner.js")) {
   );
 }
 
-if (existsAt("account/index.html") && existsAt("account/app.js")) {
+if (existsAt("account/index.html")) {
   const accountHtml = read("account/index.html");
-  const accountApp = read("account/app.js");
-  const signinForm = (accountHtml.match(
-    /<form id="signin-form"[\s\S]*?<\/form>/
-  ) || [""])[0];
-  [
-    "register-first-name",
-    "register-surname",
-    "register-student-number",
-    "register-class-key",
-    "register-email",
-    "register-password",
-    "register-password-confirm"
-  ].forEach((id) => {
-    record("registration-form-has-" + id, accountHtml.includes('id="' + id + '"'));
-  });
   record(
-    "signin-form-has-no-registration-fields",
-    Boolean(signinForm) && !/register-(?:first-name|surname|student-number|option)/.test(signinForm)
+    "account-page-has-no-legacy-register-form",
+    !/id="register-form"/.test(accountHtml)
+    && !/id="signin-form"/.test(accountHtml)
+    && !/Step 1 of 2/.test(accountHtml)
+    && !/Create learner account/.test(accountHtml)
   );
   record(
-    "registration-uses-auth-abstraction",
-    /SupabaseAuth\.signUpWithPassword/.test(accountApp) &&
-      !/\/auth\/v1\/signup/.test(accountApp)
+    "account-page-does-not-load-legacy-app",
+    !existsAt("account/app.js") && !/account\/app\.js/.test(accountHtml)
   );
   record(
-    "registration-resumes-pending-onboarding",
-    /signed-in-unlinked/.test(accountApp) && /getPending\(\)/.test(accountApp)
+    "account-page-mounts-react-hub",
+    /id="root"/.test(accountHtml) && /src\/main\.tsx/.test(accountHtml)
   );
 }
 

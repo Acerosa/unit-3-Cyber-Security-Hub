@@ -13,6 +13,7 @@ import {
 import { useHubPlatform } from "./hooks/useHubPlatform";
 import { currentIds, type PageContext } from "./page-context";
 import { breadcrumbs, findRoute, pageHeader } from "./page-copy";
+import { AccountPage } from "./pages/AccountPage";
 import { ActivityPage } from "./pages/ActivityPage";
 import { HomePage } from "./pages/HomePage";
 import { PageHost } from "./pages/PageHost";
@@ -32,16 +33,18 @@ function PageBody({
   adaptersReady,
   platform,
   platformState,
-  accountDialog,
-  onJoined
+  onJoined,
+  onOpenSignIn,
+  onOpenCreateAccount
 }: {
   context: PageContext;
   contentReady: boolean;
   adaptersReady: boolean;
   platform?: unknown;
   platformState: string;
-  accountDialog?: { open: (trigger?: EventTarget | null) => void; showOnboarding?: () => void } | null;
   onJoined?: () => void;
+  onOpenSignIn?: (trigger?: EventTarget | null) => void;
+  onOpenCreateAccount?: (trigger?: EventTarget | null) => void;
 }) {
   const route = findRoute(context);
   const scripts = route?.scripts || [];
@@ -54,6 +57,7 @@ function PageBody({
     || context.view === "week"
     || context.view === "activity"
     || context.view === "week1-activity"
+    || (context.view === "account" && platformState !== "signed-out")
   );
   const joinPanel = showJoin ? (
     <JoinClassPanel
@@ -61,7 +65,7 @@ function PageBody({
       root={context.root}
       platformState={platformState}
       platform={platform as never}
-      onSignIn={(trigger) => accountDialog?.open(trigger)}
+      onSignIn={(trigger) => onOpenSignIn?.(trigger)}
       onJoined={onJoined}
     />
   ) : null;
@@ -101,6 +105,17 @@ function PageBody({
       </>
     );
   }
+  if (context.view === "account") {
+    return (
+      <>
+        {joinPanel}
+        <AccountPage
+          onSignIn={(trigger) => onOpenSignIn?.(trigger)}
+          onCreateAccount={(trigger) => onOpenCreateAccount?.(trigger)}
+        />
+      </>
+    );
+  }
   return (
     <>
       {joinPanel}
@@ -126,13 +141,37 @@ export function App({ context }: { context: PageContext }) {
     [platform, platformState]
   );
 
-  function openAccount(trigger?: EventTarget | null) {
-    if (joinNeeded && typeof accountDialog?.showOnboarding === "function") {
+  function openAccount(trigger?: EventTarget | null, options?: { mode?: "sign-in" | "register" }) {
+    if (
+      joinNeeded
+      && options?.mode !== "register"
+      && typeof accountDialog?.showOnboarding === "function"
+    ) {
       accountDialog.showOnboarding();
       return;
     }
-    accountDialog?.open(trigger);
+    accountDialog?.open(trigger, options);
   }
+
+  function activateCreateAccountTab() {
+    const tab = Array.from(accountDialog?.element?.querySelectorAll('[role="tab"]') || [])
+      .find((node) => node.textContent === "Create account");
+    if (tab instanceof HTMLElement) tab.click();
+  }
+
+  function openCreateAccount(trigger?: EventTarget | null) {
+    accountDialog?.open(trigger, { mode: "register" });
+    activateCreateAccountTab();
+  }
+
+  useEffect(() => {
+    if (context.view !== "account" || !accountDialog) return;
+    if (platformState === "onboarding-required" && typeof accountDialog.showOnboarding === "function") {
+      accountDialog.showOnboarding();
+      return;
+    }
+    if (platformState === "signed-out") accountDialog.open();
+  }, [accountDialog, context.view, platformState]);
 
   async function refreshAfterJoin() {
     const learner = platform.learner as { refresh?: () => Promise<unknown> };
@@ -209,8 +248,9 @@ export function App({ context }: { context: PageContext }) {
         adaptersReady={adaptersReady}
         platform={guardedPlatform}
         platformState={platformState}
-        accountDialog={accountDialog}
         onJoined={() => { void refreshAfterJoin(); }}
+        onOpenSignIn={openAccount}
+        onOpenCreateAccount={openCreateAccount}
       />
     </Unit3HubShell>
   );

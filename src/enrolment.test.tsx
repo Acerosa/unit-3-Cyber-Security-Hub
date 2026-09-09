@@ -33,6 +33,21 @@ describe("Cyber Security normal learner enrolment", () => {
     );
     expect(screen.getByText(SIGN_IN_TO_CONTINUE)).toBeTruthy();
     expect(screen.getByRole("button", { name: "Sign in" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Open Account" })).toBeTruthy();
+    expect(screen.queryByRole("link", { name: "Open Account" })).toBeNull();
+  });
+
+  it("guest Open Account opens the Core account flow instead of a second signup page", () => {
+    const onSignIn = vi.fn();
+    render(
+      <JoinClassPanel
+        platformState="signed-out"
+        platform={{}}
+        onSignIn={onSignIn}
+      />
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Open Account" }));
+    expect(onSignIn).toHaveBeenCalledTimes(1);
   });
 
   it("guest requires sign-in before marking", () => {
@@ -270,6 +285,47 @@ describe("Cyber Security normal learner enrolment", () => {
     await waitFor(() => expect(joinClass).toHaveBeenCalledTimes(1));
     expect(complete).not.toHaveBeenCalled();
     expect(joinClass).toHaveBeenCalledWith(EXPECTED_REGISTRATION_KEY);
+  });
+
+  it("wrong class key is denied and does not invent a second Auth identity", async () => {
+    const complete = vi.fn(async () => ({ student_number: "STU-1" }));
+    const joinClass = vi.fn(async () => {
+      throw Object.assign(new Error("denied"), {
+        learnerMessage: "Could not join your class. Check the registration key and try again."
+      });
+    });
+    const platform = {
+      onboarding: {
+        getPending: () => ({
+          firstName: "Normal",
+          surname: "Learner",
+          studentNumber: "STU-1"
+        }),
+        complete,
+        joinClass
+      },
+      learner: {
+        getState: () => ({ status: "onboarding-required", context: null })
+      }
+    };
+
+    render(
+      <JoinClassPanel
+        platformState="onboarding-required"
+        platform={platform}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText(/Class registration key/i), {
+      target: { value: "not-the-class-key" }
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Join class" }));
+    });
+    await waitFor(() => expect(joinClass).toHaveBeenCalledWith("not-the-class-key"));
+    expect(screen.getByText(/Could not join your class/i)).toBeTruthy();
+    expect(screen.queryByLabelText(/College email address/i)).toBeNull();
+    expect(screen.queryByLabelText(/^Password$/i)).toBeNull();
   });
 
   it("enrolled learner sees joined status instead of join prompt", () => {
