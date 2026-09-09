@@ -1,5 +1,5 @@
 import { LearnerHeader, LoadingState } from "@learning-platform/ui";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { JoinClassPanel } from "./components/JoinClassPanel";
 import { Unit3HubShell } from "./components/Unit3HubShell";
 import { APP_CONFIG } from "./config";
@@ -10,7 +10,7 @@ import {
   withEnrolmentGuardedMarking,
   type EnrolmentRow
 } from "./enrolment";
-import { useHubPlatform } from "./hooks/useHubPlatform";
+import { accountPageAutoOpenAction } from "./account-auto-open";
 import { currentIds, type PageContext } from "./page-context";
 import { breadcrumbs, findRoute, pageHeader } from "./page-copy";
 import { AccountPage } from "./pages/AccountPage";
@@ -164,13 +164,25 @@ export function App({ context }: { context: PageContext }) {
     activateCreateAccountTab();
   }
 
+  const didAutoOpenAccount = useRef(false);
+
   useEffect(() => {
-    if (context.view !== "account" || !accountDialog) return;
-    if (platformState === "onboarding-required" && typeof accountDialog.showOnboarding === "function") {
+    if (context.view !== "account") {
+      didAutoOpenAccount.current = false;
+      return;
+    }
+    const action = accountPageAutoOpenAction(
+      context.view,
+      platformState,
+      didAutoOpenAccount.current
+    );
+    if (!action || !accountDialog) return;
+    didAutoOpenAccount.current = true;
+    if (action === "onboarding" && typeof accountDialog.showOnboarding === "function") {
       accountDialog.showOnboarding();
       return;
     }
-    if (platformState === "signed-out") accountDialog.open();
+    if (action === "sign-in") accountDialog.open();
   }, [accountDialog, context.view, platformState]);
 
   async function refreshAfterJoin() {
