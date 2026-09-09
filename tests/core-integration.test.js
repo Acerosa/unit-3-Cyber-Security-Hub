@@ -89,6 +89,52 @@ test("legacy compatibility files delegate to Core without parallel sessions", ()
   assert.doesNotMatch(read("js/core/supabase-learning-api.js"), /platform\.api\./);
 });
 
+test("legacy getMyAssignments prefers hub-scoped Unit 3 assignments", async () => {
+  const source = read("js/core/supabase-learning-api.js");
+  assert.match(source, /getHubAssignments/);
+  assert.match(source, /completeLearnerOnboarding:\s*platform\.onboarding\.complete/);
+  const sandbox = {
+    window: {
+      SUPABASE_CONFIG: {},
+      LearningPlatform: {
+        platform: {
+          config: { hubCode: "unit-3-cyber-security" },
+          client: { schema() { return {}; } },
+          auth: { isSignedIn() { return true; } },
+          profile: { getProfile() { return Promise.resolve(null); } },
+          enrolment: { getEnrolments() { return Promise.resolve([]); } },
+          onboarding: {
+            getRegistrationOptions() { return Promise.resolve([]); },
+            complete() { return Promise.resolve(null); }
+          },
+          assignment: {
+            getAssignments() {
+              return Promise.resolve([
+                { activity_key: "week2-malware-symptoms" },
+                { activity_key: "foundations-requirements-classification" }
+              ]);
+            },
+            getHubAssignments(hubCode) {
+              assert.equal(hubCode, "unit-3-cyber-security");
+              return Promise.resolve([{ activity_key: "week2-malware-symptoms" }]);
+            },
+            getCurriculumDelivery() { return Promise.resolve([]); }
+          },
+          progress: {
+            getAttempts() { return Promise.resolve([]); },
+            getResponses() { return Promise.resolve([]); },
+            getProgress() { return Promise.resolve([]); }
+          }
+        }
+      }
+    }
+  };
+  vm.createContext(sandbox);
+  vm.runInContext(source, sandbox, { filename: "js/core/supabase-learning-api.js" });
+  const rows = await sandbox.window.SupabaseLearningApi.getMyAssignments();
+  assert.deepEqual(rows, [{ activity_key: "week2-malware-symptoms" }]);
+});
+
 test("Core Auth restores the SDK-owned session", async () => {
   const core = loadCore();
   const session = { user: { id: "learner-1" }, access_token: "sdk-owned" };

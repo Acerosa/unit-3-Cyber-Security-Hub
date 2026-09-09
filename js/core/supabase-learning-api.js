@@ -151,7 +151,14 @@
     getMyEnrolments: (platform.enrolment || platform.enrolments).getEnrolments,
     getRegistrationOptions: platform.onboarding.getRegistrationOptions,
     completeLearnerOnboarding: platform.onboarding.complete,
-    getMyAssignments: (platform.assignment || platform.assignments).getAssignments,
+    getMyAssignments: function () {
+      var assignments = platform.assignment || platform.assignments;
+      var hubCode = platform.config && platform.config.hubCode;
+      if (typeof assignments.getHubAssignments === "function" && hubCode) {
+        return assignments.getHubAssignments(hubCode);
+      }
+      return assignments.getAssignments();
+    },
     getMyActivityDelivery: (platform.assignment || platform.assignments).getCurriculumDelivery,
     getCurriculumWeeks: getCurriculumWeeks,
     getMyAttempts: platform.progress.getAttempts,
