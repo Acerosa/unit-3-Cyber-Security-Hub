@@ -104,3 +104,11 @@ declare module "@learning-platform/content" {
   export function validatePackage(pkg: unknown): { valid: boolean; issues?: unknown[] };
   export function validateLearnerSafePackage(pkg: unknown): { valid: boolean; issues?: unknown[] };
 }
+
+declare module "@learning-platform/core/advanced" {
+  export function createSupabaseClient(
+    config: { projectUrl: string; publishableKey: string; hubCode: string },
+    dependencies?: { createClient?: unknown; client?: unknown; authStorage?: unknown }
+  ): unknown;
+  export function createAuthStorageKey(projectUrl: string, hubCode: string): string;
+}

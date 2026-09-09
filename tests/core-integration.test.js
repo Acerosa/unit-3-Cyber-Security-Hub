@@ -67,13 +67,31 @@ test("reviewed Core exposes the 0.2.0 stable browser contract", () => {
 test("one composition root owns shared platform services", () => {
   const source = read("src/platform.ts");
   assert.match(source, /createPlatformFn\(/);
+  assert.match(source, /createSupabaseClient/);
+  assert.match(source, /hubCode:\s*APP_CONFIG\.hubId/);
   assert.match(source, /supabaseClient:\s*client/);
   assert.match(source, /assignment:\s*platform\.assignments/);
   assert.match(source, /navigationMode:\s*"as-supplied"/);
-  assert.match(read("js/config/app-config.js"), /coreVersion:\s*"0\.2\.12"/);
-  assert.match(read("src/config.ts"), /coreVersion:\s*"0\.2\.12"/);
+  assert.match(read("js/config/app-config.js"), /coreVersion:\s*"0\.2\.13"/);
+  assert.match(read("src/config.ts"), /coreVersion:\s*"0\.2\.13"/);
   assert.match(source, /resolveFormativeContract:\s*createUnit3FormativeContractResolver\(\)/);
   assert.doesNotMatch(source, /installFormativeRpcNormalizer/);
+});
+
+test("hub platform uses Core hub-scoped Auth persistence", async () => {
+  const source = read("src/platform.ts");
+  assert.match(source, /createSupabaseClient/);
+  assert.match(source, /hubCode:\s*APP_CONFIG\.hubId/);
+  assert.doesNotMatch(source, /persistSession:\s*true/);
+  const { createAuthStorageKey } = await import("@learning-platform/core/advanced");
+  assert.equal(
+    createAuthStorageKey("https://hubwpkrqndorznwzvaer.supabase.co", "unit-3-cyber-security"),
+    "sb-hubwpkrqndorznwzvaer-auth-token--unit-3-cyber-security"
+  );
+  assert.equal(
+    createAuthStorageKey("https://hubwpkrqndorznwzvaer.supabase.co", "tlevel-software-development"),
+    "sb-hubwpkrqndorznwzvaer-auth-token--tlevel-software-development"
+  );
 });
 
 test("legacy compatibility files delegate to Core without parallel sessions", () => {
@@ -222,7 +240,7 @@ test("canonical manifest declares the active Phase 1 contracts", () => {
   assert.equal(manifest.hubId, "unit-3-cyber-security");
   assert.deepEqual(manifest.courses, ["ocr-level-3-it"]);
   assert.deepEqual(manifest.compatibility.required, {
-    coreVersion: "0.2.12",
+    coreVersion: "0.2.13",
     learnerApiContractVersion: "0.1.0",
     submissionContractVersion: "0.1.0"
   });
