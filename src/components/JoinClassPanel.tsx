@@ -9,6 +9,10 @@ import {
   normaliseRegistrationKey,
   type EnrolmentRow
 } from "../enrolment";
+import {
+  joinClassFailureMessage,
+  shouldCompleteProfileBeforeJoin
+} from "../join-class-errors";
 import { createSitePath } from "../paths";
 
 type ProfileFields = {
@@ -147,8 +151,10 @@ export function JoinClassPanel({
 
   if (!accessNeedsJoin) return null;
 
-  const needsProfileFields = !initial.firstName || !initial.surname || !initial.studentNumber
-    || platformState === "onboarding-required";
+  const needsProfileFields = shouldCompleteProfileBeforeJoin(platformState)
+    || !initial.firstName
+    || !initial.surname
+    || !initial.studentNumber;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -177,7 +183,12 @@ export function JoinClassPanel({
           learnerMessage: "Join class is unavailable right now. Try again shortly."
         });
       }
-      if (needsProfileFields && typeof platform.onboarding?.complete === "function") {
+      // Profile linking is not class-key enrolment. Only complete when Core still
+      // requires onboarding; otherwise Student ID conflicts mask join_learner_hub_group.
+      if (
+        shouldCompleteProfileBeforeJoin(platformState)
+        && typeof platform.onboarding?.complete === "function"
+      ) {
         await platform.onboarding.complete(details);
       }
       await platform.onboarding.joinClass(key);
@@ -185,10 +196,7 @@ export function JoinClassPanel({
       onJoined?.();
     } catch (failure) {
       setError(true);
-      const message = failure && typeof failure === "object" && "learnerMessage" in failure
-        ? String((failure as { learnerMessage?: string }).learnerMessage || "")
-        : "";
-      setStatus(message || "Could not join your class. Check the registration key and try again.");
+      setStatus(joinClassFailureMessage(failure));
     } finally {
       setBusy(false);
     }
