@@ -110,9 +110,20 @@ export function JoinClassPanel({
           >
             Sign in
           </button>
-          <a className="lp-button lp-button--secondary" href={createSitePath(root, "account/")}>
-            Open Account
-          </a>
+          {onSignIn ? (
+            <button
+              className="lp-button lp-button--secondary"
+              type="button"
+              data-join-class-open-account=""
+              onClick={(event) => onSignIn(event.currentTarget)}
+            >
+              Open Account
+            </button>
+          ) : (
+            <a className="lp-button lp-button--secondary" href={createSitePath(root, "account/")}>
+              Open Account
+            </a>
+          )}
         </div>
       </section>
     );
@@ -253,9 +264,20 @@ export function JoinClassPanel({
           <button className="lp-button" type="submit" disabled={busy} data-join-class-submit="">
             {busy ? "Joining…" : "Join class"}
           </button>
-          <a className="lp-button lp-button--secondary" href={createSitePath(root, "account/")}>
-            Account
-          </a>
+          {onSignIn ? (
+            <button
+              className="lp-button lp-button--secondary"
+              type="button"
+              data-join-class-open-account=""
+              onClick={(event) => onSignIn(event.currentTarget)}
+            >
+              Account
+            </button>
+          ) : (
+            <a className="lp-button lp-button--secondary" href={createSitePath(root, "account/")}>
+              Account
+            </a>
+          )}
         </div>
       </form>
     </section>

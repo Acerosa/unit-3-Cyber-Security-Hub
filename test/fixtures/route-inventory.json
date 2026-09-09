@@ -34,8 +34,7 @@
       "heading": "Learner account",
       "subtitle": "Sign in or create an account to save your Unit 3 progress.",
       "scripts": [
-        "js/learner-session-summary.js",
-        "account/app.js"
+        "js/learner-session-summary.js"
       ],
       "redirectTo": ""
     },

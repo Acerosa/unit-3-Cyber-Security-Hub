@@ -99,4 +99,40 @@ describe("Unit 3 learner account dialog", () => {
     expect(dialog.element.querySelector(".lp-form__status")?.textContent).toBe("Enter a valid email address.");
     platform.destroy();
   });
+
+  it("collects first name, surname and Student ID on Core create-account", () => {
+    const client = fakeClient();
+    const platform = createPlatform({
+      hubCode: "unit-3-cyber-security",
+      hubName: "Unit 3 Cyber Security Hub",
+      supabase: {
+        projectUrl: "https://example.supabase.co",
+        publishableKey: "sb_publishable_example"
+      }
+    }, {
+      supabaseClient: client,
+      sessionStorage: memoryStorage(),
+      localStorage: memoryStorage()
+    });
+    const dialog = createAccountDialog({
+      authService: platform.auth,
+      learnerContext: platform.learner,
+      onboardingService: platform.onboarding
+    });
+    document.body.append(dialog.element);
+    dialog.open();
+    const registerTab = Array.from(dialog.element.querySelectorAll('[role="tab"]'))
+      .find((tab) => tab.textContent === "Create account") as HTMLElement | undefined;
+    registerTab?.click();
+
+    const labels = Array.from(dialog.element.querySelectorAll(".lp-form__field"))
+      .filter((field) => !(field as HTMLElement).hidden)
+      .map((field) => field.querySelector("label")?.textContent);
+    expect(labels).toEqual(["First name", "Last name", "Student ID", "Email", "Password"]);
+    expect(dialog.element.querySelector("#lp-register-first-name")).toBeTruthy();
+    expect(dialog.element.querySelector("#lp-register-surname")).toBeTruthy();
+    expect(dialog.element.querySelector("#lp-register-student-number")).toBeTruthy();
+    expect(dialog.element.querySelector("#lp-account-password-confirm")).toBeNull();
+    platform.destroy();
+  });
 });
