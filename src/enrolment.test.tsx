@@ -59,6 +59,13 @@ describe("Cyber Security normal learner enrolment", () => {
     expect(markBlockedError("ready", { enrolments })).toBeNull();
   });
 
+  it("exclusive Unit 3 QA enrolment can mark without joining CYBER-TEST-A", () => {
+    const enrolments = [{ status: "active", groupCode: "CYBER-TEST-QA" }];
+    expect(needsJoinClass("ready", { enrolments })).toBe(false);
+    expect(canMarkActivity("ready", { enrolments })).toBe(true);
+    expect(markBlockedError("ready", { enrolments })).toBeNull();
+  });
+
   it("other-course ready state still requires Cyber Security class join", () => {
     const enrolments = [{ status: "active", groupCode: "TLEVEL-DSD-Y2" }];
     expect(needsJoinClass("ready", { enrolments })).toBe(true);
@@ -116,6 +123,25 @@ describe("Cyber Security normal learner enrolment", () => {
         learner: {
           getState: () => ({
             context: { enrolments: [{ status: "active", groupCode: EXPECTED_GROUP_CODE }] }
+          })
+        }
+      },
+      () => "ready"
+    );
+    await expect(platform.marking.markBlock({ activityKey: "week2-malware-symptoms" })).resolves.toMatchObject({
+      complete: true
+    });
+    expect(markBlock).toHaveBeenCalledTimes(1);
+  });
+
+  it("exclusive Unit 3 QA learner can mark through the guarded platform", async () => {
+    const markBlock = vi.fn(async (_input?: Record<string, unknown>) => ({ complete: true, correct: false }));
+    const platform = withEnrolmentGuardedMarking(
+      {
+        marking: { markBlock },
+        learner: {
+          getState: () => ({
+            context: { enrolments: [{ status: "active", groupCode: "CYBER-TEST-QA" }] }
           })
         }
       },
@@ -277,6 +303,35 @@ describe("Cyber Security normal learner enrolment", () => {
       />
     );
     expect(screen.getByText(/You are joined to/i)).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Join class" })).toBeNull();
+  });
+
+  it("exclusive Unit 3 QA enrolment shows joined status instead of join prompt", () => {
+    render(
+      <JoinClassPanel
+        platformState="ready"
+        platform={{
+          learner: {
+            getState: () => ({
+              status: "authenticated",
+              context: {
+                yearGroup: "Year 1",
+                groupName: "Cyber Security Synthetic QA Group",
+                groupCode: "CYBER-TEST-QA",
+                enrolments: [{
+                  status: "active",
+                  groupCode: "CYBER-TEST-QA",
+                  groupName: "Cyber Security Synthetic QA Group",
+                  yearGroup: "Year 1"
+                }]
+              }
+            })
+          }
+        }}
+      />
+    );
+    expect(screen.getByText(/You are joined to/i)).toBeTruthy();
+    expect(screen.getByText(/Cyber Security Synthetic QA Group/)).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Join class" })).toBeNull();
   });
 
