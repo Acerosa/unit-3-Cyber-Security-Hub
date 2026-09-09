@@ -72,8 +72,8 @@ test("one composition root owns shared platform services", () => {
   assert.match(source, /supabaseClient:\s*client/);
   assert.match(source, /assignment:\s*platform\.assignments/);
   assert.match(source, /navigationMode:\s*"as-supplied"/);
-  assert.match(read("js/config/app-config.js"), /coreVersion:\s*"0\.2\.15"/);
-  assert.match(read("src/config.ts"), /coreVersion:\s*"0\.2\.15"/);
+  assert.match(read("js/config/app-config.js"), /coreVersion:\s*"0\.2\.16"/);
+  assert.match(read("src/config.ts"), /coreVersion:\s*"0\.2\.16"/);
   assert.match(source, /resolveFormativeContract:\s*createUnit3FormativeContractResolver\(\)/);
   assert.doesNotMatch(source, /installFormativeRpcNormalizer/);
 });

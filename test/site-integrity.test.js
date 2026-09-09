@@ -117,7 +117,7 @@ test("GitHub Pages consumes reviewed Core 0.2.16, UI 0.1.10 and Content 0.1.4", 
   assert.match(workflow, /Check out reviewed UI/);
   assert.match(workflow, /Acerosa\/Acerosa-learning-platform-ui/);
   assert.match(workflow, /ref:\s*v0\.1\.10/);
-  assert.match(workflow, /ref:\s*v0\.2\.15/);
+  assert.match(workflow, /ref:\s*v0\.2\.16/);
   assert.match(workflow, /ref:\s*v0\.1\.4/);
 });
 
