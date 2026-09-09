@@ -328,6 +328,90 @@ describe("Cyber Security normal learner enrolment", () => {
     expect(screen.queryByLabelText(/^Password$/i)).toBeNull();
   });
 
+  it("surfaces Student ID already-linked instead of the generic platform message", async () => {
+    const complete = vi.fn(async () => {
+      throw Object.assign(new Error("conflict"), {
+        code: "23505",
+        learnerMessage: "The learner service could not complete that request. Try again shortly.",
+        cause: { code: "23505", message: "STUDENT_NUMBER_ALREADY_LINKED" }
+      });
+    });
+    const joinClass = vi.fn(async () => ({ groupCode: EXPECTED_GROUP_CODE, status: "enrolled" }));
+    const platform = {
+      onboarding: {
+        getPending: () => ({
+          firstName: "Other",
+          surname: "Learner",
+          studentNumber: "123456"
+        }),
+        complete,
+        joinClass
+      },
+      learner: {
+        getState: () => ({ status: "onboarding-required", context: null })
+      }
+    };
+
+    render(
+      <JoinClassPanel
+        platformState="onboarding-required"
+        platform={platform}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText(/Class registration key/i), {
+      target: { value: EXPECTED_REGISTRATION_KEY }
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Join class" }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/already linked to another learning account/i)).toBeTruthy();
+    });
+    expect(complete).toHaveBeenCalledTimes(1);
+    expect(joinClass).not.toHaveBeenCalled();
+  });
+
+  it("does not re-run complete for an already linked learner who only needs JoinClass", async () => {
+    const complete = vi.fn(async () => ({ student_number: "123456" }));
+    const joinClass = vi.fn(async () => ({ groupCode: EXPECTED_GROUP_CODE, status: "enrolled" }));
+    const platform = {
+      onboarding: {
+        getPending: () => null,
+        complete,
+        joinClass
+      },
+      learner: {
+        getState: () => ({
+          status: "authenticated",
+          context: {
+            firstName: "Linked",
+            surname: "Learner",
+            studentNumber: "123456",
+            enrolments: [{ status: "active", groupCode: "TLEVEL-DSD-Y2" }]
+          }
+        })
+      }
+    };
+
+    render(
+      <JoinClassPanel
+        platformState="no-enrolment"
+        platform={platform}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText(/Class registration key/i), {
+      target: { value: EXPECTED_REGISTRATION_KEY }
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Join class" }));
+    });
+    await waitFor(() => expect(joinClass).toHaveBeenCalledTimes(1));
+    expect(complete).not.toHaveBeenCalled();
+  });
+
   it("enrolled learner sees joined status instead of join prompt", () => {
     render(
       <JoinClassPanel
