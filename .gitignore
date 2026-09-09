@@ -23,6 +23,12 @@ local.config.js
 
 # Local clasp switching files
 .clasp.week-*.active.json
+.clasp.bak*
+.clasp.week-7.json
+
+# Local probes and CLI temp
+.write-test
+supabase/.temp/
 
 # Vite / Node
 node_modules

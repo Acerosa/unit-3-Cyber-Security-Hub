@@ -59,6 +59,16 @@ describe("Cyber Security normal learner enrolment", () => {
     expect(markBlockedError("ready", { enrolments })).toBeNull();
   });
 
+  it("inactive Cyber enrolment cannot bypass JoinClass", () => {
+    const enrolments = [{ status: "withdrawn", groupCode: EXPECTED_GROUP_CODE }];
+    expect(needsJoinClass("no-enrolment", { enrolments })).toBe(true);
+    expect(canMarkActivity("no-enrolment", { enrolments })).toBe(false);
+    expect(needsJoinClass("ready", { enrolments })).toBe(true);
+    expect(canMarkActivity("ready", { enrolments })).toBe(false);
+    const error = markBlockedError("no-enrolment", { enrolments }) as Error & { code?: string };
+    expect(error?.code).toBe("JOIN_CLASS_REQUIRED");
+  });
+
   it("exclusive Unit 3 QA enrolment can mark without joining CYBER-TEST-A", () => {
     const enrolments = [{ status: "active", groupCode: "CYBER-TEST-QA" }];
     expect(needsJoinClass("ready", { enrolments })).toBe(false);
