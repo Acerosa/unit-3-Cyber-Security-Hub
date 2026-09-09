@@ -180,8 +180,9 @@ describe("Cyber Security normal learner enrolment", () => {
     expect(markBlock).toHaveBeenCalledTimes(1);
   });
 
-  it("correct registration key creates enrolment via onboarding.complete and refreshes context", async () => {
-    const complete = vi.fn(async () => ({ group_code: EXPECTED_GROUP_CODE, idempotent: false }));
+  it("correct class key joins through onboarding.joinClass without a group picker", async () => {
+    const complete = vi.fn(async () => ({ student_number: "STU-1" }));
+    const joinClass = vi.fn(async () => ({ groupCode: EXPECTED_GROUP_CODE, status: "enrolled_created" }));
     const onJoined = vi.fn();
     const platform = {
       onboarding: {
@@ -190,20 +191,8 @@ describe("Cyber Security normal learner enrolment", () => {
           surname: "Learner",
           studentNumber: "STU-1"
         }),
-        getRegistrationOptions: async () => [{
-          registrationKey: EXPECTED_REGISTRATION_KEY,
-          yearGroup: "Year 1",
-          groupName: "Cyber Security Synthetic Test Group A",
-          groupCode: EXPECTED_GROUP_CODE,
-          courseTitle: "OCR Level 3 IT"
-        }, {
-          registrationKey: "tlevel-dsd-y2",
-          yearGroup: "Year 2",
-          groupName: "T Level Digital Software Development - Year 2",
-          groupCode: "TLEVEL-DSD-Y2",
-          courseTitle: "T Level"
-        }],
-        complete
+        complete,
+        joinClass
       },
       learner: {
         getState: () => ({ status: "onboarding-required", context: null }),
@@ -220,10 +209,8 @@ describe("Cyber Security normal learner enrolment", () => {
     );
 
     expect(screen.getByText(JOIN_CLASS_PROMPT)).toBeTruthy();
-    await waitFor(() => {
-      expect(screen.getByRole("option", { name: /Cyber Security Synthetic Test Group A/i })).toBeTruthy();
-    });
-    expect(screen.queryByRole("option", { name: /T Level/i })).toBeNull();
+    expect(screen.queryByRole("combobox")).toBeNull();
+    expect(screen.queryByText(/Or choose an open class/i)).toBeNull();
 
     fireEvent.change(screen.getByLabelText(/Class registration key/i), {
       target: { value: EXPECTED_REGISTRATION_KEY }
@@ -233,27 +220,25 @@ describe("Cyber Security normal learner enrolment", () => {
     });
 
     await waitFor(() => {
-      expect(complete).toHaveBeenCalledTimes(1);
+      expect(joinClass).toHaveBeenCalledTimes(1);
     });
-    expect(complete).toHaveBeenCalledWith(
-      { firstName: "Normal", surname: "Learner", studentNumber: "STU-1" },
-      EXPECTED_REGISTRATION_KEY
-    );
+    expect(complete).toHaveBeenCalledWith({
+      firstName: "Normal",
+      surname: "Learner",
+      studentNumber: "STU-1"
+    });
+    expect(joinClass).toHaveBeenCalledWith(EXPECTED_REGISTRATION_KEY);
     expect(onJoined).toHaveBeenCalledTimes(1);
   });
 
   it("existing unenrolled account can join without recreating the account", async () => {
-    const complete = vi.fn(async () => ({ group_code: EXPECTED_GROUP_CODE, idempotent: true }));
+    const complete = vi.fn(async () => ({ student_number: "STU-OLD" }));
+    const joinClass = vi.fn(async () => ({ groupCode: EXPECTED_GROUP_CODE, status: "enrolled" }));
     const platform = {
       onboarding: {
         getPending: () => null,
-        getRegistrationOptions: async () => [{
-          registrationKey: EXPECTED_REGISTRATION_KEY,
-          yearGroup: "Year 1",
-          groupCode: EXPECTED_GROUP_CODE,
-          groupName: "Cyber Security Synthetic Test Group A"
-        }],
-        complete
+        complete,
+        joinClass
       },
       learner: {
         getState: () => ({
@@ -275,17 +260,16 @@ describe("Cyber Security normal learner enrolment", () => {
       />
     );
 
+    expect(screen.queryByRole("combobox")).toBeNull();
     fireEvent.change(screen.getByLabelText(/Class registration key/i), {
       target: { value: EXPECTED_REGISTRATION_KEY }
     });
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: "Join class" }));
     });
-    await waitFor(() => expect(complete).toHaveBeenCalledTimes(1));
-    expect(complete).toHaveBeenCalledWith(
-      { firstName: "Existing", surname: "Student", studentNumber: "STU-OLD" },
-      EXPECTED_REGISTRATION_KEY
-    );
+    await waitFor(() => expect(joinClass).toHaveBeenCalledTimes(1));
+    expect(complete).not.toHaveBeenCalled();
+    expect(joinClass).toHaveBeenCalledWith(EXPECTED_REGISTRATION_KEY);
   });
 
   it("enrolled learner sees joined status instead of join prompt", () => {

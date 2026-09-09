@@ -46,6 +46,7 @@
     clearPending: onboarding.clearPending,
     getRegistrationOptions: onboarding.getRegistrationOptions,
     complete: onboarding.complete,
+    joinClass: onboarding.joinClass,
     mapError: function (error) {
       return error;
     }

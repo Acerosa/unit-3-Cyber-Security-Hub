@@ -71,13 +71,11 @@
               <input type="password" id="register-password-confirm" name="passwordConfirm" autocomplete="new-password" required aria-required="true" minlength="8">
             </div>
           </fieldset>
-          <fieldset id="register-option-fields" class="unit3-account__fieldset" hidden>
-            <legend>Course details</legend>
+          <fieldset id="register-class-fields" class="unit3-account__fieldset" hidden>
+            <legend>Class enrolment</legend>
             <div class="field">
-              <label for="register-option">Year / Group</label>
-              <select id="register-option" name="registrationOption" required aria-required="true" disabled>
-                <option value="">Loading available choices…</option>
-              </select>
+              <label for="register-class-key">Class registration key</label>
+              <input type="text" id="register-class-key" name="classKey" autocomplete="off" spellcheck="false" maxlength="100" placeholder="Enter the key from your tutor">
             </div>
           </fieldset>
           <p id="register-error" class="unit3-account__error" role="alert" aria-live="assertive"></p>

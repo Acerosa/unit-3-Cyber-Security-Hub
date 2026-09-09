@@ -242,7 +242,7 @@ if (existsAt("account/index.html") && existsAt("account/app.js")) {
     "register-first-name",
     "register-surname",
     "register-student-number",
-    "register-option",
+    "register-class-key",
     "register-email",
     "register-password",
     "register-password-confirm"

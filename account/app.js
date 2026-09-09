@@ -3,7 +3,6 @@
   "use strict";
 
   var registerStage = "account";
-  var optionsInFlight = null;
 
   function $(id) { return document.getElementById(id); }
 
@@ -73,77 +72,39 @@
     return null;
   }
 
-  function optionLabel(option) {
-    var group = option.groupName || option.groupCode;
-    var course = option.courseTitle ? " — " + option.courseTitle : "";
-    var year = option.academicYear ? " (" + option.academicYear + ")" : "";
-    return option.yearGroup + " — " + group + course + year;
-  }
-
-  function populateOptions(options, selectedKey) {
-    var select = $("register-option");
-    select.textContent = "";
-    var placeholder = document.createElement("option");
-    placeholder.value = "";
-    placeholder.textContent = options.length
-      ? "Select your year and group"
-      : "No registration choices are currently available";
-    select.appendChild(placeholder);
-    options.forEach(function (option) {
-      var item = document.createElement("option");
-      item.value = option.registrationKey;
-      item.textContent = optionLabel(option);
-      if (selectedKey === option.registrationKey) item.selected = true;
-      select.appendChild(item);
-    });
-    select.disabled = options.length === 0;
-  }
-
   function showAccountStep(existingAccount) {
     registerStage = existingAccount ? "profile" : "account";
     $("register-step").textContent = existingAccount
-      ? "Step 1 of 2 — Complete your learner details"
+      ? "Complete your learner details"
       : "Step 1 of 2 — Account details";
     $("register-profile-fields").hidden = false;
     $("register-account-fields").hidden = Boolean(existingAccount);
-    $("register-option-fields").hidden = true;
+    $("register-class-fields").hidden = true;
     ["register-first-name", "register-surname", "register-student-number"].forEach(function (id) {
       $(id).readOnly = false;
     });
     setBusy($("register-submit"), false, "Continue");
   }
 
-  function showOptionStep() {
+  function showClassKeyStep() {
     var pending = restorePending();
     if (!pending) {
       showAccountStep(true);
       setMessage("Enter your learner details to finish setting up your account.", false);
       return Promise.resolve();
     }
-    registerStage = "option";
+    registerStage = "class";
     activateTab("panel-register");
-    $("register-step").textContent = "Step 2 of 2 — Choose your year/group";
+    $("register-step").textContent = "Step 2 of 2 — Join your class";
     $("register-profile-fields").hidden = false;
     $("register-account-fields").hidden = true;
-    $("register-option-fields").hidden = false;
+    $("register-class-fields").hidden = false;
     ["register-first-name", "register-surname", "register-student-number"].forEach(function (id) {
       $(id).readOnly = true;
     });
-    setBusy($("register-submit"), true, "Loading choices…");
-    setMessage("", false);
-    if (!optionsInFlight) {
-      optionsInFlight = window.SupabaseOnboarding.getRegistrationOptions().finally(function () {
-        optionsInFlight = null;
-      });
-    }
-    return optionsInFlight.then(function (options) {
-      populateOptions(options, pending.registrationKey);
-      setBusy($("register-submit"), options.length === 0, "Complete registration");
-      if (options.length) $("register-option").focus();
-    }).catch(function (error) {
-      setBusy($("register-submit"), false, "Try loading choices again");
-      setMessage(error.learnerMessage, true);
-    });
+    setBusy($("register-submit"), false, "Join class");
+    if ($("register-class-key")) $("register-class-key").focus();
+    return Promise.resolve();
   }
 
   function bindTabs() {
@@ -153,7 +114,7 @@
       activateTab("panel-register");
       var authState = window.SupabaseAuth.getState();
       if (authState.status === "signed-in-unlinked") {
-        if (window.SupabaseOnboarding.getPending()) showOptionStep();
+        if (window.SupabaseOnboarding.getPending()) showClassKeyStep();
         else showAccountStep(true);
       }
     });
@@ -201,7 +162,7 @@
     if (!profile) return Promise.resolve();
     window.SupabaseOnboarding.savePending(profile);
     if (registerStage === "profile" || window.SupabaseAuth.isSignedIn()) {
-      return showOptionStep();
+      return showClassKeyStep();
     }
     var email = $("register-email").value.trim();
     var password = $("register-password").value;
@@ -232,43 +193,53 @@
     ).then(function (result) {
       $("register-password").value = "";
       $("register-password-confirm").value = "";
+      if (result && result.existingAccount) {
+        $("signin-email").value = email;
+        activateTab("panel-signin");
+        $("signin-error").className = "unit3-account__note";
+        $("signin-error").setAttribute("role", "status");
+        $("signin-error").textContent =
+          "An account with this email already exists. Sign in with your existing email and password.";
+        return;
+      }
       if (result && result.needsConfirmation) {
         $("signin-email").value = email;
         activateTab("panel-signin");
         $("signin-error").className = "unit3-account__note";
         $("signin-error").setAttribute("role", "status");
         $("signin-error").textContent =
-          "Account created. Check your email to confirm your account before signing in.";
+          "If this is a new email address, check your inbox to confirm the account, then return here and sign in.";
         return;
       }
-      return showOptionStep();
+      return showClassKeyStep();
     });
   }
 
   function completeRegistration() {
-    if ($("register-option").disabled) {
-      return showOptionStep();
-    }
     var pending = window.SupabaseOnboarding.getPending();
-    var registrationKey = $("register-option").value;
-    setInvalid("register-option", false);
+    var classKey = ($("register-class-key") && $("register-class-key").value || "").trim();
+    setInvalid("register-class-key", false);
     if (!pending) {
       showAccountStep(true);
       setMessage("Enter your learner details to continue.", true);
       return Promise.resolve();
     }
-    if (!registrationKey) {
-      setInvalid("register-option", true);
-      setMessage("Choose your year and group.", true);
-      $("register-option").focus();
+    if (!classKey) {
+      setInvalid("register-class-key", true);
+      setMessage("Enter the class registration key from your tutor.", true);
+      $("register-class-key").focus();
       return Promise.resolve();
     }
-    window.SupabaseOnboarding.savePending(Object.assign({}, pending, {
-      registrationKey: registrationKey
-    }));
-    setBusy($("register-submit"), true, "Completing registration…");
-    return window.SupabaseOnboarding.complete(pending, registrationKey).then(function () {
-      setMessage("Registration complete. Your learner account is ready.", false);
+    setBusy($("register-submit"), true, "Joining class…");
+    return Promise.resolve(window.SupabaseOnboarding.complete(pending)).then(function () {
+      if (typeof window.SupabaseOnboarding.joinClass !== "function") {
+        throw Object.assign(new Error("Join class is unavailable."), {
+          learnerMessage: "Join class is unavailable right now. Try again shortly."
+        });
+      }
+      return window.SupabaseOnboarding.joinClass(classKey);
+    }).then(function () {
+      setMessage("You have joined your class.", false);
       $("register-form").reset();
       showAccountStep(false);
     });
@@ -278,15 +249,15 @@
     $("register-form").addEventListener("submit", function (event) {
       event.preventDefault();
       setMessage("", false);
-      var action = registerStage === "option" ? completeRegistration() : beginRegistration();
+      var action = registerStage === "class" ? completeRegistration() : beginRegistration();
       Promise.resolve(action).catch(function (error) {
         setMessage((error && error.learnerMessage) ||
           "Registration could not be completed. Try again.", true);
       }).finally(function () {
-        if (registerStage !== "option") {
+        if (registerStage !== "class") {
           setBusy($("register-submit"), false, "Continue");
-        } else if (!$("register-option").disabled) {
-          setBusy($("register-submit"), false, "Complete registration");
+        } else {
+          setBusy($("register-submit"), false, "Join class");
         }
       });
     });
@@ -296,7 +267,7 @@
     if (!state) return;
     if (state.status === "signed-in-unlinked") {
       activateTab("panel-register");
-      if (window.SupabaseOnboarding.getPending()) showOptionStep();
+      if (window.SupabaseOnboarding.getPending()) showClassKeyStep();
       else showAccountStep(true);
     }
     if (state.status === "authenticated") setMessage("", false);
