@@ -11,9 +11,17 @@ import {
   resolveFormativeRpcQuestionId
 } from "../formative-contract";
 
+export type CatalogueCheckedResult = {
+  correct: boolean | null;
+  canRetry?: boolean;
+  status?: "correct" | "incorrect" | "review" | "recorded" | "error";
+  score?: { correct: number; total: number };
+};
+
 export type CatalogueDraft = {
   responses: Record<string, unknown>;
   checked: Record<string, boolean>;
+  results: Record<string, CatalogueCheckedResult>;
   startedAt?: string;
   completed?: boolean;
   submission?: { status?: string };
@@ -55,7 +63,40 @@ export function requiredCatalogueBlocks(activity: ActivityDocument | null | unde
 }
 
 export function emptyCatalogueDraft(): CatalogueDraft {
-  return { responses: {}, checked: {}, completed: false };
+  return { responses: {}, checked: {}, results: {}, completed: false };
+}
+
+const RESULT_STATUS = new Set(["correct", "incorrect", "review", "recorded", "error"]);
+
+export function learnerSafeCheckedResult(value: unknown): CatalogueCheckedResult | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const src = value as Record<string, unknown>;
+  const result: CatalogueCheckedResult = {
+    correct: src.correct === true ? true : src.correct === false ? false : null
+  };
+  if (typeof src.canRetry === "boolean") result.canRetry = src.canRetry;
+  if (typeof src.status === "string" && RESULT_STATUS.has(src.status)) {
+    result.status = src.status as CatalogueCheckedResult["status"];
+  }
+  if (src.score && typeof src.score === "object" && !Array.isArray(src.score)) {
+    const score = src.score as { correct?: unknown; total?: unknown };
+    const correct = Number(score.correct);
+    const total = Number(score.total);
+    if (Number.isFinite(correct) && Number.isFinite(total) && total >= 0) {
+      result.score = { correct, total };
+    }
+  }
+  return result;
+}
+
+export function learnerSafeCheckedResults(value: unknown): Record<string, CatalogueCheckedResult> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const next: Record<string, CatalogueCheckedResult> = {};
+  for (const [questionId, item] of Object.entries(value as Record<string, unknown>)) {
+    const safe = learnerSafeCheckedResult(item);
+    if (safe) next[questionId] = safe;
+  }
+  return next;
 }
 
 export function createCatalogueDraftStore(
@@ -82,6 +123,7 @@ export function persistCatalogueDraft(
 ): CatalogueDraft {
   const payload: CatalogueDraft = {
     ...draft,
+    results: learnerSafeCheckedResults(draft.results),
     completed: false
   };
   if (payload.submission?.status === "submitted" && options?.remote !== false) {
