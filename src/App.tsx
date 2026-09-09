@@ -166,10 +166,6 @@ export function App({ context }: { context: PageContext }) {
 
   useEffect(() => {
     if (context.view !== "account" || !accountDialog) return;
-    if (platformState === "onboarding-required" && typeof accountDialog.showOnboarding === "function") {
-      accountDialog.showOnboarding();
-      return;
-    }
     if (platformState === "signed-out") accountDialog.open();
   }, [accountDialog, context.view, platformState]);
 
