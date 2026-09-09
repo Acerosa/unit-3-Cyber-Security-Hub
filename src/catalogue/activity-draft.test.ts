@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { ActivityDocument } from "@learning-platform/ui";
-import { submitCatalogueDraft } from "./activity-draft";
+import { learnerSafeCheckedResults, persistCatalogueDraft, submitCatalogueDraft } from "./activity-draft";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -40,6 +40,7 @@ describe("catalogue Finish evidence", () => {
       {
         responses: { "week2-malware-symptoms:mw-q1": "c" },
         checked: { "week2-malware-symptoms:mw-q1": true },
+        results: {},
         completed: false
       },
       {
@@ -58,5 +59,47 @@ describe("catalogue Finish evidence", () => {
       evidenceType: "single-choice",
       value: expect.objectContaining({ optionId: "C" })
     }));
+  });
+});
+
+describe("learner-safe checked results", () => {
+  it("keeps verdict and score and strips answer keys", () => {
+    expect(learnerSafeCheckedResults({
+      "u3-w01-misconceptions:m1": {
+        correct: false,
+        status: "incorrect",
+        canRetry: true,
+        score: { correct: 0, total: 1 },
+        correctOptionId: "false",
+        spec: { mode: "single-choice" },
+        expected: { optionId: "false" }
+      }
+    })).toEqual({
+      "u3-w01-misconceptions:m1": {
+        correct: false,
+        status: "incorrect",
+        canRetry: true,
+        score: { correct: 0, total: 1 }
+      }
+    });
+  });
+
+  it("does not persist stripped answer keys in catalogue drafts", () => {
+    const save = vi.fn();
+    persistCatalogueDraft({ save }, {
+      responses: { "u3-w01-misconceptions:m1": "true" },
+      checked: { "u3-w01-misconceptions:m1": true },
+      results: {
+        "u3-w01-misconceptions:m1": {
+          correct: false,
+          correctOptionId: "false"
+        } as never
+      },
+      completed: false
+    });
+    const payload = save.mock.calls[0][0];
+    expect(payload.results["u3-w01-misconceptions:m1"]).toEqual({ correct: false });
+    expect(JSON.stringify(payload)).not.toMatch(/correctOptionId/);
+    expect(payload.completed).toBe(false);
   });
 });

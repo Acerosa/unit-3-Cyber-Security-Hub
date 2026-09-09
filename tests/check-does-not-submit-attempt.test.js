@@ -29,6 +29,7 @@ test("Catalogue Check persists without submitting", () => {
   assert.match(activityPage, /persistCatalogueDraft/);
   assert.match(activityPage, /initialResponses=\{initialDraft\.responses\}/);
   assert.match(activityPage, /initialChecked=\{initialDraft\.checked\}/);
+  assert.match(activityPage, /initialResults=\{initialDraft\.results\}/);
   assert.match(activityPage, /Finish activity/);
   assert.match(activityPage, /finishActivity/);
   const checkPath = activityPage.slice(

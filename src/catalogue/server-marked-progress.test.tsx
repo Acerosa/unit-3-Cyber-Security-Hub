@@ -292,6 +292,13 @@ describe("server-marked catalogue progress", () => {
     await waitFor(() => {
       expect(first.querySelector("[data-lp-feedback-state='incorrect']")).toBeTruthy();
     });
+    expect(within(first).getByText(/Cyber security protects information systems, networks and data/)).toBeTruthy();
+    expect(screen.queryByText("Your answer was recorded.")).toBeNull();
+    const incorrectSave = save.mock.calls.map((call) => call[0]).find((payload) => (
+      payload?.results?.["u3-w01-misconceptions:m1"]?.correct === false
+    ));
+    expect(incorrectSave?.checked["u3-w01-misconceptions:m1"]).toBe(true);
+    expect(incorrectSave?.responses["u3-w01-misconceptions:m1"]).toBe("true");
     fireEvent.click(within(first).getByRole("button", { name: "Try again" }));
     fireEvent.click(within(first).getByRole("radio", { name: "False" }));
     fireEvent.click(within(first).getByRole("button", { name: "Check answer" }));
@@ -303,7 +310,12 @@ describe("server-marked catalogue progress", () => {
     const lastSave = save.mock.calls.at(-1)?.[0];
     expect(lastSave.checked["u3-w01-misconceptions:m1"]).toBe(true);
     expect(lastSave.responses["u3-w01-misconceptions:m1"]).toBe("false");
+    expect(lastSave.results["u3-w01-misconceptions:m1"]).toEqual(expect.objectContaining({
+      correct: true,
+      status: "correct"
+    }));
     expect(lastSave.completed).toBe(false);
+    expect(JSON.stringify(lastSave)).not.toMatch(/correctOptionId/);
   });
 
   it("hydrates a persisted checked response after mount", async () => {
@@ -335,6 +347,182 @@ describe("server-marked catalogue progress", () => {
     expect(await screen.findByText("Your answer was recorded.")).toBeTruthy();
     const first = document.querySelector('[data-lp-block="option-cards"]') as HTMLElement;
     expect((within(first).getByRole("radio", { name: /False/ }) as HTMLInputElement).checked).toBe(true);
+  });
+
+  it("does not replace Incorrect feedback with recorded when hydrate arrives after Check", async () => {
+    window.__lpPackage = pkg;
+    const markBlock = vi.fn(async () => ({
+      completed: true,
+      correct: false,
+      score: { correct: 0, total: 1 },
+      status: "incorrect",
+      canRetry: true
+    }));
+    let resolveHydrate: ((value: unknown) => void) | undefined;
+    const platform = {
+      auth: { isSignedIn: () => true },
+      marking: { markBlock },
+      progress: {
+        createStore: () => ({
+          save: vi.fn(),
+          hydrate: () => new Promise((resolve) => {
+            resolveHydrate = resolve;
+          })
+        })
+      },
+      submission: { submit: vi.fn() }
+    };
+
+    render(
+      <ActivityPage
+        context={week1MisconceptionsContext()}
+        contentReady
+        adaptersReady
+        platform={platform}
+      />
+    );
+
+    const first = document.querySelector('[data-lp-block="option-cards"]') as HTMLElement;
+    fireEvent.click(within(first).getByRole("radio", { name: "True" }));
+    fireEvent.click(within(first).getByRole("button", { name: "Check answer" }));
+    await waitFor(() => {
+      expect(first.querySelector("[data-lp-feedback-state='incorrect']")).toBeTruthy();
+    });
+    expect(within(first).getByText(/Cyber security protects information systems, networks and data/)).toBeTruthy();
+    resolveHydrate?.({
+      responses: { "u3-w01-misconceptions:m1": "true" },
+      checked: { "u3-w01-misconceptions:m1": true },
+      completed: false
+    });
+    await waitFor(() => {
+      expect(first.querySelector("[data-lp-feedback-state='incorrect']")).toBeTruthy();
+    });
+    expect(within(first).getByText(/Cyber security protects information systems, networks and data/)).toBeTruthy();
+    expect(screen.queryByText("Your answer was recorded.")).toBeNull();
+    expect(markBlock).toHaveBeenCalledTimes(1);
+  });
+
+  it("restores Incorrect and authored feedback after remount without marking again", async () => {
+    window.__lpPackage = pkg;
+    const markBlock = vi.fn();
+    const platform = {
+      auth: { isSignedIn: () => true },
+      marking: { markBlock },
+      progress: {
+        createStore: () => ({
+          save: vi.fn(),
+          hydrate: async () => ({
+            responses: { "u3-w01-misconceptions:m1": "true" },
+            checked: { "u3-w01-misconceptions:m1": true },
+            results: {
+              "u3-w01-misconceptions:m1": {
+                correct: false,
+                status: "incorrect",
+                canRetry: true,
+                score: { correct: 0, total: 1 }
+              }
+            },
+            completed: false
+          })
+        })
+      }
+    };
+
+    render(
+      <ActivityPage
+        context={week1MisconceptionsContext()}
+        contentReady
+        adaptersReady
+        platform={platform}
+      />
+    );
+
+    const first = document.querySelector('[data-lp-block="option-cards"]') as HTMLElement;
+    expect(await screen.findByText(/Cyber security protects information systems, networks and data/)).toBeTruthy();
+    expect(first.querySelector("[data-lp-feedback-state='incorrect']")).toBeTruthy();
+    expect((within(first).getByRole("radio", { name: /True/ }) as HTMLInputElement).checked).toBe(true);
+    expect(screen.queryByText("Your answer was recorded.")).toBeNull();
+    expect(markBlock).not.toHaveBeenCalled();
+  });
+
+  it("restores Correct and authored feedback after remount without marking again", async () => {
+    window.__lpPackage = pkg;
+    const markBlock = vi.fn();
+    const platform = {
+      auth: { isSignedIn: () => true },
+      marking: { markBlock },
+      progress: {
+        createStore: () => ({
+          save: vi.fn(),
+          hydrate: async () => ({
+            responses: { "u3-w01-misconceptions:m1": "false" },
+            checked: { "u3-w01-misconceptions:m1": true },
+            results: {
+              "u3-w01-misconceptions:m1": {
+                correct: true,
+                status: "correct",
+                canRetry: true,
+                score: { correct: 1, total: 1 }
+              }
+            },
+            completed: false
+          })
+        })
+      }
+    };
+
+    render(
+      <ActivityPage
+        context={week1MisconceptionsContext()}
+        contentReady
+        adaptersReady
+        platform={platform}
+      />
+    );
+
+    const first = document.querySelector('[data-lp-block="option-cards"]') as HTMLElement;
+    expect(await screen.findByText(/Cyber security protects information systems, networks and data/)).toBeTruthy();
+    expect(first.querySelector("[data-lp-feedback-state='correct']")).toBeTruthy();
+    expect((within(first).getByRole("radio", { name: /False/ }) as HTMLInputElement).checked).toBe(true);
+    expect(screen.queryByText("Your answer was recorded.")).toBeNull();
+    expect(markBlock).not.toHaveBeenCalled();
+  });
+
+  it("does not invent Correct or Incorrect for a saved unchecked draft", async () => {
+    window.__lpPackage = pkg;
+    const markBlock = vi.fn();
+    const platform = {
+      auth: { isSignedIn: () => true },
+      marking: { markBlock },
+      progress: {
+        createStore: () => ({
+          save: vi.fn(),
+          hydrate: async () => ({
+            responses: { "u3-w01-misconceptions:m1": "true" },
+            checked: { "u3-w01-misconceptions:m1": false },
+            completed: false
+          })
+        })
+      }
+    };
+
+    render(
+      <ActivityPage
+        context={week1MisconceptionsContext()}
+        contentReady
+        adaptersReady
+        platform={platform}
+      />
+    );
+
+    const first = document.querySelector('[data-lp-block="option-cards"]') as HTMLElement;
+    await waitFor(() => {
+      expect((within(first).getByRole("radio", { name: /True/ }) as HTMLInputElement).checked).toBe(true);
+    });
+    expect(first.querySelector("[data-lp-feedback-state='correct']")).toBeNull();
+    expect(first.querySelector("[data-lp-feedback-state='incorrect']")).toBeNull();
+    expect(screen.queryByText("Your answer was recorded.")).toBeNull();
+    expect(markBlock).not.toHaveBeenCalled();
   });
 
   it("keeps checked state after the activity is submitted", async () => {
