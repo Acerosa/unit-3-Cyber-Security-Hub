@@ -240,7 +240,7 @@ test("canonical manifest declares the active Phase 1 contracts", () => {
   assert.equal(manifest.hubId, "unit-3-cyber-security");
   assert.deepEqual(manifest.courses, ["ocr-level-3-it"]);
   assert.deepEqual(manifest.compatibility.required, {
-    coreVersion: "0.2.15",
+    coreVersion: "0.2.16",
     learnerApiContractVersion: "0.1.0",
     submissionContractVersion: "0.1.0"
   });
