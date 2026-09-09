@@ -11,6 +11,7 @@ import {
   type EnrolmentRow
 } from "./enrolment";
 import { accountPageAutoOpenAction } from "./account-auto-open";
+import { useHubPlatform } from "./hooks/useHubPlatform";
 import { currentIds, type PageContext } from "./page-context";
 import { breadcrumbs, findRoute, pageHeader } from "./page-copy";
 import { AccountPage } from "./pages/AccountPage";
