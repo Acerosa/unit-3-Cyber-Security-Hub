@@ -5,6 +5,11 @@ import {
   type ActivityBlockDocument,
   type ActivityDocument
 } from "@learning-platform/ui";
+import {
+  canonicaliseFormativeResponsePayload,
+  ensureFormativeMapper,
+  resolveFormativeRpcQuestionId
+} from "../formative-contract";
 
 export type CatalogueDraft = {
   responses: Record<string, unknown>;
@@ -134,6 +139,36 @@ export function catalogueEvidence(activity: ActivityDocument, draft: CatalogueDr
   return list;
 }
 
+type EvidenceItem = {
+  questionKey?: string;
+  evidenceType?: string;
+  value?: unknown;
+};
+
+function isEvidenceItem(value: unknown): value is EvidenceItem {
+  return Boolean(value && typeof value === "object" && "questionKey" in (value as object) && "evidenceType" in (value as object));
+}
+
+export async function canonicaliseCatalogueEvidence(
+  activityKey: string,
+  responses: unknown[]
+): Promise<unknown[]> {
+  const mapper = await ensureFormativeMapper();
+  return responses.map((item) => {
+    if (!isEvidenceItem(item)) return item;
+    return {
+      ...item,
+      questionKey: resolveFormativeRpcQuestionId(mapper, activityKey, String(item.questionKey || "")),
+      value: canonicaliseFormativeResponsePayload(
+        mapper,
+        activityKey,
+        String(item.evidenceType || ""),
+        item.value
+      )
+    };
+  });
+}
+
 export function allCatalogueQuestionsChecked(activity: ActivityDocument, draft: CatalogueDraft): boolean {
   const blocks = requiredCatalogueBlocks(activity);
   return blocks.length > 0 && blocks.every((block) => Boolean(draft.checked[questionIdFor(block)]));
@@ -144,7 +179,10 @@ export async function submitCatalogueDraft(
   draft: CatalogueDraft,
   platform?: HubPlatformLike
 ): Promise<{ status: "submitted" | "local"; failed?: boolean; reason?: string }> {
-  const responses = catalogueEvidence(activity, draft);
+  const responses = await canonicaliseCatalogueEvidence(
+    activity.id,
+    catalogueEvidence(activity, draft)
+  );
   if (!platform?.submission || typeof platform.submission.submit !== "function") {
     return { status: "local", failed: true, reason: "This activity could not be submitted from this page." };
   }
