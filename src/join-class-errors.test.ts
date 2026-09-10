@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  isStudentNumberAlreadyLinked,
   joinClassFailureMessage,
   shouldCompleteProfileBeforeJoin
 } from "./join-class-errors";
@@ -12,6 +13,7 @@ describe("join class failure mapping", () => {
       cause: { code: "23505", message: "STUDENT_NUMBER_ALREADY_LINKED" }
     };
     expect(joinClassFailureMessage(failure)).toMatch(/already linked to another learning account/i);
+    expect(isStudentNumberAlreadyLinked(failure)).toBe(true);
   });
 
   it("maps onboarding profile conflicts", () => {
@@ -19,6 +21,9 @@ describe("join class failure mapping", () => {
       code: "23000",
       cause: { message: "ONBOARDING_CONFLICT" }
     })).toMatch(/does not match that learner profile/i);
+    expect(isStudentNumberAlreadyLinked({
+      cause: { message: "ONBOARDING_CONFLICT" }
+    })).toBe(false);
   });
 
   it("keeps joinClass learner messages for invalid class keys", () => {

@@ -26,4 +26,20 @@ describe("Unit 3 canonical account page", () => {
     expect(onSignIn).toHaveBeenCalledTimes(1);
     expect(onCreateAccount).toHaveBeenCalledTimes(1);
   });
+
+  it("offers Refresh session without technical security wording", () => {
+    const onRefreshSession = vi.fn();
+    render(
+      <AccountPage
+        onSignIn={vi.fn()}
+        onCreateAccount={vi.fn()}
+        onRefreshSession={onRefreshSession}
+        refreshStatus="Your session is up to date."
+      />
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Refresh session/i }));
+    expect(onRefreshSession).toHaveBeenCalledTimes(1);
+    expect(screen.getByText(/session is up to date/i)).toBeTruthy();
+    expect(screen.queryByText(/secure examination/i)).toBeNull();
+  });
 });

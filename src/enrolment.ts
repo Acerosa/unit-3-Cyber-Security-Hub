@@ -4,7 +4,8 @@ export const SIGN_IN_TO_CONTINUE = "Sign in to continue.";
 export const JOIN_CLASS_MESSAGE =
   "You need to join your Cyber Security class before this activity can be checked.";
 export const JOIN_CLASS_PROMPT = "Join your class to continue";
-export const EXPECTED_REGISTRATION_KEY = "cyber-year-1-test";
+export const EXPECTED_REGISTRATION_KEY = "nhc-cyber-26";
+export const EXPECTED_REGISTRATION_KEY_DISPLAY = "NHC-CYBER-26";
 export const EXPECTED_GROUP_CODE = "CYBER-TEST-A";
 export const QA_GROUP_CODE = "CYBER-TEST-QA";
 export const ACCEPTED_GROUP_CODES = Object.freeze([EXPECTED_GROUP_CODE, QA_GROUP_CODE]);

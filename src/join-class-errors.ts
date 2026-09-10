@@ -23,10 +23,15 @@ function tokensFrom(failure: unknown): string[] {
     .filter(Boolean);
 }
 
+/** True when JoinClass failed because the Student ID is owned by another Auth user. */
+export function isStudentNumberAlreadyLinked(failure: unknown): boolean {
+  return tokensFrom(failure).some((token) => token.includes("STUDENT_NUMBER_ALREADY_LINKED"));
+}
+
 /** Map JoinClass / onboarding failures to learner-safe copy. */
 export function joinClassFailureMessage(failure: unknown): string {
   const tokens = tokensFrom(failure);
-  if (tokens.some((token) => token.includes("STUDENT_NUMBER_ALREADY_LINKED"))) {
+  if (isStudentNumberAlreadyLinked(failure)) {
     return STUDENT_NUMBER_LINKED;
   }
   if (tokens.some((token) =>

@@ -1,9 +1,16 @@
 type AccountPageProps = {
   onSignIn: (trigger?: EventTarget | null) => void;
   onCreateAccount: (trigger?: EventTarget | null) => void;
+  onRefreshSession?: (trigger?: EventTarget | null) => void | Promise<void>;
+  refreshStatus?: string;
 };
 
-export function AccountPage({ onSignIn, onCreateAccount }: AccountPageProps) {
+export function AccountPage({
+  onSignIn,
+  onCreateAccount,
+  onRefreshSession,
+  refreshStatus = ""
+}: AccountPageProps) {
   return (
     <section className="panel unit3-account" aria-labelledby="account-heading" data-unit3-account="core">
       <h2 id="account-heading">Learner account</h2>
@@ -33,7 +40,22 @@ export function AccountPage({ onSignIn, onCreateAccount }: AccountPageProps) {
         >
           Create account
         </button>
+        {onRefreshSession ? (
+          <button
+            className="lp-button lp-button--secondary"
+            type="button"
+            data-account-refresh-session=""
+            onClick={(event) => { void onRefreshSession(event.currentTarget); }}
+          >
+            Having trouble? Refresh session
+          </button>
+        ) : null}
       </div>
+      {refreshStatus ? (
+        <p className="unit3-account__status" role="status" aria-live="polite">
+          {refreshStatus}
+        </p>
+      ) : null}
     </section>
   );
 }

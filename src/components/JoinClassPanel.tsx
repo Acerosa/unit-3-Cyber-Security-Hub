@@ -10,6 +10,7 @@ import {
   type EnrolmentRow
 } from "../enrolment";
 import {
+  isStudentNumberAlreadyLinked,
   joinClassFailureMessage,
   shouldCompleteProfileBeforeJoin
 } from "../join-class-errors";
@@ -50,6 +51,7 @@ type JoinClassPanelProps = {
   compact?: boolean;
   onJoined?: () => void;
   onSignIn?: (trigger?: EventTarget | null) => void;
+  onSwitchAccount?: (trigger?: EventTarget | null) => void | Promise<void>;
 };
 
 function profileFromPlatform(platform: JoinClassPanelProps["platform"]): ProfileFields {
@@ -75,7 +77,8 @@ export function JoinClassPanel({
   root = ".",
   compact = false,
   onJoined,
-  onSignIn
+  onSignIn,
+  onSwitchAccount
 }: JoinClassPanelProps) {
   const context = platform.learner?.getState?.()?.context;
   const enrolments = (context?.enrolments || null) as EnrolmentRow[] | null;
@@ -92,6 +95,7 @@ export function JoinClassPanel({
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
+  const [offerSwitchAccount, setOfferSwitchAccount] = useState(false);
 
   useEffect(() => {
     const next = profileFromPlatform(platform);
@@ -160,6 +164,7 @@ export function JoinClassPanel({
     event.preventDefault();
     setBusy(true);
     setError(false);
+    setOfferSwitchAccount(false);
     setStatus("Joining your class…");
     const key = normaliseRegistrationKey(registrationKey);
     const details = {
@@ -196,6 +201,7 @@ export function JoinClassPanel({
       onJoined?.();
     } catch (failure) {
       setError(true);
+      setOfferSwitchAccount(isStudentNumberAlreadyLinked(failure));
       setStatus(joinClassFailureMessage(failure));
     } finally {
       setBusy(false);
@@ -272,7 +278,17 @@ export function JoinClassPanel({
           <button className="lp-button" type="submit" disabled={busy} data-join-class-submit="">
             {busy ? "Joining…" : "Join class"}
           </button>
-          {onSignIn ? (
+          {offerSwitchAccount && onSwitchAccount ? (
+            <button
+              className="lp-button lp-button--secondary"
+              type="button"
+              data-join-class-switch-account=""
+              disabled={busy}
+              onClick={(event) => { void onSwitchAccount(event.currentTarget); }}
+            >
+              Switch account
+            </button>
+          ) : onSignIn ? (
             <button
               className="lp-button lp-button--secondary"
               type="button"
