@@ -177,8 +177,55 @@ describe("Unit 3 presentation", () => {
     expect(screen.getByRole("heading", { level: 3, name: "CIA triad" })).toBeTruthy();
     expect(screen.getByRole("heading", { level: 3, name: "OCR command words" })).toBeTruthy();
     expect(screen.getAllByRole("link", { name: "Open activity" })).toHaveLength(56);
+    const reportLinks = screen.getAllByRole("link", { name: "View lesson report" });
+    expect(reportLinks).toHaveLength(2);
+    expect(reportLinks[0].getAttribute("href")).toBe(
+      "https://acerosa.github.io/learning-platform-reports/?hub=unit-3-cyber-security&week=1&session=1"
+    );
+    expect(reportLinks[1].getAttribute("href")).toBe(
+      "https://acerosa.github.io/learning-platform-reports/?hub=unit-3-cyber-security&week=1&session=2"
+    );
+    for (const link of reportLinks) {
+      expect(link.getAttribute("href")).not.toMatch(/student|learner|email|uid|token/i);
+    }
     expect(screen.getByRole("heading", { name: "Spotting Week 1 misconceptions" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Challenge: more than one CIA aim" })).toBeTruthy();
+  });
+
+  it("keeps the progress panel unchanged when View lesson report is present", () => {
+    window.__lpPackage = pkg;
+    window.Unit3Week2Progress = {
+      getCompletionSummary: () => ({ completed: 3, total: 10 })
+    };
+    render(
+      <WeekPage
+        context={{ page: "week-2", section: "week-2", root: "..", view: "week", week: 2 }}
+        contentReady
+        adaptersReady
+      />
+    );
+
+    const panel = screen.getByRole("complementary", { name: "Week 2 progress" });
+    expect(panel.querySelector("[data-unit3-view-report]")).toBeNull();
+    expect(screen.getAllByRole("link", { name: "View lesson report" })).toHaveLength(2);
+    expect(screen.getByLabelText("3 of 10 correct")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Show progress details" }));
+    expect(panel.getAttribute("data-lp-collapsed")).toBe("false");
+  });
+
+  it("adds View lesson report navigation for later weeks without completion logic", () => {
+    window.__lpPackage = pkg;
+    render(
+      <WeekPage
+        context={{ page: "week-6", section: "week-6", root: "..", view: "week", week: 6 }}
+        contentReady
+        adaptersReady
+      />
+    );
+    const reportLinks = screen.getAllByRole("link", { name: "View lesson report" });
+    expect(reportLinks.length).toBeGreaterThanOrEqual(1);
+    expect(reportLinks[0].getAttribute("href")).toContain("week=6&session=1");
+    expect(reportLinks[0].getAttribute("href")).not.toMatch(/completed|27|28|percentage/i);
   });
 
   it("renders a Week 2 activity with a link to the next activity", () => {
