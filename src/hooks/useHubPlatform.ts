@@ -19,6 +19,7 @@ export function useHubPlatform(root: string) {
   const [theme, setTheme] = useState<ThemeControl | null>(null);
   const [accountDialog, setAccountDialog] = useState<AccountDialog | null>(null);
   const [platformState, setPlatformState] = useState("loading");
+  const [authStatus, setAuthStatus] = useState("signed-out");
   const [contentReady, setContentReady] = useState(false);
   const [adaptersReady, setAdaptersReady] = useState(false);
 
@@ -28,6 +29,10 @@ export function useHubPlatform(root: string) {
     let cancelled = false;
     document.body.dataset.platformState = "loading";
 
+    const stopAuth = platform.auth.subscribe?.((authState) => {
+      setAuthStatus(authState.status);
+    });
+    if (stopAuth) unsubscribers.push(stopAuth);
     unsubscribers.push(platform.learner.subscribe((state) => {
       setLearner(state.context || null);
     }));
@@ -53,6 +58,8 @@ export function useHubPlatform(root: string) {
     document.body.appendChild(dialog.element);
     setAccountDialog(dialog);
 
+    // Start Auth+learner resolve immediately (do not wait for curriculum).
+    // Platform initialise also recovers if a pre-auth empty profile probe raced Auth restore.
     void (async () => {
       const ready = platform.initialise();
       window.LearningPlatform = { platform, coreVersion: APP_CONFIG.coreVersion, ready };
@@ -75,7 +82,16 @@ export function useHubPlatform(root: string) {
     };
   }, [platform, root]);
 
-  return { platform, learner, theme, accountDialog, platformState, contentReady, adaptersReady };
+  return {
+    platform,
+    learner,
+    theme,
+    accountDialog,
+    platformState,
+    authStatus,
+    contentReady,
+    adaptersReady
+  };
 }
 
 export type { HubPlatform };
