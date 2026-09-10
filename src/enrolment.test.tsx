@@ -373,6 +373,47 @@ describe("Cyber Security normal learner enrolment", () => {
     expect(joinClass).not.toHaveBeenCalled();
   });
 
+  it("shows Switch account after Student ID already-linked when a switch handler is provided", async () => {
+    const onSwitchAccount = vi.fn();
+    const complete = vi.fn(async () => {
+      throw Object.assign(new Error("conflict"), {
+        cause: { message: "STUDENT_NUMBER_ALREADY_LINKED" }
+      });
+    });
+    render(
+      <JoinClassPanel
+        platformState="onboarding-required"
+        platform={{
+          onboarding: {
+            getPending: () => ({
+              firstName: "Other",
+              surname: "Learner",
+              studentNumber: "123456"
+            }),
+            complete,
+            joinClass: vi.fn()
+          },
+          learner: {
+            getState: () => ({ status: "onboarding-required", context: null })
+          }
+        }}
+        onSignIn={vi.fn()}
+        onSwitchAccount={onSwitchAccount}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText(/Class registration key/i), {
+      target: { value: EXPECTED_REGISTRATION_KEY }
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Join class" }));
+    });
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Switch account" })).toBeTruthy();
+    });
+    expect(screen.queryByRole("button", { name: "Account" })).toBeNull();
+  });
+
   it("does not re-run complete for an already linked learner who only needs JoinClass", async () => {
     const complete = vi.fn(async () => ({ student_number: "123456" }));
     const joinClass = vi.fn(async () => ({ groupCode: EXPECTED_GROUP_CODE, status: "enrolled" }));

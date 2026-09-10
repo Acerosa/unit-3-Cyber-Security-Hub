@@ -315,7 +315,7 @@
       className: 'privacy-notice learner-privacy-notice',
       role: 'note',
       textContent:
-        'Your name, Student ID, class group and activity result will be sent to the staff-controlled learning platform for formative assessment and progress tracking. Do not enter sensitive personal information beyond the fields requested.'
+        'When you complete activities, your responses and results may be saved so your tutor can review your progress and provide support. Please only enter information requested as part of the activity. Do not include passwords or other sensitive personal information in written responses.'
     });
   }
 

@@ -1,5 +1,5 @@
 import { LearnerHeader, LoadingState } from "@learning-platform/ui";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { JoinClassPanel } from "./components/JoinClassPanel";
 import { Unit3HubShell } from "./components/Unit3HubShell";
 import { APP_CONFIG } from "./config";
@@ -20,6 +20,7 @@ import { HomePage } from "./pages/HomePage";
 import { PageHost } from "./pages/PageHost";
 import { WeekPage } from "./pages/WeekPage";
 import { buildUnit3Navigation, buildUnit3NavigationFallback, createSitePath } from "./paths";
+import { switchUnit3Account } from "./switch-account";
 
 function RouteRedirect({ root, to }: { root: string; to: string }) {
   useEffect(() => {
@@ -36,7 +37,10 @@ function PageBody({
   platformState,
   onJoined,
   onOpenSignIn,
-  onOpenCreateAccount
+  onOpenCreateAccount,
+  onSwitchAccount,
+  onRefreshSession,
+  refreshStatus
 }: {
   context: PageContext;
   contentReady: boolean;
@@ -46,6 +50,9 @@ function PageBody({
   onJoined?: () => void;
   onOpenSignIn?: (trigger?: EventTarget | null) => void;
   onOpenCreateAccount?: (trigger?: EventTarget | null) => void;
+  onSwitchAccount?: (trigger?: EventTarget | null) => void | Promise<void>;
+  onRefreshSession?: (trigger?: EventTarget | null) => void | Promise<void>;
+  refreshStatus?: string;
 }) {
   const route = findRoute(context);
   const scripts = route?.scripts || [];
@@ -67,6 +74,7 @@ function PageBody({
       platformState={platformState}
       platform={platform as never}
       onSignIn={(trigger) => onOpenSignIn?.(trigger)}
+      onSwitchAccount={onSwitchAccount}
       onJoined={onJoined}
     />
   ) : null;
@@ -113,6 +121,8 @@ function PageBody({
         <AccountPage
           onSignIn={(trigger) => onOpenSignIn?.(trigger)}
           onCreateAccount={(trigger) => onOpenCreateAccount?.(trigger)}
+          onRefreshSession={onRefreshSession}
+          refreshStatus={refreshStatus}
         />
       </>
     );
@@ -137,6 +147,7 @@ export function App({ context }: { context: PageContext }) {
   const enrolments = (learner as { enrolments?: EnrolmentRow[] } | null)?.enrolments;
   const joinNeeded = needsJoinClass(platformState, { enrolments });
   const signedIn = Boolean(learner) || joinNeeded;
+  const [refreshStatus, setRefreshStatus] = useState("");
   const guardedPlatform = useMemo(
     () => withEnrolmentGuardedMarking(platform as never, () => platformState),
     [platform, platformState]
@@ -152,6 +163,43 @@ export function App({ context }: { context: PageContext }) {
       return;
     }
     accountDialog?.open(trigger, options);
+  }
+
+  /** Guest / post-sign-out: always open Core Sign in (never onboarding). */
+  function openSignInDialog(trigger?: EventTarget | null) {
+    accountDialog?.open(trigger, { mode: "sign-in" });
+  }
+
+  async function handleSwitchAccount(trigger?: EventTarget | null) {
+    // Account was a no-op here: openAccount → showOnboarding while still signed in
+    // as the wrong Auth identity. Sign out this hub locally, then open Sign in.
+    const onboarding = platform.onboarding as { clearPending?: () => void } | undefined;
+    await switchUnit3Account({
+      clearPending: () => onboarding?.clearPending?.(),
+      signOut: () => platform.auth.signOut(),
+      openSignIn: openSignInDialog,
+      trigger
+    });
+  }
+
+  async function handleRefreshSession(trigger?: EventTarget | null) {
+    setRefreshStatus("Refreshing your session…");
+    const refresh = (platform as { refreshHubSession?: () => Promise<{
+      ok?: boolean;
+      requiresSignIn?: boolean;
+      learnerMessage?: string;
+    }> }).refreshHubSession;
+    if (typeof refresh !== "function") {
+      setRefreshStatus("Session refresh is unavailable right now.");
+      return;
+    }
+    const result = await refresh();
+    if (result?.requiresSignIn) {
+      setRefreshStatus(result.learnerMessage || "Your session needs to be refreshed. Please sign in again.");
+      openSignInDialog(trigger);
+      return;
+    }
+    setRefreshStatus(result?.ok ? "Your session is up to date." : "Could not refresh your session.");
   }
 
   function activateCreateAccountTab() {
@@ -250,8 +298,7 @@ export function App({ context }: { context: PageContext }) {
       footer={{
         lines: [
           "Unit 3 Cyber Security Hub",
-          "OCR Level 3 IT formative learning resources",
-          "Results collection is for formative assessment only."
+          "OCR Level 3 IT learning resources"
         ]
       }}
     >
@@ -262,8 +309,11 @@ export function App({ context }: { context: PageContext }) {
         platform={guardedPlatform}
         platformState={platformState}
         onJoined={() => { void refreshAfterJoin(); }}
-        onOpenSignIn={openAccount}
+        onOpenSignIn={platformState === "signed-out" ? openSignInDialog : openAccount}
         onOpenCreateAccount={openCreateAccount}
+        onSwitchAccount={handleSwitchAccount}
+        onRefreshSession={handleRefreshSession}
+        refreshStatus={refreshStatus}
       />
     </Unit3HubShell>
   );

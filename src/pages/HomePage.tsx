@@ -108,20 +108,11 @@ export function HomePage({ root, livePackage }: { root: string; livePackage?: Co
           links, examination support and the Northbank briefing. It does not replace the
           weekly learner journey.
         </p>
-      </section>
-
-      <section className="panel" aria-labelledby="privacy-heading">
-        <h2 id="privacy-heading">Privacy and formative assessment</h2>
-        <div className="privacy-notice" role="note">
-          <p>
-            Some activities can send formative results to the staff-controlled learning platform.
-            Do not enter email addresses, passwords or other sensitive personal information.
-          </p>
-          <p>
-            This hub is not a secure examination system. Browser checks improve usability only;
-            staff systems validate submitted values again where collection is used.
-          </p>
-        </div>
+        <p>
+          <a href={createSitePath(root, "help/")}>
+            See Help for information about how your progress is saved.
+          </a>
+        </p>
       </section>
     </>
   );
