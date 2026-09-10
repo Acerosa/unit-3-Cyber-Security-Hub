@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import pkg from "../content/unit-3-cyber-security/package.json";
 import { APP_CONFIG } from "./config";
@@ -97,7 +97,68 @@ describe("Unit 3 presentation", () => {
     expect(screen.queryByText("Examination context")).toBeNull();
   });
 
-  it("docks the catalogue progress panel from Unit 3 completion summary", () => {
+  it("docks Practice progress for catalogue weeks from checked activity drafts", async () => {
+    window.__lpPackage = pkg;
+    const drafts: Record<string, { responses: Record<string, unknown>; checked: Record<string, boolean> }> = {};
+    const platform = {
+      auth: { isSignedIn: () => true },
+      progress: {
+        createStore: ({ activityKey }: { activityKey: string }) => ({
+          hydrate: async () => drafts[activityKey] || { responses: {}, checked: {} },
+          save: (state: { responses?: Record<string, unknown>; checked?: Record<string, boolean> }) => {
+            drafts[activityKey] = {
+              responses: state.responses || {},
+              checked: state.checked || {}
+            };
+            return state;
+          }
+        })
+      }
+    };
+
+    render(
+      <WeekPage
+        context={{ page: "week-1", section: "week-1", root: "..", view: "week", week: 1 }}
+        contentReady
+        adaptersReady
+        platform={platform}
+      />
+    );
+
+    const panel = await screen.findByRole("complementary", { name: /Practice progress/ });
+    expect(panel.getAttribute("data-lp-practice-progress-panel")).toBe("");
+    expect(panel.getAttribute("data-lp-docked")).toBe("left");
+    expect(within(panel).getByText("Practice progress: 0 / 56 activities completed")).toBeTruthy();
+    expect(within(panel).getByText("In progress")).toBeTruthy();
+
+    const first = (pkg.activities as Array<{ id: string; blocks?: Array<{ id?: string; type?: string; content?: { questionId?: string } }> }>)
+      .find((activity) => activity.id === "u3-w01-definition-choice");
+    expect(first).toBeTruthy();
+    const checked: Record<string, boolean> = {};
+    for (const block of first?.blocks || []) {
+      const type = String(block.type || "").toLowerCase();
+      if (type !== "single-choice" && type !== "option-cards") continue;
+      checked[block.content?.questionId || block.id || ""] = true;
+    }
+    drafts["u3-w01-definition-choice"] = { responses: {}, checked };
+
+    cleanup();
+    render(
+      <WeekPage
+        context={{ page: "week-1", section: "week-1", root: "..", view: "week", week: 1 }}
+        contentReady
+        adaptersReady
+        platform={platform}
+      />
+    );
+
+    await waitFor(() => {
+      expect(within(screen.getByRole("complementary", { name: /Practice progress/ }))
+        .getByText("Practice progress: 1 / 56 activities completed")).toBeTruthy();
+    });
+  });
+
+  it("keeps Week 2 catalogue Practice progress separate from legacy score panels", async () => {
     window.__lpPackage = pkg;
     window.Unit3Week2Progress = {
       getCompletionSummary: () => ({ completed: 3, total: 10 })
@@ -110,14 +171,13 @@ describe("Unit 3 presentation", () => {
       />
     );
 
-    const panel = screen.getByRole("complementary", { name: "Week 2 progress" });
+    const panel = await screen.findByRole("complementary", { name: /Practice progress/ });
     expect(panel.getAttribute("data-lp-practice-progress-panel")).toBe("");
     expect(panel.getAttribute("data-lp-docked")).toBe("left");
     expect(panel.getAttribute("data-lp-collapsed")).toBe("true");
-    expect(screen.getByLabelText("3 of 10 correct")).toBeTruthy();
-    expect(panel.querySelector("[data-lp-progress-badge]")).toBeNull();
+    expect(within(panel).getByText(/Practice progress: 0 \/ \d+ activities completed/)).toBeTruthy();
+    expect(screen.queryByLabelText("3 of 10 correct")).toBeNull();
     expect(screen.getAllByRole("link", { name: "Open activity" }).length).toBeGreaterThan(0);
-    expect(screen.queryByText("3 of 10 complete (30%)")).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Show progress details" }));
     expect(panel.getAttribute("data-lp-collapsed")).toBe("false");
@@ -157,7 +217,7 @@ describe("Unit 3 presentation", () => {
     expect(screen.queryByText("Which statement best describes cyber security?")).toBeNull();
     expect(document.querySelector('[data-lp-block="classification"]')).toBeNull();
     expect(document.querySelector("[data-unit3-host]")).toBeNull();
-    expect(screen.getByRole("complementary", { name: "Week 2 progress" }).getAttribute("data-lp-docked")).toBe("left");
+    expect(screen.getByRole("complementary", { name: /Practice progress/ }).getAttribute("data-lp-docked")).toBe("left");
   });
 
   it("groups Week 1 activities without inflating the session count", () => {
@@ -205,10 +265,10 @@ describe("Unit 3 presentation", () => {
       />
     );
 
-    const panel = screen.getByRole("complementary", { name: "Week 2 progress" });
+    const panel = screen.getByRole("complementary", { name: /Practice progress/ });
     expect(panel.querySelector("[data-unit3-view-report]")).toBeNull();
     expect(screen.getAllByRole("link", { name: "View lesson report" })).toHaveLength(2);
-    expect(screen.getByLabelText("3 of 10 correct")).toBeTruthy();
+    expect(within(panel).getByText(/Practice progress: 0 \/ \d+ activities completed/)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Show progress details" }));
     expect(panel.getAttribute("data-lp-collapsed")).toBe("false");
   });
