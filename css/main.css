@@ -974,3 +974,13 @@ a {
   padding-top: 1rem;
   border-top: 0.0625rem solid var(--lp-border, var(--color-border));
 }
+
+/* Additive Reports SPA navigation — not part of practice progress. */
+.unit3-session-report-link {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+}
+
+.unit3-session-report-link .lp-text-link {
+  font-weight: 500;
+}

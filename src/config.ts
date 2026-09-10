@@ -1,7 +1,7 @@
 export const APP_CONFIG = Object.freeze({
   hubId: "unit-3-cyber-security",
   courseKey: "ocr-level-3-it",
-  hubVersion: "0.2.0",
+  hubVersion: "0.2.1",
   siteName: "Unit 3 Cyber Security Hub",
   shortName: "Cyber Security Hub",
   qualification: "OCR Level 3 IT",

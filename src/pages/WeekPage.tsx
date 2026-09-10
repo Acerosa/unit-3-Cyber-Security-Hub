@@ -12,6 +12,11 @@ import { runtimeWeekForTeachingWeek } from "../curriculum/runtime-weeks";
 import { createSitePath } from "../paths";
 import type { PageContext } from "../page-context";
 import { findRoute } from "../page-copy";
+import {
+  REPORT_LINK_LABEL,
+  buildSessionReportUrl,
+  resolveSessionNumber
+} from "../reports-link";
 import { PageHost } from "./PageHost";
 
 const WEEK_TITLES: Record<number, string> = {
@@ -99,8 +104,15 @@ export function WeekPage({
 
   const catalogueSessions = useMemo(() => {
     if (!useCatalogue || !model || !content) return [];
-    return model.sessions.map((session) => {
+    return model.sessions.map((session, sessionIndex) => {
       const count = session.activities.length;
+      const packageSession = (content.sessions || []).find((entry) => entry.id === session.id);
+      const sessionNumber = resolveSessionNumber({
+        sessionId: session.id,
+        sortOrder: (packageSession?.metadata as { sortOrder?: number } | undefined)?.sortOrder,
+        index: sessionIndex
+      });
+      const reportHref = buildSessionReportUrl({ week, session: sessionNumber });
       return {
         id: session.id,
         title: session.title,
@@ -120,7 +132,23 @@ export function WeekPage({
               actionLabel: string;
               status: string;
             }
-          > = [];
+          > = [
+            {
+              children: (
+                <p className="unit3-session-report-link">
+                  <a
+                    className="lp-text-link"
+                    href={reportHref}
+                    data-unit3-view-report=""
+                    data-week={String(week)}
+                    data-session={String(sessionNumber)}
+                  >
+                    {REPORT_LINK_LABEL}
+                  </a>
+                </p>
+              )
+            }
+          ];
           let lastGroup = "";
           for (const item of session.activities) {
             const published = (content.activities || []).find((entry) => entry.id === item.id);
