@@ -1,6 +1,16 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { PracticeProgressPanel, WeekAccessGuard, WeekView, LoadingState } from "@learning-platform/ui";
+import {
+  PracticeProgressPanel,
+  WeekAccessGuard,
+  WeekView,
+  LoadingState,
+  activityProgressLabel,
+  completedActivityCountFromCheckedDrafts,
+  isCompletableReactBlock,
+  type ActivityDocument
+} from "@learning-platform/ui";
 import { loadPageScripts } from "../adapters/load-hub-adapters";
+import { createCatalogueDraftStore } from "../catalogue/activity-draft";
 import {
   CATALOGUE_PROGRESS_SCRIPTS,
   isCatalogueWeek,
@@ -51,14 +61,39 @@ function adjacentWeekLink(
   };
 }
 
+function catalogueWeekActivities(
+  content: ReturnType<typeof activeContentPackage>,
+  model: NonNullable<ReturnType<typeof weekPageFromPackage>>
+): ActivityDocument[] {
+  const ids = model.sessions.flatMap((session) => session.activities.map((item) => item.id));
+  const result: ActivityDocument[] = [];
+  for (const id of ids) {
+    const activity = (content?.activities || []).find((entry) => entry.id === id);
+    if (activity) result.push(activity as ActivityDocument);
+  }
+  return result;
+}
+
+export function accessibleCatalogueActivityTotal(
+  content: ReturnType<typeof activeContentPackage>,
+  model: NonNullable<ReturnType<typeof weekPageFromPackage>> | null
+): number {
+  if (!model || !content) return 0;
+  return catalogueWeekActivities(content, model).filter((activity) => (
+    (activity.blocks || []).some((block) => isCompletableReactBlock(block))
+  )).length;
+}
+
 export function WeekPage({
   context,
   contentReady,
-  adaptersReady
+  adaptersReady,
+  platform
 }: {
   context: PageContext;
   contentReady: boolean;
   adaptersReady: boolean;
+  platform?: unknown;
 }) {
   const route = findRoute(context);
   const week = context.week || 1;
@@ -86,6 +121,11 @@ export function WeekPage({
   );
   const useCatalogue = Boolean(model);
   const [legacyProgress, setLegacyProgress] = useState<{ completed: number; total: number } | null>(null);
+  const [practiceCompleted, setPracticeCompleted] = useState(0);
+  const practiceTotal = useMemo(
+    () => (useCatalogue ? accessibleCatalogueActivityTotal(content, model) : 0),
+    [content, model, useCatalogue]
+  );
 
   useEffect(() => {
     if (!adaptersReady) return;
@@ -101,6 +141,30 @@ export function WeekPage({
     window.addEventListener("unit3:backend-progress", read);
     return () => window.removeEventListener("unit3:backend-progress", read);
   }, [adaptersReady, context.root, useCatalogue, week]);
+
+  useEffect(() => {
+    if (!adaptersReady || !useCatalogue || !model || !content) {
+      setPracticeCompleted(0);
+      return;
+    }
+    let cancelled = false;
+    const activities = catalogueWeekActivities(content, model);
+    void Promise.all(activities.map(async (activity) => {
+      try {
+        const store = createCatalogueDraftStore(activity, platform as never);
+        const draft = store?.hydrate ? await store.hydrate() : null;
+        const checked = draft?.checked && typeof draft.checked === "object" ? draft.checked : {};
+        return [activity.id, checked] as const;
+      } catch {
+        return [activity.id, {}] as const;
+      }
+    })).then((entries) => {
+      if (cancelled) return;
+      const checkedByActivityId = Object.fromEntries(entries);
+      setPracticeCompleted(completedActivityCountFromCheckedDrafts(activities, checkedByActivityId));
+    });
+    return () => { cancelled = true; };
+  }, [adaptersReady, content, model, platform, useCatalogue, weekId]);
 
   const catalogueSessions = useMemo(() => {
     if (!useCatalogue || !model || !content) return [];
@@ -180,18 +244,24 @@ export function WeekPage({
     });
   }, [content, context.root, model, useCatalogue, week]);
 
-  const panel = legacyProgress
+  const panel = useCatalogue && practiceTotal > 0
     ? {
-      title: `Week ${week} progress`,
+      title: `Practice progress: ${activityProgressLabel(practiceCompleted, practiceTotal)}`,
       badge: weekBadge,
-      score: { correct: legacyProgress.completed, total: legacyProgress.total },
-      progress: legacyProgress.total > 0 ? legacyProgress.completed / legacyProgress.total : 0,
-      completed: legacyProgress.total > 0 && legacyProgress.completed >= legacyProgress.total,
-      message: useCatalogue
-        ? "Open each activity in order. Signed-in completion is confirmed by the learner service."
-        : "Signed-in completion is confirmed by the learner service. Drafts stay in this browser until submitted."
+      progress: practiceTotal > 0 ? practiceCompleted / practiceTotal : 0,
+      completed: practiceCompleted >= practiceTotal,
+      message: "Check every question in an activity to update progress. Finish activity saves your learning record. Formative practice only."
     }
-    : null;
+    : legacyProgress
+      ? {
+        title: `Week ${week} progress`,
+        badge: weekBadge,
+        score: { correct: legacyProgress.completed, total: legacyProgress.total },
+        progress: legacyProgress.total > 0 ? legacyProgress.completed / legacyProgress.total : 0,
+        completed: legacyProgress.total > 0 && legacyProgress.completed >= legacyProgress.total,
+        message: "Signed-in completion is confirmed by the learner service. Drafts stay in this browser until submitted."
+      }
+      : null;
 
   const weekStatus = model?.week.status || guardWeek.status || "";
   const previousWeek = adjacentWeekLink(context.root, week - 1, livePackage);
@@ -204,7 +274,7 @@ export function WeekPage({
           <PracticeProgressPanel
             title={panel.title}
             badge={panel.badge}
-            score={panel.score}
+            score={"score" in panel ? panel.score : undefined}
             progress={panel.progress}
             completed={panel.completed}
             message={panel.message}

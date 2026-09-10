@@ -221,12 +221,30 @@ export function ActivityPage({
       completed: false
     };
     if (result.completed === false) {
+      next.responses[qid] = persistableResponse(block, result);
       next.checked[qid] = false;
       delete next.results[qid];
       draftRef.current = next;
       persistCatalogueDraft(createCatalogueDraftStore(document, platform as never), next, { remote: false });
       setInitialDraft(next);
       setReadyToFinish(false);
+      progressRef.current = applyPracticeResult(progressRef.current, qid, result);
+      setPractice(aggregatePracticeProgress(progressRef.current, {
+        requiredBlocks: requiredBlocks(document).length,
+        scorableTotal: scorableBlocks(document).reduce((total, item) => total + blockScorableTotal(item), 0)
+      }));
+      if (typeof window !== "undefined") {
+        window.document.querySelector(`[data-lp-activity="${document.id}"]`)?.dispatchEvent(
+          new CustomEvent("lp-block-result", {
+            bubbles: true,
+            detail: {
+              questionId: qid,
+              response: next.responses[qid],
+              completed: false
+            }
+          })
+        );
+      }
       return;
     }
     next.responses[qid] = persistableResponse(block, result);

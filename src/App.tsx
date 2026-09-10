@@ -106,7 +106,7 @@ function PageBody({
     return (
       <>
         {joinPanel}
-        <WeekPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} />
+        <WeekPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} platform={platform} />
       </>
     );
   }
