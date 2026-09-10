@@ -14,6 +14,15 @@ describe("account page auto-open", () => {
     expect(accountPageAutoOpenAction("account", "signed-out", true)).toBeNull();
   });
 
+  it("opens onboarding once for an authenticated learner who still needs a profile", () => {
+    expect(accountPageAutoOpenAction("account", "onboarding-required", false)).toBe("onboarding");
+    expect(accountPageAutoOpenAction("account", "onboarding-required", true)).toBeNull();
+  });
+
+  it("does not open Core onboarding for a returning authenticated learner", () => {
+    expect(accountPageAutoOpenAction("account", "onboarding-required", false, "authenticated")).toBeNull();
+  });
+
   it("does not auto-open Core on other pages", () => {
     expect(accountPageAutoOpenAction("home", "signed-out", false)).toBeNull();
   });
