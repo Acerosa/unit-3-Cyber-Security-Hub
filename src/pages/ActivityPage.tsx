@@ -168,11 +168,11 @@ export function ActivityPage({
     let cancelled = false;
     const store = createCatalogueDraftStore(activity, platform as never);
     const startedAt = new Date().toISOString();
-    void (store?.hydrate ? store.hydrate() : Promise.resolve(null)).then((resolved) => {
+    const applyResolved = (resolved: CatalogueDraft | null | undefined, ignoreTouched: boolean) => {
       if (cancelled) return;
       const responses = resolved?.responses && typeof resolved.responses === "object" ? resolved.responses : {};
       const checked = resolved?.checked && typeof resolved.checked === "object" ? resolved.checked : {};
-      if (draftAlreadyTouched(draftRef.current)) return;
+      if (!ignoreTouched && draftAlreadyTouched(draftRef.current)) return;
       const next: CatalogueDraft = {
         responses,
         checked,
@@ -191,8 +191,15 @@ export function ActivityPage({
       setReadyToFinish(
         Boolean(activity && allCatalogueQuestionsChecked(activity, next) && next.submission?.status !== "submitted")
       );
+    };
+    const unsubscribe = store?.subscribe?.((resolved) => applyResolved(resolved, false));
+    void (store?.hydrate ? store.hydrate() : Promise.resolve(null)).then((resolved) => {
+      applyResolved(resolved, false);
     });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, [activity, adaptersReady, platform, playerMode]);
 
   useEffect(() => {
