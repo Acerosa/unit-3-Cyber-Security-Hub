@@ -80,14 +80,6 @@ function persistableResponse(block: ActivityBlockDocument, result: ActivityResul
   return responses && typeof responses === "object" ? responses : {};
 }
 
-function draftAlreadyTouched(draft: CatalogueDraft): boolean {
-  return Boolean(
-    Object.keys(draft.responses).length
-    || Object.keys(draft.checked).length
-    || Object.keys(draft.results || {}).length
-  );
-}
-
 function restorePracticeFromDraft(document: ActivityDocument, draft: CatalogueDraft) {
   let progress = emptyPracticeProgress();
   for (const block of requiredBlocks(document)) {
@@ -172,7 +164,7 @@ export function ActivityPage({
       if (cancelled) return;
       const responses = resolved?.responses && typeof resolved.responses === "object" ? resolved.responses : {};
       const checked = resolved?.checked && typeof resolved.checked === "object" ? resolved.checked : {};
-      if (!ignoreTouched && draftAlreadyTouched(draftRef.current)) return;
+      if (!ignoreTouched && store?.isDirty?.()) return;
       const next: CatalogueDraft = {
         responses,
         checked,
@@ -228,12 +220,30 @@ export function ActivityPage({
       completed: false
     };
     if (result.completed === false) {
+      next.responses[qid] = persistableResponse(block, result);
       next.checked[qid] = false;
       delete next.results[qid];
       draftRef.current = next;
-      persistCatalogueDraft(createCatalogueDraftStore(document, platform as never), next, { remote: false });
+      persistCatalogueDraft(createCatalogueDraftStore(document, platform as never), next, { immediate: true });
       setInitialDraft(next);
       setReadyToFinish(false);
+      progressRef.current = applyPracticeResult(progressRef.current, qid, result);
+      setPractice(aggregatePracticeProgress(progressRef.current, {
+        requiredBlocks: requiredBlocks(document).length,
+        scorableTotal: scorableBlocks(document).reduce((total, item) => total + blockScorableTotal(item), 0)
+      }));
+      if (typeof window !== "undefined") {
+        window.document.querySelector(`[data-lp-activity="${document.id}"]`)?.dispatchEvent(
+          new CustomEvent("lp-block-result", {
+            bubbles: true,
+            detail: {
+              questionId: qid,
+              response: next.responses[qid],
+              completed: false
+            }
+          })
+        );
+      }
       return;
     }
     next.responses[qid] = persistableResponse(block, result);
