@@ -80,14 +80,6 @@ function persistableResponse(block: ActivityBlockDocument, result: ActivityResul
   return responses && typeof responses === "object" ? responses : {};
 }
 
-function draftAlreadyTouched(draft: CatalogueDraft): boolean {
-  return Boolean(
-    Object.keys(draft.responses).length
-    || Object.keys(draft.checked).length
-    || Object.keys(draft.results || {}).length
-  );
-}
-
 function restorePracticeFromDraft(document: ActivityDocument, draft: CatalogueDraft) {
   let progress = emptyPracticeProgress();
   for (const block of requiredBlocks(document)) {
@@ -110,12 +102,14 @@ export function ActivityPage({
   context,
   contentReady,
   adaptersReady,
-  platform
+  platform,
+  platformState = "loading"
 }: {
   context: PageContext;
   contentReady: boolean;
   adaptersReady: boolean;
   platform?: unknown;
+  platformState?: string;
 }) {
   const route = findRoute(context);
   const week = context.week
@@ -165,14 +159,16 @@ export function ActivityPage({
 
   useEffect(() => {
     if (!adaptersReady || !activity || playerMode === "host") return;
+    const canHydrateRemote = platformState === "ready" || platformState === "no-assignments";
+    if (!canHydrateRemote) return;
     let cancelled = false;
     const store = createCatalogueDraftStore(activity, platform as never);
     const startedAt = new Date().toISOString();
-    void (store?.hydrate ? store.hydrate() : Promise.resolve(null)).then((resolved) => {
+    const applyResolved = (resolved: CatalogueDraft | null | undefined, ignoreTouched: boolean) => {
       if (cancelled) return;
       const responses = resolved?.responses && typeof resolved.responses === "object" ? resolved.responses : {};
       const checked = resolved?.checked && typeof resolved.checked === "object" ? resolved.checked : {};
-      if (draftAlreadyTouched(draftRef.current)) return;
+      if (!ignoreTouched && store?.isDirty?.()) return;
       const next: CatalogueDraft = {
         responses,
         checked,
@@ -191,9 +187,16 @@ export function ActivityPage({
       setReadyToFinish(
         Boolean(activity && allCatalogueQuestionsChecked(activity, next) && next.submission?.status !== "submitted")
       );
+    };
+    const unsubscribe = store?.subscribe?.((resolved) => applyResolved(resolved, false));
+    void (store?.hydrate ? store.hydrate() : Promise.resolve(null)).then((resolved) => {
+      applyResolved(resolved, false);
     });
-    return () => { cancelled = true; };
-  }, [activity, adaptersReady, platform, playerMode]);
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
+  }, [activity, adaptersReady, platform, platformState, playerMode]);
 
   useEffect(() => {
     if (!adaptersReady || playerMode !== "catalogue") return;
@@ -225,7 +228,7 @@ export function ActivityPage({
       next.checked[qid] = false;
       delete next.results[qid];
       draftRef.current = next;
-      persistCatalogueDraft(createCatalogueDraftStore(document, platform as never), next, { remote: false });
+      persistCatalogueDraft(createCatalogueDraftStore(document, platform as never), next, { immediate: true });
       setInitialDraft(next);
       setReadyToFinish(false);
       progressRef.current = applyPracticeResult(progressRef.current, qid, result);

@@ -88,22 +88,24 @@ export function WeekPage({
   context,
   contentReady,
   adaptersReady,
-  platform
+  platform,
+  platformState = "loading"
 }: {
   context: PageContext;
   contentReady: boolean;
   adaptersReady: boolean;
   platform?: unknown;
+  platformState?: string;
 }) {
   const route = findRoute(context);
   const week = context.week || 1;
-  if (!contentReady) {
-    return <LoadingState message="Loading curriculum..." />;
-  }
   const weekId = `week-${week}`;
   const weekBadge = `Week ${week}: ${WEEK_TITLES[week] || ""}`.trim();
   const livePackage = contentReady ? liveContentPackage() : null;
-  const content = contentReady ? activeContentPackage() : null;
+  const content = useMemo(
+    () => (contentReady ? activeContentPackage() : null),
+    [contentReady]
+  );
   const runtimeWeek = useMemo(
     () => runtimeWeekForTeachingWeek(livePackage, week),
     [livePackage, week]
@@ -147,6 +149,13 @@ export function WeekPage({
       setPracticeCompleted(0);
       return;
     }
+    // Remote mass-hydrate only when the learner identity is enrolled for this hub.
+    // Auth-without-student (onboarding / join) must not fan out get_activity_state.
+    const canHydrateRemote = platformState === "ready" || platformState === "no-assignments";
+    if (!canHydrateRemote) {
+      setPracticeCompleted(0);
+      return;
+    }
     let cancelled = false;
     const activities = catalogueWeekActivities(content, model);
     void Promise.all(activities.map(async (activity) => {
@@ -164,7 +173,7 @@ export function WeekPage({
       setPracticeCompleted(completedActivityCountFromCheckedDrafts(activities, checkedByActivityId));
     });
     return () => { cancelled = true; };
-  }, [adaptersReady, content, model, platform, useCatalogue, weekId]);
+  }, [adaptersReady, content, model, platform, platformState, useCatalogue, weekId]);
 
   const catalogueSessions = useMemo(() => {
     if (!useCatalogue || !model || !content) return [];
@@ -188,6 +197,7 @@ export function WeekPage({
           const list: Array<
             | { children: ReactNode }
             | {
+              id?: string;
               title: string;
               description: string;
               activityType: string;
@@ -229,6 +239,7 @@ export function WeekPage({
               lastGroup = group;
             }
             list.push({
+              id: item.id,
               title: item.title,
               description: published?.metadata?.summary || "",
               activityType: published?.metadata?.activityType || "Activity",
@@ -243,6 +254,10 @@ export function WeekPage({
       };
     });
   }, [content, context.root, model, useCatalogue, week]);
+
+  if (!contentReady) {
+    return <LoadingState message="Loading curriculum..." />;
+  }
 
   const panel = useCatalogue && practiceTotal > 0
     ? {

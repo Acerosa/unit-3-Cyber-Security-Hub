@@ -31,6 +31,8 @@ type ProgressStore = {
   save: (state: unknown, options?: { immediate?: boolean; remote?: boolean }) => unknown;
   hydrate?: (local?: unknown) => Promise<CatalogueDraft | null>;
   clear?: (options?: { local?: boolean }) => unknown;
+  subscribe?: (listener: (state: CatalogueDraft) => void) => () => void;
+  isDirty?: () => boolean;
 };
 
 type HubPlatformLike = {

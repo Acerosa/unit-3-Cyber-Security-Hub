@@ -23,6 +23,9 @@ import { WeekPage } from "./pages/WeekPage";
 import { buildUnit3Navigation, buildUnit3NavigationFallback, createSitePath } from "./paths";
 import { switchUnit3Account } from "./switch-account";
 
+const LEARNER_IDENTITY_COPY =
+  "We couldn’t connect your learner account. Your sign-in was successful, but your learner profile could not be loaded. Try refreshing the page once. If the problem continues, ask your tutor for help.";
+
 function RouteRedirect({ root, to }: { root: string; to: string }) {
   useEffect(() => {
     window.location.replace(createSitePath(root, to));
@@ -106,7 +109,7 @@ function PageBody({
     return (
       <>
         {joinPanel}
-        <WeekPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} platform={platform} />
+        <WeekPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} platform={platform} platformState={platformState} />
       </>
     );
   }
@@ -114,7 +117,7 @@ function PageBody({
     return (
       <>
         {joinPanel}
-        <ActivityPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} platform={platform} />
+        <ActivityPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} platform={platform} platformState={platformState} />
       </>
     );
   }
@@ -152,10 +155,28 @@ export function App({ context }: { context: PageContext }) {
   const joinNeeded = needsJoinClass(platformState, { enrolments });
   const signedIn = authStatus === "authenticated" || Boolean(learner) || joinNeeded;
   const [refreshStatus, setRefreshStatus] = useState("");
+  const [identityNotice, setIdentityNotice] = useState("");
   const guardedPlatform = useMemo(
     () => withEnrolmentGuardedMarking(platform as never, () => platformState),
-    [platform, platformState]
+    [platform]
   );
+
+  useEffect(() => {
+    const progress = platform.progress as {
+      getLearnerIdentityBlock?: () => { learnerMessage?: string } | null;
+      subscribeLearnerIdentityRecovery?: (listener: (state: { status?: string }) => void) => () => void;
+      learnerIdentityMessage?: string;
+    } | undefined;
+    const sync = () => {
+      const block = progress?.getLearnerIdentityBlock?.();
+      setIdentityNotice(block ? (block.learnerMessage || progress?.learnerIdentityMessage || LEARNER_IDENTITY_COPY) : "");
+    };
+    sync();
+    return progress?.subscribeLearnerIdentityRecovery?.((state) => {
+      if (state?.status === "failed") sync();
+      if (state?.status === "recovered") setIdentityNotice("");
+    }) || undefined;
+  }, [platform]);
 
   function openAccount(trigger?: EventTarget | null, options?: { mode?: "sign-in" | "register" }) {
     // Identity onboarding only when Auth has no learner profile. Returning
@@ -325,12 +346,24 @@ export function App({ context }: { context: PageContext }) {
         ]
       }}
     >
+      {identityNotice ? (
+        <div className="lp-callout lp-callout--warning" role="alert" data-learner-identity-notice="">
+          <p><strong>We couldn’t connect your learner account</strong></p>
+          <p>{identityNotice}</p>
+          <p>
+            <button className="lp-button lp-button--secondary" type="button" onClick={() => window.location.reload()}>
+              Refresh page
+            </button>
+          </p>
+        </div>
+      ) : null}
       <PageBody
         context={context}
         contentReady={contentReady}
         adaptersReady={adaptersReady}
         platform={guardedPlatform}
         platformState={platformState}
+        authStatus={authStatus}
         onJoined={() => { void refreshAfterJoin(); }}
         onOpenSignIn={platformState === "signed-out" ? openSignInDialog : openAccount}
         onOpenCreateAccount={openCreateAccount}
