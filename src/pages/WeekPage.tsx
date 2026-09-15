@@ -88,12 +88,15 @@ export function WeekPage({
   context,
   contentReady,
   adaptersReady,
-  platform
+  platform,
+  platformState = "ready"
 }: {
   context: PageContext;
   contentReady: boolean;
   adaptersReady: boolean;
   platform?: unknown;
+  /** App must pass live platform state so onboarding/join cannot mass-hydrate. */
+  platformState?: string;
 }) {
   const route = findRoute(context);
   const week = context.week || 1;
@@ -147,6 +150,13 @@ export function WeekPage({
       setPracticeCompleted(0);
       return;
     }
+    // Remote mass-hydrate only when the learner identity is enrolled for this hub.
+    // Auth-without-student (onboarding / join) must not fan out get_activity_state.
+    const canHydrateRemote = platformState === "ready" || platformState === "no-assignments";
+    if (!canHydrateRemote) {
+      setPracticeCompleted(0);
+      return;
+    }
     let cancelled = false;
     const activities = catalogueWeekActivities(content, model);
     void Promise.all(activities.map(async (activity) => {
@@ -164,7 +174,7 @@ export function WeekPage({
       setPracticeCompleted(completedActivityCountFromCheckedDrafts(activities, checkedByActivityId));
     });
     return () => { cancelled = true; };
-  }, [adaptersReady, content, model, platform, useCatalogue, weekId]);
+  }, [adaptersReady, content, model, platform, platformState, useCatalogue, weekId]);
 
   const catalogueSessions = useMemo(() => {
     if (!useCatalogue || !model || !content) return [];

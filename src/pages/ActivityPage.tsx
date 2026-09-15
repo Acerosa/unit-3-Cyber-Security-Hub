@@ -102,12 +102,15 @@ export function ActivityPage({
   context,
   contentReady,
   adaptersReady,
-  platform
+  platform,
+  platformState = "ready"
 }: {
   context: PageContext;
   contentReady: boolean;
   adaptersReady: boolean;
   platform?: unknown;
+  /** App must pass live platform state so onboarding/join cannot hydrate. */
+  platformState?: string;
 }) {
   const route = findRoute(context);
   const week = context.week
@@ -157,6 +160,8 @@ export function ActivityPage({
 
   useEffect(() => {
     if (!adaptersReady || !activity || playerMode === "host") return;
+    const canHydrateRemote = platformState === "ready" || platformState === "no-assignments";
+    if (!canHydrateRemote) return;
     let cancelled = false;
     const store = createCatalogueDraftStore(activity, platform as never);
     const startedAt = new Date().toISOString();
@@ -192,7 +197,7 @@ export function ActivityPage({
       cancelled = true;
       unsubscribe?.();
     };
-  }, [activity, adaptersReady, platform, playerMode]);
+  }, [activity, adaptersReady, platform, platformState, playerMode]);
 
   useEffect(() => {
     if (!adaptersReady || playerMode !== "catalogue") return;
