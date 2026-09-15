@@ -89,12 +89,13 @@ export function WeekPage({
   contentReady,
   adaptersReady,
   platform,
-  platformState = "loading"
+  platformState = "ready"
 }: {
   context: PageContext;
   contentReady: boolean;
   adaptersReady: boolean;
   platform?: unknown;
+  /** App must pass live platform state so onboarding/join cannot mass-hydrate. */
   platformState?: string;
 }) {
   const route = findRoute(context);

@@ -103,12 +103,13 @@ export function ActivityPage({
   contentReady,
   adaptersReady,
   platform,
-  platformState = "loading"
+  platformState = "ready"
 }: {
   context: PageContext;
   contentReady: boolean;
   adaptersReady: boolean;
   platform?: unknown;
+  /** App must pass live platform state so onboarding/join cannot hydrate. */
   platformState?: string;
 }) {
   const route = findRoute(context);
