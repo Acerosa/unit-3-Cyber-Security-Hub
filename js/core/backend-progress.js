@@ -10,6 +10,8 @@
 
   var rows = null;
   var wrapped = [];
+  var reconcilePromise = null;
+  var reconciledUserId = null;
 
   function isSharedBackend() {
     return Boolean(
@@ -99,7 +101,7 @@
     };
     progress.markSubmitted = function (activityId) {
       if (!isSharedBackend()) return markSubmitted(activityId);
-      reconcile();
+      reconcile({ force: true });
       return progress.getActivityState(activityId);
     };
     wrapPersist(progress);
@@ -156,6 +158,22 @@
     return Promise.resolve();
   }
 
+  function signedInUserId() {
+    var current = window.LearningPlatform && window.LearningPlatform.platform;
+    try {
+      var session = current && current.auth && typeof current.auth.getSession === "function"
+        ? current.auth.getSession()
+        : null;
+      if (session && session.user && session.user.id) return String(session.user.id);
+      if (current && current.auth && typeof current.auth.isSignedIn === "function" && current.auth.isSignedIn()) {
+        return "signed-in";
+      }
+    } catch (err) {
+      /* ignore */
+    }
+    return "";
+  }
+
   function wrapAvailableWeeks() {
     for (var week = 2; week <= 7; week += 1) {
       wrap(window["Unit3Week" + week + "Progress"]);
@@ -168,24 +186,34 @@
     }));
   }
 
-  function reconcile() {
+  function reconcile(options) {
     wrapAvailableWeeks();
     if (!isSharedBackend()) {
       rows = null;
+      reconciledUserId = null;
       dispatch();
       return Promise.resolve([]);
     }
     var platform = window.LearningPlatform && window.LearningPlatform.platform;
     if (!platform || !platform.auth.isSignedIn()) {
       rows = new Map();
+      reconciledUserId = null;
       dispatch();
       return Promise.resolve([]);
     }
-    return platform.progress.getProgress().then(function (result) {
+    var force = Boolean(options && options.force);
+    var userId = signedInUserId();
+    if (!force && reconcilePromise) return reconcilePromise;
+    if (!force && reconciledUserId === userId && rows !== null) {
+      dispatch();
+      return Promise.resolve([]);
+    }
+    reconcilePromise = platform.progress.getProgress().then(function (result) {
       rows = new Map();
       (Array.isArray(result) ? result : []).forEach(function (row) {
         if (row && row.activity_key) rows.set(normalise(row.activity_key), row);
       });
+      reconciledUserId = userId;
       var hydrations = [];
       for (var week = 2; week <= 7; week += 1) {
         hydrations.push(hydrateProgressDrafts(window["Unit3Week" + week + "Progress"]));
@@ -197,7 +225,10 @@
     }).catch(function (error) {
       console.warn("[Unit3BackendProgress] Progress refresh failed", error);
       throw error;
+    }).finally(function () {
+      reconcilePromise = null;
     });
+    return reconcilePromise;
   }
 
   function mount() {
@@ -209,6 +240,7 @@
       if (state.status === "authenticated") reconcile().catch(function () {});
       if (state.status === "signed-out") {
         rows = isSharedBackend() ? new Map() : null;
+        reconciledUserId = null;
         dispatch();
       }
     });
