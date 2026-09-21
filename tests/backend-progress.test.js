@@ -21,6 +21,7 @@ function progressStore() {
     extra: {}
   };
   return {
+    ROOT_KEY: "unit3-week2-progress",
     ACTIVITY_CATALOG: [{ activityId: state.activityId }],
     getActivityState() { return { ...state, extra: { ...state.extra } }; },
     updateActivity(activityId, patch) {
@@ -44,10 +45,18 @@ function progressStore() {
 async function load({ signedIn, rows }) {
   const progress = progressStore();
   let progressCalls = 0;
+  const weekHydrates = [];
+  let authListener = null;
   const window = {
     Unit3BackendMode: { isSupabase() { return true; } },
     Unit3ActivityKeyMap: { normaliseActivityKey(value) { return value; } },
     Unit3Week2Progress: progress,
+    Unit3RemoteLearnerWork: {
+      hydrateWeekRoot(store) {
+        weekHydrates.push(store && store.ROOT_KEY);
+        return Promise.resolve();
+      }
+    },
     LearningPlatform: {
       ready: Promise.resolve(),
       platform: {
@@ -65,6 +74,7 @@ async function load({ signedIn, rows }) {
     },
     SupabaseAuth: {
       subscribe(listener) {
+        authListener = listener;
         listener({ status: signedIn ? "authenticated" : "signed-out" });
       }
     },
@@ -83,9 +93,20 @@ async function load({ signedIn, rows }) {
     Array
   });
   vm.runInContext(source, context);
+  await window.LearningPlatform.ready.catch(() => {});
+  if (window.Unit3BackendProgress && typeof window.Unit3BackendProgress.reconcile === "function") {
+    await window.Unit3BackendProgress.reconcile().catch(() => {});
+  }
   await new Promise((resolve) => setImmediate(resolve));
   await new Promise((resolve) => setImmediate(resolve));
-  return { progress, adapter: window.Unit3BackendProgress, progressCalls: () => progressCalls };
+  return {
+    progress,
+    adapter: window.Unit3BackendProgress,
+    progressCalls: () => progressCalls,
+    weekHydrates,
+    window,
+    authListener
+  };
 }
 
 test("signed-out shared mode does not treat local completion as authoritative", async () => {
@@ -127,4 +148,85 @@ test("duplicate authenticated reconcile does not repeat getProgress", async () =
   assert.equal(progressCalls(), 1);
   await adapter.reconcile({ force: true });
   assert.equal(progressCalls(), 2);
+});
+
+test("first signed-in reconcile hydrates only loaded week carriers once", async () => {
+  const { weekHydrates, adapter } = await load({
+    signedIn: true,
+    rows: [{ activity_key: "week2-session1-retrieval", latest_score: 7, max_score: 10, attempt_count: 1 }]
+  });
+  assert.deepEqual(weekHydrates, ["unit3-week2-progress"]);
+  await adapter.reconcile();
+  await adapter.reconcile({ force: true });
+  assert.deepEqual(weekHydrates, ["unit3-week2-progress"]);
+});
+
+function weekStore(rootKey) {
+  return {
+    ROOT_KEY: rootKey,
+    ACTIVITY_CATALOG: [],
+    getActivityState() { return {}; },
+    updateActivity() { return {}; },
+    markCompleted() { return {}; },
+    markSubmitted() { return {}; }
+  };
+}
+
+test("skip path hydrates a newly loaded week without repeating getProgress", async () => {
+  const { adapter, progressCalls, weekHydrates, window } = await load({
+    signedIn: true,
+    rows: [{ activity_key: "week2-session1-retrieval", latest_score: 7, max_score: 10, attempt_count: 1 }]
+  });
+  window.Unit3Week4Progress = weekStore("unit3-week4-progress");
+  await adapter.reconcile();
+  assert.equal(progressCalls(), 1);
+  assert.deepEqual(weekHydrates, ["unit3-week2-progress", "unit3-week4-progress"]);
+  await adapter.reconcile();
+  assert.equal(progressCalls(), 1);
+  assert.deepEqual(weekHydrates, ["unit3-week2-progress", "unit3-week4-progress"]);
+});
+
+test("revisiting an already hydrated week does not issue another carrier hydrate", async () => {
+  const { adapter, weekHydrates, window } = await load({
+    signedIn: true,
+    rows: [{ activity_key: "week2-session1-retrieval", latest_score: 7, max_score: 10, attempt_count: 1 }]
+  });
+  window.Unit3Week4Progress = weekStore("unit3-week4-progress");
+  await adapter.reconcile();
+  await adapter.reconcile();
+  assert.deepEqual(weekHydrates, ["unit3-week2-progress", "unit3-week4-progress"]);
+});
+
+test("sign-out clears week hydrate intern and sign-in hydrates the loaded week again", async () => {
+  const { adapter, weekHydrates, authListener } = await load({
+    signedIn: true,
+    rows: [{ activity_key: "week2-session1-retrieval", latest_score: 7, max_score: 10, attempt_count: 1 }]
+  });
+  assert.deepEqual(weekHydrates, ["unit3-week2-progress"]);
+  authListener({ status: "signed-out" });
+  authListener({ status: "authenticated" });
+  await adapter.reconcile();
+  await new Promise((resolve) => setImmediate(resolve));
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(weekHydrates, ["unit3-week2-progress", "unit3-week2-progress"]);
+});
+
+test("compatibility carrier keys remain for weeks 2-7", () => {
+  const remote = fs.readFileSync(path.resolve(__dirname, "..", "js/core/remote-learner-work.js"), "utf8");
+  [
+    "week2-northbank-vulnerability-register",
+    "week2-ocr-question-practice",
+    "week3-peer-marking",
+    "week3-ocr-question-practice",
+    "week4-analyse-practice",
+    "week4-ocr-question-practice",
+    "week5-impact-analysis",
+    "week5-ocr-question-practice",
+    "week6-revision-organiser",
+    "week6-ocr-question-practice",
+    "week7-heightened-threat",
+    "week7-ocr-question-practice"
+  ].forEach((key) => {
+    assert.match(remote, new RegExp(key));
+  });
 });

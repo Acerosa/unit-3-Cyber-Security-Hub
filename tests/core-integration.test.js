@@ -76,6 +76,13 @@ test("one composition root owns shared platform services", () => {
   assert.match(read("src/config.ts"), /coreVersion:\s*"0\.2\.25"/);
   assert.match(source, /resolveFormativeContract:\s*createUnit3FormativeContractResolver\(\)/);
   assert.doesNotMatch(source, /installFormativeRpcNormalizer/);
+  assert.match(source, /learner\?\.status === "authenticated" && learner\.context/);
+  assert.match(source, /recoverLearnerAfterAuthRestore/);
+  assert.match(source, /status !== "onboarding-required"/);
+  assert.match(source, /platform\.learner\.refresh/);
+  assert.equal(Boolean({ status: "authenticated", context: { studentNumber: "1001" } }.context), true);
+  assert.equal(Boolean({ status: "authenticated", context: null }.context), false);
+  assert.equal({ status: "onboarding-required" }.status === "authenticated", false);
 });
 
 test("hub platform uses Core hub-scoped Auth persistence", async () => {
@@ -312,6 +319,8 @@ test("backend progress overrides completion while retaining local pending work",
   assert.match(progress, /progressSource:\s*"local-pending"/);
   assert.match(progress, /platform\.progress\.getProgress/);
   assert.match(progress, /localCompleted:\s*true/);
+  assert.match(progress, /hydratedWeeks/);
+  assert.match(progress, /hydrateUnhydratedWeeks/);
 });
 
 test("Week 1 splits Apps Script formative from Supabase final submission", () => {
