@@ -161,12 +161,21 @@
     return next;
   }
 
+  var CARRIER_COALESCE_MS = 600;
+  var pendingCarrier = {};
+
+  function saveOptionsFor(options) {
+    if (options && options.immediate) return { immediate: true };
+    if (options && options.remote === false) return { remote: false };
+    return {};
+  }
+
   function saveWork(key, version, payload, options) {
     var store = createStore(key, version, options && options.legacyKeys);
     var next = Object.assign({ completed: false }, payload || {});
     if (!store || typeof store.save !== "function") return next;
     try {
-      store.save(next, options || { immediate: true });
+      store.save(next, saveOptionsFor(options));
     } catch (err) {
       /* local cache in Core store still holds the draft */
     }
@@ -183,8 +192,26 @@
     });
   }
 
-  function persistOntoCarriers(week, patch, options) {
+  function mergeCarrierPatch(base, patch) {
+    var next = {
+      weekRoot: base && base.weekRoot,
+      localKeys: base && base.localKeys,
+      activityKey: base && base.activityKey,
+      responses: base && base.responses,
+      checked: base && base.checked
+    };
+    if (!patch) return next;
+    next.weekRoot = mergeObjects(next.weekRoot, patch.weekRoot);
+    next.localKeys = mergeObjects(next.localKeys, patch.localKeys);
+    if (patch.activityKey) next.activityKey = patch.activityKey;
+    if (patch.responses) next.responses = patch.responses;
+    if (patch.checked) next.checked = patch.checked;
+    return next;
+  }
+
+  function persistOntoCarriersNow(week, patch, options) {
     var keys = carriersFor(week);
+    var saveOptions = saveOptionsFor(options);
     if (!keys.length) return Promise.resolve(patch);
     return Promise.all(keys.map(function (key) {
       return hydrateWork(key, null, null).then(function (existing) {
@@ -203,10 +230,65 @@
           next.responses = patch.responses;
           next.checked = patch.checked || next.checked;
         }
-        saveWork(key, null, next, options || { immediate: true });
+        saveWork(key, null, next, saveOptions);
         return next;
       });
     }));
+  }
+
+  function flushCarrierPersist(week) {
+    var current = pendingCarrier[week];
+    if (!current) return Promise.resolve();
+    if (current.timer != null) {
+      clearTimeout(current.timer);
+      current.timer = null;
+    }
+    delete pendingCarrier[week];
+    return persistOntoCarriersNow(week, current.patch, { immediate: true });
+  }
+
+  function flushPending() {
+    return Promise.all(Object.keys(pendingCarrier).map(function (week) {
+      return flushCarrierPersist(week);
+    }));
+  }
+
+  function enqueueCarrierPersist(week, patch, options) {
+    var current;
+    if (!week) return persistOntoCarriersNow(week, patch, options);
+    current = pendingCarrier[week] || { patch: {}, timer: null };
+    current.patch = mergeCarrierPatch(current.patch, patch);
+    if (options && options.immediate) {
+      pendingCarrier[week] = current;
+      return flushCarrierPersist(week);
+    }
+    pendingCarrier[week] = current;
+    if (current.timer != null) return Promise.resolve(patch);
+    current.timer = setTimeout(function () {
+      current.timer = null;
+      flushCarrierPersist(week);
+    }, CARRIER_COALESCE_MS);
+    return Promise.resolve(patch);
+  }
+
+  function persistOntoCarriers(week, patch, options) {
+    return enqueueCarrierPersist(week, patch, options);
+  }
+
+  function onHide() {
+    flushPending();
+  }
+
+  function onVisibility() {
+    if (global.document && global.document.visibilityState === "hidden") onHide();
+  }
+
+  if (typeof global.addEventListener === "function") {
+    global.addEventListener("pagehide", onHide);
+    global.addEventListener("beforeunload", onHide);
+  }
+  if (global.document && typeof global.document.addEventListener === "function") {
+    global.document.addEventListener("visibilitychange", onVisibility);
   }
 
   function persistStorageKey(storageKey, activityId, values, options) {
@@ -231,13 +313,11 @@
           responses: payload.localKeys[storageKey],
           checked: (options && options.checked) || {},
           completed: false
-        }, { immediate: true, legacyKeys: [storageKey] });
+        }, Object.assign({ legacyKeys: [storageKey] }, saveOptionsFor(options)));
       }
       return payload;
     }
-    persistOntoCarriers(week, payload, {
-      immediate: !(options && options.immediate === false)
-    });
+    persistOntoCarriers(week, payload, saveOptionsFor(options));
     return payload;
   }
 
@@ -278,7 +358,7 @@
     });
   }
 
-  function persistWeekRoot(progress, activityId) {
+  function persistWeekRoot(progress, activityId, options) {
     if (!progress || typeof progress.getRoot !== "function") return;
     var root = progress.getRoot();
     var week = weekFromValue(progress.ROOT_KEY) || weekFromValue(activityId);
@@ -303,13 +383,13 @@
         patch.responses = drafts[activityId];
       }
     }
-    if (week) persistOntoCarriers(week, patch, { immediate: true });
+    if (week) persistOntoCarriers(week, patch, saveOptionsFor(options));
     else if (catalogId && isHostActivity(catalogId)) {
       saveWork(catalogId, null, {
         responses: patch.responses || {},
         weekRoot: patch.weekRoot,
         completed: false
-      }, { immediate: true });
+      }, saveOptionsFor(options));
     }
   }
 
@@ -354,6 +434,7 @@
     restoreStorageKey: restoreStorageKey,
     persistWeekRoot: persistWeekRoot,
     hydrateWeekRoot: hydrateWeekRoot,
-    carriersFor: carriersFor
+    carriersFor: carriersFor,
+    flushPending: flushPending
   });
 })(window);
