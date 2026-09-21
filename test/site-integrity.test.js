@@ -316,6 +316,7 @@ test("week pages keep docked catalogue progress chrome", function () {
   assert.match(weekPage, /showProgress:\s*false/);
   assert.match(weekPage, /lp-session-group-label/);
   assert.doesNotMatch(weekPage, /role="presentation"/);
+  assert.match(weekPage, /Unit3BackendProgress\?\.reconcile/);
   assert.match(read("src/pages/PageHost.tsx"), /unit3-page-body/);
   assert.match(read("src/pages/PageHost.tsx"), /loadPageScripts/);
 });

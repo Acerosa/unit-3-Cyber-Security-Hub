@@ -134,7 +134,11 @@ export function WeekPage({
     if (!adaptersReady) return;
     if (useCatalogue) {
       const scripts = CATALOGUE_PROGRESS_SCRIPTS[week] || [];
-      if (scripts.length) void loadPageScripts(context.root, scripts);
+      if (scripts.length) {
+        void loadPageScripts(context.root, scripts).then(() => {
+          void window.Unit3BackendProgress?.reconcile?.();
+        });
+      }
     }
     const read = () => {
       const summary = progressStore(week)?.getCompletionSummary?.();

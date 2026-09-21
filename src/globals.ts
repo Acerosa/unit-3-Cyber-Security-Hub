@@ -29,6 +29,9 @@ declare global {
     Unit3Week2Submit?: {
       renderSubmitPanel?: (options: Record<string, unknown>) => void;
     };
+    Unit3BackendProgress?: {
+      reconcile?: (options?: { force?: boolean }) => Promise<unknown>;
+    };
     setAuthoredHtml?: typeof setAuthoredHtml;
   }
 }

@@ -202,7 +202,11 @@ export function ActivityPage({
   useEffect(() => {
     if (!adaptersReady || playerMode !== "catalogue") return;
     const scripts = CATALOGUE_PROGRESS_SCRIPTS[week] || [];
-    if (scripts.length) void loadPageScripts(context.root, scripts);
+    if (scripts.length) {
+      void loadPageScripts(context.root, scripts).then(() => {
+        void window.Unit3BackendProgress?.reconcile?.();
+      });
+    }
   }, [adaptersReady, context.root, playerMode, week]);
 
   useEffect(() => {
