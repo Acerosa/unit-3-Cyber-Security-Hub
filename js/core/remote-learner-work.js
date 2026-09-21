@@ -393,13 +393,14 @@
     }
   }
 
-  function hydrateWeekRoot(progress) {
+  function hydrateWeekRoot(progress, stillCurrent) {
     var week = weekFromValue(progress && progress.ROOT_KEY);
     var keys = carriersFor(week);
     if (!progress || !keys.length) return Promise.resolve();
     return Promise.all(keys.map(function (key) {
       return hydrateWork(key, null, null);
     })).then(function (rows) {
+      if (typeof stillCurrent === "function" && !stillCurrent()) return;
       var drafts = {};
       var activities = {};
       rows.forEach(function (resolved) {

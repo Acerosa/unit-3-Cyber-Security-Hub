@@ -42,10 +42,11 @@ function progressStore() {
   };
 }
 
-async function load({ signedIn, rows }) {
+async function load({ signedIn, rows, deferHydrate = false, manual = false }) {
   const progress = progressStore();
   let progressCalls = 0;
   const weekHydrates = [];
+  const hydrateReleases = [];
   let authListener = null;
   const window = {
     Unit3BackendMode: { isSupabase() { return true; } },
@@ -54,7 +55,10 @@ async function load({ signedIn, rows }) {
     Unit3RemoteLearnerWork: {
       hydrateWeekRoot(store) {
         weekHydrates.push(store && store.ROOT_KEY);
-        return Promise.resolve();
+        if (!deferHydrate) return Promise.resolve();
+        return new Promise((resolve) => {
+          hydrateReleases.push(resolve);
+        });
       }
     },
     LearningPlatform: {
@@ -93,20 +97,30 @@ async function load({ signedIn, rows }) {
     Array
   });
   vm.runInContext(source, context);
-  await window.LearningPlatform.ready.catch(() => {});
-  if (window.Unit3BackendProgress && typeof window.Unit3BackendProgress.reconcile === "function") {
-    await window.Unit3BackendProgress.reconcile().catch(() => {});
+  if (!manual) {
+    await window.LearningPlatform.ready.catch(() => {});
+    if (window.Unit3BackendProgress && typeof window.Unit3BackendProgress.reconcile === "function") {
+      await window.Unit3BackendProgress.reconcile().catch(() => {});
+    }
+    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise((resolve) => setImmediate(resolve));
   }
-  await new Promise((resolve) => setImmediate(resolve));
-  await new Promise((resolve) => setImmediate(resolve));
   return {
     progress,
     adapter: window.Unit3BackendProgress,
     progressCalls: () => progressCalls,
     weekHydrates,
     window,
-    authListener
+    authListener,
+    releaseHydrate() {
+      const resolve = hydrateReleases.shift();
+      if (resolve) resolve();
+    }
   };
+}
+
+function flush() {
+  return new Promise((resolve) => setImmediate(resolve));
 }
 
 test("signed-out shared mode does not treat local completion as authoritative", async () => {
@@ -194,6 +208,52 @@ test("revisiting an already hydrated week does not issue another carrier hydrate
   window.Unit3Week4Progress = weekStore("unit3-week4-progress");
   await adapter.reconcile();
   await adapter.reconcile();
+  assert.deepEqual(weekHydrates, ["unit3-week2-progress", "unit3-week4-progress"]);
+});
+
+test("in-flight hydrate after sign-out does not mark the next session hydrated", async () => {
+  const { adapter, weekHydrates, authListener, releaseHydrate } = await load({
+    signedIn: true,
+    rows: [{ activity_key: "week2-session1-retrieval", latest_score: 7, max_score: 10, attempt_count: 1 }],
+    deferHydrate: true,
+    manual: true
+  });
+  await flush();
+  await flush();
+  assert.deepEqual(weekHydrates, ["unit3-week2-progress"]);
+  authListener({ status: "signed-out" });
+  releaseHydrate();
+  await flush();
+  await flush();
+  authListener({ status: "authenticated" });
+  await flush();
+  await flush();
+  assert.equal(weekHydrates.length, 2);
+  releaseHydrate();
+  await adapter.reconcile();
+  assert.deepEqual(weekHydrates, ["unit3-week2-progress", "unit3-week2-progress"]);
+});
+
+test("joining an in-flight reconcile hydrates a week that appeared during carrier restore", async () => {
+  const { adapter, progressCalls, weekHydrates, window, releaseHydrate } = await load({
+    signedIn: true,
+    rows: [{ activity_key: "week2-session1-retrieval", latest_score: 7, max_score: 10, attempt_count: 1 }],
+    deferHydrate: true,
+    manual: true
+  });
+  await flush();
+  await flush();
+  assert.deepEqual(weekHydrates, ["unit3-week2-progress"]);
+  assert.equal(progressCalls(), 1);
+  window.Unit3Week4Progress = weekStore("unit3-week4-progress");
+  const joined = adapter.reconcile();
+  releaseHydrate();
+  await flush();
+  await flush();
+  assert.deepEqual(weekHydrates, ["unit3-week2-progress", "unit3-week4-progress"]);
+  releaseHydrate();
+  await joined;
+  assert.equal(progressCalls(), 1);
   assert.deepEqual(weekHydrates, ["unit3-week2-progress", "unit3-week4-progress"]);
 });
 

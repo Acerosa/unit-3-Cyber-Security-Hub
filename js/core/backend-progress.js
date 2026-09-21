@@ -13,6 +13,7 @@
   var reconcilePromise = null;
   var reconciledUserId = null;
   var hydratedWeeks = Object.create(null);
+  var hydrationEpoch = 0;
 
   function isSharedBackend() {
     return Boolean(
@@ -150,12 +151,20 @@
     }
   }
 
+  function resetHydratedWeeks() {
+    hydrationEpoch += 1;
+    hydratedWeeks = Object.create(null);
+  }
+
   function hydrateProgressDrafts(progress) {
     var remote = window.Unit3RemoteLearnerWork;
+    var epoch = hydrationEpoch;
     if (!remote || !progress) return Promise.resolve(false);
     if (typeof remote.hydrateWeekRoot === "function") {
-      return remote.hydrateWeekRoot(progress).then(function () {
-        return true;
+      return remote.hydrateWeekRoot(progress, function () {
+        return epoch === hydrationEpoch;
+      }).then(function () {
+        return epoch === hydrationEpoch;
       }).catch(function () {
         return false;
       });
@@ -164,14 +173,19 @@
   }
 
   function hydrateUnhydratedWeeks() {
+    var epoch = hydrationEpoch;
+    var intern = hydratedWeeks;
     var week;
     var hydrations = [];
     wrapAvailableWeeks();
     for (week = 2; week <= 7; week += 1) {
-      if (!window["Unit3Week" + week + "Progress"] || hydratedWeeks[week]) continue;
+      if (!window["Unit3Week" + week + "Progress"] || intern[week]) continue;
       hydrations.push((function (weekNumber) {
+        intern[weekNumber] = "pending";
         return hydrateProgressDrafts(window["Unit3Week" + weekNumber + "Progress"]).then(function (hydrated) {
-          if (hydrated) hydratedWeeks[weekNumber] = true;
+          if (epoch !== hydrationEpoch || intern !== hydratedWeeks) return;
+          if (hydrated) intern[weekNumber] = true;
+          else delete intern[weekNumber];
         });
       })(week));
     }
@@ -206,12 +220,28 @@
     }));
   }
 
+  function signedInNow() {
+    var platform = window.LearningPlatform && window.LearningPlatform.platform;
+    return Boolean(platform && platform.auth.isSignedIn && platform.auth.isSignedIn());
+  }
+
+  function finishJoinedReconcile(result, joinedEpoch) {
+    if (!isSharedBackend() || !signedInNow()) return Promise.resolve(result);
+    if (joinedEpoch !== hydrationEpoch || reconciledUserId !== signedInUserId() || rows === null) {
+      return reconcile();
+    }
+    return hydrateUnhydratedWeeks().then(function () {
+      dispatch();
+      return result;
+    });
+  }
+
   function reconcile(options) {
     wrapAvailableWeeks();
     if (!isSharedBackend()) {
       rows = null;
       reconciledUserId = null;
-      hydratedWeeks = Object.create(null);
+      resetHydratedWeeks();
       dispatch();
       return Promise.resolve([]);
     }
@@ -219,26 +249,37 @@
     if (!platform || !platform.auth.isSignedIn()) {
       rows = new Map();
       reconciledUserId = null;
-      hydratedWeeks = Object.create(null);
+      resetHydratedWeeks();
       dispatch();
       return Promise.resolve([]);
     }
     var force = Boolean(options && options.force);
     var userId = signedInUserId();
-    if (!force && reconcilePromise) return reconcilePromise;
+    if (!force && reconcilePromise) {
+      var joinedEpoch = hydrationEpoch;
+      return reconcilePromise.then(function (result) {
+        return finishJoinedReconcile(result, joinedEpoch);
+      }, function (error) {
+        if (joinedEpoch !== hydrationEpoch && signedInNow()) return reconcile();
+        throw error;
+      });
+    }
     if (!force && reconciledUserId === userId && rows !== null) {
       return hydrateUnhydratedWeeks().then(function () {
         dispatch();
         return [];
       });
     }
-    reconcilePromise = platform.progress.getProgress().then(function (result) {
+    var epoch = hydrationEpoch;
+    var request = platform.progress.getProgress().then(function (result) {
+      if (epoch !== hydrationEpoch) return result;
       rows = new Map();
       (Array.isArray(result) ? result : []).forEach(function (row) {
         if (row && row.activity_key) rows.set(normalise(row.activity_key), row);
       });
       reconciledUserId = userId;
       return hydrateUnhydratedWeeks().then(function () {
+        if (epoch !== hydrationEpoch) return result;
         dispatch();
         return result;
       });
@@ -246,9 +287,10 @@
       console.warn("[Unit3BackendProgress] Progress refresh failed", error);
       throw error;
     }).finally(function () {
-      reconcilePromise = null;
+      if (reconcilePromise === request) reconcilePromise = null;
     });
-    return reconcilePromise;
+    reconcilePromise = request;
+    return request;
   }
 
   function mount() {
@@ -261,7 +303,7 @@
       if (state.status === "signed-out") {
         rows = isSharedBackend() ? new Map() : null;
         reconciledUserId = null;
-        hydratedWeeks = Object.create(null);
+        resetHydratedWeeks();
         dispatch();
       }
     });

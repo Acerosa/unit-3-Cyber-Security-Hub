@@ -21,7 +21,9 @@ export function PageHost({
     if (template && hostRef.current.childNodes.length === 0) {
       hostRef.current.appendChild(template.content.cloneNode(true));
     }
-    void loadPageScripts(root, scripts);
+    void loadPageScripts(root, scripts).then(() => {
+      void window.Unit3BackendProgress?.reconcile?.();
+    });
   }, [adaptersReady, root, scripts]);
 
   if (!adaptersReady) {
