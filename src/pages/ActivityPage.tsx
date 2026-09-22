@@ -56,6 +56,11 @@ import {
   submitCatalogueDraft,
   type CatalogueDraft
 } from "../catalogue/activity-draft";
+import {
+  bindPersistedCatalogueDraft,
+  UNMAPPED_RESPONSE_COPY
+} from "../catalogue/response-identity";
+import { ensureFormativeMapper } from "../formative-contract";
 import { ActivitySequenceNav } from "./ActivitySequenceNav";
 import { PageHost } from "./PageHost";
 
@@ -180,7 +185,19 @@ export function ActivityPage({
     let cancelled = false;
     const store = createCatalogueDraftStore(activity, platform as never);
     const startedAt = new Date().toISOString();
-    const applyResolved = (resolved: CatalogueDraft | null | undefined, ignoreTouched: boolean) => {
+    const bindResolved = (
+      resolved: CatalogueDraft | null | undefined,
+      mapper: Parameters<typeof bindPersistedCatalogueDraft>[2] | null
+    ) => {
+      if (!resolved || !mapper) return { draft: resolved, unmappedKeys: [] as string[], ambiguousKeys: [] as string[] };
+      const bound = bindPersistedCatalogueDraft(activity, resolved, mapper);
+      return {
+        draft: bound.draft,
+        unmappedKeys: bound.unmappedKeys,
+        ambiguousKeys: bound.ambiguousKeys
+      };
+    };
+    const applyResolved = (resolved: CatalogueDraft | null | undefined, ignoreTouched: boolean, unmappedKeys: string[] = []) => {
       if (cancelled) return;
       const responses = resolved?.responses && typeof resolved.responses === "object" ? resolved.responses : {};
       const checked = resolved?.checked && typeof resolved.checked === "object" ? resolved.checked : {};
@@ -209,13 +226,27 @@ export function ActivityPage({
       setReadyToFinish(
         Boolean(activity && allCatalogueQuestionsChecked(activity, next) && next.submission?.status !== "submitted")
       );
+      if (unmappedKeys.length) {
+        setRecoveryNotice((current) => current || UNMAPPED_RESPONSE_COPY);
+      }
     };
-    const unsubscribe = store?.subscribe?.((resolved) => applyResolved(resolved, false));
+    const unsubscribe = store?.subscribe?.((resolved) => {
+      const mapper = typeof window !== "undefined" ? window.Unit3ActivityKeyMap || null : null;
+      const bound = bindResolved(resolved as CatalogueDraft, mapper);
+      applyResolved(bound.draft, false, bound.unmappedKeys.concat(bound.ambiguousKeys));
+    });
     void (async () => {
+      let mapper: Parameters<typeof bindPersistedCatalogueDraft>[2] | null = null;
+      try {
+        mapper = await ensureFormativeMapper();
+      } catch {
+        mapper = typeof window !== "undefined" ? window.Unit3ActivityKeyMap || null : null;
+      }
       const resolved = store?.hydrate ? await store.hydrate() : null;
       if (cancelled) return;
-      if (catalogueDraftHasWork(resolved as CatalogueDraft)) {
-        applyResolved(resolved, false);
+      const boundCurrent = bindResolved(resolved as CatalogueDraft, mapper);
+      if (catalogueDraftHasWork(boundCurrent.draft as CatalogueDraft)) {
+        applyResolved(boundCurrent.draft, false, boundCurrent.unmappedKeys.concat(boundCurrent.ambiguousKeys));
         return;
       }
       if (catalogueDraftHasWork(draftRef.current)) return;
@@ -237,13 +268,13 @@ export function ActivityPage({
       if (recovered.kind === "incompatible") {
         setRecoveryNotice(recovered.reason || "");
       }
-      applyResolved(resolved, false);
+      applyResolved(boundCurrent.draft, false, boundCurrent.unmappedKeys.concat(boundCurrent.ambiguousKeys));
     })();
     return () => {
       cancelled = true;
       unsubscribe?.();
     };
-  }, [activity, adaptersReady, platform, platformState, playerMode]);
+  }, [activity?.id, adaptersReady, platform, platformState, playerMode]);
 
   useEffect(() => {
     if (!activity || playerMode === "host") return;
@@ -389,20 +420,18 @@ export function ActivityPage({
     if (draftRef.current.submission?.status === "submitted") return;
     finishInFlight.current = true;
     const store = createCatalogueDraftStore(catalogueActivityDocument, platform as never);
-    persistDraft(catalogueActivityDocument, draftRef.current, { immediate: true });
+    persistCatalogueDraft(store, draftRef.current, { remote: false });
     const result = await submitCatalogueDraft(catalogueActivityDocument, draftRef.current, platform as never);
     const next: CatalogueDraft = {
       ...draftRef.current,
       submission: { status: result.status }
     };
     draftRef.current = next;
-    persistCatalogueDraft(store, next, { remote: false });
     setFinishNotice(result.reason || (result.status === "submitted"
       ? "Saved to your learning record."
       : "Your work is still saved on this device."));
     if (result.status === "submitted") {
       setReadyToFinish(false);
-      setPersistStatus("saved");
       const scripts = CATALOGUE_PROGRESS_SCRIPTS[week] || [];
       if (scripts.length) {
         await loadPageScripts(context.root, scripts);
@@ -414,8 +443,9 @@ export function ActivityPage({
       }
       return;
     }
+    persistCatalogueDraft(store, next, { remote: false });
     finishInFlight.current = false;
-  }, [catalogueActivityDocument, context.root, persistDraft, platform, week]);
+  }, [catalogueActivityDocument, context.root, platform, week]);
 
   const scorableTotal = useMemo(
     () => scorableBlocks(catalogueActivityDocument).reduce((total, block) => total + blockScorableTotal(block), 0),

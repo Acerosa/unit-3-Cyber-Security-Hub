@@ -104,4 +104,33 @@ describe("historical same-key recovery", () => {
     expect(recovered.state?.responses["BAS-Q01"]).toBe("C");
     expect(saves).toEqual([]);
   });
+
+  it("does not blindly request unassigned 1.1.0–1.3.0 for week2 retrieval", async () => {
+    const versions: string[] = [];
+    const retrieval = {
+      id: "week2-session1-retrieval",
+      version: "1.0.0",
+      blocks: [
+        {
+          id: "q1",
+          type: "single-choice",
+          content: { questionId: "week2-session1-retrieval:s1-q1", sourceQuestionId: "s1-q1" }
+        }
+      ]
+    } as ActivityDocument;
+    await recoverCatalogueState({
+      activity: retrieval,
+      currentState: null,
+      platform: {
+        progress: {
+          createStore: ({ activityVersion }: { activityVersion: string }) => {
+            versions.push(activityVersion);
+            return { hydrate: async () => null, destroy: () => {} };
+          }
+        }
+      }
+    });
+    expect(versions).toEqual([]);
+  });
 });
+

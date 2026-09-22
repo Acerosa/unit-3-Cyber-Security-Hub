@@ -195,17 +195,21 @@
     var current = trim(currentVersion);
     var seen = {};
     var out = [];
+    var key = normaliseActivityKey(activityId);
     function add(value) {
       var ver = trim(value);
       if (!ver || ver === current || seen[ver]) return;
       seen[ver] = true;
       out.push(ver);
     }
-    add(hardcodedCatalogueVersion(activityId));
-    add("1.0.0");
-    add("1.1.0");
-    add("1.2.0");
-    add("1.3.0");
+    // Only versions attributed to this activity. Do not sweep 1.0.0–1.3.0,
+    // and do not treat the generic week[2-7] 1.1.0 fallback as assigned.
+    add(packageVersionFor(activityId));
+    if (isClassicHostActivity(key) || key.indexOf("u3-w01-") === 0) {
+      add(hardcodedCatalogueVersion(activityId));
+    } else if (WEEK5_MARKING_V1[key]) {
+      add(hardcodedCatalogueVersion(activityId));
+    }
     return out;
   }
 

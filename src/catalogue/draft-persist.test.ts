@@ -16,4 +16,30 @@ describe("Core persist status mapping", () => {
     expect(persistUiStatusFromCore({ status: "idle" })).toBe("idle");
     expect(persistUiStatusFromCore(null)).toBe("idle");
   });
+
+  it("does not display Saved after a remote 403 / failed save", () => {
+    expect(persistUiStatusFromCore({
+      status: "failed",
+      lastRemoteSaveSucceeded: false,
+      retryPending: true
+    })).toBe("error");
+    expect(persistUiStatusFromCore({
+      status: "idle",
+      lastRemoteSaveSucceeded: true
+    })).toBe("idle");
+    expect(persistUiStatusFromCore({
+      status: "pending",
+      dirty: true,
+      lastRemoteSaveSucceeded: false
+    })).toBe("pending");
+  });
+
+  it("displays Saved only after Core confirms remote sync for the current fingerprint", () => {
+    expect(persistUiStatusFromCore({
+      status: "synced",
+      lastRemoteSaveSucceeded: true
+    })).toBe("saved");
+    expect(PERSIST_STATUS_COPY.saved).toBe("Saved ✓");
+  });
 });
+

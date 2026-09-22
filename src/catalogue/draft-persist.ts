@@ -24,8 +24,13 @@ export function persistUiStatusFromCore(
 ): PersistUiStatus {
   if (!snapshot) return "idle";
   if (snapshot.saving === true || snapshot.status === "saving") return "saving";
-  if (snapshot.status === "failed" || snapshot.retryPending === true) return "error";
+  if (
+    snapshot.status === "failed"
+    || snapshot.status === "retrieval-failed"
+    || snapshot.retryPending === true
+  ) return "error";
   if (snapshot.status === "pending" || snapshot.dirty === true) return "pending";
-  if (snapshot.status === "synced" || snapshot.lastRemoteSaveSucceeded === true) return "saved";
+  // Saved ✓ only after Core confirms remote sync for the current fingerprint.
+  if (snapshot.status === "synced" && snapshot.lastRemoteSaveSucceeded === true) return "saved";
   return "idle";
 }
