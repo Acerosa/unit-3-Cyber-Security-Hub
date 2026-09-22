@@ -35,7 +35,7 @@ function loadWeek1Modules(overrides) {
   const platformAttemptIds = new Map();
   const sandboxWindow = {
     location: {
-      pathname: "/activities/activity.html",
+      pathname: (overrides && overrides.pathname) || "/activities/activity.html",
       search: "?activityId=U3-W01-BASELINE&backend=APPS_SCRIPT"
     },
     localStorage: createStorage(),
@@ -324,4 +324,35 @@ test("activity engine keeps GAS getActivity/markSection and does not dual-write"
   assert.doesNotMatch(supabaseFn[0], /submitAttempt/);
   assert.doesNotMatch(supabaseFn[0], /studentId/);
   assert.match(engine, /handleAppsScriptRollbackSubmit/);
+});
+
+test("classic GAS Activity API still validates the 10-question baseline bank", () => {
+  const harness = loadWeek1Modules({ signedIn: true });
+  assert.throws(
+    () => harness.window.Unit3Week1FinalSubmit.assertLiveBankMatchesCatalogue("U3-W01-BASELINE", {
+      sections: [{
+        questions: Array.from({ length: 6 }, (_, index) => ({
+          questionId: "BAS-Q" + String(index + 1).padStart(2, "0"),
+          questionType: "single-choice"
+        }))
+      }]
+    }),
+    /QUESTION_COUNT_MISMATCH/
+  );
+});
+
+test("catalogue SPA Week 1 pages do not apply classic question-count validation", () => {
+  const harness = loadWeek1Modules({
+    signedIn: true,
+    pathname: "/week-1/baseline/"
+  });
+  const questions = harness.window.Unit3Week1FinalSubmit.assertLiveBankMatchesCatalogue("U3-W01-BASELINE", {
+    sections: [{
+      questions: Array.from({ length: 6 }, (_, index) => ({
+        questionId: "u3-w01-baseline:q" + String(index + 1),
+        questionType: "single-choice"
+      }))
+    }]
+  });
+  assert.equal(questions.length, 6);
 });

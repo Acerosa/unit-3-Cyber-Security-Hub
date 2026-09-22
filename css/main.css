@@ -984,3 +984,17 @@ a {
 .unit3-session-report-link .lp-text-link {
   font-weight: 500;
 }
+
+.lp-persist-status {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+.lp-persist-status[data-lp-persist-status="saved"] {
+  color: var(--color-heading);
+}
+
+.lp-persist-status[data-lp-persist-status="error"] {
+  color: var(--color-heading);
+}

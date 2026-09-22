@@ -6,6 +6,7 @@
  */
 
 const LEARNER_RPC = /\/rest\/v1\/(?:rpc\/ensure_learner_auth_link|rpc\/resolve_learner_hub_access|rpc\/my_hub_assignments|my_profile|my_enrolments|my_assignments)(?:\?|$)/;
+const BOOTSTRAP_WAIT_MS = 2500;
 
 export function isUserAccessToken(authorization: string | null | undefined): boolean {
   const value = String(authorization || "").trim();
@@ -60,12 +61,15 @@ function emptyJsonResponse(): Response {
 /**
  * Wrap fetch so authenticated-only learner RPCs never run as publishable/anon
  * during Auth restore. After timeout with no session, skip ensure (avoid 403
- * noise) and allow other reads to proceed empty.
+ * noise) and allow other reads to proceed empty. Persist RPCs must not fall
+ * through as anonymous empty GETs — that would intern "no work".
  */
 export function createAuthGatedFetch(
   getClient: () => SessionClient | null | undefined,
-  innerFetch: typeof fetch = fetch
+  innerFetch: typeof fetch = fetch,
+  options?: { bootstrapWaitMs?: number }
 ): typeof fetch {
+  const bootstrapWaitMs = options?.bootstrapWaitMs ?? BOOTSTRAP_WAIT_MS;
   return async function authGatedFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
     const url = requestUrl(input);
     if (!LEARNER_RPC.test(url)) {
@@ -78,7 +82,7 @@ export function createAuthGatedFetch(
       return innerFetch(input, init);
     }
 
-    const token = await waitForUserAccessToken(getClient);
+    const token = await waitForUserAccessToken(getClient, bootstrapWaitMs);
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
       const nextInit: RequestInit = { ...(init || {}), headers };

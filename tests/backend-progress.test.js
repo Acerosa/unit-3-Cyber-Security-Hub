@@ -186,7 +186,7 @@ test("skip path hydrates a newly loaded week without repeating getProgress", asy
   assert.deepEqual(weekHydrates, ["unit3-week2-progress", "unit3-week4-progress"]);
 });
 
-test("revisiting an already hydrated week does not issue another carrier hydrate", async () => {
+test("GUARDRAIL: Unit 3 same-week revisit carrier reads are 0 extra", async () => {
   const { adapter, weekHydrates, window } = await load({
     signedIn: true,
     rows: [{ activity_key: "week2-session1-retrieval", latest_score: 7, max_score: 10, attempt_count: 1 }]

@@ -15,6 +15,7 @@ export function isCatalogueWeek(week: number): boolean {
 }
 
 export const CATALOGUE_PROGRESS_SCRIPTS: Record<number, string[]> = {
+  1: ["js/core/backend-progress.js"],
   2: ["js/week2-progress.js", "js/core/backend-progress.js"],
   3: ["js/week3-progress.js", "js/core/backend-progress.js"],
   4: ["js/week4-progress.js", "js/core/backend-progress.js"],
