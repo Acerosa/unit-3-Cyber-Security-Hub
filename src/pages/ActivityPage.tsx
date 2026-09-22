@@ -225,10 +225,13 @@ export function ActivityPage({
         currentState: resolved as CatalogueDraft | null
       });
       if (cancelled) return;
+      // Learner work during historical probes must win. Do not remap or
+      // remount current answers just because a same-key store later hydrated.
+      if (catalogueDraftHasWork(draftRef.current) || store?.isDirty?.()) return;
       if (recovered.kind === "compatible" && recovered.state) {
         recoveredRef.current = true;
         setRecoveryNotice(recovered.reason || "");
-        applyResolved(recovered.state, true);
+        applyResolved(recovered.state, false);
         return;
       }
       if (recovered.kind === "incompatible") {

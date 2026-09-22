@@ -27,7 +27,10 @@ function mockPlatform(drafts: Record<string, {
     auth: { isSignedIn: () => true },
     progress: {
       createStore: ({ activityKey }: { activityKey: string }) => ({
-        hydrate: async () => drafts[activityKey] || { responses: {}, checked: {}, results: {} },
+        hydrate: async () => {
+          await new Promise((resolve) => setTimeout(resolve, 40));
+          return drafts[activityKey] || { responses: {}, checked: {}, results: {} };
+        },
         save: (state: {
           responses?: Record<string, unknown>;
           checked?: Record<string, boolean>;

@@ -142,24 +142,25 @@ describe("ActivityPage P0 persistence and finish", () => {
       saving: boolean;
       lastRemoteSaveSucceeded: boolean;
     }) => void> = [];
+    let lastSnapshot = {
+      status: "idle",
+      dirty: false,
+      saving: false,
+      lastRemoteSaveSucceeded: null as boolean | null
+    };
     const store = {
       save: vi.fn(() => {
-        const snapshot = {
+        lastSnapshot = {
           status: "synced",
           dirty: false,
           saving: false,
           lastRemoteSaveSucceeded: true
         };
-        listeners.forEach((listener) => listener(snapshot));
+        listeners.forEach((listener) => listener(lastSnapshot));
       }),
       hydrate: async () => null,
       isDirty: () => false,
-      persistStatus: () => ({
-        status: "idle",
-        dirty: false,
-        saving: false,
-        lastRemoteSaveSucceeded: null
-      }),
+      persistStatus: () => lastSnapshot,
       subscribePersistStatus: (listener: (snapshot: {
         status: string;
         dirty: boolean;
