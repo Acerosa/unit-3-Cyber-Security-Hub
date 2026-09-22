@@ -112,8 +112,8 @@ describe("formative contract mapping", () => {
     expect(resolveFormativeRpcQuestionId(mapper, "week2-threat-vulnerability-sort", "week2-threat-vulnerability-sort:sort-01")).toBe("SORT-01");
   });
 
-  it("uses catalogue version 1.1.0 for week2-malware-symptoms", () => {
-    expect(resolveFormativeActivityVersion(mapper, "week2-malware-symptoms", "1.0.0")).toBe("1.1.0");
+  it("uses published package version 1.0.0 for week2-malware-symptoms", () => {
+    expect(resolveFormativeActivityVersion(mapper, "week2-malware-symptoms", "1.0.0")).toBe("1.0.0");
   });
 
   it("keeps published Week 1 React versions instead of remapping to 1.2.0", () => {
@@ -218,7 +218,7 @@ describe("formative contract mapping", () => {
         response_payload: { optionId: "b" }
       }]
     });
-    expect(result.activityVersion).toBe("1.1.0");
+    expect(result.activityVersion).toBe("1.0.0");
     expect(result.responses[0].question_id).toBe("MW-Q1");
     expect(result.responses[0].response_payload).toEqual({ optionId: "B" });
   });
@@ -392,7 +392,7 @@ describe("production-shaped formative marking path", () => {
     const rpc = calls[0];
     expect(rpc.name).toBe("mark_formative_response");
     expect(rpc.payload.p_activity_key).toBe("week2-malware-symptoms");
-    expect(rpc.payload.p_activity_version).toBe("1.1.0");
+    expect(rpc.payload.p_activity_version).toBe("1.0.0");
     expect(rpc.payload.p_responses).toEqual([{
       question_id: "MW-Q1",
       response_type: "single-choice",
@@ -463,7 +463,7 @@ describe("formative classification → hosted optionId", () => {
           response_payload: { categoryId, itemId }
         }]
       });
-      expect(result.activityVersion).toBe("1.1.0");
+      expect(result.activityVersion).toBe("1.0.0");
       expect(result.responses[0].question_id).toBe(itemId.toUpperCase());
       expect(result.responses[0].response_type).toBe("single-choice");
       expect(result.responses[0].response_payload).toEqual({
@@ -507,7 +507,7 @@ describe("formative classification → hosted optionId", () => {
           response_payload: { categoryId, itemId }
         }]
       });
-      expect(result.activityVersion).toBe("1.1.0");
+      expect(result.activityVersion).toBe("1.0.0");
       expect(result.responses[0].question_id).toBe(itemId);
       expect(result.responses[0].response_type).toBe("single-choice");
       expect(result.responses[0].response_payload).toEqual({ optionId: categoryId });
@@ -526,7 +526,7 @@ describe("formative classification → hosted optionId", () => {
           response_payload: { categoryId, itemId }
         }]
       });
-      expect(result.activityVersion).toBe("1.1.0");
+      expect(result.activityVersion).toBe("1.0.0");
       expect(result.responses[0].question_id).toBe(itemId.toUpperCase());
       expect(result.responses[0].response_type).toBe("single-choice");
       expect(result.responses[0].response_payload).toEqual({ optionId: categoryId });
@@ -663,7 +663,7 @@ describe("production-shaped classification formative RPC", () => {
       responses: { "sort-01": "threat" }
     });
     expect(calls[0].payload.p_activity_key).toBe("week2-threat-vulnerability-sort");
-    expect(calls[0].payload.p_activity_version).toBe("1.1.0");
+    expect(calls[0].payload.p_activity_version).toBe("1.0.0");
     expect(calls[0].payload.p_responses).toEqual([{
       question_id: "SORT-01",
       response_type: "single-choice",
@@ -745,7 +745,7 @@ describe("production-shaped classification formative RPC", () => {
       },
       responses: { tm1: "motivation" }
     });
-    expect(calls[0].payload.p_activity_version).toBe("1.1.0");
+    expect(calls[0].payload.p_activity_version).toBe("1.0.0");
     expect(calls[0].payload.p_responses).toEqual([{
       question_id: "TM1",
       response_type: "single-choice",

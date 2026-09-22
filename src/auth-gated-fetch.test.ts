@@ -69,6 +69,34 @@ describe("createAuthGatedFetch", () => {
     expect(inner).not.toHaveBeenCalled();
   });
 
+  it("does not gate persist RPCs (Core owns persist authentication)", async () => {
+    const inner = vi.fn(async () => new Response("[]", { status: 200 }));
+    const gated = createAuthGatedFetch(() => ({
+      auth: { getSession: async () => ({ data: { session: null } }) }
+    }), inner as unknown as typeof fetch);
+
+    const res = await gated("https://hub.supabase.co/rest/v1/rpc/get_activity_state", {
+      method: "POST",
+      headers: { Authorization: "Bearer sb_publishable_test" }
+    });
+    expect(res.status).toBe(200);
+    expect(inner).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not delay save_activity_state when no session appears", async () => {
+    const inner = vi.fn(async () => new Response("[]", { status: 200 }));
+    const gated = createAuthGatedFetch(() => ({
+      auth: { getSession: async () => ({ data: { session: null } }) }
+    }), inner as unknown as typeof fetch);
+
+    const res = await gated("https://hub.supabase.co/rest/v1/rpc/save_activity_state", {
+      method: "POST",
+      headers: { Authorization: "Bearer sb_publishable_test" }
+    });
+    expect(res.status).toBe(200);
+    expect(inner).toHaveBeenCalledTimes(1);
+  });
+
   it("does not gate curriculum RPCs", async () => {
     const inner = vi.fn(async () => new Response("{}", { status: 200 }));
     const gated = createAuthGatedFetch(() => null, inner as unknown as typeof fetch);

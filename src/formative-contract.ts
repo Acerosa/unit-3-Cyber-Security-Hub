@@ -3,9 +3,14 @@
  * Bridges catalogue React blocks to hosted Supabase stable keys.
  */
 import type { ActivityBlockDocument } from "@learning-platform/ui";
+import { WEEK_HOST_ACTIVITY_IDS } from "./catalogue/week-activities";
 
 type KeyMap = {
   catalogueVersionFor: (activityKey: string) => string;
+  hardcodedCatalogueVersion?: (activityKey: string) => string;
+  packageVersionFor?: (activityKey: string) => string;
+  isClassicHostActivity?: (activityKey: string) => boolean;
+  knownHistoricalVersionsFor?: (activityKey: string, currentVersion: string) => string[];
   normaliseQuestionKey: (questionId: string, activityKey: string) => string;
   normaliseActivityVersion: (version: string, activityKey: string) => string;
   normaliseOptionId: (value: string, activityKey: string) => string;
@@ -21,6 +26,14 @@ declare global {
   interface Window {
     Unit3ActivityKeyMap?: KeyMap;
   }
+}
+
+const CLASSIC_HOST_KEYS = new Set(
+  Object.values(WEEK_HOST_ACTIVITY_IDS).flat()
+);
+
+export function isClassicHostActivityKey(activityKey: string): boolean {
+  return CLASSIC_HOST_KEYS.has(String(activityKey || "").trim().toLowerCase());
 }
 
 let mapperPromise: Promise<KeyMap> | null = null;
@@ -63,6 +76,11 @@ export function resolveFormativeActivityVersion(
   // u3-w01-* onto the legacy GAS catalogue at 1.2.0, and do not invent 0.1.0.
   if (activity.startsWith("u3-w01-")) {
     return /^\d+\.\d+\.\d+/.test(published) ? published : "";
+  }
+  // Other catalogue activities keep the published package version too.
+  // Do not remap week2-session1-retrieval 1.0.0 onto classic map 1.1.0.
+  if (/^\d+\.\d+\.\d+/.test(published) && !isClassicHostActivityKey(activity)) {
+    return published;
   }
   return mapper.catalogueVersionFor(activityKey)
     || mapper.normaliseActivityVersion(packageVersion, activityKey)

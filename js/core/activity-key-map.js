@@ -10,9 +10,17 @@
  * The Unit 3 Supabase catalogue stores:
  *   - lower-case activity stable keys (u3-w01-baseline etc.)
  *   - catalogue question stable keys (W2OCR-Q01, S1-Q1, MAP1MOT)
- *   - Batch B versions (1.2.0 Week 1 + Week 2 OCR; 1.0.0 four Week 5
- *     activities; 1.2.0 week6-legislation-matching; 1.1.0 everything
- *     else in Weeks 2–7)
+ *   - Hardcoded Batch B fallbacks when the live package is not loaded
+ *     (1.2.0 Week 1 + Week 2 OCR; 1.0.0 four Week 5 activities;
+ *     1.2.0 week6-legislation-matching; 1.1.0 everything else in Weeks 2–7)
+ *
+ * Catalogue/package `activity.version` is the write/read authority for
+ * catalogue-driven activities. Hardcoded fallbacks must not override a
+ * package-supplied version (for example u3-w01-baseline 1.3.0 must not
+ * become 1.2.0, and week2-session1-retrieval 1.0.0 must not become 1.1.0).
+ * Classic host engines keep the hardcoded fallback so production host
+ * work (OCR 1.2.0, registers 1.1.0) is not rewritten onto a stub package
+ * version.
  *
  * This module is the single source of truth for:
  *   1. question ID aliasing
@@ -31,6 +39,43 @@
     "week5-threat-vulnerability-risk": true,
     "week5-controls-matching": true,
     "week5-secure-rewrite": true
+  });
+
+  /*
+   * Practical host engines whose stored learner work follows the classic
+   * map, not a catalogue stub version. Keep in sync with WEEK_HOST_ACTIVITY_IDS.
+   */
+  var CLASSIC_HOST_ACTIVITY_KEYS = Object.freeze({
+    "week2-northbank-vulnerability-analysis": true,
+    "week2-ocr-question-practice": true,
+    "week2-peer-marking-answer-improvement": true,
+    "week2-northbank-vulnerability-register": true,
+    "week3-ocr-question-practice": true,
+    "week3-peer-marking": true,
+    "week4-ocr-question-practice": true,
+    "week4-answer-improvement": true,
+    "week4-mtm-mapping": true,
+    "week4-northbank-exposure": true,
+    "week4-analyse-practice": true,
+    "week5-ocr-question-practice": true,
+    "week5-answer-improvement": true,
+    "week5-ransomware-companion": true,
+    "week5-stakeholder-grid": true,
+    "week5-impact-analysis": true,
+    "week6-ocr-question-practice": true,
+    "week6-answer-improvement": true,
+    "week6-discuss-planner": true,
+    "week6-stakeholder-debate": true,
+    "week6-revision-organiser": true,
+    "week6-exercise-decision-record": true,
+    "week6-legislation-matching": true,
+    "week6-government-initiatives": true,
+    "week6-ncsc-guidance": true,
+    "week6-discuss-learning": true,
+    "week7-ocr-question-practice": true,
+    "week7-answer-improvement": true,
+    "week7-northbank-risk-register": true,
+    "week7-heightened-threat": true
   });
 
   /*
@@ -86,10 +131,52 @@
     return raw.toLowerCase();
   }
 
-  function catalogueVersionFor(activityId) {
+  function isClassicHostActivity(activityId) {
+    return Boolean(CLASSIC_HOST_ACTIVITY_KEYS[normaliseActivityKey(activityId)]);
+  }
+
+  function packageActivities() {
+    var pkg = window.__lpLivePackage || window.__lpPackage;
+    if (!pkg) return null;
+    if (Array.isArray(pkg.activities)) return pkg.activities;
+    if (Array.isArray(pkg)) return pkg;
+    return null;
+  }
+
+  function packageVersionFor(activityId) {
+    var activities = packageActivities();
+    var key = normaliseActivityKey(activityId);
+    var i;
+    var item;
+    var ver;
+    if (!activities || !key) return "";
+    for (i = 0; i < activities.length; i += 1) {
+      item = activities[i];
+      if (!item || normaliseActivityKey(item.id) !== key) continue;
+      ver = trim(item.version || item.activityVersion || "");
+      if (/^\d+\.\d+\.\d+/.test(ver)) return ver;
+    }
+    return "";
+  }
+
+  function hardcodedCatalogueVersion(activityId) {
     var key = normaliseActivityKey(activityId);
     if (!key) return "";
-    var overrides = config().activityCatalogueVersions || {};
+    if (key.indexOf("u3-w01-") === 0) return "1.2.0";
+    if (key === "week2-ocr-question-practice") return "1.2.0";
+    if (key === "week6-legislation-matching") return "1.2.0";
+    if (WEEK5_MARKING_V1[key]) return "1.0.0";
+    if (/^week[2-7]-/.test(key)) return "1.1.0";
+    return "";
+  }
+
+  function catalogueVersionFor(activityId) {
+    var key = normaliseActivityKey(activityId);
+    var overrides;
+    var pkg;
+    var fallback;
+    if (!key) return "";
+    overrides = config().activityCatalogueVersions || {};
     if (
       Object.prototype.hasOwnProperty.call(overrides, key) &&
       typeof overrides[key] === "string" &&
@@ -97,12 +184,29 @@
     ) {
       return overrides[key].trim();
     }
-    if (key.indexOf("u3-w01-") === 0) return "1.2.0";
-    if (key === "week2-ocr-question-practice") return "1.2.0";
-    if (key === "week6-legislation-matching") return "1.2.0";
-    if (WEEK5_MARKING_V1[key]) return "1.0.0";
-    if (/^week[2-7]-/.test(key)) return "1.1.0";
-    return "";
+    pkg = packageVersionFor(key);
+    if (pkg && !isClassicHostActivity(key)) return pkg;
+    fallback = hardcodedCatalogueVersion(key);
+    if (fallback) return fallback;
+    return pkg || "";
+  }
+
+  function knownHistoricalVersionsFor(activityId, currentVersion) {
+    var current = trim(currentVersion);
+    var seen = {};
+    var out = [];
+    function add(value) {
+      var ver = trim(value);
+      if (!ver || ver === current || seen[ver]) return;
+      seen[ver] = true;
+      out.push(ver);
+    }
+    add(hardcodedCatalogueVersion(activityId));
+    add("1.0.0");
+    add("1.1.0");
+    add("1.2.0");
+    add("1.3.0");
+    return out;
   }
 
   function normaliseActivityVersion(version, activityKey) {
@@ -377,6 +481,10 @@
     normaliseQuestionKey: normaliseQuestionKey,
     normaliseActivityVersion: normaliseActivityVersion,
     catalogueVersionFor: catalogueVersionFor,
+    hardcodedCatalogueVersion: hardcodedCatalogueVersion,
+    packageVersionFor: packageVersionFor,
+    isClassicHostActivity: isClassicHostActivity,
+    knownHistoricalVersionsFor: knownHistoricalVersionsFor,
     optionLetterCase: optionLetterCase,
     normaliseOptionId: normaliseOptionId,
     normaliseCategoryId: normaliseCategoryId,

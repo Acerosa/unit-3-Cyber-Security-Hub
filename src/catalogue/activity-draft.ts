@@ -33,6 +33,22 @@ type ProgressStore = {
   clear?: (options?: { local?: boolean }) => unknown;
   subscribe?: (listener: (state: CatalogueDraft) => void) => () => void;
   isDirty?: () => boolean;
+  persistStatus?: () => {
+    status?: string;
+    dirty?: boolean;
+    saving?: boolean;
+    retryPending?: boolean;
+    lastRemoteSaveSucceeded?: boolean | null;
+  };
+  subscribePersistStatus?: (
+    listener: (snapshot: {
+      status?: string;
+      dirty?: boolean;
+      saving?: boolean;
+      retryPending?: boolean;
+      lastRemoteSaveSucceeded?: boolean | null;
+    }) => void
+  ) => () => void;
 };
 
 type HubPlatformLike = {

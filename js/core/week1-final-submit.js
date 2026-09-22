@@ -61,12 +61,30 @@
     return questions;
   }
 
+  function isClassicGasActivityApiPage() {
+    try {
+      var path =
+        window.location && typeof window.location.pathname === "string"
+          ? window.location.pathname
+          : "";
+      return /\/activities\/activity\.html$/i.test(path);
+    } catch (err) {
+      return false;
+    }
+  }
+
   function assertLiveBankMatchesCatalogue(activityId, activityPayload) {
     var map = keyMap();
     var activityKey =
       typeof map.normaliseActivityKey === "function"
         ? map.normaliseActivityKey(activityId)
         : String(activityId || "").toLowerCase();
+    // Catalogue SPA banks (baseline 1.3.0 = 6 questions) must not use the
+    // classic GAS Activity API counts (baseline = 10). Keep this check only
+    // for activities/activity.html.
+    if (!isClassicGasActivityApiPage()) {
+      return collectLiveQuestions(activityPayload);
+    }
     var expected = EXPECTED_QUESTION_COUNTS[activityKey];
     if (expected == null) {
       throw new Error("UNKNOWN_ACTIVITY: " + String(activityId || ""));
@@ -210,6 +228,7 @@
 
   window.Unit3Week1FinalSubmit = Object.freeze({
     EXPECTED_QUESTION_COUNTS: EXPECTED_QUESTION_COUNTS,
+    isClassicGasActivityApiPage: isClassicGasActivityApiPage,
     usesSupabaseFinalSubmit: usesSupabaseFinalSubmit,
     usesAppsScriptFormative: usesAppsScriptFormative,
     collectLiveQuestions: collectLiveQuestions,

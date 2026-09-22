@@ -31,6 +31,15 @@ import {
   neighboursInSequence,
   scorableBlocks
 } from "../catalogue/week-activities";
+import {
+  catalogueDraftHasWork,
+  recoverCatalogueState
+} from "../catalogue/historical-state";
+import {
+  persistUiStatusFromCore,
+  PERSIST_STATUS_COPY,
+  type PersistUiStatus
+} from "../catalogue/draft-persist";
 import { activeContentPackage, liveContentPackage } from "../curriculum/apply-runtime";
 import { weekPageFromPackage } from "../curriculum/from-package";
 import { runtimeWeekForTeachingWeek } from "../curriculum/runtime-weeks";
@@ -141,21 +150,27 @@ export function ActivityPage({
   const progressRef = useRef(emptyPracticeProgress());
   const draftRef = useRef<CatalogueDraft>(emptyCatalogueDraft());
   const finishInFlight = useRef(false);
+  const recoveredRef = useRef(false);
   const [practice, setPractice] = useState<PracticeProgressAggregate>(
     aggregatePracticeProgress(emptyPracticeProgress(), { requiredBlocks: 0, scorableTotal: 0 })
   );
   const [initialDraft, setInitialDraft] = useState<CatalogueDraft>(emptyCatalogueDraft());
   const [readyToFinish, setReadyToFinish] = useState(false);
   const [finishNotice, setFinishNotice] = useState("");
+  const [recoveryNotice, setRecoveryNotice] = useState("");
+  const [persistStatus, setPersistStatus] = useState<PersistUiStatus>("idle");
 
   useEffect(() => {
     progressRef.current = emptyPracticeProgress();
     draftRef.current = emptyCatalogueDraft();
     finishInFlight.current = false;
+    recoveredRef.current = false;
     setPractice(aggregatePracticeProgress(emptyPracticeProgress(), { requiredBlocks: 0, scorableTotal: 0 }));
     setInitialDraft(emptyCatalogueDraft());
     setReadyToFinish(false);
     setFinishNotice("");
+    setRecoveryNotice("");
+    setPersistStatus("idle");
   }, [activityId]);
 
   useEffect(() => {
@@ -170,6 +185,12 @@ export function ActivityPage({
       const responses = resolved?.responses && typeof resolved.responses === "object" ? resolved.responses : {};
       const checked = resolved?.checked && typeof resolved.checked === "object" ? resolved.checked : {};
       if (!ignoreTouched && store?.isDirty?.()) return;
+      if (!ignoreTouched && recoveredRef.current && !catalogueDraftHasWork(resolved as CatalogueDraft)) return;
+      if (
+        !ignoreTouched
+        && catalogueDraftHasWork(draftRef.current)
+        && !catalogueDraftHasWork(resolved as CatalogueDraft)
+      ) return;
       const next: CatalogueDraft = {
         responses,
         checked,
@@ -190,14 +211,49 @@ export function ActivityPage({
       );
     };
     const unsubscribe = store?.subscribe?.((resolved) => applyResolved(resolved, false));
-    void (store?.hydrate ? store.hydrate() : Promise.resolve(null)).then((resolved) => {
+    void (async () => {
+      const resolved = store?.hydrate ? await store.hydrate() : null;
+      if (cancelled) return;
+      if (catalogueDraftHasWork(resolved as CatalogueDraft)) {
+        applyResolved(resolved, false);
+        return;
+      }
+      if (catalogueDraftHasWork(draftRef.current)) return;
+      const recovered = await recoverCatalogueState({
+        activity,
+        platform: platform as never,
+        currentState: resolved as CatalogueDraft | null
+      });
+      if (cancelled) return;
+      if (recovered.kind === "compatible" && recovered.state) {
+        recoveredRef.current = true;
+        setRecoveryNotice(recovered.reason || "");
+        applyResolved(recovered.state, true);
+        return;
+      }
+      if (recovered.kind === "incompatible") {
+        setRecoveryNotice(recovered.reason || "");
+      }
       applyResolved(resolved, false);
-    });
+    })();
     return () => {
       cancelled = true;
       unsubscribe?.();
     };
   }, [activity, adaptersReady, platform, platformState, playerMode]);
+
+  useEffect(() => {
+    if (!activity || playerMode === "host") return;
+    const store = createCatalogueDraftStore(activity, platform as never);
+    const apply = (snapshot: Parameters<typeof persistUiStatusFromCore>[0]) => {
+      setPersistStatus(persistUiStatusFromCore(snapshot));
+    };
+    apply(typeof store?.persistStatus === "function" ? store.persistStatus() : undefined);
+    const unsubscribe = store?.subscribePersistStatus?.(apply);
+    return () => {
+      unsubscribe?.();
+    };
+  }, [activity, platform, playerMode]);
 
   useEffect(() => {
     if (!adaptersReady || playerMode !== "catalogue") return;
@@ -208,6 +264,17 @@ export function ActivityPage({
       });
     }
   }, [adaptersReady, context.root, playerMode, week]);
+
+  const persistDraft = useCallback((
+    document: ActivityDocument,
+    draft: CatalogueDraft,
+    options?: { immediate?: boolean; remote?: boolean }
+  ) => {
+    const current = createCatalogueDraftStore(document, platform as never);
+    persistCatalogueDraft(current, draft, options);
+    if (options?.remote === false) return;
+    recoveredRef.current = false;
+  }, [platform]);
 
   useEffect(() => {
     if (!adaptersReady || playerMode === "host" || !activityId || !sessionAccessible) return;
@@ -233,7 +300,7 @@ export function ActivityPage({
       next.checked[qid] = false;
       delete next.results[qid];
       draftRef.current = next;
-      persistCatalogueDraft(createCatalogueDraftStore(document, platform as never), next, { immediate: true });
+      persistDraft(document, next, { immediate: true });
       setInitialDraft(next);
       setReadyToFinish(false);
       progressRef.current = applyPracticeResult(progressRef.current, qid, result);
@@ -267,8 +334,8 @@ export function ActivityPage({
       if (marked) next.results[qid] = marked;
     }
     draftRef.current = next;
-    persistCatalogueDraft(
-      createCatalogueDraftStore(document, platform as never),
+    persistDraft(
+      document,
       next,
       draftRef.current.submission?.status === "submitted"
         ? { remote: false }
@@ -311,7 +378,7 @@ export function ActivityPage({
     if (aggregate.complete) {
       progressStore(week)?.markCompleted?.(document.id);
     }
-  }, [platform, week]);
+  }, [persistDraft, week]);
 
   const finishActivity = useCallback(async () => {
     if (!catalogueActivityDocument || finishInFlight.current) return;
@@ -319,7 +386,7 @@ export function ActivityPage({
     if (draftRef.current.submission?.status === "submitted") return;
     finishInFlight.current = true;
     const store = createCatalogueDraftStore(catalogueActivityDocument, platform as never);
-    persistCatalogueDraft(store, draftRef.current, { immediate: true });
+    persistDraft(catalogueActivityDocument, draftRef.current, { immediate: true });
     const result = await submitCatalogueDraft(catalogueActivityDocument, draftRef.current, platform as never);
     const next: CatalogueDraft = {
       ...draftRef.current,
@@ -327,12 +394,25 @@ export function ActivityPage({
     };
     draftRef.current = next;
     persistCatalogueDraft(store, next, { remote: false });
-    setReadyToFinish(false);
     setFinishNotice(result.reason || (result.status === "submitted"
       ? "Saved to your learning record."
       : "Your work is still saved on this device."));
-    if (result.status !== "submitted") finishInFlight.current = false;
-  }, [catalogueActivityDocument, platform]);
+    if (result.status === "submitted") {
+      setReadyToFinish(false);
+      setPersistStatus("saved");
+      const scripts = CATALOGUE_PROGRESS_SCRIPTS[week] || [];
+      if (scripts.length) {
+        await loadPageScripts(context.root, scripts);
+      }
+      try {
+        await window.Unit3BackendProgress?.reconcile?.({ force: true });
+      } catch {
+        /* Keep the confirmed submission; chrome can refresh on the next visit. */
+      }
+      return;
+    }
+    finishInFlight.current = false;
+  }, [catalogueActivityDocument, context.root, persistDraft, platform, week]);
 
   const scorableTotal = useMemo(
     () => scorableBlocks(catalogueActivityDocument).reduce((total, block) => total + blockScorableTotal(block), 0),
@@ -375,6 +455,20 @@ export function ActivityPage({
         renderFallback={renderCatalogueFallback}
         onResult={(result, block) => recordPracticeResult(catalogueActivityDocument, result, block)}
       />
+      {persistStatus !== "idle" ? (
+        <p
+          className="lp-persist-status"
+          data-lp-persist-status={persistStatus}
+          aria-live="polite"
+        >
+          {PERSIST_STATUS_COPY[persistStatus]}
+        </p>
+      ) : null}
+      {recoveryNotice ? (
+        <p className="lp-activity-status" data-lp-historical-recovery="">
+          {recoveryNotice}
+        </p>
+      ) : null}
       {readyToSubmit ? (
         <p className="lp-activity-ready" data-lp-finish-ready="">
           All questions checked. Finish the activity to save it to your learning record.
