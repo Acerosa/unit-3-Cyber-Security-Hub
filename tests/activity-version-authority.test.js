@@ -46,6 +46,20 @@ test("catalogue package version wins: week2-session1-retrieval stays 1.0.0 not 1
   assert.equal(mapper.normaliseActivityVersion("1.1.0", "week2-session1-retrieval"), "1.0.0");
 });
 
+test("historical probes use attributed versions only, not a 1.0.0–1.3.0 sweep", () => {
+  const mapper = loadMapper([{ id: "week2-session1-retrieval", version: "1.0.0" }]);
+  assert.equal(
+    Array.from(mapper.knownHistoricalVersionsFor("week2-session1-retrieval", "1.0.0")).join(","),
+    ""
+  );
+  const baseline = loadMapper([{ id: "u3-w01-baseline", version: "1.3.0" }]);
+  assert.equal(
+    Array.from(baseline.knownHistoricalVersionsFor("u3-w01-baseline", "1.3.0")).join(","),
+    "1.2.0"
+  );
+});
+
+
 test("classic host OCR keeps 1.2.0 even when the package stub is 1.0.0", () => {
   const mapper = loadMapper([{ id: "week2-ocr-question-practice", version: "1.0.0" }]);
   assert.equal(mapper.isClassicHostActivity("week2-ocr-question-practice"), true);

@@ -1,6 +1,8 @@
 import { resolveActivityVersion } from "@learning-platform/core";
 import { questionIdFor, type ActivityDocument } from "@learning-platform/ui";
+import { ensureFormativeMapper } from "../formative-contract";
 import { requiredCatalogueBlocks, type CatalogueDraft } from "./activity-draft";
+import { bindPersistedCatalogueDraft } from "./response-identity";
 
 export type HistoricalCompatibility = {
   compatible: boolean;
@@ -103,8 +105,7 @@ export function historicalCandidateVersions(
   if (map && typeof map.knownHistoricalVersionsFor === "function") {
     return map.knownHistoricalVersionsFor(activityKey, currentVersion);
   }
-  const current = String(currentVersion || "").trim();
-  return ["1.0.0", "1.1.0", "1.2.0", "1.3.0"].filter((version) => version !== current);
+  return [];
 }
 
 export const INCOMPATIBLE_RECOVERY_COPY =
@@ -119,7 +120,17 @@ export async function recoverCatalogueState(options: {
   currentState?: CatalogueDraft | null;
 }): Promise<HistoricalRecovery> {
   const currentVersion = resolveActivityVersion(options.activity);
-  const current = asDraft(options.currentState);
+  let mapper: Parameters<typeof bindPersistedCatalogueDraft>[2] | null = null;
+  try {
+    mapper = await ensureFormativeMapper();
+  } catch {
+    mapper = typeof window !== "undefined" ? window.Unit3ActivityKeyMap || null : null;
+  }
+  const bind = (state: CatalogueDraft | null): CatalogueDraft | null => {
+    if (!state || !mapper) return state;
+    return bindPersistedCatalogueDraft(options.activity, state, mapper).draft;
+  };
+  const current = bind(asDraft(options.currentState));
   if (catalogueDraftHasWork(current)) {
     return { kind: "current", state: current, currentVersion };
   }
@@ -138,7 +149,7 @@ export async function recoverCatalogueState(options: {
         activityVersion: sourceVersion,
         storage: typeof window !== "undefined" ? window.localStorage : undefined
       });
-      const resolved = asDraft(store?.hydrate ? await store.hydrate() : null);
+      const resolved = bind(asDraft(store?.hydrate ? await store.hydrate() : null));
       if (!catalogueDraftHasWork(resolved)) continue;
       const compatibility = assessHistoricalCompatibility(options.activity, resolved);
       if (compatibility.compatible) {

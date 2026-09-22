@@ -206,4 +206,193 @@ describe("ActivityPage P0 persistence and finish", () => {
       expect(document.querySelector('[data-lp-persist-status="saved"]')?.textContent).toMatch(/Saved/);
     });
   });
+
+  it("does not display Saved when Core reports a remote 403 / failed save", async () => {
+    window.__lpPackage = pkg;
+    const listeners: Array<(snapshot: {
+      status: string;
+      dirty: boolean;
+      saving: boolean;
+      lastRemoteSaveSucceeded: boolean | null;
+      retryPending?: boolean;
+    }) => void> = [];
+    let lastSnapshot = {
+      status: "idle",
+      dirty: false,
+      saving: false,
+      lastRemoteSaveSucceeded: null as boolean | null,
+      retryPending: false
+    };
+    const store = {
+      save: vi.fn(() => {
+        lastSnapshot = {
+          status: "failed",
+          dirty: true,
+          saving: false,
+          lastRemoteSaveSucceeded: false,
+          retryPending: true
+        };
+        listeners.forEach((listener) => listener(lastSnapshot));
+      }),
+      hydrate: async () => null,
+      isDirty: () => false,
+      persistStatus: () => lastSnapshot,
+      subscribePersistStatus: (listener: (snapshot: {
+        status: string;
+        dirty: boolean;
+        saving: boolean;
+        lastRemoteSaveSucceeded: boolean | null;
+        retryPending?: boolean;
+      }) => void) => {
+        listeners.push(listener);
+        return () => {};
+      }
+    };
+    const platform = {
+      auth: { isSignedIn: () => true },
+      marking: {
+        markBlock: vi.fn(async () => ({
+          completed: true,
+          correct: true,
+          score: { correct: 1, total: 1 },
+          status: "correct"
+        }))
+      },
+      progress: {
+        createStore: () => store
+      }
+    };
+
+    render(
+      <ActivityPage
+        context={week1MisconceptionsContext()}
+        contentReady
+        adaptersReady
+        platform={platform}
+      />
+    );
+
+    const first = document.querySelector('[data-lp-block="option-cards"]') as HTMLElement;
+    fireEvent.click(within(first).getByRole("radio", { name: /False/ }));
+    fireEvent.click(within(first).getByRole("button", { name: "Check answer" }));
+
+    await waitFor(() => {
+      expect(store.save).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(document.querySelector('[data-lp-persist-status="error"]')?.textContent).toMatch(/Not saved online/);
+    });
+    expect(document.querySelector('[data-lp-persist-status="saved"]')).toBeNull();
+    expect(document.body.textContent).not.toMatch(/Saved ✓/);
+  });
+
+  it("cancels the pending draft remotely before Finish and does not save after submit", async () => {
+    window.__lpPackage = pkg;
+    const reconcile = vi.fn(async () => []);
+    window.Unit3BackendProgress = { reconcile };
+    const submit = vi.fn(async () => ({ status: "completed" }));
+    const save = vi.fn();
+    const store = {
+      save,
+      hydrate: async () => null,
+      isDirty: () => false
+    };
+    const platform = {
+      auth: { isSignedIn: () => true },
+      marking: {
+        markBlock: vi.fn(async () => ({
+          completed: true,
+          correct: true,
+          score: { correct: 1, total: 1 },
+          status: "correct"
+        }))
+      },
+      progress: {
+        createStore: () => store
+      },
+      submission: { submit }
+    };
+
+    render(
+      <ActivityPage
+        context={week1MisconceptionsContext()}
+        contentReady
+        adaptersReady
+        platform={platform}
+      />
+    );
+
+    await checkEveryMisconception();
+    const savesBeforeFinish = save.mock.calls.length;
+    fireEvent.click(await screen.findByRole("button", { name: "Finish activity" }));
+
+    await waitFor(() => {
+      expect(submit).toHaveBeenCalledTimes(1);
+    });
+    const finishSaves = save.mock.calls.slice(savesBeforeFinish);
+    expect(finishSaves.length).toBeGreaterThan(0);
+    expect(finishSaves.every((call) => call[1]?.remote === false)).toBe(true);
+    expect(finishSaves.some((call) => call[1]?.immediate === true)).toBe(false);
+    await waitFor(() => {
+      expect(reconcile).toHaveBeenCalledWith({ force: true });
+    });
+    expect(save.mock.calls.slice(savesBeforeFinish + 1).every((call) => call[1]?.remote === false)).toBe(true);
+  });
+
+  it("restores hosted S1-Q keys onto week2 retrieval radios without saving or submitting", async () => {
+    window.__lpPackage = pkg;
+    const save = vi.fn();
+    const submit = vi.fn();
+    const responses = Object.fromEntries(
+      Array.from({ length: 10 }, (_, index) => [`S1-Q${index + 1}`, "B"])
+    );
+    const checked = Object.fromEntries(Object.keys(responses).map((key) => [key, true]));
+    const platform = {
+      auth: { isSignedIn: () => true },
+      progress: {
+        createStore: () => ({
+          save,
+          hydrate: async () => ({
+            responses,
+            checked,
+            results: {},
+            submission: { status: "submitted" },
+            restoreSource: "completed-attempt",
+            completed: true
+          }),
+          isDirty: () => false
+        })
+      },
+      submission: { submit }
+    };
+
+    render(
+      <ActivityPage
+        context={{
+          page: "week-2-session1-retrieval",
+          section: "week-2",
+          root: "../..",
+          view: "activity",
+          week: 2,
+          activity: "session1-retrieval"
+        }}
+        contentReady
+        adaptersReady
+        platform={platform}
+      />
+    );
+
+    await waitFor(() => {
+      const selected = [...document.querySelectorAll('[data-lp-block="option-cards"] .lp-card__meta')]
+        .filter((node) => node.textContent === "Selected");
+      expect(selected.length).toBe(10);
+    });
+    const first = document.querySelector('[data-lp-block="option-cards"]') as HTMLElement;
+    expect(within(first).getByText("Selected")).toBeTruthy();
+    expect(within(first).getByRole("radio", { name: /Protecting systems, networks and data/ })).toBeTruthy();
+    expect(save).not.toHaveBeenCalled();
+    expect(submit).not.toHaveBeenCalled();
+    expect(screen.queryByRole("button", { name: "Finish activity" })).toBeNull();
+  });
 });
+
