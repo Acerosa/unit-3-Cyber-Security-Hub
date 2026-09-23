@@ -44,6 +44,9 @@ export function KnowledgeReportPage({
   }, [contentReady, context.activityId]);
   const config = knowledgeReportConfig(activity);
   const questionId = activity ? reportQuestionId(activity) : "";
+  const learnerSignedIn = Boolean(
+    (platform as { auth?: { isSignedIn?: () => boolean } } | null)?.auth?.isSignedIn?.()
+  );
   const storeRef = useRef<ReturnType<typeof createCatalogueDraftStore>>(null);
   const finaliseRef = useRef(false);
   const [phase, setPhase] = useState<ReportPhase>("intro");
@@ -109,7 +112,7 @@ export function KnowledgeReportPage({
         expiryRetryRef.current = null;
       }
     };
-  }, [activity, platform, questionId]);
+  }, [activity, platform, questionId, learnerSignedIn]);
 
   useEffect(() => {
     if (phase !== "writing" || !serverStartedAt) return undefined;

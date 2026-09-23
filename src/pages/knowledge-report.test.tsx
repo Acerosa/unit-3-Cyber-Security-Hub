@@ -103,6 +103,32 @@ describe("Knowledge Report pages", () => {
     expect(screen.getByLabelText("Your report")).toBeTruthy();
   });
 
+  it("resumes the server sitting once sign-in is restored", async () => {
+    const startedAt = new Date(Date.now() - 60_000).toISOString();
+    let signedIn = false;
+    const store = {
+      save: vi.fn(),
+      flush: vi.fn(),
+      hydrate: vi.fn(async () => ({
+        startedAt,
+        responses: { "u3-cyber-security-knowledge-report-response": "kept after refresh" }
+      }))
+    };
+    const hub = {
+      auth: { isSignedIn: () => signedIn },
+      progress: { createStore: () => store },
+      submission: { submit: vi.fn() }
+    };
+    const view = render(<KnowledgeReportPage context={context} contentReady platform={hub} />);
+    expect(await screen.findByRole("button", { name: "Start Task" })).toBeTruthy();
+    expect(store.hydrate).not.toHaveBeenCalled();
+    signedIn = true;
+    view.rerender(<KnowledgeReportPage context={context} contentReady platform={hub} />);
+    const timer = await screen.findByRole("timer");
+    expect(timer.textContent || "").toMatch(/29:|28:5/);
+    expect((screen.getByLabelText("Your report") as HTMLTextAreaElement).value).toBe("kept after refresh");
+  });
+
   it("blocks copy, cut and paste and keeps submit disabled below 500 words", async () => {
     const { platform: hub, submit } = platform();
     render(<KnowledgeReportPage context={context} contentReady platform={hub} />);
