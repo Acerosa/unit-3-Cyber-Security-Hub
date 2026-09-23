@@ -31,6 +31,15 @@ export function breadcrumbs(context: PageContext): BreadcrumbItem[] {
       label: `Week ${week}`,
       path: context.view === "week" ? undefined : `week-${week}/`
     });
+  } else if (context.section === "knowledge-reports" || context.page === "knowledge-reports") {
+    items.push({
+      label: "Knowledge Reports",
+      path: context.view === "knowledge-reports" ? undefined : "knowledge-reports/"
+    });
+    if (context.view === "knowledge-report") {
+      items.push({ label: route?.heading || "Knowledge Report", path: undefined });
+    }
+    return items;
   } else if (context.page === "resources" || context.page === "help" || context.page === "account") {
     items.push({ label: route?.heading || context.page, path: undefined });
     return items;

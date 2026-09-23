@@ -12,7 +12,7 @@ function read(relativePath) {
 }
 
 test("the committed inventory lists every learner-facing public route", function () {
-  assert.equal(routeFiles.length, 152);
+  assert.equal(routeFiles.length, 154);
   assert.equal(inventory.routes.filter((route) => route.view === "week").length, 7);
   assert.equal(inventory.routes.filter((route) => route.view === "week1-activity").length, 1);
   assert.equal(inventory.routes.some((route) => route.route === "activities/activity.html"), true);
@@ -67,10 +67,11 @@ test("the home page uses a Unit 14-style welcome and start-card layout", functio
 
 test("APP_CONFIG navigation is the single learner IA", function () {
   const config = read("src/config.ts") + read("js/config/app-config.js");
-  ["Home", "Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Resources", "Help", "Account"]
+  ["Home", "Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Knowledge Report", "Resources", "Help", "Account"]
     .forEach(function (label) {
       assert.match(config, new RegExp(label));
     });
+  assert.match(config, /Week 7[\s\S]*Knowledge Report[\s\S]*Resources/);
   assert.match(read("src/platform.ts"), /navigationMode:\s*"as-supplied"/);
   assert.match(read("src/App.tsx"), /resolveHref/);
   assert.match(read("src/page-copy.ts"), /path:/);

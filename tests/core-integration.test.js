@@ -18,6 +18,8 @@ function routeFiles() {
     "account/index.html",
     "activities/activity.html",
     "help/index.html",
+    "knowledge-reports/index.html",
+    "knowledge-reports/cyber-security/index.html",
     "resources/index.html"
   ];
   for (let week = 1; week <= 7; week += 1) {
@@ -255,7 +257,7 @@ test("canonical manifest declares the active Phase 1 contracts", () => {
 
 test("all static learner routes are Vite shells that mount the React hub", () => {
   const routes = routeFiles();
-  assert.equal(routes.length, 152);
+  assert.equal(routes.length, 154);
   routes.forEach((route) => {
     const html = read(route);
     assert.match(html, /id="root"/, route);

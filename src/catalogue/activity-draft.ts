@@ -32,6 +32,11 @@ type ProgressStore = {
   hydrate?: (local?: unknown) => Promise<CatalogueDraft | null>;
   clear?: (options?: { local?: boolean }) => unknown;
   subscribe?: (listener: (state: CatalogueDraft) => void) => () => void;
+  flush?: () => Promise<{
+    state?: CatalogueDraft | null;
+    startedAt?: string | null;
+    status?: string | null;
+  } | null>;
   isDirty?: () => boolean;
   persistStatus?: () => {
     status?: string;
@@ -264,6 +269,57 @@ export async function submitCatalogueDraft(
       status: "local",
       failed: true,
       reason: "Your work is still saved on this device. It has not been sent to your learning record yet."
+    };
+  }
+}
+
+function submissionFailureReason(error: unknown, minWords: number): string {
+  const code = error && typeof error === "object" && "code" in error
+    ? String((error as { code?: string }).code || "")
+    : "";
+  if (code === "MINIMUM_WORDS_NOT_MET") {
+    return `Minimum ${minWords} words required before you can submit.`;
+  }
+  if (code === "TIMED_REPORT_ALREADY_SUBMITTED") {
+    return "Your report has already been submitted.";
+  }
+  if (code === "TIMED_REPORT_NOT_STARTED") {
+    return "Start the task before submitting.";
+  }
+  return "Your report is still saved on this device. It has not been sent to your learning record yet.";
+}
+
+/** Final written evidence for a timed report. Server timestamps stay authoritative. */
+export async function submitWrittenReport(
+  activity: ActivityDocument,
+  questionId: string,
+  text: string,
+  platform?: HubPlatformLike,
+  minWords = 500
+): Promise<{ status: "submitted" | "local"; failed?: boolean; reason?: string; code?: string }> {
+  const responses = await canonicaliseCatalogueEvidence(activity.id, [
+    evidence.written(questionId, text)
+  ]);
+  if (!platform?.submission || typeof platform.submission.submit !== "function") {
+    return { status: "local", failed: true, reason: "This activity could not be submitted from this page." };
+  }
+  try {
+    await platform.submission.submit({
+      activityKey: activity.id,
+      activityVersion: resolveActivityVersion(activity),
+      responses: responses as never[],
+      sourcePage: typeof window !== "undefined" ? window.location.pathname : undefined
+    });
+    return { status: "submitted" };
+  } catch (error) {
+    const code = error && typeof error === "object" && "code" in error
+      ? String((error as { code?: string }).code || "")
+      : "";
+    return {
+      status: "local",
+      failed: true,
+      code,
+      reason: submissionFailureReason(error, minWords)
     };
   }
 }

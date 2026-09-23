@@ -18,6 +18,8 @@ import { breadcrumbs, findRoute, pageHeader } from "./page-copy";
 import { AccountPage } from "./pages/AccountPage";
 import { ActivityPage } from "./pages/ActivityPage";
 import { HomePage } from "./pages/HomePage";
+import { KnowledgeReportPage } from "./pages/KnowledgeReportPage";
+import { KnowledgeReportsPage } from "./pages/KnowledgeReportsPage";
 import { PageHost } from "./pages/PageHost";
 import { WeekPage } from "./pages/WeekPage";
 import { buildUnit3Navigation, buildUnit3NavigationFallback, createSitePath } from "./paths";
@@ -71,6 +73,8 @@ function PageBody({
     || context.view === "week"
     || context.view === "activity"
     || context.view === "week1-activity"
+    || context.view === "knowledge-reports"
+    || context.view === "knowledge-report"
     || (context.view === "account" && platformState !== "signed-out")
   );
   const joinPanel = showJoin ? (
@@ -110,6 +114,22 @@ function PageBody({
       <>
         {joinPanel}
         <WeekPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} platform={platform} platformState={platformState} />
+      </>
+    );
+  }
+  if (context.view === "knowledge-reports") {
+    return (
+      <>
+        {joinPanel}
+        <KnowledgeReportsPage root={context.root} contentReady={contentReady} />
+      </>
+    );
+  }
+  if (context.view === "knowledge-report") {
+    return (
+      <>
+        {joinPanel}
+        <KnowledgeReportPage context={context} contentReady={contentReady} platform={platform} />
       </>
     );
   }

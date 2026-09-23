@@ -43,6 +43,7 @@ describe("Unit 3 presentation", () => {
       "Week 5",
       "Week 6",
       "Week 7",
+      "Knowledge Report",
       "Resources",
       "Help",
       "Account"

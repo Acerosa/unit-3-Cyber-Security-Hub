@@ -998,3 +998,65 @@ a {
 .lp-persist-status[data-lp-persist-status="error"] {
   color: var(--color-heading);
 }
+
+.knowledge-report__status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  align-items: baseline;
+}
+
+.knowledge-report__timer {
+  margin: 0;
+  font-size: 2rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.knowledge-report__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(14rem, 3fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.knowledge-report__textarea {
+  display: block;
+  width: 100%;
+  min-height: 24rem;
+  margin: 0 0 0.75rem;
+  padding: 0.75rem;
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.knowledge-report__textarea:focus {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.knowledge-report__guidance {
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.knowledge-report__guidance h3,
+.knowledge-report__guidance h4 {
+  margin: 0 0 0.5rem;
+  color: var(--color-heading);
+}
+
+.knowledge-report__guidance ul {
+  margin: 0 0 1rem;
+  padding-left: 1.2rem;
+}
+
+@media (max-width: 800px) {
+  .knowledge-report__layout {
+    grid-template-columns: 1fr;
+  }
+}
