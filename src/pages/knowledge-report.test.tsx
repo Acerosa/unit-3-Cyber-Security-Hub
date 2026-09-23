@@ -15,7 +15,7 @@ beforeAll(() => {
   window.__lpPackage = pkg;
   window.Unit3ActivityKeyMap = {
     catalogueVersionFor: () => "1.0.0",
-    normaliseQuestionKey: (questionId: string) => questionId,
+    normaliseQuestionKey: (questionId: string) => questionId.toUpperCase(),
     normaliseActivityVersion: (version: string) => version,
     normaliseOptionId: (value: string) => value
   };
@@ -151,5 +151,7 @@ describe("Knowledge Report pages", () => {
     expect(screen.getByText("Submit this report? You will not be able to change it after you submit.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Submit Report" }));
     await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
+    const payload = submit.mock.calls[0][0] as { responses: Array<{ questionKey: string }> };
+    expect(payload.responses[0].questionKey).toBe("u3-cyber-security-knowledge-report-response");
   });
 });

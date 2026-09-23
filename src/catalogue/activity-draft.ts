@@ -297,9 +297,7 @@ export async function submitWrittenReport(
   platform?: HubPlatformLike,
   minWords = 500
 ): Promise<{ status: "submitted" | "local"; failed?: boolean; reason?: string; code?: string }> {
-  const responses = await canonicaliseCatalogueEvidence(activity.id, [
-    evidence.written(questionId, text)
-  ]);
+  const responses = [evidence.written(questionId, text)];
   if (!platform?.submission || typeof platform.submission.submit !== "function") {
     return { status: "local", failed: true, reason: "This activity could not be submitted from this page." };
   }
