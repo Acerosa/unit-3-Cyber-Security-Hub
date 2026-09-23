@@ -19,6 +19,7 @@
       { id: "week-5", label: "Week 5", path: "week-5/" },
       { id: "week-6", label: "Week 6", path: "week-6/" },
       { id: "week-7", label: "Week 7", path: "week-7/" },
+      { id: "knowledge-reports", label: "Knowledge Report", path: "knowledge-reports/" },
       { id: "resources", label: "Resources", path: "resources/" },
       { id: "help", label: "Help", path: "help/" },
       { id: "account", label: "Account", path: "account/" }

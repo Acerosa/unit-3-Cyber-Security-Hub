@@ -22758,5 +22758,108 @@
         }
       }
     ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-cyber-security-knowledge-report",
+    "version": "1.0.0",
+    "metadata": {
+      "title": "Cyber Security Knowledge Report",
+      "status": "available",
+      "summary": "A timed opportunity to demonstrate what you have learned so far.",
+      "activityType": "Knowledge report",
+      "knowledgeReport": {
+        "placement": "knowledge-report",
+        "slug": "cyber-security",
+        "durationMinutes": 30,
+        "minWords": 500,
+        "brief": "This is a timed opportunity to demonstrate what you have learned so far.",
+        "guidance": [
+          {
+            "heading": "Introduction",
+            "prompts": [
+              "What is cyber security?",
+              "Why is it important to individuals and organisations?"
+            ]
+          },
+          {
+            "heading": "CIA Triad",
+            "prompts": [
+              "Name the three parts.",
+              "Explain what each one means.",
+              "Give real-world examples.",
+              "Explain what could be affected if each was compromised."
+            ]
+          },
+          {
+            "heading": "Threats and vulnerabilities",
+            "prompts": [
+              "Explain the difference.",
+              "Give examples from what you have learned.",
+              "Explain how they could affect a real organisation."
+            ]
+          },
+          {
+            "heading": "Cyber attacks",
+            "prompts": [
+              "Name examples you have studied.",
+              "Explain how they work.",
+              "Who or what could be targeted?",
+              "What could the consequences be?"
+            ]
+          },
+          {
+            "heading": "Protecting organisations",
+            "prompts": [
+              "What protection measures have you learned about?",
+              "What risks do they address?",
+              "Explain how they reduce risk."
+            ]
+          },
+          {
+            "heading": "Conclusion",
+            "prompts": [
+              "Summarise the main points.",
+              "What should organisations prioritise and why?"
+            ]
+          }
+        ],
+        "sentenceStarters": [
+          "One important concept we studied was…",
+          "This means that…",
+          "A real-world example would be…",
+          "If this was compromised…",
+          "This could affect an organisation by…",
+          "One way an organisation could reduce this risk is…",
+          "This is important because…",
+          "In conclusion…"
+        ]
+      }
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-cyber-security-knowledge-report-response",
+        "version": "1.0.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "questionId": "u3-cyber-security-knowledge-report-response",
+          "prompt": "Write your cyber security knowledge report.",
+          "minChars": 1
+        }
+      }
+    ]
   }
 ]

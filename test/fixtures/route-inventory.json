@@ -90,6 +90,36 @@
       "redirectTo": ""
     },
     {
+      "route": "knowledge-reports/index.html",
+      "view": "knowledge-reports",
+      "page": "knowledge-reports",
+      "section": "knowledge-reports",
+      "week": null,
+      "activity": "",
+      "activityId": "",
+      "title": "Knowledge Reports — Unit 3 Cyber Security Hub",
+      "description": "Timed knowledge reports for OCR Level 3 IT Unit 3 Cyber Security.",
+      "heading": "Knowledge Reports",
+      "subtitle": "A timed opportunity to demonstrate what you have learned so far.",
+      "scripts": [],
+      "redirectTo": ""
+    },
+    {
+      "route": "knowledge-reports/cyber-security/index.html",
+      "view": "knowledge-report",
+      "page": "knowledge-report-cyber-security",
+      "section": "knowledge-reports",
+      "week": null,
+      "activity": "cyber-security",
+      "activityId": "u3-cyber-security-knowledge-report",
+      "title": "Cyber Security Knowledge Report — Unit 3 Cyber Security Hub",
+      "description": "Timed cyber security knowledge report. 30 minutes, minimum 500 words.",
+      "heading": "Cyber Security Knowledge Report",
+      "subtitle": "A timed opportunity to demonstrate what you have learned so far.",
+      "scripts": [],
+      "redirectTo": ""
+    },
+    {
       "route": "resources/index.html",
       "view": "resources",
       "page": "resources",
