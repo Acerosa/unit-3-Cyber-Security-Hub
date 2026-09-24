@@ -13,9 +13,12 @@ permissions:
   pages: write
   id-token: write
 
+# PR runs share a group per pull request and cancel superseded commits for
+# that PR only. Production pushes and workflow_dispatch share one production
+# group, serialize, and never cancel PR validation or each other.
 concurrency:
-  group: github-pages
-  cancel-in-progress: true
+  group: ${{ github.event_name == 'pull_request' && format('{0}-pr-{1}', github.workflow, github.event.pull_request.number) || format('{0}-production', github.workflow) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:

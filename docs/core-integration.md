@@ -85,3 +85,15 @@ Those prerequisites are satisfied on the hosted Learning Platform backend for
 the synthetic `CYBER-TEST-A` delivery. Curriculum publication of hub package
 `0.2.10` is a separate later step and is not required for the Week 1
 submission cutover itself.
+
+## Production Pages deployments
+
+GitHub Pages serves the last successful production deployment until a later
+production workflow completes. Avoid routine production deployments during
+active teaching sessions. Batch non-critical content changes. Emergency fixes
+remain allowed. After a production push, confirm the GitHub Pages workflow
+succeeded before assuming learners have the new build.
+
+The Pages artifact replaces the previous site as a whole. Hashed Vite assets
+from the previous deployment are removed. A cached HTML page can still request
+a JavaScript file that no longer exists until the browser fetches fresh HTML.
