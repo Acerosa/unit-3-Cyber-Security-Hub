@@ -96,8 +96,8 @@ const scored = scoredActivityDirs();
 // worksheets that still call renderSubmitPanel.
 record(
   "scored-activity-count",
-  scored.length === 31,
-  "expected 31 host/hybrid scored engines, found " + scored.length
+  scored.length === 30,
+  "expected 30 host/hybrid scored engines, found " + scored.length
 );
 
 scored.forEach((absDir) => {
