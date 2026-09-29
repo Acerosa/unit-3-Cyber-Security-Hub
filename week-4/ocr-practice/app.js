@@ -154,8 +154,6 @@
           if (answers[q.id] === opt.id) input.checked = true;
           input.addEventListener('change', function () {
             answers[q.id] = opt.id;
-            if (opt.id === q.correctOptionId) selfMarks[q.id] = q.marks;
-            else selfMarks[q.id] = 0;
             save();
           });
           label.appendChild(input);
@@ -243,39 +241,26 @@
               var match = String(q.id || '').match(/ocr-(\d+)/i);
               var qid = match ? 'OCR' + match[1] : String(q.id || '').toUpperCase();
               var answer = answers[q.id];
-              var marks = Number(selfMarks[q.id]);
-              var score = Number.isFinite(marks)
-                ? Math.max(0, Math.min(q.marks, marks))
-                : 0;
               if (q.responseType === 'mcq') {
                 var payload = { selectedOptionId: answer || null };
                 if (evidence && evidence.structured) {
                   return evidence.structured(qid, payload, {
-                    responseType: 'single-choice',
-                    correct: answer === q.correctOptionId,
-                    score: score
+                    responseType: 'single-choice'
                   });
                 }
                 return {
                   questionId: qid,
                   response: payload,
-                  responseType: 'single-choice',
-                  correct: answer === q.correctOptionId,
-                  score: score
+                  responseType: 'single-choice'
                 };
               }
               if (evidence && evidence.freeText) {
-                return evidence.freeText(qid, answer || '', {
-                  correct: score > 0,
-                  score: score
-                });
+                return evidence.freeText(qid, answer || '', {});
               }
               return {
                 questionId: qid,
                 response: answer || '',
-                responseType: 'text',
-                correct: score > 0,
-                score: score
+                responseType: 'text'
               };
             });
           },

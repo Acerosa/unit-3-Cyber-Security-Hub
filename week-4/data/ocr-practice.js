@@ -38,7 +38,6 @@
           Object.freeze({ id: 'c', text: 'Exfiltration' }),
           Object.freeze({ id: 'd', text: 'Damage' })
         ]),
-        correctOptionId: 'b',
         markScheme: '1 mark for publicity (or another listed motivation if an equivalent option were offered).',
         indicativeContent: 'Publicity is a motivation. Phishing, exfiltration and damage are methods.',
         modelAnswer: 'Publicity.',
@@ -58,7 +57,6 @@
           Object.freeze({ id: 'c', text: 'Fraud' }),
           Object.freeze({ id: 'd', text: 'Thrill' })
         ]),
-        correctOptionId: 'a',
         markScheme: '1 mark for people.',
         indicativeContent: 'People are targeted; phishing would be the method; fraud/thrill are motivations.',
         modelAnswer: 'People.',
