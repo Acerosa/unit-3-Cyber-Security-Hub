@@ -284,6 +284,184 @@ describe("Knowledge Report pages", () => {
     assertLearnerThresholdHidden();
   });
 
+  function expiredStandardDraft(text = "saved standard work") {
+    return {
+      startedAt: new Date(Date.now() - 31 * 60_000).toISOString(),
+      responses: { "u3-cyber-security-knowledge-report-response": text },
+      knowledgeReportPhase: { phase: "standard", additionalTimeStartedAt: null }
+    };
+  }
+
+  function phaseRow(phase: string, text = "saved standard work") {
+    return {
+      state: {
+        responses: { "u3-cyber-security-knowledge-report-response": text },
+        knowledgeReportPhase: {
+          phase,
+          additionalTimeStartedAt: null,
+          additionalTimeSeconds: 900
+        }
+      }
+    };
+  }
+
+  it("reconciles a below-threshold expiry to additional time without refreshing or starting the clock", async () => {
+    const startAdditionalTime = vi.fn();
+    const submit = vi.fn();
+    const getActivityState = vi.fn(async () => phaseRow("additional_available"));
+    const flush = vi.fn(async () => null);
+    const { platform: hub } = platform();
+    hub.submission.submit = submit;
+    hub.progress.createStore = () => ({
+      save: vi.fn(),
+      flush,
+      hydrate: vi.fn(async () => expiredStandardDraft())
+    });
+    (hub.progress as { getActivityState?: typeof getActivityState }).getActivityState = getActivityState;
+    (hub as { knowledgeReport?: { startAdditionalTime: typeof startAdditionalTime } }).knowledgeReport = {
+      startAdditionalTime
+    };
+    render(<KnowledgeReportPage context={context} contentReady platform={hub} />);
+    expect(await screen.findByRole("button", { name: "Continue with additional time" })).toBeTruthy();
+    const editor = screen.getByLabelText("Your report") as HTMLTextAreaElement;
+    expect(editor.readOnly).toBe(true);
+    expect(editor.value).toBe("saved standard work");
+    expect(screen.getByText("Standard time complete")).toBeTruthy();
+    expect(screen.getByText("Additional time available: 15 minutes")).toBeTruthy();
+    expect(screen.queryByText("Your report is still saved on this device. It has not been sent to your learning record yet.")).toBeNull();
+    expect(visibleText()).not.toContain("Additional time:");
+    expect((screen.getByRole("timer").textContent || "")).toContain("00:00");
+    expect(getActivityState).toHaveBeenCalled();
+    expect(submit).not.toHaveBeenCalled();
+    expect(startAdditionalTime).not.toHaveBeenCalled();
+    expect((screen.getByRole("button", { name: "Continue with additional time" }) as HTMLButtonElement).disabled).toBe(false);
+    assertLearnerThresholdHidden();
+  });
+
+  it("reconciles a server-finalised expiry to the completed report without an additional-time offer", async () => {
+    const submit = vi.fn(async () => ({ attempt_id: "attempt" }));
+    const getActivityState = vi.fn(async () => phaseRow("standard_complete", "completed standard report"));
+    const { platform: hub } = platform();
+    hub.submission.submit = submit;
+    hub.progress.createStore = () => ({
+      save: vi.fn(),
+      flush: vi.fn(async () => null),
+      hydrate: vi.fn(async () => expiredStandardDraft("completed standard report"))
+    });
+    (hub.progress as { getActivityState?: typeof getActivityState }).getActivityState = getActivityState;
+    render(<KnowledgeReportPage context={context} contentReady platform={hub} />);
+    expect(await screen.findByText("Standard time complete. Your report has been saved and submitted.")).toBeTruthy();
+    expect((screen.getByLabelText("Your report") as HTMLTextAreaElement).readOnly).toBe(true);
+    expect(screen.queryByRole("button", { name: "Continue with additional time" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Try again" })).toBeNull();
+    expect(visibleText()).not.toContain("Additional time");
+    expect(visibleText()).not.toContain("Additional time:");
+    expect(submit).toHaveBeenCalledTimes(1);
+    expect(getActivityState).toHaveBeenCalledTimes(1);
+    assertLearnerThresholdHidden();
+  });
+
+  it("locks the editor and shows a checking state while expiry reconciliation is delayed", async () => {
+    let resolveState: (value: unknown) => void = () => {};
+    const getActivityState = vi.fn(() => new Promise((resolve) => {
+      resolveState = resolve;
+    }));
+    const startAdditionalTime = vi.fn();
+    const { platform: hub } = platform();
+    hub.progress.createStore = () => ({
+      save: vi.fn(),
+      flush: vi.fn(async () => null),
+      hydrate: vi.fn(async () => expiredStandardDraft("still being checked"))
+    });
+    (hub.progress as { getActivityState?: typeof getActivityState }).getActivityState = getActivityState;
+    (hub as { knowledgeReport?: { startAdditionalTime: typeof startAdditionalTime } }).knowledgeReport = {
+      startAdditionalTime
+    };
+    render(<KnowledgeReportPage context={context} contentReady platform={hub} />);
+    expect(await screen.findByText("Standard time complete")).toBeTruthy();
+    expect(await screen.findByText("Checking your report…")).toBeTruthy();
+    const editor = screen.getByLabelText("Your report") as HTMLTextAreaElement;
+    expect(editor.readOnly).toBe(true);
+    expect(editor.value).toBe("still being checked");
+    expect(screen.queryByRole("button", { name: "Continue with additional time" })).toBeNull();
+    expect(visibleText()).not.toContain("Additional time:");
+    expect(startAdditionalTime).not.toHaveBeenCalled();
+    expect(screen.queryByText("Your report is still saved on this device. It has not been sent to your learning record yet.")).toBeNull();
+    await waitFor(() => expect(getActivityState).toHaveBeenCalledTimes(1));
+    resolveState(phaseRow("additional_available", "still being checked"));
+    expect(await screen.findByRole("button", { name: "Continue with additional time" })).toBeTruthy();
+    expect(screen.queryByText("Checking your report…")).toBeNull();
+    expect(startAdditionalTime).not.toHaveBeenCalled();
+    expect((screen.getByLabelText("Your report") as HTMLTextAreaElement).readOnly).toBe(true);
+    assertLearnerThresholdHidden();
+  });
+
+  it("keeps the locked draft and retries a failed expiry reconciliation without starting additional time", async () => {
+    const startAdditionalTime = vi.fn();
+    const submit = vi.fn();
+    const getActivityState = vi.fn()
+      .mockRejectedValueOnce(new Error("network down"))
+      .mockResolvedValueOnce(phaseRow("additional_available", "kept on this page"));
+    const { platform: hub } = platform();
+    hub.submission.submit = submit;
+    hub.progress.createStore = () => ({
+      save: vi.fn(),
+      flush: vi.fn(async () => null),
+      hydrate: vi.fn(async () => expiredStandardDraft("kept on this page"))
+    });
+    (hub.progress as { getActivityState?: typeof getActivityState }).getActivityState = getActivityState;
+    (hub as { knowledgeReport?: { startAdditionalTime: typeof startAdditionalTime } }).knowledgeReport = {
+      startAdditionalTime
+    };
+    render(<KnowledgeReportPage context={context} contentReady platform={hub} />);
+    const retry = await screen.findByRole("button", { name: "Try again" });
+    const editor = screen.getByLabelText("Your report") as HTMLTextAreaElement;
+    expect(editor.readOnly).toBe(true);
+    expect(editor.value).toBe("kept on this page");
+    expect(screen.queryByRole("button", { name: "Continue with additional time" })).toBeNull();
+    expect(visibleText()).not.toContain("Additional time:");
+    expect(startAdditionalTime).not.toHaveBeenCalled();
+    expect(submit).not.toHaveBeenCalled();
+    fireEvent.click(retry);
+    expect(await screen.findByRole("button", { name: "Continue with additional time" })).toBeTruthy();
+    expect(editor.readOnly).toBe(true);
+    expect(editor.value).toBe("kept on this page");
+    expect(getActivityState).toHaveBeenCalledTimes(2);
+    expect(submit).not.toHaveBeenCalled();
+    expect(startAdditionalTime).not.toHaveBeenCalled();
+    expect(visibleText()).not.toContain("Additional time:");
+    assertLearnerThresholdHidden();
+  });
+
+  it("handles repeated timer ticks at expiry with one reconciliation and no extra submission", async () => {
+    const submit = vi.fn();
+    const flush = vi.fn(async () => ({
+      state: {
+        responses: { "u3-cyber-security-knowledge-report-response": "saved standard work" },
+        knowledgeReportPhase: { phase: "additional_available", additionalTimeStartedAt: null }
+      }
+    }));
+    const getActivityState = vi.fn();
+    const { platform: hub } = platform();
+    hub.submission.submit = submit;
+    hub.progress.createStore = () => ({
+      save: vi.fn(),
+      flush,
+      hydrate: vi.fn(async () => expiredStandardDraft())
+    });
+    (hub.progress as { getActivityState?: typeof getActivityState }).getActivityState = getActivityState;
+    render(<KnowledgeReportPage context={context} contentReady platform={hub} />);
+    expect(await screen.findByRole("button", { name: "Continue with additional time" })).toBeTruthy();
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    expect(flush).toHaveBeenCalledTimes(1);
+    expect(getActivityState).not.toHaveBeenCalled();
+    expect(submit).not.toHaveBeenCalled();
+    expect(screen.getAllByRole("button", { name: "Continue with additional time" })).toHaveLength(1);
+    expect(visibleText()).not.toContain("Additional time:");
+    expect((screen.getByRole("timer").textContent || "")).toContain("00:00");
+    assertLearnerThresholdHidden();
+  });
+
   it("does not show the internal threshold on the opening screen", () => {
     render(<KnowledgeReportsPage root="." contentReady />);
     expect(screen.getByText("Minimum 500 words")).toBeTruthy();

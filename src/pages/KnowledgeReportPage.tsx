@@ -25,9 +25,32 @@ type ServerTiming = {
   additionalTimeStartedAt?: string | null;
 };
 
+type ExpiryAction = "ready" | "submit" | "pending";
+
+const EXPIRY_CHECK_NOTICE = "Standard time complete. Checking your report…";
+const EXPIRY_SAVED_NOTICE = "Standard time complete. Your work has been saved.";
+const EXPIRY_SUBMITTED_NOTICE = "Standard time complete. Your report has been saved and submitted.";
+const EXPIRY_RETRY_NOTICE = "Standard time complete. We could not check your report. Check your connection, then try again.";
+
 function serverTiming(draft: CatalogueDraft | null | undefined): ServerTiming | null {
   const value = (draft as { knowledgeReportPhase?: ServerTiming } | null | undefined)?.knowledgeReportPhase;
   return value && typeof value === "object" ? value : null;
+}
+
+function decisiveTiming(timing: ServerTiming | null): boolean {
+  const phaseName = timing?.phase;
+  return phaseName === "additional_available"
+    || phaseName === "additional"
+    || phaseName === "additional_expired"
+    || phaseName === "standard_complete"
+    || phaseName === "submitted";
+}
+
+function draftFromActivityRow(row: unknown): CatalogueDraft | null {
+  if (!row || typeof row !== "object") return null;
+  const record = row as { state?: unknown; state_payload?: unknown; knowledgeReportPhase?: unknown; responses?: unknown };
+  const state = record.state || record.state_payload || (record.knowledgeReportPhase || record.responses ? record : null);
+  return state && typeof state === "object" ? state as CatalogueDraft : null;
 }
 
 function draftText(draft: CatalogueDraft | null | undefined, questionId: string): string {
@@ -61,6 +84,7 @@ export function KnowledgeReportPage({
   );
   const storeRef = useRef<ReturnType<typeof createCatalogueDraftStore>>(null);
   const finaliseRef = useRef(false);
+  const expiryRef = useRef(false);
   const [phase, setPhase] = useState<ReportPhase>("intro");
   const [text, setText] = useState("");
   const [serverStartedAt, setServerStartedAt] = useState<string | null>(null);
@@ -73,6 +97,7 @@ export function KnowledgeReportPage({
   const [ready, setReady] = useState(false);
   const [lockedRemaining, setLockedRemaining] = useState<number | null>(null);
   const [deferExpiry, setDeferExpiry] = useState(false);
+  const [expiryNeedsRetry, setExpiryNeedsRetry] = useState(false);
   const textRef = useRef(text);
   const expiryRetryRef = useRef<number | null>(null);
   textRef.current = text;
@@ -93,6 +118,8 @@ export function KnowledgeReportPage({
 
   useEffect(() => {
     finaliseRef.current = false;
+    expiryRef.current = false;
+    setExpiryNeedsRetry(false);
     setPhase("intro");
     setText("");
     setServerStartedAt(null);
@@ -199,14 +226,19 @@ export function KnowledgeReportPage({
     if (result.status === "submitted" || result.code === "TIMED_REPORT_ALREADY_SUBMITTED") {
       setLockedRemaining(becauseExpired ? 0 : Math.max(0, remainingMs));
       setPhase("submitted");
-    setNotice(becauseExpired
-      ? (phase === "additional"
-        ? "Additional time is complete. Your report has been saved and submitted."
-        : "Standard time complete. Your report has been saved and submitted.")
-      : "Your report has been submitted.");
+      setExpiryNeedsRetry(false);
+      setNotice(becauseExpired
+        ? (phase === "additional"
+          ? "Additional time is complete. Your report has been saved and submitted."
+          : EXPIRY_SUBMITTED_NOTICE)
+        : "Your report has been submitted.");
       return;
     }
     finaliseRef.current = false;
+    if (becauseExpired && result.code === "ADDITIONAL_TIME_NOT_STARTED") {
+      const recovered = await readAuthoritativeExpiry();
+      if (showAuthoritativeExpiry(recovered.draft, recovered.timing) === "ready") return;
+    }
     if (becauseExpired && result.code === "MINIMUM_WORDS_NOT_MET") {
       setDeferExpiry(true);
       if (expiryRetryRef.current != null) window.clearTimeout(expiryRetryRef.current);
@@ -217,28 +249,119 @@ export function KnowledgeReportPage({
       setNotice("Keep writing until the time is up or you reach the minimum word count.");
       return;
     }
+    if (becauseExpired) {
+      expiryRef.current = false;
+      setExpiryNeedsRetry(true);
+      setNotice(EXPIRY_RETRY_NOTICE);
+      return;
+    }
     setNotice(result.reason || "Your report is still saved on this device. It has not been sent to your learning record yet.");
+  }
+
+  function showAuthoritativeExpiry(draft: CatalogueDraft | null, timing: ServerTiming | null): ExpiryAction {
+    const serverText = draftText(draft, questionId);
+    if (serverText) setText(serverText);
+    if (timing?.phase === "submitted") {
+      setLockedRemaining(0);
+      setPhase("submitted");
+      setExpiryNeedsRetry(false);
+      setNotice(EXPIRY_SUBMITTED_NOTICE);
+      return "ready";
+    }
+    if (timing?.phase === "additional_available") {
+      setPhase("additional_available");
+      setExpiryNeedsRetry(false);
+      setNotice(EXPIRY_SAVED_NOTICE);
+      return "ready";
+    }
+    if (timing?.phase === "additional" && timing.additionalTimeStartedAt) {
+      setAdditionalStartedAt(timing.additionalTimeStartedAt);
+      setAdditionalSeconds(Number(timing.additionalTimeSeconds) || 0);
+      setPhase("additional");
+      setExpiryNeedsRetry(false);
+      setNotice("");
+      return "ready";
+    }
+    if (timing?.phase === "standard_complete" || timing?.phase === "additional_expired") {
+      return "submit";
+    }
+    return "pending";
+  }
+
+  async function readAuthoritativeExpiry(): Promise<{ draft: CatalogueDraft | null; timing: ServerTiming | null }> {
+    const store = storeRef.current;
+    store?.save?.({
+      responses: { [questionId]: textRef.current },
+      checked: {},
+      results: {}
+    });
+    const progress = (platform as {
+      progress?: { getActivityState?: (activityKey: string, activityVersion: string) => Promise<unknown> };
+    } | null)?.progress;
+    const freshHydrate = store as {
+      hydrate?: (local?: unknown, options?: { fresh?: boolean }) => Promise<CatalogueDraft | null>;
+    } | null;
+    let latestDraft: CatalogueDraft | null = null;
+    let latestTiming: ServerTiming | null = null;
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      if (attempt > 0) await new Promise((resolve) => window.setTimeout(resolve, 200));
+      const flushed = await store?.flush?.();
+      const flushedDraft = (flushed?.state as CatalogueDraft | undefined) || null;
+      const flushedTiming = serverTiming(flushedDraft);
+      if (flushedDraft) latestDraft = flushedDraft;
+      if (flushedTiming) latestTiming = flushedTiming;
+      if (decisiveTiming(flushedTiming)) return { draft: flushedDraft, timing: flushedTiming };
+      // A null flush means a save is already in flight or the draft is already clean.
+      // Wait for that save before reading, so the server freezes the latest accepted draft.
+      if (!flushed && attempt < 3) continue;
+      if (activity && progress?.getActivityState) {
+        const row = await progress.getActivityState(activity.id, resolveActivityVersion(activity));
+        const draft = draftFromActivityRow(row);
+        const timing = serverTiming(draft);
+        if (draft) latestDraft = draft;
+        if (timing) latestTiming = timing;
+        if (decisiveTiming(timing)) return { draft, timing };
+      }
+      const hydrated = await freshHydrate?.hydrate?.(undefined, { fresh: true });
+      const timing = serverTiming(hydrated);
+      if (hydrated) latestDraft = hydrated;
+      if (timing) latestTiming = timing;
+      if (decisiveTiming(timing)) return { draft: hydrated, timing };
+    }
+    return { draft: latestDraft, timing: latestTiming };
+  }
+
+  async function reconcileStandardExpiry() {
+    if (expiryRef.current) return;
+    expiryRef.current = true;
+    setExpiryNeedsRetry(false);
+    setBusy(true);
+    setNotice(EXPIRY_CHECK_NOTICE);
+    try {
+      const recovered = await readAuthoritativeExpiry();
+      const action = showAuthoritativeExpiry(recovered.draft, recovered.timing);
+      if (action === "submit") {
+        await finalise(true);
+        return;
+      }
+      if (action === "pending") {
+        expiryRef.current = false;
+        setExpiryNeedsRetry(true);
+        setNotice(EXPIRY_RETRY_NOTICE);
+      }
+    } catch {
+      expiryRef.current = false;
+      setExpiryNeedsRetry(true);
+      setNotice(EXPIRY_RETRY_NOTICE);
+    } finally {
+      setBusy(false);
+    }
   }
 
   useEffect(() => {
     if (phase !== "writing" || !standardExpired || !ready) return;
-    void (async () => {
-      const saved = await storeRef.current?.flush?.();
-      const timing = serverTiming(saved?.state as CatalogueDraft | undefined);
-      if (timing?.phase === "additional_available") {
-        setPhase("additional_available");
-        setNotice("Standard time complete. Your work has been saved.");
-        return;
-      }
-      if (timing?.phase === "additional" && timing.additionalTimeStartedAt) {
-        setAdditionalStartedAt(timing.additionalTimeStartedAt);
-        setAdditionalSeconds(Number(timing.additionalTimeSeconds) || 0);
-        setPhase("additional");
-        return;
-      }
-      void finalise(true);
-    })();
-    // finalise is stable enough for the expiry edge; the ref blocks repeats.
+    void reconcileStandardExpiry();
+    // The ref blocks a second expiry pass while reconciliation or submission is running.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [standardExpired, phase, ready]);
 
@@ -361,6 +484,18 @@ export function KnowledgeReportPage({
               aria-describedby="knowledge-report-word-count"
               data-academic-integrity="exclude"
             />
+            {phase === "writing" && standardExpired ? (
+              <div>
+                <p>Standard time complete</p>
+                {expiryNeedsRetry ? (
+                  <button className="lp-button" type="button" onClick={() => { void reconcileStandardExpiry(); }}>
+                    Try again
+                  </button>
+                ) : (
+                  <p>Checking your report…</p>
+                )}
+              </div>
+            ) : null}
             {phase === "additional_available" ? (
               <div>
                 <p>Standard time complete</p>
