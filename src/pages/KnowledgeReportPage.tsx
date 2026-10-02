@@ -23,6 +23,7 @@ type ServerTiming = {
   phase?: string;
   additionalTimeSeconds?: number;
   additionalTimeStartedAt?: string | null;
+  serverNow?: string;
 };
 
 type ExpiryAction = "ready" | "submit" | "pending";
@@ -47,8 +48,9 @@ function decisiveTiming(timing: ServerTiming | null): boolean {
 }
 
 function draftFromActivityRow(row: unknown): CatalogueDraft | null {
-  if (!row || typeof row !== "object") return null;
-  const record = row as { state?: unknown; state_payload?: unknown; knowledgeReportPhase?: unknown; responses?: unknown };
+  const recordRow = Array.isArray(row) ? row[0] : row;
+  if (!recordRow || typeof recordRow !== "object") return null;
+  const record = recordRow as { state?: unknown; state_payload?: unknown; knowledgeReportPhase?: unknown; responses?: unknown };
   const state = record.state || record.state_payload || (record.knowledgeReportPhase || record.responses ? record : null);
   return state && typeof state === "object" ? state as CatalogueDraft : null;
 }
@@ -100,7 +102,15 @@ export function KnowledgeReportPage({
   const [expiryNeedsRetry, setExpiryNeedsRetry] = useState(false);
   const textRef = useRef(text);
   const expiryRetryRef = useRef<number | null>(null);
+  const serverSkewRef = useRef(0);
   textRef.current = text;
+
+  function noteServerClock(timing: ServerTiming | null) {
+    const parsed = timing?.serverNow ? Date.parse(timing.serverNow) : Number.NaN;
+    if (!Number.isFinite(parsed)) return;
+    serverSkewRef.current = parsed - Date.now();
+    setNow(Date.now() + serverSkewRef.current);
+  }
 
   const durationMs = (config?.durationMinutes || 0) * 60 * 1000;
   const additionalMs = (additionalSeconds || (config?.additionalTimeMinutes || 0) * 60) * 1000;
@@ -138,6 +148,7 @@ export function KnowledgeReportPage({
       const hydrated = store ? await store.hydrate?.() : null;
       if (cancelled) return;
       const timing = serverTiming(hydrated);
+      noteServerClock(timing);
       if (hydrated?.submission?.status === "submitted" || hydrated?.completed || timing?.phase === "submitted") {
         setText(draftText(hydrated, questionId));
         setPhase("submitted");
@@ -184,7 +195,7 @@ export function KnowledgeReportPage({
 
   useEffect(() => {
     if ((phase !== "writing" && phase !== "additional") || !serverStartedAt) return undefined;
-    const timer = window.setInterval(() => setNow(Date.now()), 250);
+    const timer = window.setInterval(() => setNow(Date.now() + serverSkewRef.current), 250);
     return () => window.clearInterval(timer);
   }, [phase, serverStartedAt]);
 
@@ -359,6 +370,30 @@ export function KnowledgeReportPage({
   }
 
   useEffect(() => {
+    if ((phase !== "writing" && phase !== "additional") || !ready || !activity || standardExpired || additionalExpired) return undefined;
+    let cancelled = false;
+    const readServerClock = async () => {
+      const progress = (platform as {
+        progress?: { getActivityState?: (activityKey: string, activityVersion: string) => Promise<unknown> };
+      } | null)?.progress;
+      if (!progress?.getActivityState) return;
+      try {
+        const row = await progress.getActivityState(activity.id, resolveActivityVersion(activity));
+        if (cancelled) return;
+        noteServerClock(serverTiming(draftFromActivityRow(row)));
+      } catch {
+        // The expiry reconciliation reports a real failure if the sitting cannot be read.
+      }
+    };
+    const timer = window.setInterval(() => { void readServerClock(); }, 2000);
+    void readServerClock();
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, [activity, additionalExpired, phase, platform, ready, standardExpired]);
+
+  useEffect(() => {
     if (phase !== "writing" || !standardExpired || !ready) return;
     void reconcileStandardExpiry();
     // The ref blocks a second expiry pass while reconciliation or submission is running.
@@ -407,10 +442,14 @@ export function KnowledgeReportPage({
     }
     try {
       const saved = await starter(activity.id, resolveActivityVersion(activity));
-      const timing = serverTiming(saved?.state as CatalogueDraft | undefined);
-      setAdditionalStartedAt(timing?.additionalTimeStartedAt || new Date().toISOString());
-      setAdditionalSeconds(Number(timing?.additionalTimeSeconds) || (config?.additionalTimeMinutes || 0) * 60);
-      setNow(Date.now());
+      const timing = serverTiming(draftFromActivityRow(saved));
+      if (!timing?.additionalTimeStartedAt) {
+        setNotice("Additional time could not be started. Check that you are signed in, then try again.");
+        return;
+      }
+      noteServerClock(timing);
+      setAdditionalStartedAt(timing.additionalTimeStartedAt);
+      setAdditionalSeconds(Number(timing.additionalTimeSeconds) || (config?.additionalTimeMinutes || 0) * 60);
       setPhase("additional");
       setNotice("");
     } catch {

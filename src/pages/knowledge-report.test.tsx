@@ -462,6 +462,96 @@ describe("Knowledge Report pages", () => {
     assertLearnerThresholdHidden();
   });
 
+  it("follows a jumped server clock to the expiry screen without refreshing", async () => {
+    const startedAt = new Date().toISOString();
+    const startAdditionalTime = vi.fn();
+    const submit = vi.fn();
+    const getActivityState = vi.fn(async () => phaseRow("additional_available"));
+    getActivityState.mockImplementation(async () => ({
+      state: {
+        ...phaseRow("additional_available").state,
+        knowledgeReportPhase: {
+          phase: "additional_available",
+          additionalTimeStartedAt: null,
+          additionalTimeSeconds: 900,
+          serverNow: new Date(Date.parse(startedAt) + 1_801_000).toISOString()
+        }
+      }
+    }));
+    const { platform: hub } = platform();
+    hub.submission.submit = submit;
+    hub.progress.createStore = () => ({
+      save: vi.fn(),
+      flush: vi.fn(async () => null),
+      hydrate: vi.fn(async () => ({
+        startedAt,
+        responses: { "u3-cyber-security-knowledge-report-response": "saved standard work" },
+        knowledgeReportPhase: {
+          phase: "standard",
+          serverNow: new Date().toISOString()
+        }
+      }))
+    });
+    (hub.progress as { getActivityState?: typeof getActivityState }).getActivityState = getActivityState;
+    (hub as { knowledgeReport?: { startAdditionalTime: typeof startAdditionalTime } }).knowledgeReport = {
+      startAdditionalTime
+    };
+    render(<KnowledgeReportPage context={context} contentReady platform={hub} />);
+    expect(await screen.findByRole("button", { name: "Continue with additional time" })).toBeTruthy();
+    expect((screen.getByLabelText("Your report") as HTMLTextAreaElement).readOnly).toBe(true);
+    expect((screen.getByRole("timer").textContent || "")).toContain("00:00");
+    expect(screen.queryByText("Your report is still saved on this device. It has not been sent to your learning record yet.")).toBeNull();
+    expect(submit).not.toHaveBeenCalled();
+    expect(startAdditionalTime).not.toHaveBeenCalled();
+    expect(visibleText()).not.toContain("Additional time:");
+    assertLearnerThresholdHidden();
+  });
+
+  it("starts the 15-minute timer from the server row when the test clock is already ahead", async () => {
+    const startedAt = new Date(Date.now() - 31 * 60_000).toISOString();
+    const serverNow = new Date(Date.parse(startedAt) + 1_801_000).toISOString();
+    const submit = vi.fn();
+    const startAdditionalTime = vi.fn(async () => [{
+      state: {
+        responses: { "u3-cyber-security-knowledge-report-response": "saved standard work" },
+        knowledgeReportPhase: {
+          phase: "additional",
+          additionalTimeStartedAt: serverNow,
+          additionalTimeSeconds: 900,
+          serverNow
+        }
+      }
+    }]);
+    const { platform: hub } = platform();
+    hub.submission.submit = submit;
+    hub.progress.createStore = () => ({
+      save: vi.fn(),
+      flush: vi.fn(async () => null),
+      hydrate: vi.fn(async () => ({
+        startedAt,
+        responses: { "u3-cyber-security-knowledge-report-response": "saved standard work" },
+        knowledgeReportPhase: {
+          phase: "additional_available",
+          additionalTimeStartedAt: null,
+          additionalTimeSeconds: 900,
+          serverNow
+        }
+      }))
+    });
+    (hub as { knowledgeReport?: { startAdditionalTime: typeof startAdditionalTime } }).knowledgeReport = {
+      startAdditionalTime
+    };
+    render(<KnowledgeReportPage context={context} contentReady platform={hub} />);
+    fireEvent.click(await screen.findByRole("button", { name: "Continue with additional time" }));
+    const timer = await screen.findByRole("timer");
+    expect(timer.textContent || "").toMatch(/Additional time: 15:00|Additional time: 14:5/);
+    expect((screen.getByLabelText("Your report") as HTMLTextAreaElement).readOnly).toBe(false);
+    expect((screen.getByLabelText("Your report") as HTMLTextAreaElement).value).toBe("saved standard work");
+    expect(submit).not.toHaveBeenCalled();
+    expect(screen.queryByRole("button", { name: "Continue with additional time" })).toBeNull();
+    assertLearnerThresholdHidden();
+  });
+
   it("does not show the internal threshold on the opening screen", () => {
     render(<KnowledgeReportsPage root="." contentReady />);
     expect(screen.getByText("Minimum 500 words")).toBeTruthy();
