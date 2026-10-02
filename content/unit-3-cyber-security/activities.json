@@ -22763,7 +22763,7 @@
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
     "id": "u3-cyber-security-knowledge-report",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "metadata": {
       "title": "Cyber Security Knowledge Report",
       "status": "available",
@@ -22774,6 +22774,8 @@
         "slug": "cyber-security",
         "durationMinutes": 30,
         "minWords": 500,
+        "additionalTimeMinutes": 15,
+        "additionalTimeThresholdWords": 400,
         "brief": "This is a timed opportunity to demonstrate what you have learned so far.",
         "guidance": [
           {

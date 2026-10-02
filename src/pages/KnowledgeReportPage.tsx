@@ -1,3 +1,4 @@
+import { resolveActivityVersion } from "@learning-platform/core";
 import { EmptyState } from "@learning-platform/ui";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import {
@@ -16,7 +17,18 @@ import {
 import { activeContentPackage } from "../curriculum/apply-runtime";
 import type { PageContext } from "../page-context";
 
-type ReportPhase = "intro" | "writing" | "submitted";
+type ReportPhase = "intro" | "writing" | "additional_available" | "additional" | "submitted";
+
+type ServerTiming = {
+  phase?: string;
+  additionalTimeSeconds?: number;
+  additionalTimeStartedAt?: string | null;
+};
+
+function serverTiming(draft: CatalogueDraft | null | undefined): ServerTiming | null {
+  const value = (draft as { knowledgeReportPhase?: ServerTiming } | null | undefined)?.knowledgeReportPhase;
+  return value && typeof value === "object" ? value : null;
+}
 
 function draftText(draft: CatalogueDraft | null | undefined, questionId: string): string {
   const value = draft?.responses?.[questionId];
@@ -52,6 +64,8 @@ export function KnowledgeReportPage({
   const [phase, setPhase] = useState<ReportPhase>("intro");
   const [text, setText] = useState("");
   const [serverStartedAt, setServerStartedAt] = useState<string | null>(null);
+  const [additionalStartedAt, setAdditionalStartedAt] = useState<string | null>(null);
+  const [additionalSeconds, setAdditionalSeconds] = useState(0);
   const [now, setNow] = useState(() => Date.now());
   const [notice, setNotice] = useState("");
   const [confirming, setConfirming] = useState(false);
@@ -64,13 +78,18 @@ export function KnowledgeReportPage({
   textRef.current = text;
 
   const durationMs = (config?.durationMinutes || 0) * 60 * 1000;
+  const additionalMs = (additionalSeconds || (config?.additionalTimeMinutes || 0) * 60) * 1000;
   const minWords = config?.minWords || 0;
   const words = countWords(text);
   const remainingMs = serverStartedAt
     ? new Date(serverStartedAt).getTime() + durationMs - now
     : durationMs;
-  const expired = phase === "writing" && serverStartedAt != null && remainingMs <= 0 && !deferExpiry;
-  const frozen = phase === "submitted" || expired || busy;
+  const additionalRemainingMs = additionalStartedAt
+    ? new Date(additionalStartedAt).getTime() + additionalMs - now
+    : additionalMs;
+  const standardExpired = phase === "writing" && serverStartedAt != null && remainingMs <= 0 && !deferExpiry;
+  const additionalExpired = phase === "additional" && additionalStartedAt != null && additionalRemainingMs <= 0;
+  const frozen = phase === "submitted" || phase === "additional_available" || standardExpired || additionalExpired || busy;
 
   useEffect(() => {
     finaliseRef.current = false;
@@ -91,11 +110,33 @@ export function KnowledgeReportPage({
     (async () => {
       const hydrated = store ? await store.hydrate?.() : null;
       if (cancelled) return;
-      if (hydrated?.submission?.status === "submitted" || hydrated?.completed) {
+      const timing = serverTiming(hydrated);
+      if (hydrated?.submission?.status === "submitted" || hydrated?.completed || timing?.phase === "submitted") {
         setText(draftText(hydrated, questionId));
         setPhase("submitted");
         setLockedRemaining(0);
         setNotice("Your report has been submitted.");
+      } else if (timing?.phase === "additional" && timing.additionalTimeStartedAt) {
+        setText(draftText(hydrated, questionId));
+        setServerStartedAt(hydrated?.startedAt || null);
+        setAdditionalStartedAt(timing.additionalTimeStartedAt);
+        setAdditionalSeconds(Number(timing.additionalTimeSeconds) || 0);
+        setPhase("additional");
+      } else if (timing?.phase === "additional_available") {
+        setText(draftText(hydrated, questionId));
+        setServerStartedAt(hydrated?.startedAt || null);
+        setPhase("additional_available");
+        setNotice("Standard time complete. Your work has been saved.");
+      } else if (timing?.phase === "additional_expired" && timing.additionalTimeStartedAt) {
+        setText(draftText(hydrated, questionId));
+        setServerStartedAt(hydrated?.startedAt || null);
+        setAdditionalStartedAt(timing.additionalTimeStartedAt);
+        setAdditionalSeconds(Number(timing.additionalTimeSeconds) || 0);
+        setPhase("additional");
+      } else if (timing?.phase === "standard_complete") {
+        setText(draftText(hydrated, questionId));
+        setServerStartedAt(hydrated?.startedAt || null);
+        setPhase("writing");
       } else if (hydrated?.startedAt) {
         setText(draftText(hydrated, questionId));
         setServerStartedAt(hydrated.startedAt);
@@ -115,13 +156,13 @@ export function KnowledgeReportPage({
   }, [activity, platform, questionId, learnerSignedIn]);
 
   useEffect(() => {
-    if (phase !== "writing" || !serverStartedAt) return undefined;
+    if ((phase !== "writing" && phase !== "additional") || !serverStartedAt) return undefined;
     const timer = window.setInterval(() => setNow(Date.now()), 250);
     return () => window.clearInterval(timer);
   }, [phase, serverStartedAt]);
 
   useEffect(() => {
-    if (phase !== "writing" || frozen) return;
+    if ((phase !== "writing" && phase !== "additional") || frozen) return;
     const store = storeRef.current;
     if (!store || !questionId) return;
     store.save?.({
@@ -158,9 +199,11 @@ export function KnowledgeReportPage({
     if (result.status === "submitted" || result.code === "TIMED_REPORT_ALREADY_SUBMITTED") {
       setLockedRemaining(becauseExpired ? 0 : Math.max(0, remainingMs));
       setPhase("submitted");
-      setNotice(becauseExpired
-        ? "Time is up. Your report has been saved and submitted."
-        : "Your report has been submitted.");
+    setNotice(becauseExpired
+      ? (phase === "additional"
+        ? "Additional time is complete. Your report has been saved and submitted."
+        : "Standard time complete. Your report has been saved and submitted.")
+      : "Your report has been submitted.");
       return;
     }
     finaliseRef.current = false;
@@ -178,11 +221,32 @@ export function KnowledgeReportPage({
   }
 
   useEffect(() => {
-    if (!expired || phase !== "writing" || !ready) return;
-    void finalise(true);
+    if (phase !== "writing" || !standardExpired || !ready) return;
+    void (async () => {
+      const saved = await storeRef.current?.flush?.();
+      const timing = serverTiming(saved?.state as CatalogueDraft | undefined);
+      if (timing?.phase === "additional_available") {
+        setPhase("additional_available");
+        setNotice("Standard time complete. Your work has been saved.");
+        return;
+      }
+      if (timing?.phase === "additional" && timing.additionalTimeStartedAt) {
+        setAdditionalStartedAt(timing.additionalTimeStartedAt);
+        setAdditionalSeconds(Number(timing.additionalTimeSeconds) || 0);
+        setPhase("additional");
+        return;
+      }
+      void finalise(true);
+    })();
     // finalise is stable enough for the expiry edge; the ref blocks repeats.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [expired, phase, ready]);
+  }, [standardExpired, phase, ready]);
+
+  useEffect(() => {
+    if (phase !== "additional" || !additionalExpired || !ready) return;
+    void finalise(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [additionalExpired, phase, ready]);
 
   async function startTask() {
     if (!activity || !questionId || busy) return;
@@ -204,6 +268,32 @@ export function KnowledgeReportPage({
     setServerStartedAt(startedAt);
     setNow(Date.now());
     setPhase("writing");
+  }
+
+  async function continueAdditional() {
+    if (!activity || busy) return;
+    setBusy(true);
+    setNotice("");
+    const starter = (platform as {
+      knowledgeReport?: { startAdditionalTime?: (activityKey: string, activityVersion: string) => Promise<{ state?: CatalogueDraft; startedAt?: string } | null> };
+    } | null)?.knowledgeReport?.startAdditionalTime;
+    if (!starter) {
+      setBusy(false);
+      setNotice("Additional time could not be started. Check that you are signed in, then try again.");
+      return;
+    }
+    try {
+      const saved = await starter(activity.id, resolveActivityVersion(activity));
+      const timing = serverTiming(saved?.state as CatalogueDraft | undefined);
+      setAdditionalStartedAt(timing?.additionalTimeStartedAt || new Date().toISOString());
+      setAdditionalSeconds(Number(timing?.additionalTimeSeconds) || (config?.additionalTimeMinutes || 0) * 60);
+      setNow(Date.now());
+      setPhase("additional");
+      setNotice("");
+    } catch {
+      setNotice("Additional time could not be started. Check that you are signed in, then try again.");
+    }
+    setBusy(false);
   }
 
   function onEditorKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
@@ -240,8 +330,8 @@ export function KnowledgeReportPage({
         ) : (
           <div className="knowledge-report__status">
             <p className="knowledge-report__timer" role="timer">
-              <span className="visually-hidden">Time remaining </span>
-              {formatCountdown(phase === "submitted" ? (lockedRemaining ?? 0) : remainingMs)}
+              <span className="visually-hidden">{phase === "additional" ? "Additional time remaining " : "Time remaining "}</span>
+              {phase === "additional" ? `Additional time: ${formatCountdown(additionalRemainingMs)}` : formatCountdown(phase === "submitted" ? (lockedRemaining ?? 0) : remainingMs)}
             </p>
             <p id="knowledge-report-word-count">
               {minimumMet
@@ -271,6 +361,16 @@ export function KnowledgeReportPage({
               aria-describedby="knowledge-report-word-count"
               data-academic-integrity="exclude"
             />
+            {phase === "additional_available" ? (
+              <div>
+                <p>Standard time complete</p>
+                <p>Your work has been saved.</p>
+                <p>Additional time available: {config.additionalTimeMinutes || Math.round(additionalSeconds / 60)} minutes</p>
+                <button className="lp-button" type="button" onClick={() => { void continueAdditional(); }} disabled={busy}>
+                  Continue with additional time
+                </button>
+              </div>
+            ) : null}
             {phase === "writing" && !minimumMet ? (
               <p id="knowledge-report-minimum">Minimum {minWords} words required before you can submit.</p>
             ) : null}
@@ -290,7 +390,7 @@ export function KnowledgeReportPage({
               <button
                 className="lp-button"
                 type="button"
-                disabled={phase !== "writing" || !minimumMet || busy || expired}
+                disabled={(phase !== "writing" && phase !== "additional") || !minimumMet || busy || standardExpired || additionalExpired}
                 aria-describedby={minimumMet ? undefined : "knowledge-report-minimum"}
                 onClick={() => setConfirming(true)}
               >
