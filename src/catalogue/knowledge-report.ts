@@ -12,6 +12,7 @@ export type KnowledgeReportConfig = {
   slug: string;
   durationMinutes: number;
   minWords: number;
+  additionalTimeMinutes: number | null;
   brief: string;
   guidance: KnowledgeReportSection[];
   sentenceStarters: string[];
@@ -49,6 +50,9 @@ export function knowledgeReportConfig(activity: ActivityDocument | null | undefi
     slug: String(report.slug || "").trim(),
     durationMinutes,
     minWords,
+    additionalTimeMinutes: Number.isFinite(Number(report.additionalTimeMinutes)) && Number(report.additionalTimeMinutes) > 0
+      ? Number(report.additionalTimeMinutes)
+      : null,
     brief: String(report.brief || metadata?.summary || "").trim(),
     guidance: Array.isArray(report.guidance) ? report.guidance : [],
     sentenceStarters: Array.isArray(report.sentenceStarters) ? report.sentenceStarters : []
