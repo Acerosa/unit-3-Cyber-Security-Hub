@@ -18,24 +18,24 @@
     questions: Object.freeze([
       Object.freeze({
         id: 's2q1',
-        prompt: 'Which impact category best fits unrecovered destruction of referral letters?',
-        options: Object.freeze(['Loss', 'Disruption only', 'Safety only', 'Motivation']),
+        prompt: 'Encrypted clinic rotas that staff cannot open are best classified as:',
+        options: Object.freeze(['Loss of availability', 'A motivation', 'A defensive control', 'An attacker type']),
         correctIndex: 0,
-        explanation: 'Destroyed or unrecoverable information is a loss of data.'
+        explanation: 'Staff cannot use the rotas when they need them. That is loss of availability.'
       }),
       Object.freeze({
         id: 's2q2',
-        prompt: 'Reception cannot confirm any clinic visits for two days. This is primarily:',
-        options: Object.freeze(['Disruption', 'Identity theft', 'A motivation', 'Legislation']),
+        prompt: 'Partner clinics pause referrals while they check whether shared records can be trusted. This is primarily:',
+        options: Object.freeze(['Disruption of a working relationship and a loss of confidence', 'Identity theft', "The attacker's motivation", 'A completed prosecution']),
         correctIndex: 0,
-        explanation: 'A depended-on service has become unreliable — disruption.'
+        explanation: 'Referrals have stopped because confidence in the shared records has been lost.'
       }),
       Object.freeze({
         id: 's2q3',
-        prompt: 'A patient faces increased clinical risk because an urgent review is delayed. This is primarily:',
-        options: Object.freeze(['Safety', 'Financial loss only', 'Broadcasting disruption', 'Publicity motivation']),
+        prompt: 'Ambulance routes are affected because traffic signals behave unpredictably. This is primarily:',
+        options: Object.freeze(['A safety impact, with disruption of the road network', 'Financial loss only', 'A publicity motivation', 'A software update']),
         correctIndex: 0,
-        explanation: 'Physical or clinical risk to a person is a safety impact.'
+        explanation: 'Unpredictable signals can put road users at physical risk and also disrupt the road network.'
       }),
       Object.freeze({
         id: 's2q4',
@@ -48,7 +48,7 @@
         ]),
         correctIndex: 1,
         explanation:
-          'Different stakeholders can experience the same incident differently — individuals, the organisation, employees, patients, suppliers, regulators and the state.'
+          'Different stakeholders can experience the same incident differently: individuals, the organisation, employees, patients, suppliers, regulators and the state.'
       }),
       Object.freeze({
         id: 's2q5',
@@ -69,7 +69,7 @@
           'An immediate availability outage only',
           'A longer-term consequence',
           'A Week 6 legal duty',
-          'An NCSC staged prompt'
+          'Evidence that no impact occurred'
         ]),
         correctIndex: 1,
         explanation:
@@ -77,7 +77,7 @@
       }),
       Object.freeze({
         id: 's2q7',
-        prompt: 'Awkward example: “Northbank suffered.” Why is this weak?',
+        prompt: 'Why is "Northbank suffered" too weak as an impact answer?',
         options: Object.freeze([
           'It names every stakeholder clearly',
           'It does not name the stakeholder or the specific impact',
@@ -135,7 +135,7 @@
         ]),
         correctIndex: 1,
         explanation:
-          'The same incident affects a patient differently from a regulator — both perspectives need analysis.'
+          'The same incident affects a patient differently from a regulator. Both perspectives need analysis.'
       }),
       Object.freeze({
         id: 's2q12',

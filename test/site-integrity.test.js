@@ -180,6 +180,7 @@ test("Week 2 lists activities on the week page and links each activity to the ne
     "week-5/impacts-learning/index.html",
     "week-5/impact-classification/index.html",
     "week-5/exercise-debrief/index.html",
+    "week-5/ransomware-companion/index.html",
     "week-5/controls-matching/index.html",
     "week-5/secure-rewrite/index.html"
   ];
@@ -188,7 +189,6 @@ test("Week 2 lists activities on the week page and links each activity to the ne
     assert.doesNotMatch(chunk, /\/app\.js/);
     assert.doesNotMatch(chunk, /week5-quiz\.js/);
   });
-  assert.match(inventory.split("week-5/ransomware-companion/index.html")[1].split("week-5/session1")[0], /week-5\/ransomware-companion\/app\.js/);
   assert.match(inventory.split("week-5/stakeholder-grid/index.html")[1].split('"redirectTo"')[0], /week-5\/stakeholder-grid\/app\.js/);
   assert.match(inventory.split("week-5/impact-analysis/index.html")[1].split("week-5/impact-classification")[0], /week-5\/impact-analysis\/app\.js/);
   assert.match(inventory.split("week-5/ocr-practice/index.html")[1].split("week-5/ransomware")[0], /week-5\/ocr-practice\/app\.js/);

@@ -115,8 +115,8 @@
         })
         .join('') +
       '</ul>');
-    field(challenge, 'challenge-decision', 'Decision you would now challenge', 'challengeDecision', 2);
-    field(challenge, 'challenge-why', 'Two sentences explaining why', 'challengeWhy', 3);
+    field(challenge, 'challenge-decision', 'Optional: one impact that would differ for the other organisation', 'challengeDecision', 2);
+    field(challenge, 'challenge-why', 'Optional: why that impact would differ', 'challengeWhy', 3);
     panel.appendChild(challenge);
 
     var ack = document.createElement('label');

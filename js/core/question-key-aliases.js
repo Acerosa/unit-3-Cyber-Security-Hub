@@ -149,16 +149,15 @@
       "m6": "AI6"
     },
     "week5-exercise-debrief": {
-      "impactreduced": "DB1",
-      "stakeholderbenefit": "DB2",
-      "timescale": "DB3",
-      "negativeeffect": "DB4"
+      "timescale": "DB1",
+      "impact-chain": "DB2",
+      "follow-on": "DB3"
     },
     "week5-ransomware-companion": {
-      "selectedrole": "RC1",
-      "roledecision": "RC2",
-      "decisions": "RC3",
-      "facilitatedconfirmed": "RC4"
+      "spot": "RC1",
+      "spot-justify": "RC2",
+      "chain": "RC3",
+      "chain-link": "RC4"
     },
     "week5-stakeholder-grid": {
       "individuals": "SG1",

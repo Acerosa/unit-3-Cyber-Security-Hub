@@ -10,11 +10,9 @@
   var host = document.getElementById('w5-activity-host');
   var startedAt = new Date().toISOString();
   var state = {
-    annotations: {},
     immediate: '',
     sixMonths: '',
-    improvement: '',
-    revealedStrong: false
+    improvement: ''
   };
 
   if (progress) {
@@ -42,37 +40,43 @@
     }
   }
 
-  function computeScore() {
-    var marks = 0;
-    var selected = Object.keys(state.annotations).filter(function (key) {
-      return state.annotations[key];
-    }).length;
-    if (selected >= 3) marks += 2;
-    if (String(state.immediate || '').trim().length >= WRITING_MIN) marks += 1;
-    if (String(state.sixMonths || '').trim().length >= WRITING_MIN) marks += 1;
-    if (String(state.improvement || '').trim().length >= WRITING_MIN) marks += 1;
-    var combined = (state.immediate + ' ' + state.sixMonths).toLowerCase();
-    if (
-      combined.indexOf('because') !== -1 ||
-      combined.indexOf('which means') !== -1 ||
-      combined.indexOf('scenario') !== -1
-    ) {
-      marks += 1;
+  function combinedWriting() {
+    return [state.immediate, state.sixMonths, state.improvement].join(' ');
+  }
+
+  function meetsCriterion(id) {
+    var text = combinedWriting().toLowerCase();
+    if (id === 'a1') {
+      return /patient|staff|northbank|regulator|clinic|individual/.test(text);
     }
+    if (id === 'a2') {
+      return /delay|cancel|expos|unavailable|encrypt|review|record|confidence|reputation/.test(text);
+    }
+    if (id === 'a3') {
+      return /two|working day|contact|media|urgent|booking|shared/.test(text);
+    }
+    if (id === 'a4') {
+      return String(state.immediate || '').trim().length >= WRITING_MIN &&
+        String(state.sixMonths || '').trim().length >= WRITING_MIN;
+    }
+    if (id === 'a5') {
+      return /because|so that|which means|as a result/.test(text);
+    }
+    if (id === 'a6') {
+      return /safety|clinical|confidential|confidence|reputation|disruption/.test(text);
+    }
+    return false;
+  }
+
+  function computeScore() {
+    var marks = (data.creditCriteria || []).filter(function (item) {
+      return meetsCriterion(item.id);
+    }).length;
     return Math.min(data.total, marks);
   }
 
   function validate() {
     var messages = [];
-    var selected = Object.keys(state.annotations).filter(function (key) {
-      return state.annotations[key];
-    }).length;
-    if (!state.revealedStrong) {
-      messages.push('Reveal the stronger response and annotate where it earns credit before submitting.');
-    }
-    if (selected < 3) {
-      messages.push('Identify at least three places where the stronger response earns additional credit.');
-    }
     if (String(state.immediate || '').trim().length < WRITING_MIN) {
       messages.push('Write a full immediate-impact sentence.');
     }
@@ -112,51 +116,11 @@
       '</ul>');
     panel.appendChild(weak);
 
-    if (!state.revealedStrong) {
-      var reveal = document.createElement('button');
-      reveal.type = 'button';
-      reveal.className = 'btn btn-secondary';
-      reveal.textContent = 'Reveal stronger analytical response';
-      reveal.addEventListener('click', function () {
-        state.revealedStrong = true;
-        save();
-        render();
-      });
-      panel.appendChild(reveal);
-      var hideNote = document.createElement('p');
-      hideNote.className = 'panel-note';
-      hideNote.textContent =
-        'Study the weak response first. The stronger response stays hidden until you choose to reveal it.';
-      panel.appendChild(hideNote);
-    } else {
-      var strong = document.createElement('blockquote');
-      strong.className = 'w5-scenario w5-improved-response';setAuthoredHtml(strong, '<strong>' + data.strongResponse.label + ':</strong> ' + data.strongResponse.text);
-      panel.appendChild(strong);
-
-      var annHeading = document.createElement('h3');
-      annHeading.textContent = 'Annotation: where does the stronger response earn credit?';
-      panel.appendChild(annHeading);
-      data.strongResponse.creditAnnotations.forEach(function (item) {
-        var label = document.createElement('label');
-        label.className = 'w5-checkbox-label';
-        var input = document.createElement('input');
-        input.type = 'checkbox';
-        input.checked = !!state.annotations[item.id];
-        input.addEventListener('change', function () {
-          state.annotations[item.id] = input.checked;
-          save();
-        });
-        label.appendChild(input);
-        label.appendChild(document.createTextNode(' ' + item.label));
-        panel.appendChild(label);
-      });
-    }
-
     data.writingTasks.forEach(function (task) {
       textFields.mount(panel, {
         wrapClass: 'w5-reflection-field',
         id: task.id,
-        prompt: task.label + ' (starter: ' + task.starter + ')',
+        prompt: task.label,
         minChars: WRITING_MIN,
         value: state[task.id] || '',
         rows: 3,
@@ -207,11 +171,17 @@
         return;
       }
       var score = computeScore();
-      if (progress) progress.markCompleted(ACTIVITY_ID, score, data.total);setAuthoredHtml(status, '<p class="message message-success">Analysis practice completed (' +
+      if (progress) progress.markCompleted(ACTIVITY_ID, score, data.total);
+      var criteria = (data.creditCriteria || []).map(function (item) {
+        return '<li>' + (meetsCriterion(item.id) ? 'Met: ' : 'Still missing: ') + item.label + '</li>';
+      }).join('');
+      setAuthoredHtml(status, '<p class="message message-success">Analysis practice completed (' +
         score +
         ' / ' +
         data.total +
-        '). Structured feedback: stronger credit comes from named stakeholders, scenario evidence, timescale and connections — not lists.</p>');
+        ').</p><p>A stronger answer includes:</p><ul class="section-list">' +
+        criteria +
+        '</ul>');
       window.Unit3Week5Submit.renderSubmitPanel({
         activityId: ACTIVITY_ID,
         hostId: 'w5-submit-host',
@@ -226,17 +196,16 @@
         },
         getResponses: function () {
           var evidence = window.Unit3SupabaseEvidence;
-          var annotations =
-            (data.strongResponse && data.strongResponse.creditAnnotations) || [];
-          return annotations.map(function (item, index) {
+          var criteria = data.creditCriteria || [];
+          return criteria.map(function (item, index) {
             var qid = 'IA' + (index + 1);
-            var checked = Boolean(state.annotations[item.id]);
+            var checked = meetsCriterion(item.id);
             var payload = {
-              annotationId: item.id,
+              criterionId: item.id,
               label: item.label,
-              checked: checked
+              met: checked
             };
-            if (index === annotations.length - 1) {
+            if (index === criteria.length - 1) {
               payload.immediate = state.immediate;
               payload.sixMonths = state.sixMonths;
               payload.improvement = state.improvement;

@@ -11,7 +11,7 @@
     { id: 'week5-impacts-learning', total: 9, version: '1.0' },
     { id: 'week5-impact-classification', total: 8, version: '1.0' },
     { id: 'week5-ransomware-companion', total: 4, version: '1.0' },
-    { id: 'week5-exercise-debrief', total: 4, version: '1.0' },
+    { id: 'week5-exercise-debrief', total: 6, version: '1.0' },
     { id: 'week5-session2-retrieval', total: 12, version: '1.0' },
     { id: 'week5-stakeholder-grid', total: 10, version: '1.0' },
     { id: 'week5-impact-analysis', total: 6, version: '1.0' },
@@ -106,34 +106,31 @@
       }).length;
       if (ambiguous < 1) fail('ambiguous-items', String(ambiguous));
       else pass('ambiguous-items');
-      var appointment = classifyRows.some(function (item) {
+      var partnerPause = classifyRows.some(function (item) {
+        var text = item.statement || item.text || '';
+        return /partner clinics pause referrals/i.test(text);
+      });
+      if (!partnerPause) fail('partner-referral-example', 'missing');
+      else pass('partner-referral-example');
+      var cancelled = classifyRows.some(function (item) {
         var text = item.statement || item.text || '';
         return /healthcare appointment is cancelled|cancelled healthcare appointment/i.test(text);
       });
-      if (!appointment) fail('cancelled-appointment-example', 'missing');
-      else pass('cancelled-appointment-example');
+      if (cancelled) fail('no-duplicate-cancelled-appointment', 'still present');
+      else pass('no-duplicate-cancelled-appointment');
     }
 
     if (!companion) fail('companion-data', 'missing');
     else {
       pass('companion-data');
-      if (companion.roles.length !== 4) fail('role-count', String(companion.roles.length));
-      else pass('role-count');
-      var roleNames = companion.roles.map(function (role) {
-        return role.title.toLowerCase();
-      }).join('|');
-      ['practice manager', 'it support contractor', 'records officer', 'communications lead'].forEach(
-        function (name) {
-          if (roleNames.indexOf(name) === -1) fail('role-' + name, roleNames);
-          else pass('role-' + name);
-        }
-      );
+      if (!companion.scenarios || companion.scenarios.length !== 2) {
+        fail('scenario-count', 'expected 2');
+      } else pass('scenario-count');
       var blob = JSON.stringify(companion);
-      if (/inject\s+\d|stage\s+1:|what would you do next\?/i.test(blob)) {
-        fail('invented-ncsc-prompts', 'possible staged prompt content');
-      } else pass('no-invented-ncsc-prompts');
-      if (blob.indexOf('ncsc.gov.uk') === -1) fail('ncsc-link', 'missing');
-      else pass('ncsc-link');
+      if (blob.indexOf('ncsc.gov.uk') !== -1) fail('ncsc-link-removed', 'still present');
+      else pass('ncsc-link-removed');
+      if (/exercise in a box/i.test(blob)) fail('ncsc-exercise-removed', 'still present');
+      else pass('ncsc-exercise-removed');
     }
 
     if (!grid) fail('grid-data', 'missing');
@@ -163,18 +160,33 @@
       var worked = grid.stakeholders.filter(function (item) {
         return item.workedExample;
       });
-      if (worked.length !== 1 || worked[0].id !== 'individuals') {
-        fail('worked-individuals-row', String(worked.length));
-      } else pass('worked-individuals-row');
+      if (worked.length !== 0) fail('no-worked-example', String(worked.length));
+      else pass('no-worked-example');
+      var seed = grid.partlyCompletedSeed || {};
+      var seeded = Object.keys(seed).some(function (key) {
+        var row = seed[key] || {};
+        return Object.keys(row).some(function (field) {
+          return String(row[field] || '').trim().length > 0;
+        });
+      });
+      if (seeded) fail('no-prefilled-row', 'seed still has answers');
+      else pass('no-prefilled-row');
     }
 
-    if (!analysis || !analysis.strongResponse || !analysis.weakResponse) {
+    if (!analysis || !analysis.weakResponse || !analysis.creditCriteria) {
       fail('analysis-responses', 'missing');
     } else {
       pass('analysis-responses');
+      if (analysis.strongResponse) fail('no-model-answer-before-check', 'strong response still present');
+      else pass('no-model-answer-before-check');
       if (!analysis.writingTasks || analysis.writingTasks.length !== 2) {
         fail('timescale-writing-tasks', 'expected 2');
       } else pass('timescale-writing-tasks');
+      var starters = analysis.writingTasks.some(function (task) {
+        return task.starter;
+      });
+      if (starters) fail('no-writing-starters', 'present');
+      else pass('no-writing-starters');
     }
 
     if (!ocr || ocr.total !== 20) fail('ocr-total', ocr && String(ocr.total));

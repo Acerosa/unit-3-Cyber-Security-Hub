@@ -333,7 +333,7 @@ write(
     </section>
     <section class="panel" aria-labelledby="w7-northbank-heading">
       <h2 id="w7-northbank-heading">Connection to previous Northbank work</h2>
-      <p>This week you convert the Week 2 Northbank vulnerability register into a risk register. You do not start the asset list again. You will also reuse cost, operational and stakeholder thinking from Week 6 and the NCSC Exercise in a Box classroom pattern from Weeks 5 and 6.</p>
+      <p>This week you convert the Week 2 Northbank vulnerability register into a risk register. You do not start the asset list again. You will also reuse cost, operational and stakeholder thinking from Week 6 and the NCSC Exercise in a Box classroom pattern from Week 6.</p>
     </section>
     <section class="panel" aria-labelledby="w7-exam-heading">
       <h2 id="w7-exam-heading">Examination focus</h2>
@@ -422,7 +422,7 @@ write(
       <h2 id="w7-related-heading">Related weeks</h2>
       <ul class="section-list">
         <li><a href="../week-2/">Week 2</a> - Northbank vulnerability register</li>
-        <li><a href="../week-5/">Week 5</a> - Impacts and Exercise in a Box companion pattern</li>
+        <li><a href="../week-5/">Week 5</a> - Impacts of cyber security incidents</li>
         <li><a href="../week-6/">Week 6</a> - Cost, operational and stakeholder considerations</li>
       </ul>
     </section>

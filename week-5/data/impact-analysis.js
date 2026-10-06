@@ -10,7 +10,7 @@
   global.Week5ImpactAnalysis = Object.freeze({
     activityId: 'week5-impact-analysis',
     activityName: 'Analysing Rather Than Listing Impacts',
-    activityVersion: '1.0',
+    activityVersion: '1.1',
     weekNumber: 5,
     sessionNumber: 2,
     total: 6,
@@ -32,49 +32,22 @@
         'Imports unrelated incidents'
       ])
     }),
-    strongResponse: Object.freeze({
-      label: 'Stronger analytical response',
-      text:
-        'Patients at Northbank face an immediate safety-related consequence because urgent reviews are delayed while booking systems remain encrypted for two working days, which means time-critical care may be postponed. The scenario also states that patient contact details may have been exposed, so individuals can suffer longer-term loss of confidentiality and confidence. Six months later, reputational damage may continue even after recovery fees are paid, because local media reporting leaves patients asking whether records are safe.',
-      creditAnnotations: Object.freeze([
-        Object.freeze({
-          id: 'a1',
-          label: 'Names a stakeholder (patients / individuals)'
-        }),
-        Object.freeze({
-          id: 'a2',
-          label: 'States a specific consequence (delayed urgent reviews)'
-        }),
-        Object.freeze({
-          id: 'a3',
-          label: 'Uses scenario evidence (two working days; exposed contact details; media reporting)'
-        }),
-        Object.freeze({
-          id: 'a4',
-          label: 'Shows immediate and longer-term timescales'
-        }),
-        Object.freeze({
-          id: 'a5',
-          label: 'Connects evidence to why the consequence follows'
-        }),
-        Object.freeze({
-          id: 'a6',
-          label: 'Covers more than financial loss (safety, confidentiality, reputation/confidence)'
-        })
-      ])
-    }),
+    creditCriteria: Object.freeze([
+      Object.freeze({ id: 'a1', label: 'Names a stakeholder' }),
+      Object.freeze({ id: 'a2', label: 'States a specific consequence' }),
+      Object.freeze({ id: 'a3', label: 'Uses evidence from this scenario' }),
+      Object.freeze({ id: 'a4', label: 'Shows an immediate and a longer-term timescale' }),
+      Object.freeze({ id: 'a5', label: 'Explains why the consequence follows' }),
+      Object.freeze({ id: 'a6', label: 'Covers more than financial loss' })
+    ]),
     writingTasks: Object.freeze([
       Object.freeze({
         id: 'immediate',
-        label:
-          'Write one sentence explaining an immediate impact of the Northbank ransomware incident.',
-        starter: 'Immediately after the incident…'
+        label: 'Write one sentence explaining an immediate impact of the Northbank ransomware incident.'
       }),
       Object.freeze({
         id: 'sixMonths',
-        label:
-          'Write one sentence explaining an impact that may still be felt six months later.',
-        starter: 'Six months later…'
+        label: 'Write one sentence explaining an impact that may still be felt six months later.'
       })
     ]),
     improvementPrompt:

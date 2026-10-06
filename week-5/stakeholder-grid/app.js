@@ -175,9 +175,9 @@
       '<p class="panel-note"><strong>Checklist:</strong> ' +
       data.checklist.join(' · ') +
       '</p>' +
-      '<p class="panel-note"><strong>Optional starters:</strong> ' +
-      data.sentenceStarters.join(' ') +
-      '</p>' +
+      (data.sentenceStarters && data.sentenceStarters.length
+        ? '<p class="panel-note"><strong>Optional starters:</strong> ' + data.sentenceStarters.join(' ') + '</p>'
+        : '') +
       '<p id="w5-grid-completion" class="panel-note" aria-live="polite"></p>');
 
     data.stakeholders.forEach(function (stakeholder) {

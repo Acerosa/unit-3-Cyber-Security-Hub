@@ -51,9 +51,9 @@
     Object.freeze({
       activityId: 'week5-impacts-learning',
       number: 4,
-      title: 'Impacts Learning: Loss, Disruption and Safety',
+      title: 'Impacts: loss, disruption and safety',
       description:
-        'Learn the OCR impact categories with Northbank examples, learner checks and feedback that separates similar impact types.',
+        'Learn the OCR impact categories, then apply them to short cases.',
       type: 'Guided learning',
       estimatedMinutes: 35,
       session: 1,
@@ -77,11 +77,11 @@
     Object.freeze({
       activityId: 'week5-ransomware-companion',
       number: 6,
-      title: 'Northbank Ransomware Exercise Companion',
+      title: 'Spot the impact',
       description:
-        'Prepare for the tutor-facilitated NCSC Exercise in a Box ransomware exercise with role cards and a structured decision record.',
-      type: 'Facilitated companion',
-      estimatedMinutes: 40,
+        'Identify impacts from two short incidents and justify them from the scenario.',
+      type: 'Scenario analysis',
+      estimatedMinutes: 25,
       session: 1,
       total: 4,
       path: 'ransomware-companion/',
@@ -90,13 +90,13 @@
     Object.freeze({
       activityId: 'week5-exercise-debrief',
       number: 7,
-      title: 'Exercise Debrief',
+      title: 'Immediate and longer-term consequences',
       description:
-        'Revisit recorded decisions to identify intended impact reduction, stakeholders, timescale and possible negative effects on others.',
-      type: 'Reflection',
+        'Classify consequences by timescale and put an impact chain in order.',
+      type: 'Classification',
       estimatedMinutes: 20,
       session: 1,
-      total: 4,
+      total: 6,
       path: 'exercise-debrief/',
       scored: true
     }),

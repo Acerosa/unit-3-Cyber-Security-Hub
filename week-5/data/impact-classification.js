@@ -89,13 +89,13 @@
       Object.freeze({
         id: 'c7',
         statement:
-          'A healthcare appointment is cancelled after systems fail.',
-        accepted: Object.freeze(['Disruption', 'Safety', 'More than one category']),
+          'Partner clinics pause referrals while they check whether shared patient records can still be trusted.',
+        accepted: Object.freeze(['Disruption', 'Loss', 'More than one category']),
         ambiguous: true,
         reasonRequired: true,
         teachingFocus: true,
         feedback:
-          'Weekly-plan example: cancellation may be disruption for the healthcare organisation and may also create a safety impact for the patient. The defensible answer depends on the stakeholder considered — explain your reasoning.'
+          'Paused referrals disrupt how the organisations work together. The reason is also a loss of trust in the records. Either emphasis can be justified, so more than one category fits.'
       }),
       Object.freeze({
         id: 'c8',

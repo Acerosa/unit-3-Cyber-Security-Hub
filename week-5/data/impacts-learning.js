@@ -19,7 +19,7 @@
       'Do not treat every cyber security impact as financial loss. A single incident can create loss, disruption and safety consequences together. Categories are not always mutually exclusive.',
     definitions: Object.freeze({
       loss:
-        'Something of value is taken, damaged, corrupted, reduced or no longer trusted — including data, money, identity, reputation or confidence.',
+        'Something of value is taken, damaged, corrupted, reduced or no longer trusted, including data, money, identity, reputation or confidence.',
       disruption:
         'A service, process or operation stops, slows or becomes unreliable for people who depend on it.',
       safety:
@@ -89,7 +89,7 @@
           ]),
           correctIndex: 0,
           explanation:
-            'The information exists but cannot be used when needed — loss of availability.'
+            'The information exists but cannot be used when needed. That is loss of availability.'
         })
       }),
       Object.freeze({
@@ -144,7 +144,7 @@
         example:
           'Local residents choose another clinic for routine bookings after repeated Northbank outages.',
         distinction:
-          'Related to, but not identical with, loss of customer confidence — business loss is the reduced activity itself.',
+          'Related to, but not identical with, loss of customer confidence. Business loss is the reduced activity itself.',
         check: Object.freeze({
           prompt: 'Patients start booking elsewhere after repeated Northbank outages. This illustrates:',
           options: Object.freeze([
@@ -307,7 +307,7 @@
         ]),
         correctIndex: 1,
         explanation:
-          'Delayed time-critical care places a person at physical risk — a safety impact supported by the scenario.'
+          'Delayed time-critical care places a person at physical risk. That is a safety impact supported by the scenario.'
       }),
       Object.freeze({
         id: 'k3',

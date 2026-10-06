@@ -81,49 +81,6 @@
       host.appendChild(renderCard(item));
     });
   }
-  function renderNcsc() {
-    var host = document.getElementById('w5-ncsc-cards');
-    if (!host) return;
-    host.textContent = '';
-    var article = document.createElement('article');
-    article.className = 'hub-card w5-thm-card';
-    var platform = document.createElement('p');
-    platform.className = 'w5-thm-platform';
-    platform.textContent = 'NCSC';
-    article.appendChild(platform);
-    var badge = document.createElement('span');
-    badge.className = 'status-label status-label-progress';
-    badge.textContent = 'Tutor-facilitated';
-    article.appendChild(badge);
-    var h = document.createElement('h3');
-    h.textContent = 'Responding to a ransomware attack';
-    article.appendChild(h);
-    var p = document.createElement('p');
-    p.textContent =
-      'Use the companion workspace to prepare your Northbank role and record decisions. Do not invent exercise prompts; follow the tutor-facilitated NCSC materials.';
-    article.appendChild(p);
-    var actions = document.createElement('div');
-    actions.className = 'w5-actions';
-    var companion = document.createElement('a');
-    companion.className = 'btn btn-secondary';
-    companion.href = 'ransomware-companion/';
-    companion.textContent = 'Open companion workspace';
-    actions.appendChild(companion);
-    var open = document.createElement('a');
-    open.className = 'btn btn-primary w5-thm-external-link';
-    open.href = 'https://www.ncsc.gov.uk/section/exercise-in-a-box/responding-ransomware-attack';
-    open.target = '_blank';
-    open.rel = 'noopener noreferrer';
-    open.textContent = 'Open NCSC exercise page (opens in a new tab)';
-    var icon = document.createElement('span');
-    icon.className = 'w5-external-icon';
-    icon.setAttribute('aria-hidden', 'true');
-    icon.textContent = ' ↗';
-    open.appendChild(icon);
-    actions.appendChild(open);
-    article.appendChild(actions);
-    host.appendChild(article);
-  }
   renderCompletion();
   renderSession(1, 'w5-session-1-cards');
   renderSession(2, 'w5-session-2-cards');
@@ -132,5 +89,4 @@
     renderSession(1, 'w5-session-1-cards');
     renderSession(2, 'w5-session-2-cards');
   });
-  renderNcsc();
 })();

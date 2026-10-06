@@ -16,10 +16,10 @@
     total: 8,
     estimatedMinutes: 15,
     homeworkReminder:
-      'Submit your Week 4 case study analysis if you have not already done so. Use the method your tutor has set — this hub does not provide a new file-upload system.',
+      'Submit your Week 4 case study analysis if you have not already done so. Use the method your tutor has set. This hub does not provide a new file-upload system.',
     harvestPrompts: Object.freeze({
       intro:
-        'Think of one cyber security incident you have studied (for example from Week 4). Move from cause and motivation to consequence.',
+        'Recall one incident from Week 4. Move from cause and motivation to consequence.',
       fields: Object.freeze([
         Object.freeze({
           id: 'whoHarmed',
@@ -76,7 +76,7 @@
         ]),
         correctIndex: 1,
         explanation:
-          'Learners must cover loss, disruption and safety — not treat every impact as financial loss alone.'
+          'Learners must cover loss, disruption and safety. Do not treat every impact as financial loss alone.'
       }),
       Object.freeze({
         id: 's1q4',
