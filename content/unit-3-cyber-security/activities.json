@@ -13270,12 +13270,13 @@
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "",
-            "incorrect": ""
+            "correct": "Correct. Publicity is why the attacker acted. Phishing, exfiltration and damage describe how the attack is carried out.",
+            "incorrect": "Not quite. A motivation is why the attacker acted. Phishing, exfiltration and damage are methods."
           },
           "commandWord": "Identify",
           "marks": 1,
-          "sourceType": "single"
+          "sourceType": "single",
+          "instructions": "Identify · 1 mark · about 1 minute. Motivation means why the attacker acted. Do not choose a method."
         }
       },
       {
@@ -13311,12 +13312,13 @@
           ],
           "correctOptionId": "a",
           "feedback": {
-            "correct": "",
-            "incorrect": ""
+            "correct": "Correct. Reception staff are people. Fraud and thrill are motivations, not the target.",
+            "incorrect": "Not quite. The target is who or what was attacked. Reception staff are people."
           },
           "commandWord": "Identify",
           "marks": 1,
-          "sourceType": "single"
+          "sourceType": "single",
+          "instructions": "Identify · 1 mark · about 1 minute. Target means what was attacked."
         }
       },
       {
@@ -13326,21 +13328,18 @@
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
-        "type": "single-choice",
+        "type": "short-response",
         "content": {
           "formative": true,
           "questionId": "week4-ocr-question-practice:ocr-3",
           "sourceQuestionId": "ocr-3",
           "prompt": "Explain the difference between fraud and income generation as attacker motivations.",
-          "options": [],
-          "correctOptionId": "",
-          "feedback": {
-            "correct": "",
-            "incorrect": ""
-          },
           "commandWord": "Explain",
           "marks": 2,
-          "sourceType": "single"
+          "sourceType": "single",
+          "instructions": "Explain · 2 marks · about 2 minutes. Use the OCR distinction: fraud requires deception; income generation may not.",
+          "minChars": 80,
+          "placeholder": "Write your examination response"
         }
       },
       {
@@ -13350,21 +13349,18 @@
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
-        "type": "single-choice",
+        "type": "short-response",
         "content": {
           "formative": true,
           "questionId": "week4-ocr-question-practice:ocr-4",
           "sourceQuestionId": "ocr-4",
           "prompt": "Describe the four categories of target for cyber security threats and give one associated method for each.",
-          "options": [],
-          "correctOptionId": "",
-          "feedback": {
-            "correct": "",
-            "incorrect": ""
-          },
           "commandWord": "Describe",
           "marks": 4,
-          "sourceType": "single"
+          "sourceType": "single",
+          "instructions": "Describe · 4 marks · about 4 minutes. Name people, organisations, equipment and information, with one associated method for each.",
+          "minChars": 80,
+          "placeholder": "Write your examination response"
         }
       },
       {
@@ -13374,21 +13370,18 @@
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
-        "type": "single-choice",
+        "type": "short-response",
         "content": {
           "formative": true,
           "questionId": "week4-ocr-question-practice:ocr-5",
           "sourceQuestionId": "ocr-5",
           "prompt": "Explain the difference between motivation, target and method, using one short Northbank-related example.",
-          "options": [],
-          "correctOptionId": "",
-          "feedback": {
-            "correct": "",
-            "incorrect": ""
-          },
           "commandWord": "Explain",
           "marks": 4,
-          "sourceType": "single"
+          "sourceType": "single",
+          "instructions": "Explain · 4 marks · about 4 minutes. Keep why, what and how distinct, and sustain one example.",
+          "minChars": 80,
+          "placeholder": "Write your examination response"
         }
       },
       {
@@ -13398,21 +13391,18 @@
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
-        "type": "single-choice",
+        "type": "short-response",
         "content": {
           "formative": true,
           "questionId": "week4-ocr-question-practice:ocr-6",
           "sourceQuestionId": "ocr-6",
           "prompt": "Northbank’s public website is defaced with a protest message about health funding. Clinical systems are not encrypted and no ransom is demanded. Analyse why this organisation was targeted, connecting attacker motivation, selected target and method used. Use evidence from the scenario.",
-          "options": [],
-          "correctOptionId": "",
-          "feedback": {
-            "correct": "",
-            "incorrect": ""
-          },
           "commandWord": "Analyse",
           "marks": 8,
-          "sourceType": "single"
+          "sourceType": "single",
+          "instructions": "Analyse · 8 marks · about 8 minutes. Sustain one case. State explicit connections. Complete the final connection. Do not invent unsupported Northbank details.",
+          "minChars": 80,
+          "placeholder": "Write your examination response"
         }
       },
       {
@@ -13424,8 +13414,7 @@
         "relationships": {},
         "type": "markdown",
         "content": {
-          "text": "```json\n{\n  \"weekNumber\": 4,\n  \"sessionNumber\": 2,\n  \"suggestedMinutes\": 20,\n  \"timingGuidance\": \"Use approximately one minute per mark where this helps you manage time.\",\n  \"beforeReminders\": [\n    \"Read whether the question asks for motivation, target or method.\",\n    \"Use one case consistently.\",\n    \"Include explicit connections.\",\n    \"Complete the final connection rather than leaving it implied.\",\n    \"Allocate time according to the marks available.\"\n  ]\n}\n```",
-          "format": "application/json"
+          "text": "Suggested time: about 20 minutes. Use approximately one minute per mark.\n\nBefore you start:\n- Read whether the question asks for motivation, target or method.\n- Use one case consistently.\n- Include explicit connections.\n- Complete the final connection rather than leaving it implied.\n- Allocate time according to the marks available.\n\nQuestions 1 and 2 are checked and marked. Questions 3 to 6 are written examination practice. Save them for review. They are not given an automatic Correct or Incorrect mark."
         }
       }
     ]
