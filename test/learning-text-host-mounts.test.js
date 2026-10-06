@@ -23,7 +23,6 @@ const WAVE_HOST_APPS = [
   "week-4/ocr-practice/app.js",
   "week-5/impact-analysis/app.js",
   "week-5/answer-improvement/app.js",
-  "week-5/ransomware-companion/app.js",
   "week-5/stakeholder-grid/app.js",
   "week-5/ocr-practice/app.js",
   "week-6/discuss-planner/app.js",

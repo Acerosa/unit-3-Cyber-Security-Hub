@@ -1065,10 +1065,10 @@
       "week": 5,
       "activity": "exercise-debrief",
       "activityId": "",
-      "title": "5. Exercise Debrief | Week 5",
-      "description": "Reflect on decisions, stakeholders, timescales and trade-offs.",
-      "heading": "5. Exercise Debrief",
-      "subtitle": "Reflect on decisions, stakeholders, timescales and trade-offs.",
+      "title": "Immediate and longer-term consequences | Week 5",
+      "description": "Classify consequences as immediate or longer term, then complete an impact chain.",
+      "heading": "Immediate and longer-term consequences",
+      "subtitle": "Classify consequences as immediate or longer term, then complete an impact chain.",
       "scripts": [
         "js/week5-progress.js",
         "js/core/backend-progress.js"
@@ -1122,10 +1122,10 @@
       "week": 5,
       "activity": "impacts-learning",
       "activityId": "",
-      "title": "2. Impacts Learning: Loss, Disruption and Safety | Week 5",
-      "description": "OCR impact categories with Northbank examples and learner checks.",
-      "heading": "2. Impacts Learning: Loss, Disruption and Safety",
-      "subtitle": "OCR impact categories with Northbank examples and learner checks.",
+      "title": "Impacts: loss, disruption and safety | Week 5",
+      "description": "Learn the OCR impact categories, then apply them to short cases.",
+      "heading": "Impacts: loss, disruption and safety",
+      "subtitle": "Learn the OCR impact categories, then apply them to short cases.",
       "scripts": [
         "js/week5-progress.js",
         "js/core/backend-progress.js"
@@ -1180,16 +1180,13 @@
       "week": 5,
       "activity": "ransomware-companion",
       "activityId": "",
-      "title": "4. Northbank Ransomware Exercise Companion | Week 5",
-      "description": "NCSC Exercise in a Box companion: roles and decision record.",
-      "heading": "4. Northbank Ransomware Exercise Companion",
-      "subtitle": "NCSC Exercise in a Box companion: roles and decision record.",
+      "title": "Spot the impact | Week 5",
+      "description": "Identify impacts from two short incidents and justify them from the scenario.",
+      "heading": "Spot the impact",
+      "subtitle": "Identify impacts from two short incidents and justify them from the scenario.",
       "scripts": [
         "js/week5-progress.js",
-        "js/core/backend-progress.js",
-        "js/week5-submit.js",
-        "week-5/data/ransomware-companion.js",
-        "week-5/ransomware-companion/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },

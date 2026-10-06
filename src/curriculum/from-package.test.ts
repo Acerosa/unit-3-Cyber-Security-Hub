@@ -351,7 +351,7 @@ describe("Unit 3 package hydration", () => {
   it("restores Week 5 impact-classification and exercise-debrief catalogue shapes", () => {
     expect(cataloguePlayerMode(5, "week5-impact-classification", catalogueActivity(pkg, "week5-impact-classification"))).toBe("catalogue");
     expect(cataloguePlayerMode(5, "week5-exercise-debrief", catalogueActivity(pkg, "week5-exercise-debrief"))).toBe("catalogue");
-    expect(cataloguePlayerMode(5, "week5-ransomware-companion", catalogueActivity(pkg, "week5-ransomware-companion"))).toBe("host");
+    expect(cataloguePlayerMode(5, "week5-ransomware-companion", catalogueActivity(pkg, "week5-ransomware-companion"))).toBe("catalogue");
     expect(cataloguePlayerMode(5, "week5-stakeholder-grid", catalogueActivity(pkg, "week5-stakeholder-grid"))).toBe("host");
     expect(cataloguePlayerMode(5, "week5-impact-analysis", catalogueActivity(pkg, "week5-impact-analysis"))).toBe("host");
 
@@ -368,8 +368,15 @@ describe("Unit 3 package hydration", () => {
     expect((classify?.blocks || []).some((block) => block.type === "reflection")).toBe(false);
 
     const debrief = catalogueActivity(pkg, "week5-exercise-debrief");
-    expect((debrief?.blocks || []).filter((block) => block.type === "short-response")).toHaveLength(5);
+    expect((debrief?.blocks || []).filter((block) => block.type === "classification")).toHaveLength(1);
+    expect((debrief?.blocks || []).filter((block) => block.type === "ordering")).toHaveLength(1);
+    expect((debrief?.blocks || []).filter((block) => block.type === "short-response")).toHaveLength(1);
     expect((debrief?.blocks || []).some((block) => block.type === "reflection")).toBe(false);
+
+    const companion = catalogueActivity(pkg, "week5-ransomware-companion");
+    expect((companion?.blocks || []).some((block) => block.type === "classification")).toBe(true);
+    expect((companion?.blocks || []).some((block) => block.type === "ordering")).toBe(true);
+    expect(JSON.stringify(companion).includes("ncsc.gov.uk")).toBe(false);
 
     expect(cataloguePlayerMode(5, "week5-vulnerability-patterns", catalogueActivity(pkg, "week5-vulnerability-patterns"))).toBe("catalogue");
     expect(cataloguePlayerMode(5, "week5-threat-vulnerability-risk", catalogueActivity(pkg, "week5-threat-vulnerability-risk"))).toBe("catalogue");

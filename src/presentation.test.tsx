@@ -734,7 +734,7 @@ describe("Unit 3 presentation", () => {
     expect(document.querySelector("[data-unit3-host]")).toBeNull();
   });
 
-  it("renders Week 5 exercise-debrief as catalogue short responses", () => {
+  it("renders Week 5 immediate and longer-term consequences as catalogue tasks", () => {
     window.__lpPackage = pkg;
     window.Unit3Week5Progress = { markStarted: vi.fn(), markCompleted: vi.fn() };
     render(
@@ -753,13 +753,14 @@ describe("Unit 3 presentation", () => {
     );
 
     expect(document.querySelector('[data-lp-activity="week5-exercise-debrief"]')).toBeTruthy();
-    expect(document.querySelectorAll('[data-lp-block="short-response"]').length).toBe(5);
+    expect(document.querySelector('[data-lp-block="classification"]')).toBeTruthy();
+    expect(document.querySelector('[data-lp-block="ordering"]')).toBeTruthy();
+    expect(document.querySelectorAll('[data-lp-block="short-response"]').length).toBe(1);
     expect(document.querySelector("textarea[data-lp-response]")).toBeTruthy();
-    expect(document.querySelector("[data-lp-char-count]")).toBeTruthy();
     expect(document.querySelector("[data-unit3-host]")).toBeNull();
   });
 
-  it("keeps Week 5 ransomware companion on the host shell", () => {
+  it("renders Week 5 spot the impact as a catalogue activity", () => {
     window.__lpPackage = pkg;
     window.Unit3Week5Progress = { markStarted: vi.fn(), markCompleted: vi.fn() };
     render(
@@ -777,8 +778,41 @@ describe("Unit 3 presentation", () => {
       />
     );
 
-    expect(document.querySelector("[data-unit3-host]")).toBeTruthy();
-    expect(document.querySelector("[data-lp-activity]")).toBeNull();
+    expect(document.querySelector('[data-lp-activity="week5-ransomware-companion"]')).toBeTruthy();
+    expect(document.querySelector('[data-lp-block="classification"]')).toBeTruthy();
+    expect(document.querySelector('[data-lp-block="ordering"]')).toBeTruthy();
+    expect(document.body.textContent).not.toMatch(/ncsc\.gov\.uk/i);
+    expect(document.querySelector("[data-unit3-host]")).toBeNull();
+  });
+
+  it("shows Week 5 impact teaching before questions and feedback only after Check", () => {
+    window.__lpPackage = pkg;
+    window.Unit3Week5Progress = { markStarted: vi.fn(), markCompleted: vi.fn() };
+    render(
+      <ActivityPage
+        context={{
+          page: "week-5-impacts-learning",
+          section: "week-5",
+          root: "../..",
+          view: "activity",
+          week: 5,
+          activity: "impacts-learning"
+        }}
+        contentReady
+        adaptersReady
+      />
+    );
+
+    expect(document.body.textContent).toMatch(/Loss means something of value/);
+    expect(document.body.textContent).toMatch(/healthcare, transport, broadcasting/);
+    expect(document.body.textContent).not.toMatch(/correctOptionId/);
+    expect(document.body.textContent).not.toMatch(/mark scheme/i);
+    const first = document.querySelector('[data-lp-block="option-cards"]') as HTMLElement;
+    expect(first.querySelector("[data-lp-feedback-state]")).toBeNull();
+    fireEvent.click(within(first).getByRole("radio", { name: "Clinic booking is unavailable for two working days" }));
+    fireEvent.click(within(first).getByRole("button", { name: "Check answer" }));
+    expect(first.querySelector("[data-lp-feedback-state='correct']")).toBeTruthy();
+    expect(first.textContent).toMatch(/disruption of a service people depend on/i);
   });
 
   it("renders Week 5 vulnerability-patterns as catalogue option cards", () => {

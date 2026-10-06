@@ -16,7 +16,7 @@
       room: 'Juicy Details',
       url: 'https://tryhackme.com/room/juicydetails',
       note:
-        'Do not reproduce room content or answers here. Record your own findings after authorised access.',
+        'Optional. This room is not required to complete Week 5. Do not copy room answers into this page. If you use the room, record your own findings.',
       recordFields: Object.freeze([
         'What was taken in the breach',
         'How investigators established what had happened',
@@ -35,12 +35,12 @@
       ])
     }),
     decisionChallenge: Object.freeze({
-      title: 'Northbank decision challenge',
+      title: 'Optional comparison',
       requirements: Object.freeze([
-        'Review the decisions recorded during the ransomware exercise.',
-        'Select one decision you would now challenge.',
-        'Write two sentences explaining why.',
-        'Prepare to defend the position in Week 6.'
+        'This task is optional and is not part of the scored Week 5 activities.',
+        'Compare how the same ransomware incident would affect Northbank and one other type of organisation.',
+        'Name one impact that would differ, and say why.',
+        'You can use the comparison in a later discussion if your tutor asks for it.'
       ])
     })
   });

@@ -13642,11 +13642,11 @@
           "formative": true,
           "questionId": "week5-session1-retrieval:s1q1",
           "sourceQuestionId": "s1q1",
-          "prompt": "Week 4 focused mainly on why attackers act and what they target. Week 5 focuses on:",
+          "prompt": "Week 4 focused on why attackers act and what they target. Week 5 focuses on:",
           "options": [
             {
               "id": "a",
-              "label": "Risk scoring formulae"
+              "label": "How to calculate a risk score"
             },
             {
               "id": "b",
@@ -13654,17 +13654,17 @@
             },
             {
               "id": "c",
-              "label": "Incident-response stage ordering"
+              "label": "The order of incident-response stages"
             },
             {
               "id": "d",
-              "label": "Choosing security controls for LO4"
+              "label": "How to select controls for a later learning outcome"
             }
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "Week 5 moves from cause and motivation to consequence: loss, disruption and safety impacts.",
-            "incorrect": "Week 5 moves from cause and motivation to consequence: loss, disruption and safety impacts."
+            "correct": "Week 5 is about impacts: what happens to people, services and organisations after an incident.",
+            "incorrect": "Week 5 is about impacts: what happens to people, services and organisations after an incident."
           },
           "sourceType": "single"
         }
@@ -13681,7 +13681,7 @@
           "formative": true,
           "questionId": "week5-session1-retrieval:s1q2",
           "sourceQuestionId": "s1q2",
-          "prompt": "Which statement best describes a motivation rather than an impact?",
+          "prompt": "Which statement describes a motivation rather than an impact?",
           "options": [
             {
               "id": "a",
@@ -13693,7 +13693,7 @@
             },
             {
               "id": "c",
-              "label": "Northbank’s reputation is damaged for months"
+              "label": "Northbank's reputation is damaged for months"
             },
             {
               "id": "d",
@@ -13702,8 +13702,8 @@
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "Income generation is a motivation (why). The other options describe consequences for services or stakeholders.",
-            "incorrect": "Income generation is a motivation (why). The other options describe consequences for services or stakeholders."
+            "correct": "Wanting money is why the attacker acted. The other statements are consequences.",
+            "incorrect": "Wanting money is why the attacker acted. The other statements are consequences."
           },
           "sourceType": "single"
         }
@@ -13720,7 +13720,7 @@
           "formative": true,
           "questionId": "week5-session1-retrieval:s1q3",
           "sourceQuestionId": "s1q3",
-          "prompt": "OCR teaching content 2.5 groups impacts under which three broad categories?",
+          "prompt": "OCR teaching content 2.5 groups impacts under which three categories?",
           "options": [
             {
               "id": "a",
@@ -13741,8 +13741,8 @@
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "Learners must cover loss, disruption and safety — not treat every impact as financial loss alone.",
-            "incorrect": "Learners must cover loss, disruption and safety — not treat every impact as financial loss alone."
+            "correct": "The three impact categories for this unit are loss, disruption and safety.",
+            "incorrect": "The three impact categories for this unit are loss, disruption and safety."
           },
           "sourceType": "single"
         }
@@ -13775,13 +13775,13 @@
             },
             {
               "id": "d",
-              "label": "Have consequences that end as soon as systems restart"
+              "label": "End as soon as the systems restart"
             }
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "One incident can create several impacts, and different stakeholders experience the same incident differently.",
-            "incorrect": "One incident can create several impacts, and different stakeholders experience the same incident differently."
+            "correct": "One incident can affect patients, staff and the organisation in different ways, including after systems return.",
+            "incorrect": "One incident can affect patients, staff and the organisation in different ways, including after systems return."
           },
           "sourceType": "single"
         }
@@ -13806,11 +13806,11 @@
             },
             {
               "id": "b",
-              "label": "Buying replacement hard drives"
+              "label": "Buying replacement storage"
             },
             {
               "id": "c",
-              "label": "Loss of customer confidence over several months"
+              "label": "Loss of patient confidence over several months"
             },
             {
               "id": "d",
@@ -13819,8 +13819,8 @@
           ],
           "correctOptionId": "c",
           "feedback": {
-            "correct": "Reputational damage and loss of customer confidence may continue after immediate financial costs are addressed and can be hard to quantify.",
-            "incorrect": "Reputational damage and loss of customer confidence may continue after immediate financial costs are addressed and can be hard to quantify."
+            "correct": "Confidence is real but hard to price. The other options are short-term costs.",
+            "incorrect": "Confidence is real but hard to price. The other options are short-term costs."
           },
           "sourceType": "single"
         }
@@ -13837,19 +13837,19 @@
           "formative": true,
           "questionId": "week5-session1-retrieval:s1q6",
           "sourceQuestionId": "s1q6",
-          "prompt": "Why must impact claims be supported by scenario evidence?",
+          "prompt": "Why must an impact claim use evidence from the scenario?",
           "options": [
             {
               "id": "a",
-              "label": "So answers can ignore the organisation named in the question"
+              "label": "So the answer can ignore the organisation named in the question"
             },
             {
               "id": "b",
-              "label": "So learners can import facts from famous unrelated breaches"
+              "label": "So a famous breach can be used instead of the case given"
             },
             {
               "id": "c",
-              "label": "So each claimed impact can be justified from the given case"
+              "label": "So each impact can be justified from the given case"
             },
             {
               "id": "d",
@@ -13858,8 +13858,8 @@
           ],
           "correctOptionId": "c",
           "feedback": {
-            "correct": "Examination answers should use evidence from the scenario provided, not invent or import unrelated incident facts.",
-            "incorrect": "Examination answers should use evidence from the scenario provided, not invent or import unrelated incident facts."
+            "correct": "Use the facts in the question. Do not replace them with another incident.",
+            "incorrect": "Use the facts in the question. Do not replace them with another incident."
           },
           "sourceType": "single"
         }
@@ -13876,7 +13876,7 @@
           "formative": true,
           "questionId": "week5-session1-retrieval:s1q7",
           "sourceQuestionId": "s1q7",
-          "prompt": "Cancelling a healthcare appointment after systems fail may be:",
+          "prompt": "Cancelling a clinic appointment after systems fail may be:",
           "options": [
             {
               "id": "a",
@@ -13884,11 +13884,11 @@
             },
             {
               "id": "b",
-              "label": "Disruption for the organisation and potentially a safety impact for the patient"
+              "label": "Disruption for the organisation and a possible safety impact for the patient"
             },
             {
               "id": "c",
-              "label": "Only a safety impact for the regulator"
+              "label": "Only a safety impact for a regulator"
             },
             {
               "id": "d",
@@ -13897,8 +13897,8 @@
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "The same event can be disruption for the healthcare organisation and also create a safety impact for the patient, depending on the stakeholder considered.",
-            "incorrect": "The same event can be disruption for the healthcare organisation and also create a safety impact for the patient, depending on the stakeholder considered."
+            "correct": "The organisation loses the service. The patient may also face a clinical risk if the appointment was urgent.",
+            "incorrect": "The organisation loses the service. The patient may also face a clinical risk if the appointment was urgent."
           },
           "sourceType": "single"
         }
@@ -13931,13 +13931,13 @@
             },
             {
               "id": "d",
-              "label": "Only reputational loss"
+              "label": "Only an organisation's reputation"
             }
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "Week 5 establishes that cyber security incidents can affect individuals, organisations and states.",
-            "incorrect": "Week 5 establishes that cyber security incidents can affect individuals, organisations and states."
+            "correct": "Impacts can reach individuals, organisations and states, not one sector only.",
+            "incorrect": "Impacts can reach individuals, organisations and states, not one sector only."
           },
           "sourceType": "single"
         }
@@ -13951,7 +13951,7 @@
         "relationships": {},
         "type": "markdown",
         "content": {
-          "text": "```json\n{\n  \"weekNumber\": 5,\n  \"sessionNumber\": 1,\n  \"estimatedMinutes\": 15,\n  \"homeworkReminder\": \"Submit your Week 4 case study analysis if you have not already done so. Use the method your tutor has set — this hub does not provide a new file-upload system.\",\n  \"harvestPrompts\": {\n    \"intro\": \"Think of one cyber security incident you have studied (for example from Week 4). Move from cause and motivation to consequence.\",\n    \"fields\": [\n      {\n        \"id\": \"whoHarmed\",\n        \"label\": \"Who was harmed?\",\n        \"required\": true\n      },\n      {\n        \"id\": \"whatLost\",\n        \"label\": \"What did each party lose?\",\n        \"required\": true\n      },\n      {\n        \"id\": \"timescale\",\n        \"label\": \"Was the harm immediate or longer term? Explain briefly.\",\n        \"required\": true\n      }\n    ]\n  }\n}\n```",
+          "text": "```json\n{\n  \"weekNumber\": 5,\n  \"sessionNumber\": 1,\n  \"estimatedMinutes\": 15,\n  \"homeworkReminder\": \"Submit your Week 4 case study analysis if you have not already done so. Use the method your tutor has set — this hub does not provide a new file-upload system.\",\n  \"harvestPrompts\": {\n    \"intro\": \"Recall one incident from Week 4. Move from cause and motivation to consequence.\",\n    \"fields\": [\n      {\n        \"id\": \"whoHarmed\",\n        \"label\": \"Who was harmed?\",\n        \"required\": true\n      },\n      {\n        \"id\": \"whatLost\",\n        \"label\": \"What did each party lose?\",\n        \"required\": true\n      },\n      {\n        \"id\": \"timescale\",\n        \"label\": \"Was the harm immediate or longer term? Explain briefly.\",\n        \"required\": true\n      }\n    ]\n  }\n}\n```",
           "format": "application/json"
         }
       }
@@ -13963,9 +13963,9 @@
     "id": "week5-impacts-learning",
     "version": "1.0.0",
     "metadata": {
-      "title": "Impacts Learning: Loss, Disruption and Safety",
+      "title": "Impacts: loss, disruption and safety",
       "status": "available",
-      "summary": "Impacts Learning: Loss, Disruption and Safety",
+      "summary": "Learn loss, disruption and safety, then apply them to short cases.",
       "href": null,
       "activityType": "Guided learning",
       "runtimeGlobal": "Week5ImpactsLearning"
@@ -13988,14 +13988,62 @@
         "relationships": {},
         "type": "heading",
         "content": {
-          "text": "Impacts Learning: Loss, Disruption and Safety",
+          "text": "Impacts: loss, disruption and safety",
           "level": 2
         }
       },
       {
         "schema": "lp.content.block",
         "schemaVersion": "0.1.0",
-        "id": "week5-impacts-learning-q-1-k1",
+        "id": "week5-impacts-learning-loss",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Loss means something of value is taken, damaged, corrupted, or no longer trusted. That includes confidentiality (the wrong people can see information), integrity (information is no longer accurate), availability (a system or record cannot be used), money, identity, reputation and confidence."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-impacts-learning-disruption",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Disruption means a service people depend on stops, slows, or becomes unreliable. OCR examples include healthcare, transport, broadcasting, utilities, oil installations and traffic control."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-impacts-learning-safety",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Safety means people are placed at greater physical risk. A delayed clinical review or unsafe traffic signals can be a safety impact, not only a financial one."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-impacts-learning-overlap",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "One incident can create more than one of these. Name who is affected and use evidence from the scenario."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-impacts-learning-q-k1",
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
@@ -14004,29 +14052,29 @@
           "formative": true,
           "questionId": "week5-impacts-learning:k1",
           "sourceQuestionId": "k1",
-          "prompt": "Which option is a disruption impact rather than a pure financial-loss statement?",
+          "prompt": "Which statement is a disruption impact?",
           "options": [
             {
               "id": "a",
-              "label": "Northbank paid £2,000 in overtime"
+              "label": "Northbank pays overtime to recovery contractors"
             },
             {
               "id": "b",
-              "label": "Clinic booking services were unavailable for two working days"
+              "label": "Clinic booking is unavailable for two working days"
             },
             {
               "id": "c",
-              "label": "An attacker wanted income generation"
+              "label": "Patients are less willing to return after news coverage"
             },
             {
               "id": "d",
-              "label": "A student copied a mark scheme"
+              "label": "Stolen identity details are used to open accounts"
             }
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "Unavailable clinic booking is disruption of a depended-on service. Overtime is financial loss; income generation is motivation.",
-            "incorrect": "Unavailable clinic booking is disruption of a depended-on service. Overtime is financial loss; income generation is motivation."
+            "correct": "Booking that cannot be used is disruption of a service people depend on. Overtime is financial loss. News coverage is reputational. Misused identity details are a loss for the individual.",
+            "incorrect": "Booking that cannot be used is disruption of a service people depend on. Overtime is financial loss. News coverage is reputational. Misused identity details are a loss for the individual."
           },
           "sourceType": "single"
         }
@@ -14034,7 +14082,7 @@
       {
         "schema": "lp.content.block",
         "schemaVersion": "0.1.0",
-        "id": "week5-impacts-learning-q-2-k2",
+        "id": "week5-impacts-learning-q-k2",
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
@@ -14047,25 +14095,25 @@
           "options": [
             {
               "id": "a",
-              "label": "Northbank’s logo looks outdated on the website"
+              "label": "Local news asks whether Northbank records are safe"
             },
             {
               "id": "b",
-              "label": "A patient misses a time-critical review because records and booking systems are down"
+              "label": "A patient misses a time-critical review because records and booking are unavailable"
             },
             {
               "id": "c",
-              "label": "A supplier invoice is emailed a day late"
+              "label": "An emergency contractor invoice is paid the same week"
             },
             {
               "id": "d",
-              "label": "Staff discuss the incident in a team meeting"
+              "label": "The shared drive of clinic rotas cannot be opened"
             }
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "Delayed time-critical care places a person at physical risk — a safety impact supported by the scenario.",
-            "incorrect": "Delayed time-critical care places a person at physical risk — a safety impact supported by the scenario."
+            "correct": "A delayed time-critical review increases physical risk for that patient. News coverage is reputational. The invoice is financial loss. An unopened drive is loss of availability and disruption.",
+            "incorrect": "A delayed time-critical review increases physical risk for that patient. News coverage is reputational. The invoice is financial loss. An unopened drive is loss of availability and disruption."
           },
           "sourceType": "single"
         }
@@ -14073,7 +14121,7 @@
       {
         "schema": "lp.content.block",
         "schemaVersion": "0.1.0",
-        "id": "week5-impacts-learning-q-3-k3",
+        "id": "week5-impacts-learning-q-k3",
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
@@ -14086,25 +14134,25 @@
           "options": [
             {
               "id": "a",
-              "label": "Always mutually exclusive labels"
+              "label": "Labels that can never apply to the same incident"
             },
             {
               "id": "b",
-              "label": "Categories that can overlap when a scenario supports more than one"
+              "label": "Categories that can overlap when the scenario supports more than one"
             },
             {
               "id": "c",
-              "label": "Only used for state-level incidents"
+              "label": "A replacement for naming the stakeholder"
             },
             {
               "id": "d",
-              "label": "Replacements for naming stakeholders"
+              "label": "Used only for incidents that affect a whole country"
             }
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "A cancelled appointment may be disruption for the organisation and safety for the patient. Categories can combine when justified.",
-            "incorrect": "A cancelled appointment may be disruption for the organisation and safety for the patient. Categories can combine when justified."
+            "correct": "A single incident can support more than one category. You still need to name who is affected.",
+            "incorrect": "A single incident can support more than one category. You still need to name who is affected."
           },
           "sourceType": "single"
         }
@@ -14112,7 +14160,7 @@
       {
         "schema": "lp.content.block",
         "schemaVersion": "0.1.0",
-        "id": "week5-impacts-learning-q-4-k4",
+        "id": "week5-impacts-learning-q-k4",
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
@@ -14121,29 +14169,29 @@
           "formative": true,
           "questionId": "week5-impacts-learning:k4",
           "sourceQuestionId": "k4",
-          "prompt": "Which pair is most likely to continue after immediate recovery spending?",
+          "prompt": "Which pair is most likely to continue after the first recovery invoice is paid?",
           "options": [
             {
               "id": "a",
-              "label": "Emergency call-out fee and same-day taxi receipt"
+              "label": "A same-day call-out fee and a taxi receipt"
             },
             {
               "id": "b",
-              "label": "Reputational loss and loss of customer confidence"
+              "label": "Reputational damage and loss of patient confidence"
             },
             {
               "id": "c",
-              "label": "A one-hour reboot delay only"
+              "label": "A one-hour wait while a server restarts"
             },
             {
               "id": "d",
-              "label": "A single printed leaflet cost"
+              "label": "The cost of printing one clinic's paper list"
             }
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "Reputation and confidence harms may continue for months after immediate financial costs are addressed.",
-            "incorrect": "Reputation and confidence harms may continue for months after immediate financial costs are addressed."
+            "correct": "Reputation and confidence can last for months. The other options are immediate costs or a short delay.",
+            "incorrect": "Reputation and confidence can last for months. The other options are immediate costs or a short delay."
           },
           "sourceType": "single"
         }
@@ -14151,7 +14199,7 @@
       {
         "schema": "lp.content.block",
         "schemaVersion": "0.1.0",
-        "id": "week5-impacts-learning-q-5-k5",
+        "id": "week5-impacts-learning-q-k5",
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
@@ -14164,25 +14212,25 @@
           "options": [
             {
               "id": "a",
-              "label": "Only the broadcasting regulator"
+              "label": "The person whose details are misused"
             },
             {
               "id": "b",
-              "label": "Individuals whose personal details are misused"
+              "label": "Only the organisation's insurer"
             },
             {
               "id": "c",
-              "label": "Only oil installations"
+              "label": "Only a regulator who never receives the data"
             },
             {
               "id": "d",
-              "label": "Nobody if backups exist"
+              "label": "Nobody, if a backup of the records exists"
             }
           ],
-          "correctOptionId": "b",
+          "correctOptionId": "a",
           "feedback": {
-            "correct": "Identity theft is an individual loss impact, even when an organisation was the breached party.",
-            "incorrect": "Identity theft is an individual loss impact, even when an organisation was the breached party."
+            "correct": "Misuse of personal details harms the individual. A backup does not undo that misuse.",
+            "incorrect": "Misuse of personal details harms the individual. A backup does not undo that misuse."
           },
           "sourceType": "single"
         }
@@ -14190,7 +14238,7 @@
       {
         "schema": "lp.content.block",
         "schemaVersion": "0.1.0",
-        "id": "week5-impacts-learning-q-6-k6",
+        "id": "week5-impacts-learning-q-k6",
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
@@ -14199,29 +14247,29 @@
           "formative": true,
           "questionId": "week5-impacts-learning:k6",
           "sourceQuestionId": "k6",
-          "prompt": "When classifying an impact you should first identify:",
+          "prompt": "When you classify an impact, what should you identify first?",
           "options": [
             {
               "id": "a",
-              "label": "A famous unrelated breach from the news"
-            },
-            {
-              "id": "b",
               "label": "Which service stopped, who depended on it, and how they were affected"
             },
             {
+              "id": "b",
+              "label": "The name of a well-known breach from another organisation"
+            },
+            {
               "id": "c",
-              "label": "The LO4 incident-response stage name"
+              "label": "A numerical risk score"
             },
             {
               "id": "d",
-              "label": "A risk score from Week 7"
+              "label": "The attacker's preferred malware family"
             }
           ],
-          "correctOptionId": "b",
+          "correctOptionId": "a",
           "feedback": {
-            "correct": "Week 5 teaching asks which service stopped or became unreliable, who depended on it, and how they were affected.",
-            "incorrect": "Week 5 teaching asks which service stopped or became unreliable, who depended on it, and how they were affected."
+            "correct": "Start from the service, the people who needed it, and the consequence. Do not import another incident.",
+            "incorrect": "Start from the service, the people who needed it, and the consequence. Do not import another incident."
           },
           "sourceType": "single"
         }
@@ -14229,7 +14277,7 @@
       {
         "schema": "lp.content.block",
         "schemaVersion": "0.1.0",
-        "id": "week5-impacts-learning-q-7-k7",
+        "id": "week5-impacts-learning-q-k7",
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
@@ -14238,29 +14286,29 @@
           "formative": true,
           "questionId": "week5-impacts-learning:k7",
           "sourceQuestionId": "k7",
-          "prompt": "Traffic-control interference is included in Week 5 mainly to illustrate:",
+          "prompt": "Why is traffic-control interference included in this topic?",
           "options": [
             {
               "id": "a",
-              "label": "Only financial loss for advertisers"
+              "label": "It can disrupt a service people rely on and create a safety consequence"
             },
             {
               "id": "b",
-              "label": "Disruption of a depended-on service and possible safety consequences"
+              "label": "It is only an example of the cost of replacing a server"
             },
             {
               "id": "c",
-              "label": "Motivation taxonomy from Week 4"
+              "label": "It is used to name the attacker's motivation"
             },
             {
               "id": "d",
-              "label": "Legislation from Week 6"
+              "label": "It is only an example of a later legal duty"
             }
           ],
-          "correctOptionId": "b",
+          "correctOptionId": "a",
           "feedback": {
-            "correct": "Transport and traffic-control contexts show disruption and can raise safety issues when people are placed at physical risk.",
-            "incorrect": "Transport and traffic-control contexts show disruption and can raise safety issues when people are placed at physical risk."
+            "correct": "Unreliable signals disrupt travel and can put road users, including ambulances, at risk.",
+            "incorrect": "Unreliable signals disrupt travel and can put road users, including ambulances, at risk."
           },
           "sourceType": "single"
         }
@@ -14268,7 +14316,7 @@
       {
         "schema": "lp.content.block",
         "schemaVersion": "0.1.0",
-        "id": "week5-impacts-learning-q-8-k8",
+        "id": "week5-impacts-learning-q-k8",
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
@@ -14277,29 +14325,29 @@
           "formative": true,
           "questionId": "week5-impacts-learning:k8",
           "sourceQuestionId": "k8",
-          "prompt": "A strong impact answer for Northbank should usually include:",
+          "prompt": "A strong impact answer usually includes:",
           "options": [
             {
               "id": "a",
-              "label": "Only a list of malware names"
+              "label": "The stakeholder, the consequence, and evidence from the scenario"
             },
             {
               "id": "b",
-              "label": "Named stakeholder, consequence, scenario evidence and timescale where relevant"
+              "label": "Only a list of malware names"
             },
             {
               "id": "c",
-              "label": "Invented controls not present in the briefing"
+              "label": "Facts taken from an unrelated incident"
             },
             {
               "id": "d",
-              "label": "Official OCR examination paper numbers"
+              "label": "A claim that every organisation loses the same amount of money"
             }
           ],
-          "correctOptionId": "b",
+          "correctOptionId": "a",
           "feedback": {
-            "correct": "Analysis needs a named stakeholder, a specific consequence, evidence from the scenario and clear timescale thinking.",
-            "incorrect": "Analysis needs a named stakeholder, a specific consequence, evidence from the scenario and clear timescale thinking."
+            "correct": "Name who is affected, what happens, and the evidence in the scenario.",
+            "incorrect": "Name who is affected, what happens, and the evidence in the scenario."
           },
           "sourceType": "single"
         }
@@ -14307,7 +14355,7 @@
       {
         "schema": "lp.content.block",
         "schemaVersion": "0.1.0",
-        "id": "week5-impacts-learning-q-9-k9",
+        "id": "week5-impacts-learning-q-k9",
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
@@ -14316,29 +14364,29 @@
           "formative": true,
           "questionId": "week5-impacts-learning:k9",
           "sourceQuestionId": "k9",
-          "prompt": "Why is “the organisation suffered” a weak examination phrase on its own?",
+          "prompt": "Why is \"the organisation suffered\" a weak examination phrase on its own?",
           "options": [
             {
               "id": "a",
-              "label": "Because organisations never suffer impacts"
+              "label": "It does not name the stakeholder or the specific consequence"
             },
             {
               "id": "b",
-              "label": "Because it fails to name the stakeholder and the specific consequence"
+              "label": "Organisations cannot experience impacts"
             },
             {
               "id": "c",
-              "label": "Because only states can be named"
+              "label": "Financial loss must never be mentioned"
             },
             {
               "id": "d",
-              "label": "Because financial loss is forbidden"
+              "label": "Only states can be named in an impact answer"
             }
           ],
-          "correctOptionId": "b",
+          "correctOptionId": "a",
           "feedback": {
-            "correct": "Name who is affected and what happened. Vague organisational suffering without stakeholder or evidence earns limited credit.",
-            "incorrect": "Name who is affected and what happened. Vague organisational suffering without stakeholder or evidence earns limited credit."
+            "correct": "The phrase does not say who was affected or what happened to them.",
+            "incorrect": "The phrase does not say who was affected or what happened to them."
           },
           "sourceType": "single"
         }
@@ -14355,21 +14403,8 @@
           "formative": true,
           "questionId": "week5-impacts-learning:checkpoint",
           "sourceQuestionId": "checkpoint",
-          "prompt": "Explain one loss, one disruption and one safety impact using a short Northbank ransomware example.",
-          "minChars": 120
-        }
-      },
-      {
-        "schema": "lp.content.block",
-        "schemaVersion": "0.1.0",
-        "id": "week5-impacts-learning-source-remainder",
-        "version": "0.1.0",
-        "metadata": {},
-        "relationships": {},
-        "type": "markdown",
-        "content": {
-          "text": "```json\n{\n  \"weekNumber\": 5,\n  \"sessionNumber\": 1,\n  \"estimatedMinutes\": 35,\n  \"overviewNote\": \"Do not treat every cyber security impact as financial loss. A single incident can create loss, disruption and safety consequences together. Categories are not always mutually exclusive.\",\n  \"definitions\": {\n    \"loss\": \"Something of value is taken, damaged, corrupted, reduced or no longer trusted — including data, money, identity, reputation or confidence.\",\n    \"disruption\": \"A service, process or operation stops, slows or becomes unreliable for people who depend on it.\",\n    \"safety\": \"People are placed at physical risk, or physical harm becomes more likely, because of the cyber incident or its consequences.\"\n  },\n  \"lossForms\": [\n    {\n      \"id\": \"confidentiality\",\n      \"term\": \"Loss of confidentiality\",\n      \"explanation\": \"Information that should be restricted becomes known to unauthorised people.\",\n      \"example\": \"Northbank patient contact details from a shared mailbox are emailed to the wrong external address.\",\n      \"distinction\": \"Different from integrity loss: the data may still be accurate, but the wrong people can see it.\",\n      \"check\": {\n        \"prompt\": \"A staff member posts a screenshot of a patient booking list in a public group chat. Which loss is clearest?\",\n        \"options\": [\n          \"Loss of confidentiality\",\n          \"Loss of availability\",\n          \"Safety only\",\n          \"No impact\"\n        ],\n        \"correctIndex\": 0,\n        \"explanation\": \"Restricted patient information has been exposed. That is loss of confidentiality even if systems still work.\"\n      }\n    },\n    {\n      \"id\": \"integrity\",\n      \"term\": \"Loss of integrity\",\n      \"explanation\": \"Information is altered so it is no longer accurate or trustworthy.\",\n      \"example\": \"Ransomware encrypts Northbank appointment records so staff cannot trust which visits remain scheduled.\",\n      \"distinction\": \"Different from confidentiality: the issue is trustworthiness of the data, not only who can see it.\",\n      \"check\": {\n        \"prompt\": \"An attacker changes dosage fields in a shared prescribing note template used by Northbank. This is primarily:\",\n        \"options\": [\n          \"Loss of integrity\",\n          \"Loss of business only\",\n          \"Disruption of broadcasting\",\n          \"Identity theft only\"\n        ],\n        \"correctIndex\": 0,\n        \"explanation\": \"Altering clinical information so it is no longer trustworthy is loss of integrity. It may also raise safety concerns later, but integrity is the direct data impact.\"\n      }\n    },\n    {\n      \"id\": \"availability\",\n      \"term\": \"Loss of availability\",\n      \"explanation\": \"Systems, data or services cannot be used when needed.\",\n      \"example\": \"Northbank’s booking system is offline after encryption, so staff cannot open today’s clinic list.\",\n      \"distinction\": \"Closely linked to disruption of services, but availability focuses on whether the asset can be used.\",\n      \"check\": {\n        \"prompt\": \"Staff cannot open the encrypted shared drive containing clinic rotas. The clearest CIA-related loss is:\",\n        \"options\": [\n          \"Loss of availability\",\n          \"Identity theft\",\n          \"Loss of customer confidence only\",\n          \"Reputational loss only\"\n        ],\n        \"correctIndex\": 0,\n        \"explanation\": \"The information exists but cannot be used when needed — loss of availability.\"\n      }\n    },\n    {\n      \"id\": \"data\",\n      \"term\": \"Loss of data\",\n      \"explanation\": \"Data is destroyed, permanently inaccessible, or no longer recoverable in a usable form.\",\n      \"example\": \"Northbank cannot restore last week’s referral letters after backups fail during a ransomware event.\",\n      \"distinction\": \"Wider than confidentiality: the organisation may no longer have the data at all.\",\n      \"check\": {\n        \"prompt\": \"Which statement best illustrates loss of data rather than temporary unavailability?\",\n        \"options\": [\n          \"The system is down for ten minutes during a reboot\",\n          \"Backups fail and referral letters cannot be restored\",\n          \"A patient is late for an appointment\",\n          \"A supplier invoice is paid on time\"\n        ],\n        \"correctIndex\": 1,\n        \"explanation\": \"If information cannot be restored, the organisation has lost data, not merely waited for a short outage.\"\n      }\n    },\n    {\n      \"id\": \"financial\",\n      \"term\": \"Financial loss\",\n      \"explanation\": \"Money is spent, stolen or otherwise lost because of the incident.\",\n      \"example\": \"Northbank pays emergency IT contractor fees and overtime to recover encrypted booking systems.\",\n      \"distinction\": \"Important, but not the only impact. Do not stop at money when a question asks for impacts.\",\n      \"check\": {\n        \"prompt\": \"Paying overtime and recovery fees after ransomware is best described as:\",\n        \"options\": [\n          \"Financial loss\",\n          \"Safety impact only\",\n          \"Motivation for attack\",\n          \"No organisational impact\"\n        ],\n        \"correctIndex\": 0,\n        \"explanation\": \"Direct extra spending is financial loss. Strong answers also consider disruption and safety where relevant.\"\n      }\n    },\n    {\n      \"id\": \"business\",\n      \"term\": \"Loss of business\",\n      \"explanation\": \"Customers, patients or partners take their activity elsewhere, reducing future work or service use.\",\n      \"example\": \"Local residents choose another clinic for routine bookings after repeated Northbank outages.\",\n      \"distinction\": \"Related to, but not identical with, loss of customer confidence — business loss is the reduced activity itself.\",\n      \"check\": {\n        \"prompt\": \"Patients start booking elsewhere after repeated Northbank outages. This illustrates:\",\n        \"options\": [\n          \"Loss of business\",\n          \"Loss of confidentiality only\",\n          \"A transport-network impact\",\n          \"An oil-installation safety case\"\n        ],\n        \"correctIndex\": 0,\n        \"explanation\": \"Activity moving away from the organisation is loss of business.\"\n      }\n    },\n    {\n      \"id\": \"identity\",\n      \"term\": \"Identity loss or identity theft\",\n      \"explanation\": \"Personal identifying information is misused so someone can pretend to be another person or take over their accounts.\",\n      \"example\": \"Stolen Northbank patient identity details are used to open fraudulent accounts in a patient’s name.\",\n      \"distinction\": \"A form of loss for the individual; it may also create longer-term financial and confidence harms.\",\n      \"check\": {\n        \"prompt\": \"Stolen patient details are used to open fraudulent accounts. Which impact fits best?\",\n        \"options\": [\n          \"Identity theft / identity loss\",\n          \"Broadcasting disruption\",\n          \"Utilities disruption only\",\n          \"No individual impact\"\n        ],\n        \"correctIndex\": 0,\n        \"explanation\": \"Misuse of personal identity information is identity theft / identity loss for the individual.\"\n      }\n    },\n    {\n      \"id\": \"reputation\",\n      \"term\": \"Reputational loss\",\n      \"explanation\": \"Trust in the organisation’s competence or trustworthiness is damaged in public or professional opinion.\",\n      \"example\": \"Local news reports that Northbank cancelled clinics after ransomware, and GPs hesitate to refer patients.\",\n      \"distinction\": \"May continue after immediate financial recovery costs are paid.\",\n      \"check\": {\n        \"prompt\": \"Why might reputational loss still matter after recovery fees are paid?\",\n        \"options\": [\n          \"Because reputation always equals insurance payouts\",\n          \"Because damaged trust can continue for months and affect future use of the service\",\n          \"Because reputation is never an OCR impact\",\n          \"Because only states experience reputational loss\"\n        ],\n        \"correctIndex\": 1,\n        \"explanation\": \"Reputational loss can continue after immediate financial costs are addressed and remains important even when hard to quantify.\"\n      }\n    },\n    {\n      \"id\": \"confidence\",\n      \"term\": \"Loss of customer confidence\",\n      \"explanation\": \"Patients, customers or partners become less willing to trust the organisation with their care, data or business.\",\n      \"example\": \"Patients ask reception whether Northbank can keep medical information safe after a publicised breach.\",\n      \"distinction\": \"Closely linked to reputational loss; confidence focuses on the stakeholder’s willingness to trust and continue using the service.\",\n      \"check\": {\n        \"prompt\": \"Patients repeatedly ask whether Northbank can keep records safe after an incident. This best shows:\",\n        \"options\": [\n          \"Loss of customer confidence\",\n          \"Loss of availability of a traffic system\",\n          \"A state-level utilities outage\",\n          \"No longer-term consequence\"\n        ],\n        \"correctIndex\": 0,\n        \"explanation\": \"Reduced willingness to trust the organisation is loss of customer confidence and may continue after immediate recovery.\"\n      }\n    }\n  ],\n  \"disruptionContexts\": [\n    {\n      \"id\": \"healthcare\",\n      \"context\": \"Healthcare services / hospitals\",\n      \"explanation\": \"Clinical or administrative services stop or become unreliable for patients and staff who depend on them.\",\n      \"example\": \"Northbank cannot run booked clinics while systems are offline, so appointments are cancelled.\"\n    },\n    {\n      \"id\": \"transport\",\n      \"context\": \"Transport networks\",\n      \"explanation\": \"Travel services become delayed, cancelled or unsafe to rely on.\",\n      \"example\": \"A ransomware incident on a regional booking platform leaves passengers unable to confirm journeys.\"\n    },\n    {\n      \"id\": \"broadcasting\",\n      \"context\": \"Broadcasting\",\n      \"explanation\": \"Media or public-information services cannot transmit as planned.\",\n      \"example\": \"A broadcaster cannot air scheduled public-service announcements during an outage.\"\n    },\n    {\n      \"id\": \"utilities\",\n      \"context\": \"Utilities\",\n      \"explanation\": \"Essential utility services become unreliable for households or organisations.\",\n      \"example\": \"A cyber incident interrupts monitoring for a local utility, affecting service continuity.\"\n    },\n    {\n      \"id\": \"oil\",\n      \"context\": \"Oil installations\",\n      \"explanation\": \"Industrial operations are interrupted, with possible wider supply and safety consequences.\",\n      \"example\": \"Control systems at an oil installation are taken offline, stopping normal operations.\"\n    },\n    {\n      \"id\": \"traffic\",\n      \"context\": \"Traffic-control interference\",\n      \"explanation\": \"Traffic management becomes unreliable, affecting road users who depend on signals or control systems.\",\n      \"example\": \"Interference with traffic-control systems causes unpredictable signal behaviour on major routes.\"\n    }\n  ],\n  \"safetyTeaching\": \"A cyber security incident can cause physical harm or place people at physical risk. Safety is not optional content when the scenario supports it.\",\n  \"safetyExamples\": [\n    \"A cancelled urgent healthcare appointment leaves a patient without timely clinical review.\",\n    \"Traffic-control interference increases the chance of collisions.\",\n    \"Disrupted hospital systems delay access to care records needed for treatment decisions.\"\n  ]\n}\n```",
-          "format": "application/json"
+          "prompt": "Using a short Northbank ransomware example, explain one loss, one disruption and one safety impact. Name who is affected in each case.",
+          "minChars": 80
         }
       }
     ]
@@ -14418,7 +14453,7 @@
         "relationships": {},
         "type": "paragraph",
         "content": {
-          "text": "Classify each short impact statement as Loss, Disruption, Safety, or More than one category. Categories are not always mutually exclusive — use More than one category where a justified combination fits."
+          "text": "Classify each statement as Loss, Disruption, Safety, or More than one category. Use More than one category when a justified combination fits."
         }
       },
       {
@@ -14491,9 +14526,9 @@
             },
             {
               "id": "c7",
-              "text": "A healthcare appointment is cancelled after systems fail.",
+              "text": "Partner clinics pause referrals while they check whether shared patient records can still be trusted.",
               "correctCategoryId": "More than one category",
-              "explanation": "Weekly-plan example: cancellation may be disruption for the healthcare organisation and may also create a safety impact for the patient. The defensible answer depends on the stakeholder considered — explain your reasoning."
+              "explanation": "Paused referrals disrupt how the organisations work together. The reason is also a loss of trust in the records. Either emphasis can be justified, so more than one category fits."
             },
             {
               "id": "c8",
@@ -14535,7 +14570,7 @@
         "relationships": {},
         "type": "markdown",
         "content": {
-          "text": "```json\n{\n  \"weekNumber\": 5,\n  \"sessionNumber\": 1,\n  \"estimatedMinutes\": 25,\n  \"categories\": [\n    \"Loss\",\n    \"Disruption\",\n    \"Safety\",\n    \"More than one category\"\n  ],\n  \"instructions\": [\n    \"Classify each short impact statement.\",\n    \"Choose More than one category where a justified combination fits.\",\n    \"For ambiguous examples, write a short reason naming the stakeholder perspective you used.\",\n    \"Categories are not always mutually exclusive.\"\n  ],\n  \"checklist\": [\n    \"Have I considered loss?\",\n    \"Have I considered disruption?\",\n    \"Have I considered safety?\",\n    \"Have I named whose perspective I am using?\"\n  ],\n  \"items\": [\n    {\n      \"id\": \"c1\",\n      \"statement\": \"Northbank pays emergency contractor fees to rebuild encrypted servers.\",\n      \"accepted\": [\n        \"Loss\"\n      ],\n      \"ambiguous\": false,\n      \"feedback\": \"Direct extra spending is financial loss. It does not, by itself, describe a stopped service or physical risk.\"\n    },\n    {\n      \"id\": \"c2\",\n      \"statement\": \"Clinic booking services are unavailable for two working days, so reception cannot confirm visits.\",\n      \"accepted\": [\n        \"Disruption\",\n        \"More than one category\"\n      ],\n      \"ambiguous\": true,\n      \"reasonRequired\": true,\n      \"feedback\": \"This is clearly disruption of a depended-on service. Some learners may also argue loss of availability; if you chose more than one category, your reason should identify the service and who depended on it.\"\n    },\n    {\n      \"id\": \"c3\",\n      \"statement\": \"A patient’s urgent review is cancelled because Northbank cannot access records; the delay increases clinical risk for that patient.\",\n      \"accepted\": [\n        \"Safety\",\n        \"More than one category\"\n      ],\n      \"ambiguous\": true,\n      \"reasonRequired\": true,\n      \"feedback\": \"Physical or clinical risk to the patient is a safety impact. It may also be disruption for the organisation. More than one category is defensible when both perspectives are explained.\"\n    },\n    {\n      \"id\": \"c4\",\n      \"statement\": \"Stolen patient identity details are later used to open fraudulent accounts.\",\n      \"accepted\": [\n        \"Loss\"\n      ],\n      \"ambiguous\": false,\n      \"feedback\": \"Identity theft is a loss impact for the individual. Focus on what the person lost or had misused.\"\n    },\n    {\n      \"id\": \"c5\",\n      \"statement\": \"Local news coverage leaves patients unsure whether Northbank can be trusted with medical information for months afterwards.\",\n      \"accepted\": [\n        \"Loss\"\n      ],\n      \"ambiguous\": false,\n      \"feedback\": \"This is reputational loss / loss of customer confidence. It may be hard to quantify but remains an important longer-term loss impact.\"\n    },\n    {\n      \"id\": \"c6\",\n      \"statement\": \"Interference with a traffic-control system causes unpredictable signal behaviour on major routes used by ambulances.\",\n      \"accepted\": [\n        \"Disruption\",\n        \"Safety\",\n        \"More than one category\"\n      ],\n      \"ambiguous\": true,\n      \"reasonRequired\": true,\n      \"feedback\": \"The service becomes unreliable (disruption) and people may be placed at physical risk (safety). More than one category is often the strongest justified choice.\"\n    },\n    {\n      \"id\": \"c7\",\n      \"statement\": \"A healthcare appointment is cancelled after systems fail.\",\n      \"accepted\": [\n        \"Disruption\",\n        \"Safety\",\n        \"More than one category\"\n      ],\n      \"ambiguous\": true,\n      \"reasonRequired\": true,\n      \"teachingFocus\": true,\n      \"feedback\": \"Weekly-plan example: cancellation may be disruption for the healthcare organisation and may also create a safety impact for the patient. The defensible answer depends on the stakeholder considered — explain your reasoning.\"\n    },\n    {\n      \"id\": \"c8\",\n      \"statement\": \"An oil installation’s control systems are taken offline and normal operations stop.\",\n      \"accepted\": [\n        \"Disruption\",\n        \"More than one category\"\n      ],\n      \"ambiguous\": true,\n      \"reasonRequired\": true,\n      \"feedback\": \"Stopped operations are disruption. Safety may also be argued if the scenario evidence shows people placed at physical risk; do not invent hazards that are not stated.\"\n    }\n  ]\n}\n```",
+          "text": "```json\n{\n  \"weekNumber\": 5,\n  \"sessionNumber\": 1,\n  \"estimatedMinutes\": 25,\n  \"categories\": [\n    \"Loss\",\n    \"Disruption\",\n    \"Safety\",\n    \"More than one category\"\n  ],\n  \"instructions\": [\n    \"Classify each short impact statement.\",\n    \"Choose More than one category where a justified combination fits.\",\n    \"For ambiguous examples, write a short reason naming the stakeholder perspective you used.\",\n    \"Categories are not always mutually exclusive.\"\n  ],\n  \"checklist\": [\n    \"Have I considered loss?\",\n    \"Have I considered disruption?\",\n    \"Have I considered safety?\",\n    \"Have I named whose perspective I am using?\"\n  ],\n  \"items\": [\n    {\n      \"id\": \"c1\",\n      \"statement\": \"Northbank pays emergency contractor fees to rebuild encrypted servers.\",\n      \"accepted\": [\n        \"Loss\"\n      ],\n      \"ambiguous\": false,\n      \"feedback\": \"Direct extra spending is financial loss. It does not, by itself, describe a stopped service or physical risk.\"\n    },\n    {\n      \"id\": \"c2\",\n      \"statement\": \"Clinic booking services are unavailable for two working days, so reception cannot confirm visits.\",\n      \"accepted\": [\n        \"Disruption\",\n        \"More than one category\"\n      ],\n      \"ambiguous\": true,\n      \"reasonRequired\": true,\n      \"feedback\": \"This is clearly disruption of a depended-on service. Some learners may also argue loss of availability; if you chose more than one category, your reason should identify the service and who depended on it.\"\n    },\n    {\n      \"id\": \"c3\",\n      \"statement\": \"A patient’s urgent review is cancelled because Northbank cannot access records; the delay increases clinical risk for that patient.\",\n      \"accepted\": [\n        \"Safety\",\n        \"More than one category\"\n      ],\n      \"ambiguous\": true,\n      \"reasonRequired\": true,\n      \"feedback\": \"Physical or clinical risk to the patient is a safety impact. It may also be disruption for the organisation. More than one category is defensible when both perspectives are explained.\"\n    },\n    {\n      \"id\": \"c4\",\n      \"statement\": \"Stolen patient identity details are later used to open fraudulent accounts.\",\n      \"accepted\": [\n        \"Loss\"\n      ],\n      \"ambiguous\": false,\n      \"feedback\": \"Identity theft is a loss impact for the individual. Focus on what the person lost or had misused.\"\n    },\n    {\n      \"id\": \"c5\",\n      \"statement\": \"Local news coverage leaves patients unsure whether Northbank can be trusted with medical information for months afterwards.\",\n      \"accepted\": [\n        \"Loss\"\n      ],\n      \"ambiguous\": false,\n      \"feedback\": \"This is reputational loss / loss of customer confidence. It may be hard to quantify but remains an important longer-term loss impact.\"\n    },\n    {\n      \"id\": \"c6\",\n      \"statement\": \"Interference with a traffic-control system causes unpredictable signal behaviour on major routes used by ambulances.\",\n      \"accepted\": [\n        \"Disruption\",\n        \"Safety\",\n        \"More than one category\"\n      ],\n      \"ambiguous\": true,\n      \"reasonRequired\": true,\n      \"feedback\": \"The service becomes unreliable (disruption) and people may be placed at physical risk (safety). More than one category is often the strongest justified choice.\"\n    },\n    {\n      \"id\": \"c7\",\n      \"statement\": \"Partner clinics pause referrals while they check whether shared patient records can still be trusted.\",\n      \"accepted\": [\n        \"Disruption\",\n        \"Safety\",\n        \"More than one category\"\n      ],\n      \"ambiguous\": true,\n      \"reasonRequired\": true,\n      \"teachingFocus\": true,\n      \"feedback\": \"Paused referrals disrupt how the organisations work together. The reason is also a loss of trust in the records. The defensible answer depends on the stakeholder considered. Explain your reasoning.\"\n    },\n    {\n      \"id\": \"c8\",\n      \"statement\": \"An oil installation’s control systems are taken offline and normal operations stop.\",\n      \"accepted\": [\n        \"Disruption\",\n        \"More than one category\"\n      ],\n      \"ambiguous\": true,\n      \"reasonRequired\": true,\n      \"feedback\": \"Stopped operations are disruption. Safety may also be argued if the scenario evidence shows people placed at physical risk; do not invent hazards that are not stated.\"\n    }\n  ]\n}\n```",
           "format": "application/json"
         }
       }
@@ -14547,11 +14582,11 @@
     "id": "week5-ransomware-companion",
     "version": "1.0.0",
     "metadata": {
-      "title": "Northbank Ransomware Exercise Companion",
+      "title": "Spot the impact",
       "status": "available",
-      "summary": "Northbank Ransomware Exercise Companion",
+      "summary": "Identify impacts from two short incidents and justify them from the scenario.",
       "href": null,
-      "activityType": "Facilitated companion",
+      "activityType": "Scenario analysis",
       "runtimeGlobal": "Week5RansomwareCompanion"
     },
     "relationships": {
@@ -14572,36 +14607,166 @@
         "relationships": {},
         "type": "heading",
         "content": {
-          "text": "Northbank Ransomware Exercise Companion",
+          "text": "Spot the impact",
           "level": 2
         }
       },
       {
         "schema": "lp.content.block",
         "schemaVersion": "0.1.0",
-        "id": "week5-ransomware-companion-source-remainder",
+        "id": "week5-ransomware-companion-college",
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
-        "type": "markdown",
+        "type": "paragraph",
         "content": {
-          "text": "```json\n{\n  \"weekNumber\": 5,\n  \"sessionNumber\": 1,\n  \"estimatedMinutes\": 40,\n  \"ncsc\": {\n    \"producer\": \"National Cyber Security Centre (NCSC)\",\n    \"productName\": \"Exercise in a Box\",\n    \"purpose\": \"Exercise in a Box is designed for organisations to test their readiness through structured discussion exercises.\",\n    \"namedExercise\": \"Responding to a ransomware attack\",\n    \"overviewUrl\": \"https://www.ncsc.gov.uk/section/exercise-in-a-box/overview\",\n    \"exerciseUrl\": \"https://www.ncsc.gov.uk/section/exercise-in-a-box/responding-ransomware-attack\",\n    \"classroomRules\": [\n      \"The class will role-play Northbank Community Health Partnership.\",\n      \"Answer from your allocated organisational role, not from personal opinion alone.\",\n      \"Base decisions on the Northbank briefing and established posture.\",\n      \"Do not invent controls, staff, systems or capabilities that are not present in the briefing.\",\n      \"Staged exercise prompts remain on the official NCSC materials and are tutor-facilitated.\",\n      \"This hub is a companion workspace before, during and after the facilitated exercise — it does not replace the NCSC exercise content.\"\n    ]\n  },\n  \"roles\": [\n    {\n      \"id\": \"practice-manager\",\n      \"title\": \"Practice manager\",\n      \"responsibility\": \"Overall service continuity and prioritisation for Northbank Community Health Partnership, including decisions that affect clinics, patients and staff working arrangements.\",\n      \"decisionPrompt\": \"State one decision this role may be responsible for during a ransomware incident (do not invent systems or staff that are not in the Northbank briefing).\",\n      \"prompts\": [\n        \"Which patient-facing services must be prioritised if systems stay down?\",\n        \"Who needs clear instruction first: reception, clinicians or partners?\",\n        \"Which impact are you trying to reduce for patients and for the organisation?\"\n      ]\n    },\n    {\n      \"id\": \"it-support\",\n      \"title\": \"IT support contractor\",\n      \"responsibility\": \"Technical containment and recovery advice for Northbank systems within the capabilities described in the briefing — without inventing advanced tooling that is not present.\",\n      \"decisionPrompt\": \"State one decision this role may be responsible for during a ransomware incident, staying within briefing capabilities.\",\n      \"prompts\": [\n        \"What must be protected first: data integrity, remaining available systems, or recovery paths?\",\n        \"What information do other roles need from you before they decide?\",\n        \"Which loss or disruption impacts could worsen if systems are brought back too quickly?\"\n      ]\n    },\n    {\n      \"id\": \"records-officer\",\n      \"title\": \"Records officer\",\n      \"responsibility\": \"Care and confidentiality of patient and organisational records, including what can still be accessed, shared or trusted during the incident.\",\n      \"decisionPrompt\": \"State one decision this role may be responsible for during a ransomware incident relating to records or information trust.\",\n      \"prompts\": [\n        \"Which records are needed for safe care today?\",\n        \"How do you prevent further loss of confidentiality while services continue manually?\",\n        \"What evidence would show integrity problems in records?\"\n      ]\n    },\n    {\n      \"id\": \"communications-lead\",\n      \"title\": \"Communications lead\",\n      \"responsibility\": \"Internal and external messaging for Northbank so patients, staff and partners receive accurate information without inventing capabilities or making unsupported promises.\",\n      \"decisionPrompt\": \"State one decision this role may be responsible for during a ransomware incident about what is communicated and to whom.\",\n      \"prompts\": [\n        \"Which stakeholders need information first?\",\n        \"How do you reduce reputational loss without claiming facts you do not have?\",\n        \"What message would protect patient safety without creating panic?\"\n      ]\n    }\n  ],\n  \"decisionRecord\": {\n    \"intro\": \"Use this record during the tutor-facilitated exercise. There is no single correct answer bank here — record reasoned group decisions. Do not invent NCSC prompts.\",\n    \"fields\": [\n      {\n        \"id\": \"decision\",\n        \"label\": \"Decision made\",\n        \"rows\": 3\n      },\n      {\n        \"id\": \"reason\",\n        \"label\": \"Reason for the decision\",\n        \"rows\": 3\n      },\n      {\n        \"id\": \"stakeholder\",\n        \"label\": \"Stakeholder or service being protected\",\n        \"rows\": 2\n      },\n      {\n        \"id\": \"impactReduced\",\n        \"label\": \"Impact the decision is intended to reduce\",\n        \"rows\": 2\n      },\n      {\n        \"id\": \"impactCategory\",\n        \"label\": \"Impact category (loss, disruption, safety, or justified combination)\",\n        \"rows\": 2\n      }\n    ],\n    \"minDecisions\": 2,\n    \"completionNote\": \"Opening the NCSC page alone does not complete this activity. Completion requires role preparation and at least two reasoned decision records, plus confirmation that the facilitated exercise discussion was used.\"\n  },\n  \"impactOptions\": [\n    \"Loss\",\n    \"Disruption\",\n    \"Safety\",\n    \"Loss and disruption\",\n    \"Disruption and safety\",\n    \"Loss and safety\",\n    \"Loss, disruption and safety\"\n  ]\n}\n```",
-          "format": "application/json"
+          "text": "A college's student records system is encrypted by ransomware on Monday morning. Staff cannot access timetables, attendance records or student contact details for two days."
         }
       },
       {
         "schema": "lp.content.block",
         "schemaVersion": "0.1.0",
-        "id": "week5-ransomware-companion-learner-note",
+        "id": "week5-ransomware-companion-spot",
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
-        "type": "reflection",
+        "type": "classification",
         "content": {
           "formative": true,
-          "questionId": "week5-ransomware-companion:learner-note",
-          "sourceQuestionId": "learner-note",
-          "prompt": "Complete this activity on the learner hub page, then write a short note to confirm you have finished."
+          "questionId": "week5-ransomware-companion:spot",
+          "sourceQuestionId": "spot",
+          "prompt": "Classify each statement.",
+          "categories": [
+            {
+              "id": "Loss",
+              "label": "Loss"
+            },
+            {
+              "id": "Disruption",
+              "label": "Disruption"
+            },
+            {
+              "id": "Safety",
+              "label": "Safety"
+            },
+            {
+              "id": "Not supported",
+              "label": "Not supported by the scenario"
+            }
+          ],
+          "items": [
+            {
+              "id": "spot-1",
+              "text": "Staff cannot open timetables or attendance records.",
+              "correctCategoryId": "Disruption",
+              "explanation": "Staff cannot use a service they rely on. That is disruption."
+            },
+            {
+              "id": "spot-2",
+              "text": "Student contact details cannot be accessed for two days.",
+              "correctCategoryId": "Loss",
+              "explanation": "The contact details cannot be used when needed. That is loss of availability."
+            },
+            {
+              "id": "spot-3",
+              "text": "Students may miss classes because staff cannot contact them.",
+              "correctCategoryId": "Disruption",
+              "explanation": "Students missing classes is disruption of their learning. The scenario does not describe physical harm, so this is not a safety impact."
+            },
+            {
+              "id": "spot-4",
+              "text": "A regulator has already fined the college.",
+              "correctCategoryId": "Not supported",
+              "explanation": "The scenario does not say a fine has been issued. Do not add impacts that are not supported."
+            }
+          ]
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-ransomware-companion-spot-justify",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "formative": true,
+          "questionId": "week5-ransomware-companion:spot-justify",
+          "sourceQuestionId": "spot-justify",
+          "prompt": "Identify two impacts of this incident. For each one, give one piece of evidence from the scenario.",
+          "minChars": 80
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-ransomware-companion-retailer",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Notes from an online retailer breach, recorded out of time order: customers posted complaints and the company brought in external specialists; customer names, addresses and payment information were stolen; customers became less willing to trust the retailer with payment details; the website was taken offline while the company investigated."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-ransomware-companion-chain",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "ordering",
+        "content": {
+          "formative": true,
+          "questionId": "week5-ransomware-companion:chain",
+          "sourceQuestionId": "chain",
+          "prompt": "Put these consequences in the order they occur.",
+          "items": [
+            {
+              "id": "stolen",
+              "label": "Customer names, addresses and payment information are stolen"
+            },
+            {
+              "id": "offline",
+              "label": "The website is taken offline while the company investigates"
+            },
+            {
+              "id": "complaints",
+              "label": "Customers complain online and specialists are brought in"
+            },
+            {
+              "id": "trust",
+              "label": "Customers are less willing to trust the retailer with payment details"
+            }
+          ],
+          "correctOrder": [
+            "stolen",
+            "offline",
+            "complaints",
+            "trust"
+          ],
+          "feedback": {
+            "correct": "That order follows the incident as described.",
+            "incorrect": "Use only the events in the scenario. Put the first consequence first."
+          }
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-ransomware-companion-chain-link",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "formative": true,
+          "questionId": "week5-ransomware-companion:chain-link",
+          "sourceQuestionId": "chain-link",
+          "prompt": "Choose one step in that sequence. Explain how it leads to the next consequence.",
+          "minChars": 60
         }
       }
     ]
@@ -14612,11 +14777,11 @@
     "id": "week5-exercise-debrief",
     "version": "1.0.0",
     "metadata": {
-      "title": "Exercise Debrief",
+      "title": "Immediate and longer-term consequences",
       "status": "available",
-      "summary": "Debrief ransomware exercise decisions by impact, stakeholder and timescale.",
+      "summary": "Classify consequences by timescale and complete an impact chain.",
       "href": null,
-      "activityType": "Short response",
+      "activityType": "Classification",
       "runtimeGlobal": "Week5ExerciseDebrief"
     },
     "relationships": {
@@ -14637,7 +14802,7 @@
         "relationships": {},
         "type": "heading",
         "content": {
-          "text": "Exercise Debrief",
+          "text": "Immediate and longer-term consequences",
           "level": 2
         }
       },
@@ -14650,41 +14815,7 @@
         "relationships": {},
         "type": "paragraph",
         "content": {
-          "text": "Revisit the decisions recorded in the companion workspace. This debrief is about impacts and stakeholders, not formal incident-response stage teaching. Cyber security is a global issue affecting individuals, organisations and states. Use your Northbank decisions to show how one incident can reach beyond a single IT team."
-        }
-      },
-      {
-        "schema": "lp.content.block",
-        "schemaVersion": "0.1.0",
-        "id": "week5-exercise-debrief-impactReduced",
-        "version": "0.1.0",
-        "metadata": {},
-        "relationships": {},
-        "type": "short-response",
-        "content": {
-          "formative": true,
-          "questionId": "week5-exercise-debrief:impactReduced",
-          "sourceQuestionId": "impactReduced",
-          "prompt": "Which impact was each key decision intended to reduce?",
-          "minChars": 80,
-          "guidance": "Immediately after the incident… This would affect the stakeholder because…"
-        }
-      },
-      {
-        "schema": "lp.content.block",
-        "schemaVersion": "0.1.0",
-        "id": "week5-exercise-debrief-stakeholderBenefit",
-        "version": "0.1.0",
-        "metadata": {},
-        "relationships": {},
-        "type": "short-response",
-        "content": {
-          "formative": true,
-          "questionId": "week5-exercise-debrief:stakeholderBenefit",
-          "sourceQuestionId": "stakeholderBenefit",
-          "prompt": "Which stakeholder benefited from each key decision?",
-          "minChars": 80,
-          "guidance": "Immediately after the incident… This would affect the stakeholder because…"
+          "text": "Some consequences happen at once. Others appear later. A consequence can reasonably fit both, depending on the scenario."
         }
       },
       {
@@ -14694,48 +14825,123 @@
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
-        "type": "short-response",
+        "type": "classification",
         "content": {
           "formative": true,
           "questionId": "week5-exercise-debrief:timescale",
           "sourceQuestionId": "timescale",
-          "prompt": "Was the intended effect immediate or longer term? Explain for at least one decision.",
-          "minChars": 80,
-          "guidance": "Immediately after the incident… This would affect the stakeholder because…"
+          "prompt": "Classify each consequence.",
+          "categories": [
+            {
+              "id": "Immediate",
+              "label": "Immediate"
+            },
+            {
+              "id": "Longer term",
+              "label": "Longer term"
+            },
+            {
+              "id": "Could be either",
+              "label": "Could be either"
+            }
+          ],
+          "items": [
+            {
+              "id": "t1",
+              "text": "The booking system cannot be opened on the morning of the attack.",
+              "correctCategoryId": "Immediate",
+              "explanation": "The system is unavailable as the incident starts."
+            },
+            {
+              "id": "t2",
+              "text": "Staff cannot see that day's appointments.",
+              "correctCategoryId": "Immediate",
+              "explanation": "The effect is on the clinic that day."
+            },
+            {
+              "id": "t3",
+              "text": "Investigation invoices arrive over the following months.",
+              "correctCategoryId": "Longer term",
+              "explanation": "The cost continues after the first day."
+            },
+            {
+              "id": "t4",
+              "text": "Fewer patients book routine appointments six months later.",
+              "correctCategoryId": "Longer term",
+              "explanation": "Lost confidence shows up after the systems are back."
+            },
+            {
+              "id": "t5",
+              "text": "Local news reports the outage the same day, and patients still mention it months later.",
+              "correctCategoryId": "Could be either",
+              "explanation": "The report is immediate. The effect on confidence can continue. Either timescale can be justified if you say which part you mean."
+            },
+            {
+              "id": "t6",
+              "text": "The organisation later changes how backups are stored.",
+              "correctCategoryId": "Longer term",
+              "explanation": "A change to process comes after the incident, not at the moment systems fail."
+            }
+          ]
         }
       },
       {
         "schema": "lp.content.block",
         "schemaVersion": "0.1.0",
-        "id": "week5-exercise-debrief-negativeEffect",
+        "id": "week5-exercise-debrief-impact-chain",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "ordering",
+        "content": {
+          "formative": true,
+          "questionId": "week5-exercise-debrief:impact-chain",
+          "sourceQuestionId": "impact-chain",
+          "prompt": "Put this clinic chain in order. One later consequence is missing. You will add it in the next question.",
+          "items": [
+            {
+              "id": "encrypt",
+              "label": "Ransomware encrypts the booking system"
+            },
+            {
+              "id": "confirm",
+              "label": "Staff cannot confirm appointments"
+            },
+            {
+              "id": "cancel",
+              "label": "Clinics cancel visits"
+            },
+            {
+              "id": "complaints",
+              "label": "The organisation receives complaints"
+            }
+          ],
+          "correctOrder": [
+            "encrypt",
+            "confirm",
+            "cancel",
+            "complaints"
+          ],
+          "feedback": {
+            "correct": "That order follows the incident as described.",
+            "incorrect": "Use only the events in the scenario. Put the first consequence first."
+          }
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "week5-exercise-debrief-follow-on",
         "version": "0.1.0",
         "metadata": {},
         "relationships": {},
         "type": "short-response",
         "content": {
           "formative": true,
-          "questionId": "week5-exercise-debrief:negativeEffect",
-          "sourceQuestionId": "negativeEffect",
-          "prompt": "Could another stakeholder have been negatively affected by the same decision? Explain.",
-          "minChars": 80,
-          "guidance": "Immediately after the incident… This would affect the stakeholder because…"
-        }
-      },
-      {
-        "schema": "lp.content.block",
-        "schemaVersion": "0.1.0",
-        "id": "week5-exercise-debrief-globalLink",
-        "version": "0.1.0",
-        "metadata": {},
-        "relationships": {},
-        "type": "short-response",
-        "content": {
-          "formative": true,
-          "questionId": "week5-exercise-debrief:globalLink",
-          "sourceQuestionId": "globalLink",
-          "prompt": "In two or three sentences, explain how this incident shows cyber security affecting individuals, organisations and states.",
-          "minChars": 120,
-          "guidance": "Immediately after the incident… This would affect the stakeholder because…"
+          "questionId": "week5-exercise-debrief:follow-on",
+          "sourceQuestionId": "follow-on",
+          "prompt": "Add one longer-term consequence that is not in the chain above. Explain why it follows.",
+          "minChars": 60
         }
       }
     ]
@@ -14787,29 +14993,29 @@
           "formative": true,
           "questionId": "week5-session2-retrieval:s2q1",
           "sourceQuestionId": "s2q1",
-          "prompt": "Which impact category best fits unrecovered destruction of referral letters?",
+          "prompt": "Encrypted clinic rotas that staff cannot open are best classified as:",
           "options": [
             {
               "id": "a",
-              "label": "Loss"
+              "label": "Loss of availability"
             },
             {
               "id": "b",
-              "label": "Disruption only"
+              "label": "A motivation"
             },
             {
               "id": "c",
-              "label": "Safety only"
+              "label": "A defensive control"
             },
             {
               "id": "d",
-              "label": "Motivation"
+              "label": "An attacker type"
             }
           ],
           "correctOptionId": "a",
           "feedback": {
-            "correct": "Destroyed or unrecoverable information is a loss of data.",
-            "incorrect": "Destroyed or unrecoverable information is a loss of data."
+            "correct": "The rotas cannot be used when needed. That is loss of availability.",
+            "incorrect": "The rotas cannot be used when needed. That is loss of availability."
           },
           "sourceType": "single"
         }
@@ -14826,11 +15032,11 @@
           "formative": true,
           "questionId": "week5-session2-retrieval:s2q2",
           "sourceQuestionId": "s2q2",
-          "prompt": "Reception cannot confirm any clinic visits for two days. This is primarily:",
+          "prompt": "Partner clinics pause referrals while they check whether shared records can be trusted. This is primarily:",
           "options": [
             {
               "id": "a",
-              "label": "Disruption"
+              "label": "Disruption of a working relationship and a loss of confidence"
             },
             {
               "id": "b",
@@ -14838,17 +15044,17 @@
             },
             {
               "id": "c",
-              "label": "A motivation"
+              "label": "The attacker's motivation"
             },
             {
               "id": "d",
-              "label": "Legislation"
+              "label": "A completed prosecution"
             }
           ],
           "correctOptionId": "a",
           "feedback": {
-            "correct": "A depended-on service has become unreliable — disruption.",
-            "incorrect": "A depended-on service has become unreliable — disruption."
+            "correct": "Referrals stopping is disruption. The pause because records may not be trusted is also a loss of confidence.",
+            "incorrect": "Referrals stopping is disruption. The pause because records may not be trusted is also a loss of confidence."
           },
           "sourceType": "single"
         }
@@ -14865,11 +15071,11 @@
           "formative": true,
           "questionId": "week5-session2-retrieval:s2q3",
           "sourceQuestionId": "s2q3",
-          "prompt": "A patient faces increased clinical risk because an urgent review is delayed. This is primarily:",
+          "prompt": "Ambulance routes are affected because traffic signals behave unpredictably. This is primarily:",
           "options": [
             {
               "id": "a",
-              "label": "Safety"
+              "label": "A safety impact, with disruption of the road network"
             },
             {
               "id": "b",
@@ -14877,17 +15083,17 @@
             },
             {
               "id": "c",
-              "label": "Broadcasting disruption"
+              "label": "A publicity motivation"
             },
             {
               "id": "d",
-              "label": "Publicity motivation"
+              "label": "A software update"
             }
           ],
           "correctOptionId": "a",
           "feedback": {
-            "correct": "Physical or clinical risk to a person is a safety impact.",
-            "incorrect": "Physical or clinical risk to a person is a safety impact."
+            "correct": "Unreliable signals disrupt travel and can put people at physical risk.",
+            "incorrect": "Unreliable signals disrupt travel and can put people at physical risk."
           },
           "sourceType": "single"
         }
@@ -14912,21 +15118,21 @@
             },
             {
               "id": "b",
-              "label": "Patients, employees, suppliers, regulators and the organisation itself, among others"
+              "label": "Patients, employees, suppliers, regulators and the organisation itself"
             },
             {
               "id": "c",
-              "label": "Only the college tutor"
+              "label": "Only the member of staff who first noticed the outage"
             },
             {
               "id": "d",
-              "label": "Only oil installations"
+              "label": "Only the insurer"
             }
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "Different stakeholders can experience the same incident differently — individuals, the organisation, employees, patients, suppliers, regulators and the state.",
-            "incorrect": "Different stakeholders can experience the same incident differently — individuals, the organisation, employees, patients, suppliers, regulators and the state."
+            "correct": "Stakeholders include the people and organisations affected, not only the attacker.",
+            "incorrect": "Stakeholders include the people and organisations affected, not only the attacker."
           },
           "sourceType": "single"
         }
@@ -14943,11 +15149,11 @@
           "formative": true,
           "questionId": "week5-session2-retrieval:s2q5",
           "sourceQuestionId": "s2q5",
-          "prompt": "An immediate consequence is best described as one that:",
+          "prompt": "An immediate consequence is one that:",
           "options": [
             {
               "id": "a",
-              "label": "Appears only in national legislation"
+              "label": "Appears only in legislation"
             },
             {
               "id": "b",
@@ -14959,13 +15165,13 @@
             },
             {
               "id": "d",
-              "label": "Is always financial"
+              "label": "Is always a financial cost"
             }
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "Immediate consequences occur at or shortly after the incident.",
-            "incorrect": "Immediate consequences occur at or shortly after the incident."
+            "correct": "Immediate means at the time of the incident or very soon afterwards.",
+            "incorrect": "Immediate means at the time of the incident or very soon afterwards."
           },
           "sourceType": "single"
         }
@@ -14982,11 +15188,11 @@
           "formative": true,
           "questionId": "week5-session2-retrieval:s2q6",
           "sourceQuestionId": "s2q6",
-          "prompt": "Loss of customer confidence six months later is best described as:",
+          "prompt": "Loss of patient confidence six months later is:",
           "options": [
             {
               "id": "a",
-              "label": "An immediate availability outage only"
+              "label": "Only an immediate availability outage"
             },
             {
               "id": "b",
@@ -14994,17 +15200,17 @@
             },
             {
               "id": "c",
-              "label": "A Week 6 legal duty"
+              "label": "A Week 6 legal duty by itself"
             },
             {
               "id": "d",
-              "label": "An NCSC staged prompt"
+              "label": "Evidence that no impact occurred"
             }
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "Confidence and reputational harms often continue for months and are longer-term consequences.",
-            "incorrect": "Confidence and reputational harms often continue for months and are longer-term consequences."
+            "correct": "Confidence lost months later is a longer-term consequence.",
+            "incorrect": "Confidence lost months later is a longer-term consequence."
           },
           "sourceType": "single"
         }
@@ -15021,11 +15227,11 @@
           "formative": true,
           "questionId": "week5-session2-retrieval:s2q7",
           "sourceQuestionId": "s2q7",
-          "prompt": "Awkward example: “Northbank suffered.” Why is this weak?",
+          "prompt": "Why is \"Northbank suffered\" too weak as an impact answer?",
           "options": [
             {
               "id": "a",
-              "label": "It names every stakeholder clearly"
+              "label": "It names every stakeholder and the evidence"
             },
             {
               "id": "b",
@@ -15033,17 +15239,17 @@
             },
             {
               "id": "c",
-              "label": "It covers loss, disruption and safety in detail"
+              "label": "It already covers loss, disruption and safety"
             },
             {
               "id": "d",
-              "label": "It uses scenario evidence precisely"
+              "label": "It uses too much scenario evidence"
             }
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "Name who was affected and what happened; avoid vague organisational suffering.",
-            "incorrect": "Name who was affected and what happened; avoid vague organisational suffering."
+            "correct": "Say who was affected and what happened. The short phrase does neither.",
+            "incorrect": "Say who was affected and what happened. The short phrase does neither."
           },
           "sourceType": "single"
         }
@@ -15060,7 +15266,7 @@
           "formative": true,
           "questionId": "week5-session2-retrieval:s2q8",
           "sourceQuestionId": "s2q8",
-          "prompt": "Awkward example: listing “money, reputation, trust” with no explanation mainly fails because it:",
+          "prompt": "A list such as \"money, reputation, trust\" with no explanation mainly fails because it:",
           "options": [
             {
               "id": "a",
@@ -15068,7 +15274,7 @@
             },
             {
               "id": "b",
-              "label": "Lists impacts without analysis, evidence or stakeholder focus"
+              "label": "Names impacts without analysis, evidence or a stakeholder"
             },
             {
               "id": "c",
@@ -15081,8 +15287,8 @@
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "Listing is not analysis. Connect stakeholder, consequence, evidence and timescale.",
-            "incorrect": "Listing is not analysis. Connect stakeholder, consequence, evidence and timescale."
+            "correct": "A list is not an explanation. Add who is affected, what happens, and the evidence.",
+            "incorrect": "A list is not an explanation. Add who is affected, what happens, and the evidence."
           },
           "sourceType": "single"
         }
@@ -15099,7 +15305,7 @@
           "formative": true,
           "questionId": "week5-session2-retrieval:s2q9",
           "sourceQuestionId": "s2q9",
-          "prompt": "A cancelled healthcare appointment may be disruption for the organisation and safety for the patient. This shows that:",
+          "prompt": "A cancelled clinic appointment can be disruption for the organisation and safety for the patient. This shows that:",
           "options": [
             {
               "id": "a",
@@ -15107,21 +15313,21 @@
             },
             {
               "id": "b",
-              "label": "More than one classification may be defensible depending on the stakeholder"
+              "label": "More than one classification may be justified, depending on the stakeholder"
             },
             {
               "id": "c",
-              "label": "Safety never applies in healthcare"
+              "label": "Safety does not apply in healthcare"
             },
             {
               "id": "d",
-              "label": "Financial loss is the only valid lens"
+              "label": "Financial loss is the only valid category"
             }
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "Ambiguous cases can have more than one defensible classification when stakeholder perspective is explained.",
-            "incorrect": "Ambiguous cases can have more than one defensible classification when stakeholder perspective is explained."
+            "correct": "The same event can be classified differently for different stakeholders.",
+            "incorrect": "The same event can be classified differently for different stakeholders."
           },
           "sourceType": "single"
         }
@@ -15142,25 +15348,25 @@
           "options": [
             {
               "id": "a",
-              "label": "“Hospitals somewhere had ransomware once.”"
+              "label": "Ransomware has affected other hospitals before"
             },
             {
               "id": "b",
-              "label": "“The booking system could not confirm visits for two working days.”"
+              "label": "The booking system could not confirm visits for two working days"
             },
             {
               "id": "c",
-              "label": "“Attackers like money.”"
+              "label": "Attackers often want money"
             },
             {
               "id": "d",
-              "label": "“All organisations always lose reputation.”"
+              "label": "All organisations lose reputation after any incident"
             }
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "Use scenario evidence about the service that stopped or became unreliable.",
-            "incorrect": "Use scenario evidence about the service that stopped or became unreliable."
+            "correct": "Use the outage in this scenario. The other statements are not evidence from the case.",
+            "incorrect": "Use the outage in this scenario. The other statements are not evidence from the case."
           },
           "sourceType": "single"
         }
@@ -15177,7 +15383,7 @@
           "formative": true,
           "questionId": "week5-session2-retrieval:s2q11",
           "sourceQuestionId": "s2q11",
-          "prompt": "Regulators are included in the stakeholder grid because:",
+          "prompt": "Regulators are included as stakeholders because:",
           "options": [
             {
               "id": "a",
@@ -15185,11 +15391,11 @@
             },
             {
               "id": "b",
-              "label": "They may face reporting, oversight or assurance consequences that differ from patient impacts"
+              "label": "They may have reporting or assurance consequences that differ from patient impacts"
             },
             {
               "id": "c",
-              "label": "They replace the need to discuss safety"
+              "label": "Naming a regulator removes the need to discuss safety"
             },
             {
               "id": "d",
@@ -15198,8 +15404,8 @@
           ],
           "correctOptionId": "b",
           "feedback": {
-            "correct": "The same incident affects a patient differently from a regulator — both perspectives need analysis.",
-            "incorrect": "The same incident affects a patient differently from a regulator — both perspectives need analysis."
+            "correct": "A regulator's consequence is about oversight, not the same as a patient's cancelled care.",
+            "incorrect": "A regulator's consequence is about oversight, not the same as a patient's cancelled care."
           },
           "sourceType": "single"
         }
@@ -15216,7 +15422,7 @@
           "formative": true,
           "questionId": "week5-session2-retrieval:s2q12",
           "sourceQuestionId": "s2q12",
-          "prompt": "Cyber security is a global problem affecting:",
+          "prompt": "Cyber security is a global problem because incidents can affect:",
           "options": [
             {
               "id": "a",
@@ -15237,8 +15443,8 @@
           ],
           "correctOptionId": "c",
           "feedback": {
-            "correct": "Week 5 learning outcomes require recognition that individuals, organisations and states can all be affected.",
-            "incorrect": "Week 5 learning outcomes require recognition that individuals, organisations and states can all be affected."
+            "correct": "Impacts are not limited to one organisation.",
+            "incorrect": "Impacts are not limited to one organisation."
           },
           "sourceType": "single"
         }
@@ -15435,29 +15641,29 @@
           "formative": true,
           "questionId": "week5-ocr-question-practice:ocr-1",
           "sourceQuestionId": "ocr-1",
-          "prompt": "Identify which impact category best matches unrecovered destruction of referral letters.",
+          "prompt": "A shared mailbox of patient contact details is emailed to the wrong external address. Which impact is clearest?",
           "options": [
             {
               "id": "a",
-              "label": "Loss"
+              "label": "Loss of confidentiality"
             },
             {
               "id": "b",
-              "label": "Disruption only"
+              "label": "Loss of integrity, because the addresses were edited"
             },
             {
               "id": "c",
-              "label": "Safety only"
+              "label": "Disruption only, because email still sends"
             },
             {
               "id": "d",
-              "label": "Motivation"
+              "label": "Safety only, because no appointment changed"
             }
           ],
           "correctOptionId": "a",
           "feedback": {
-            "correct": "",
-            "incorrect": ""
+            "correct": "Restricted patient information has been seen by people who should not have it. That is loss of confidentiality.",
+            "incorrect": "Restricted patient information has been seen by people who should not have it. That is loss of confidentiality."
           },
           "commandWord": "Identify",
           "marks": 1,
@@ -15476,11 +15682,11 @@
           "formative": true,
           "questionId": "week5-ocr-question-practice:ocr-2",
           "sourceQuestionId": "ocr-2",
-          "prompt": "Identify which impact category best matches clinic booking services being unavailable for two working days.",
+          "prompt": "Northbank cannot run booked clinics while the booking system is offline, so appointments are cancelled. Which impact is clearest?",
           "options": [
             {
               "id": "a",
-              "label": "Disruption"
+              "label": "Disruption of a healthcare service"
             },
             {
               "id": "b",
@@ -15488,17 +15694,17 @@
             },
             {
               "id": "c",
-              "label": "Publicity motivation"
+              "label": "A publicity motivation"
             },
             {
               "id": "d",
-              "label": "Legislation"
+              "label": "A change in the law"
             }
           ],
           "correctOptionId": "a",
           "feedback": {
-            "correct": "",
-            "incorrect": ""
+            "correct": "A service patients and staff depend on has stopped. That is disruption.",
+            "incorrect": "A service patients and staff depend on has stopped. That is disruption."
           },
           "commandWord": "Identify",
           "marks": 1,
@@ -15517,7 +15723,7 @@
           "formative": true,
           "questionId": "week5-ocr-question-practice:ocr-3",
           "sourceQuestionId": "ocr-3",
-          "prompt": "Identify which impact category best matches increased clinical risk from a delayed urgent review.",
+          "prompt": "An urgent review is delayed because staff cannot open the clinical record. Which impact is clearest?",
           "options": [
             {
               "id": "a",
@@ -15529,17 +15735,17 @@
             },
             {
               "id": "c",
-              "label": "Broadcasting disruption"
+              "label": "Loss of a broadcast service"
             },
             {
               "id": "d",
-              "label": "No impact"
+              "label": "No impact, because the record still exists"
             }
           ],
           "correctOptionId": "a",
           "feedback": {
-            "correct": "",
-            "incorrect": ""
+            "correct": "Delaying time-critical care increases physical risk for the patient.",
+            "incorrect": "Delaying time-critical care increases physical risk for the patient."
           },
           "commandWord": "Identify",
           "marks": 1,
@@ -15822,7 +16028,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Keep concatenating, but convert the surname to uppercase first"
+              "label": "Escape quote characters, then still join the surname into the query text"
             },
             {
               "id": "b",
@@ -15830,11 +16036,11 @@
             },
             {
               "id": "c",
-              "label": "Hide the lookup behind a longer URL"
+              "label": "Move the query into a longer function name"
             },
             {
               "id": "d",
-              "label": "Print the full query on the screen so staff can check it"
+              "label": "Show the finished query on the page so staff can read it"
             }
           ],
           "correctOptionId": "b",
@@ -15866,15 +16072,15 @@
             },
             {
               "id": "b",
-              "label": "comments.innerHTML = visitorMessage + visitorMessage"
+              "label": "Encode the message, then still assign it with innerHTML"
             },
             {
               "id": "c",
-              "label": "Disable CSS so scripts cannot run"
+              "label": "Remove the page stylesheet"
             },
             {
               "id": "d",
-              "label": "Store the message twice in localStorage"
+              "label": "Save the message in localStorage and still assign innerHTML"
             }
           ],
           "correctOptionId": "a",
@@ -15902,7 +16108,7 @@
           "options": [
             {
               "id": "a",
-              "label": "Leave it, because the value says it is not real"
+              "label": "Keep it in the file because the name says demo"
             },
             {
               "id": "b",
@@ -15910,11 +16116,11 @@
             },
             {
               "id": "c",
-              "label": "Rename the variable to TOKEN2"
+              "label": "Rename the variable and commit the same file"
             },
             {
               "id": "d",
-              "label": "Email the token to every staff member so they remember it"
+              "label": "Copy the token into the project README"
             }
           ],
           "correctOptionId": "b",
@@ -15946,15 +16152,15 @@
             },
             {
               "id": "b",
-              "label": "Use a longer patient number so it is harder to guess"
+              "label": "Use a longer identifier and still return any matching record"
             },
             {
               "id": "c",
-              "label": "Show a warning banner but still return any record"
+              "label": "Log the access, then still return any matching record"
             },
             {
               "id": "d",
-              "label": "Cache every training record in the browser"
+              "label": "Cache every training record in the browser for speed"
             }
           ],
           "correctOptionId": "a",
@@ -15986,15 +16192,15 @@
             },
             {
               "id": "b",
-              "label": "Write admin / admin on a sticky note under the keyboard"
+              "label": "Change the shared password and give it to every member of staff"
             },
             {
               "id": "c",
-              "label": "Use admin / admin but change the username to Admin"
+              "label": "Keep one shared login but change the username"
             },
             {
               "id": "d",
-              "label": "Disable the screen lock so staff save time"
+              "label": "Leave the shared login and turn off the screen lock"
             }
           ],
           "correctOptionId": "a",
@@ -16026,15 +16232,15 @@
             },
             {
               "id": "b",
-              "label": "Add more files to the same open share so it is harder to find letters"
+              "label": "Add more files to the same open share"
             },
             {
               "id": "c",
-              "label": "Rename the folder to PRIVATE but leave Everyone = Read"
+              "label": "Rename the folder and leave the same read permission"
             },
             {
               "id": "d",
-              "label": "Email all draft letters to a public mailing list instead"
+              "label": "Move the letters to a second folder with the same open permission"
             }
           ],
           "correctOptionId": "a",
@@ -16266,7 +16472,7 @@
         "relationships": {},
         "type": "paragraph",
         "content": {
-          "text": "Keep the three terms separate. A vulnerability is a weakness. A threat is a potential cause of harm (a person, process or event). Risk is the combination of that threat using a vulnerability and the impact that would follow. Classify each statement, then explain one chain in your own words."
+          "text": "Classify each statement as a vulnerability, a threat, or a risk. Then write one Northbank chain that uses all three terms."
         }
       },
       {
@@ -16732,15 +16938,15 @@
             },
             {
               "id": "b",
-              "label": "Hoping no one notices"
+              "label": "Waiting until a patient reports a problem"
             },
             {
               "id": "c",
-              "label": "Deleting log files each night so nothing is stored"
+              "label": "Deleting logs each night so there is nothing to review"
             },
             {
               "id": "d",
-              "label": "Publishing admin passwords in the staff newsletter"
+              "label": "Checking only that the page loads in one browser"
             }
           ],
           "correctOptionId": "a",

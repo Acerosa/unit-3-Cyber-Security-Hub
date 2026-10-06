@@ -16,7 +16,7 @@
     total: 6,
     estimatedMinutes: 25,
     commonError:
-      'Covering loss thoroughly — especially financial loss — while ignoring disruption and safety.',
+      'Covering loss thoroughly, especially financial loss, while ignoring disruption and safety.',
     question: Object.freeze({
       commandWord: 'Analyse',
       marks: 6,

@@ -11,7 +11,7 @@
   global.Week5OcrPractice = Object.freeze({
     activityId: 'week5-ocr-question-practice',
     activityName: 'OCR-Style Impact Questions',
-    activityVersion: '1.0',
+    activityVersion: '1.1',
     weekNumber: 5,
     sessionNumber: 2,
     total: 20,
@@ -22,7 +22,7 @@
       'Cover loss, disruption and safety when impacts are requested.',
       'Name the stakeholder affected.',
       'Distinguish immediate and longer-term consequences.',
-      'Use scenario evidence — do not import unrelated incidents.',
+      'Use scenario evidence. Do not import unrelated incidents.',
       'Mark schemes stay hidden until you open review.'
     ]),
     northbankScenario:
@@ -35,16 +35,16 @@
         suggestedMinutes: 1,
         responseType: 'mcq',
         prompt:
-          'Identify which impact category best matches unrecovered destruction of referral letters.',
-        guidance: 'Choose the broad Week 5 category.',
+          'A shared mailbox of patient contact details is emailed to the wrong external address. Which impact is clearest?',
+        guidance: 'Use the scenario. Do not treat every information problem as the same category.',
         options: Object.freeze([
-          Object.freeze({ id: 'a', text: 'Loss' }),
-          Object.freeze({ id: 'b', text: 'Disruption only' }),
-          Object.freeze({ id: 'c', text: 'Safety only' }),
-          Object.freeze({ id: 'd', text: 'Motivation' })
+          Object.freeze({ id: 'a', text: 'Loss of confidentiality' }),
+          Object.freeze({ id: 'b', text: 'Loss of integrity, because the addresses were edited' }),
+          Object.freeze({ id: 'c', text: 'Disruption only, because email still sends' }),
+          Object.freeze({ id: 'd', text: 'Safety only, because no appointment changed' })
         ]),
         correctOptionId: 'a',
-        markScheme: Object.freeze(['Loss (of data).'])
+        markScheme: Object.freeze(['Loss of confidentiality.'])
       }),
       Object.freeze({
         id: 'ocr-2',
@@ -53,16 +53,16 @@
         suggestedMinutes: 1,
         responseType: 'mcq',
         prompt:
-          'Identify which impact category best matches clinic booking services being unavailable for two working days.',
-        guidance: 'Focus on the service becoming unreliable.',
+          'Northbank cannot run booked clinics while the booking system is offline, so appointments are cancelled. Which impact is clearest?',
+        guidance: 'Focus on the service people were depending on.',
         options: Object.freeze([
-          Object.freeze({ id: 'a', text: 'Disruption' }),
+          Object.freeze({ id: 'a', text: 'Disruption of a healthcare service' }),
           Object.freeze({ id: 'b', text: 'Identity theft' }),
-          Object.freeze({ id: 'c', text: 'Publicity motivation' }),
-          Object.freeze({ id: 'd', text: 'Legislation' })
+          Object.freeze({ id: 'c', text: 'A publicity motivation' }),
+          Object.freeze({ id: 'd', text: 'A change in the law' })
         ]),
         correctOptionId: 'a',
-        markScheme: Object.freeze(['Disruption.'])
+        markScheme: Object.freeze(['Disruption of a healthcare service.'])
       }),
       Object.freeze({
         id: 'ocr-3',
@@ -71,13 +71,13 @@
         suggestedMinutes: 1,
         responseType: 'mcq',
         prompt:
-          'Identify which impact category best matches increased clinical risk from a delayed urgent review.',
-        guidance: 'Think about physical / clinical risk to a person.',
+          'An urgent review is delayed because staff cannot open the clinical record. Which impact is clearest?',
+        guidance: 'Decide from the consequence for the patient.',
         options: Object.freeze([
           Object.freeze({ id: 'a', text: 'Safety' }),
           Object.freeze({ id: 'b', text: 'Financial loss only' }),
-          Object.freeze({ id: 'c', text: 'Broadcasting disruption' }),
-          Object.freeze({ id: 'd', text: 'No impact' })
+          Object.freeze({ id: 'c', text: 'Loss of a broadcast service' }),
+          Object.freeze({ id: 'd', text: 'No impact, because the record still exists' })
         ]),
         correctOptionId: 'a',
         markScheme: Object.freeze(['Safety.'])
