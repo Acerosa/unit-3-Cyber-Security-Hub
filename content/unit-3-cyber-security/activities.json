@@ -13599,7 +13599,7 @@
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
     "id": "week5-session1-retrieval",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "metadata": {
       "title": "Session 1 Retrieval and Homework Harvest",
       "status": "available",
@@ -13961,7 +13961,7 @@
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
     "id": "week5-impacts-learning",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "metadata": {
       "title": "Impacts: loss, disruption and safety",
       "status": "available",
@@ -14413,7 +14413,7 @@
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
     "id": "week5-impact-classification",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "metadata": {
       "title": "Loss, Disruption and Safety Classification",
       "status": "available",
@@ -14580,7 +14580,7 @@
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
     "id": "week5-ransomware-companion",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "metadata": {
       "title": "Spot the impact",
       "status": "available",
@@ -14775,7 +14775,7 @@
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
     "id": "week5-exercise-debrief",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "metadata": {
       "title": "Immediate and longer-term consequences",
       "status": "available",
@@ -14950,7 +14950,7 @@
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
     "id": "week5-session2-retrieval",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "metadata": {
       "title": "Session 2 Retrieval Quiz",
       "status": "available",
@@ -15956,7 +15956,7 @@
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
     "id": "week5-secure-rewrite",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "metadata": {
       "title": "Improving insecure implementations",
       "status": "available",
@@ -16432,7 +16432,7 @@
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
     "id": "week5-threat-vulnerability-risk",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "metadata": {
       "title": "Vulnerability, threat and risk",
       "status": "available",
@@ -16582,7 +16582,7 @@
     "schema": "lp.content.activity",
     "schemaVersion": "0.1.0",
     "id": "week5-vulnerability-patterns",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "metadata": {
       "title": "Recognising vulnerability patterns",
       "status": "available",
