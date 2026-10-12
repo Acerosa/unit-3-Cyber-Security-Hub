@@ -55,9 +55,12 @@ function loadWeek6Data() {
   return byActivityId;
 }
 
+const REMAINDER_HOST_KEYS = ["sections", "total", "activityName", "activityVersion"];
+
 function overlayRemainder(existing, data) {
   const next = clone(existing);
-  for (const key of Object.keys(next)) {
+  const keys = new Set([...Object.keys(next), ...REMAINDER_HOST_KEYS]);
+  for (const key of keys) {
     if (Object.prototype.hasOwnProperty.call(data, key) && data[key] !== undefined) {
       next[key] = clone(data[key]);
     }
