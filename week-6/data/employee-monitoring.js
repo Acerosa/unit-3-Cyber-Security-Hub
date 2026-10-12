@@ -39,7 +39,7 @@
         id: 'legal',
         label: 'Legal prompts',
         questions: Object.freeze([
-          'Which statute and duty are most relevant (Computer Misuse Act 1990, current United Kingdom data protection legislation, or Police and Justice Act 2006 amendments where tools are supplied)?',
+          'Which legislation and duty are most relevant (Computer Misuse Act 1990; UK GDPR and the Data Protection Act 2018 as amended; or Police and Justice Act 2006 amendments where articles are supplied for misuse)?',
           'What lawful basis or transparency might employees and customers expect?'
         ])
       }),
@@ -82,7 +82,7 @@
     sentenceStarters: Object.freeze([
       'From the perspective of [stakeholder]…',
       'The scenario shows that…',
-      'Under current United Kingdom data protection legislation…',
+      'Under current United Kingdom data protection legislation (UK GDPR and the Data Protection Act 2018, as amended)…',
       'Ethically, the concern is…',
       'Operationally, Northbank would need to…'
     ])

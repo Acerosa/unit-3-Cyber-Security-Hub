@@ -168,7 +168,7 @@
         ]),
         correctIndex: 1,
         explanation:
-          'Organisations processing personal data must follow current United Kingdom data protection legislation, not guidance schemes alone.'
+          'Organisations processing personal data must follow current United Kingdom data protection legislation, including the UK GDPR and the Data Protection Act 2018 as amended, not guidance schemes alone.'
       }),
       Object.freeze({
         id: 'd11',

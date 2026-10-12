@@ -130,9 +130,22 @@
       if (lawBlob.indexOf('current United Kingdom data protection legislation') === -1) {
         fail('dp-wording', 'missing required phrase');
       } else pass('dp-wording');
+      ['UK GDPR', 'Data Protection Act 2018', 'Data (Use and Access) Act 2025'].forEach(function (name) {
+        if (lawBlob.indexOf(name) === -1) fail('dp-name-' + name, 'missing');
+        else pass('dp-name-' + name);
+      });
       if (lawBlob.indexOf('Police and Justice Act 2006') === -1) fail('pja-present', 'missing');
       else pass('pja-present');
-      if (/Data Protection Act 2018|UK GDPR|72 hour|notification period of/i.test(lawBlob)) {
+      if (lawBlob.indexOf('amended the Computer Misuse Act 1990') === -1) {
+        fail('pja-amends-cma', 'missing amendment wording');
+      } else pass('pja-amends-cma');
+      if (lawBlob.indexOf('unauthorised acts intended to impair') === -1) {
+        fail('cma-section3-current', 'missing current section 3 wording');
+      } else pass('cma-section3-current');
+      if (lawBlob.indexOf('unauthorised access with intent to commit or facilitate further offences') === -1) {
+        fail('cma-section2-current', 'missing current section 2 wording');
+      } else pass('cma-section2-current');
+      if (/72 hour|notification period of|£[0-9]|penalty of/i.test(lawBlob)) {
         fail('invented-legal-detail', 'unsupported statute detail');
       } else pass('no-invented-legal-detail');
     }
@@ -146,6 +159,13 @@
       });
       if (!needsDuty) fail('matching-duty-required', 'legislation without duty/offence');
       else pass('matching-duty-required');
+      var matchingBlob = JSON.stringify(matching);
+      if (matchingBlob.indexOf('Unauthorised acts intended to impair, or reckless as to impairing, computer operations') === -1) {
+        fail('matching-cma-section3', 'missing current impair offence');
+      } else pass('matching-cma-section3');
+      var liveModificationDuty = (matching.dutyOptions || []).indexOf('Unauthorised modification of computer material') !== -1;
+      if (liveModificationDuty) fail('matching-outdated-modification-duty', 'outdated CMA section 3 option');
+      else pass('matching-no-outdated-modification-duty');
     }
 
     if (!operational) fail('operational', 'missing');
@@ -169,6 +189,12 @@
         if (initBlob.indexOf(name) === -1) fail('initiative-' + name, 'missing');
         else pass('initiative-' + name);
       });
+      if (initBlob.indexOf('not a separately prescribed compulsory category under section 2.6') === -1) {
+        fail('initiatives-supporting-not-2-6', 'missing supporting-content note');
+      } else pass('initiatives-supporting-not-2-6');
+      if (!/historical|later succeeded by Cyber Aware/i.test(initBlob)) {
+        fail('streetwise-historical', 'Cyber Streetwise should be identified as historical');
+      } else pass('streetwise-historical');
     }
 
     if (!ncsc) fail('ncsc-guidance', 'missing');
@@ -256,6 +282,16 @@
         if (codes.indexOf(code) === -1) fail('revision-' + code, codes);
         else pass('revision-' + code);
       });
+      var section26 = (revision.sections || []).filter(function (s) {
+        return String(s.code || s.id || '') === '2.6';
+      })[0];
+      var title26 = String((section26 && section26.title) || '');
+      if (title26.indexOf('implications for stakeholders') === -1) {
+        fail('revision-2-6-stakeholders', title26);
+      } else pass('revision-2-6-stakeholders');
+      if (/government initiatives/i.test(title26)) {
+        fail('revision-2-6-not-initiatives-category', title26);
+      } else pass('revision-2-6-not-initiatives-category');
     }
 
     if (!directed) fail('directed-study', 'missing');
@@ -269,7 +305,7 @@
       fail('directed-not-scored', 'directed study must not be routed');
     } else pass('directed-not-scored');
 
-    if (week5 && week5.ACTIVITY_CATALOG && week5.ACTIVITY_CATALOG.length === 10) {
+    if (week5 && week5.ACTIVITY_CATALOG && week5.ACTIVITY_CATALOG.length === 14) {
       pass('week5-regression-catalog');
     } else if (week5) {
       fail('week5-regression-catalog', String((week5.ACTIVITY_CATALOG || []).length));

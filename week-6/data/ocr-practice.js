@@ -102,8 +102,8 @@
           'Explain why the insider copying patient contact details may engage both the Computer Misuse Act 1990 and current United Kingdom data protection legislation.',
         guidance: 'Link each statute to a relevant duty or offence.',
         markScheme: Object.freeze([
-          'Computer Misuse Act 1990 linked to unauthorised access or misuse of computer material',
-          'Current United Kingdom data protection legislation linked to personal data security or accountability',
+          'Computer Misuse Act 1990 linked to unauthorised access or unauthorised acts intended to impair computer operations, depending on the facts',
+          'Current United Kingdom data protection legislation (UK GDPR and the Data Protection Act 2018, as amended) linked to personal data security, accountability, transparency or lawful processing',
           'Clear explanation that the same incident can raise more than one legal duty'
         ])
       }),

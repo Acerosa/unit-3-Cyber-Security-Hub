@@ -62,7 +62,7 @@
       '2.3 Motivations: I can explain why an insider or external attacker might act.',
       '2.4 Targets: I can identify what Northbank assets or data may be targeted.',
       '2.5 Impacts: I can analyse loss, disruption and safety for stakeholders.',
-      '2.6 Other considerations: I can separate ethical, legal and operational points and name required statutes.'
+      '2.6 Other considerations: I can separate ethical, legal, operational and stakeholder implications and name current legislation accurately.'
     ]),
     revisionPriorities: Object.freeze([
       'Revision priority 1 after this directed study',
