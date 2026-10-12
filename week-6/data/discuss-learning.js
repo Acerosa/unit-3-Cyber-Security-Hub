@@ -54,7 +54,7 @@
     strongResponse: Object.freeze({
       label: 'Stronger balanced response',
       text:
-        'The issue is how far Northbank should monitor staff after an insider copied patient contact details. Enhanced log review may be supported because it could deter repeat misuse and show accountability to customers and the data protection regulator under current United Kingdom data protection legislation. However, employees may argue that continuous monitoring damages trust and adds operational burden if clinic staff fear excessive scrutiny during busy appointments. I accept that some targeted auditing of access to sensitive records is more proportionate than blanket surveillance. Overall, Northbank should favour targeted, transparent monitoring with clear rules rather than unlimited observation, because this balances security with ethical respect for staff and workable day-to-day care delivery.',
+        'The issue is how far Northbank should monitor staff after an insider copied patient contact details. Enhanced log review may be supported because it could deter repeat misuse and show accountability to customers and the data protection regulator under current United Kingdom data protection legislation (UK GDPR and the Data Protection Act 2018, as amended). However, employees may argue that continuous monitoring damages trust and adds operational burden if clinic staff fear excessive scrutiny during busy appointments. I accept that some targeted auditing of access to sensitive records is more proportionate than blanket surveillance. Overall, Northbank should favour targeted, transparent monitoring with clear rules rather than unlimited observation, because this balances security with ethical respect for staff and workable day-to-day care delivery.',
       strengths: Object.freeze([
         'States the issue clearly',
         'Develops a supported consideration with scenario and legal link',
@@ -93,7 +93,7 @@
         id: 'kc3',
         prompt: 'Where does the stronger response link statute to duty?',
         options: Object.freeze([
-          'Accountability to customers and the data protection regulator under current United Kingdom data protection legislation',
+          'Accountability to customers and the data protection regulator under current United Kingdom data protection legislation (UK GDPR and the Data Protection Act 2018, as amended)',
           'Police and Justice Act 2006 amendments on marketing emails only',
           'Computer Misuse Act 1990 removing all privacy rights',
           'It does not mention law at all'

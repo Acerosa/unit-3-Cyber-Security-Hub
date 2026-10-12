@@ -22,9 +22,9 @@
         id: 'cma',
         formalName: 'Computer Misuse Act 1990',
         purpose:
-          'Creates criminal offences for unauthorised access to computer material, unauthorised access with intent, and unauthorised modification of computer material.',
+          'Creates criminal offences for unauthorised access to computer material; unauthorised access with intent to commit or facilitate further offences; and unauthorised acts intended to impair, or reckless as to impairing, computer operations. Older summaries used "unauthorised modification of computer material"; that is not the current section 3 wording.',
         dutyOffence:
-          'Relevant offences include unauthorised access to computer material and unauthorised acts with intent to impair operation of a computer.',
+          'Relevant offences include unauthorised access to computer material; unauthorised access with intent to commit or facilitate further offences; and unauthorised acts intended to impair, or reckless as to impairing, computer operations.',
         northbankApplication:
           'If an insider accesses patient records without permission, or an external attacker breaks into Northbank systems, Computer Misuse Act 1990 offences may apply depending on authorisation and intent.',
         misconception:
@@ -34,9 +34,9 @@
         id: 'dp',
         formalName: 'Current United Kingdom data protection legislation',
         purpose:
-          'Sets duties for organisations that process personal data, including lawful basis, fairness, security and accountability expectations.',
+          'Current United Kingdom data protection legislation includes the UK GDPR, the Data Protection Act 2018, and relevant amendments made by the Data (Use and Access) Act 2025. These instruments set duties for organisations that process personal data; the 2025 Act amends, rather than replaces, the UK GDPR and the Data Protection Act 2018.',
         dutyOffence:
-          'Relevant duties include processing personal data lawfully, securely and transparently, and handling personal data breaches appropriately under the current framework.',
+          'Relevant cyber security duties include lawful processing, security of personal data, accountability, transparency, and appropriate responses to personal data breaches. Do not invent notification periods, section numbers or penalty amounts.',
         northbankApplication:
           'Northbank must protect patient personal data, limit access to what is necessary and respond properly if an insider causes a data breach affecting records.',
         misconception:
@@ -46,13 +46,13 @@
         id: 'pja',
         formalName: 'Police and Justice Act 2006 amendments (supplying tools for misuse)',
         purpose:
-          'Amended computer misuse law to address making, supplying or obtaining articles for use in computer misuse offences.',
+          'The Police and Justice Act 2006 amended the Computer Misuse Act 1990. It inserted the offence of making, supplying or obtaining articles for use in computer misuse offences.',
         dutyOffence:
-          'Relevant offence area: supplying or making available tools knowing they are likely to be used to commit unauthorised access or related misuse.',
+          'Relevant offence area: making, supplying, offering to supply or obtaining an article intending it to be used, or believing it is likely to be used, to commit unauthorised access or related Computer Misuse Act offences.',
         northbankApplication:
-          'If someone distributes a bespoke credential-stealing kit aimed at Northbank staff, supply-of-tools offences may be relevant alongside direct misuse offences.',
+          'If someone distributes a bespoke credential-stealing kit aimed at Northbank staff, the Computer Misuse Act supply-of-articles offence, inserted by the Police and Justice Act 2006, may be relevant alongside direct misuse offences.',
         misconception:
-          'Misconception: possessing security testing tools is not automatically illegal. Context, authorisation and intent matter, especially for legitimate security work.'
+          'Misconception: possessing legitimate security testing tools is not automatically unlawful. Authorised testing with permission, scope and rules of engagement is different from making or supplying articles for criminal misuse. Context, authorisation and intent matter.'
       })
     ]),
     knowledgeCheck: Object.freeze([
@@ -67,7 +67,7 @@
         ]),
         correctIndex: 1,
         explanation:
-          'Name legislation and the relevant duty or offence. Guidance schemes are not statutes.'
+          'Name legislation and the relevant duty or offence. Guidance schemes are not statutes. Current United Kingdom data protection legislation includes the UK GDPR and the Data Protection Act 2018, as amended.'
       }),
       Object.freeze({
         id: 'lk2',
@@ -93,7 +93,7 @@
         ]),
         correctIndex: 0,
         explanation:
-          'Tool supply offences were strengthened through Police and Justice Act 2006 amendments.'
+          'The Police and Justice Act 2006 amended the Computer Misuse Act 1990 to address making, supplying or obtaining articles for use in computer misuse offences. Possessing legitimate authorised security testing tools is not automatically unlawful.'
       }),
       Object.freeze({
         id: 'lk4',
@@ -119,7 +119,7 @@
         ]),
         correctIndex: 1,
         explanation:
-          'Personal data handling duties are under data protection legislation. Computer misuse may also apply to unauthorised access.'
+          'Personal data handling duties sit under current United Kingdom data protection legislation (UK GDPR and the Data Protection Act 2018, as amended). Computer Misuse Act 1990 offences may also apply to unauthorised access, depending on authorisation and intent.'
       }),
       Object.freeze({
         id: 'lk6',

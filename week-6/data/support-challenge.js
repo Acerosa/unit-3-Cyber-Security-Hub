@@ -15,17 +15,17 @@
       Object.freeze({
         title: 'Computer Misuse Act 1990',
         summary:
-          'Creates offences such as unauthorised access to computer material and related misuse. Relevant when an insider accesses records without authority.'
+          'Creates offences for unauthorised access to computer material; unauthorised access with intent to commit or facilitate further offences; and unauthorised acts intended to impair, or reckless as to impairing, computer operations. Relevant when an insider accesses records without authority.'
       }),
       Object.freeze({
         title: 'Current United Kingdom data protection legislation',
         summary:
-          'Sets duties for handling personal data, including security, accountability and transparency. Relevant when patient contact details are copied or exposed.'
+          'Includes the UK GDPR, the Data Protection Act 2018, and relevant amendments made by the Data (Use and Access) Act 2025. Sets duties for lawful processing, security of personal data, accountability, transparency and appropriate breach response. Relevant when patient contact details are copied or exposed.'
       }),
       Object.freeze({
         title: 'Police and Justice Act 2006 amendments',
         summary:
-          'Addresses supplying tools for misuse under the Computer Misuse Act 1990. Relevant when considering hacking or testing tools without clear authorisation.'
+          'Amended the Computer Misuse Act 1990 by inserting offences of making, supplying or obtaining articles for use in computer misuse. Possessing legitimate authorised security testing tools is not automatically unlawful.'
       })
     ]),
     roleCards: Object.freeze([
@@ -91,7 +91,7 @@
       Object.freeze({
         title: 'Statute linked to duty',
         text:
-          'Under current United Kingdom data protection legislation, Northbank must protect patient contact details and explain how insider access is controlled.'
+          'Under current United Kingdom data protection legislation (UK GDPR and the Data Protection Act 2018, as amended), Northbank must protect patient contact details and be able to explain how insider access is controlled.'
       }),
       Object.freeze({
         title: 'Ethical versus legal',

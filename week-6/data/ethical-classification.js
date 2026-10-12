@@ -50,7 +50,7 @@
           'A student downloads a password-cracking tool from the internet to try on a friend home router without the friend knowledge.',
         accepted: Object.freeze(['Both unethical and unlawful']),
         feedback:
-          'Ethically, this violates consent and privacy. Unauthorised access attempts may breach Computer Misuse Act 1990. Supplying or preparing tools for misuse may also engage Police and Justice Act 2006 amendments in some circumstances.'
+          'Ethically, this violates consent and privacy. Unauthorised access attempts may breach the Computer Misuse Act 1990, depending on authorisation and intent. Obtaining a tool intending to use it for misuse may also engage the Computer Misuse Act articles offence inserted by the Police and Justice Act 2006. Possessing legitimate authorised security testing tools is not automatically unlawful.'
       }),
       Object.freeze({
         id: 'e4',

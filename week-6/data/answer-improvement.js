@@ -48,6 +48,6 @@
     nextActionPrompt:
       'One next-exam action you will take when you see a Discuss question on ethical, legal and operational considerations.',
     modelAfterSubmit:
-      'Stronger answers state the issue, link current United Kingdom data protection legislation to security and accountability, treat the Computer Misuse Act 1990 as relevant to unauthorised access, accept that employees may raise proportionality concerns, and conclude with targeted transparent monitoring rather than unlimited surveillance.'
+      'Stronger answers state the issue, link current United Kingdom data protection legislation (UK GDPR and the Data Protection Act 2018, as amended) to security, accountability and transparency, treat the Computer Misuse Act 1990 as relevant to unauthorised access depending on authorisation and intent, accept that employees may raise proportionality concerns, and conclude with targeted transparent monitoring rather than unlimited surveillance.'
   });
 })(window);

@@ -28,7 +28,7 @@
         ]),
         correctIndex: 0,
         explanation:
-          'Unauthorised access to computer material is primarily addressed under the Computer Misuse Act 1990.'
+          'Unauthorised access to computer material is primarily addressed under the Computer Misuse Act 1990. Related offences include unauthorised access with intent to commit or facilitate further offences, and unauthorised acts intended to impair computer operations.'
       }),
       Object.freeze({
         id: 'lrq2',
@@ -42,7 +42,7 @@
         ]),
         correctIndex: 0,
         explanation:
-          'Processing personal data must comply with current United Kingdom data protection legislation, including lawful purpose and security expectations.'
+          'Processing personal data must comply with current United Kingdom data protection legislation, including the UK GDPR and the Data Protection Act 2018 as amended, covering lawful processing, security, accountability and transparency.'
       }),
       Object.freeze({
         id: 'lrq3',
@@ -56,7 +56,7 @@
         ]),
         correctIndex: 0,
         explanation:
-          'The Police and Justice Act 2006 amendments address making, supplying or obtaining articles for use in Computer Misuse Act offences.'
+          'The Police and Justice Act 2006 amended the Computer Misuse Act 1990 to address making, supplying or obtaining articles for use in Computer Misuse Act offences. Authorised security testing with permission is not the same as supplying tools for criminal misuse.'
       }),
       Object.freeze({
         id: 'lrq4',
@@ -84,7 +84,7 @@
         ]),
         correctIndex: 0,
         explanation:
-          'Security of personal data and accountability sit under current United Kingdom data protection legislation.'
+          'Security of personal data and accountability sit under current United Kingdom data protection legislation (UK GDPR and the Data Protection Act 2018, as amended).'
       }),
       Object.freeze({
         id: 'lrq6',
@@ -126,7 +126,7 @@
         ]),
         correctIndex: 0,
         explanation:
-          'Different statutes address different duties. Personal data handling also falls under current United Kingdom data protection legislation.'
+          'Different statutes address different duties. Personal data handling also falls under current United Kingdom data protection legislation. The same incident can raise more than one legal consideration.'
       }),
       Object.freeze({
         id: 'lrq9',

@@ -23,7 +23,7 @@
     ]),
     dutyOptions: Object.freeze([
       'Unauthorised access to computer material',
-      'Unauthorised modification of computer material',
+      'Unauthorised acts intended to impair, or reckless as to impairing, computer operations',
       'Processing personal data without appropriate security or lawful basis',
       'Handling a personal data breach under current duties',
       'Supplying tools knowing they are likely to be used for computer misuse',
@@ -52,15 +52,15 @@
         legislation: 'Police and Justice Act 2006 amendments (supplying tools for misuse)',
         duty: 'Supplying tools knowing they are likely to be used for computer misuse',
         feedback:
-          'Supplying tools for misuse is not the same as the Computer Misuse Act 1990 access offence itself. Name the supply offence under the Police and Justice Act 2006 amendments.'
+          'Supplying tools for misuse is not the same as the Computer Misuse Act 1990 access offence itself. The Police and Justice Act 2006 amended the Computer Misuse Act 1990 to cover making, supplying or obtaining articles for use in computer misuse. Possessing legitimate authorised security testing tools is not automatically unlawful.'
       }),
       Object.freeze({
         id: 'm4',
         text: 'Malware encrypts Northbank servers and deletes backups without authorisation.',
         legislation: 'Computer Misuse Act 1990',
-        duty: 'Unauthorised modification of computer material',
+        duty: 'Unauthorised acts intended to impair, or reckless as to impairing, computer operations',
         feedback:
-          'Encrypting or deleting data without permission may be unauthorised modification. Do not assume every incident is only a data protection matter.'
+          'Encrypting or deleting data without permission may be an unauthorised act intended to impair, or reckless as to impairing, computer operations under the Computer Misuse Act 1990. Older summaries called this unauthorised modification. Personal data duties may also apply, but do not treat the incident as only a data protection matter.'
       }),
       Object.freeze({
         id: 'm5',

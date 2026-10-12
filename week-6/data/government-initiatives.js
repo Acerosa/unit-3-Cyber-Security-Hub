@@ -16,13 +16,13 @@
     total: 4,
     estimatedMinutes: 20,
     teachingNote:
-      'These initiatives are United Kingdom government guidance or programmes. Describe their purpose in examination answers. Do not invent unsupported claims about current certification status or funding.',
+      'These initiatives are supporting teaching examples named in the OCR Unit 3 aim. They are not a separately prescribed compulsory category under section 2.6, which requires ethical, legal, operational and stakeholder implications. Distinguish legislation from government strategies, guidance and certification schemes. Describe purpose accurately. Do not invent unsupported claims about current certification status or funding.',
     initiatives: Object.freeze([
       Object.freeze({
         id: 'strategy',
         name: 'United Kingdom Cyber Security Strategy',
         purpose:
-          'Sets national direction for improving cyber resilience across government, industry and society, prioritising threats and coordinated response.'
+          'Sets national direction for improving cyber resilience across government, industry and society, prioritising threats and coordinated response. This is strategy and guidance, not a criminal statute.'
       }),
       Object.freeze({
         id: 'essentials',
@@ -40,7 +40,7 @@
         id: 'streetwise',
         name: 'Cyber Streetwise',
         purpose:
-          'A public awareness campaign helping individuals and small organisations adopt safer everyday online habits.'
+          'A historical public awareness campaign, later succeeded by Cyber Aware, that helped individuals and small organisations adopt safer everyday online habits. It is not legislation.'
       })
     ]),
     comparisonQuiz: Object.freeze([
@@ -94,7 +94,7 @@
         ]),
         correctIndex: 0,
         explanation:
-          'Cyber Streetwise is an awareness campaign for everyday safer behaviour.'
+          'Cyber Streetwise was a public awareness campaign for everyday safer behaviour. It is historical supporting content, later succeeded by Cyber Aware, and is not a statute.'
       })
     ])
   });

@@ -105,7 +105,7 @@
       Object.freeze({
         id: '2-6',
         code: '2.6',
-        title: 'Other considerations (ethical, legal, operational, government initiatives)',
+        title: 'Other considerations (ethical, legal, operational, implications for stakeholders)',
         fields: Object.freeze([
           Object.freeze({ id: 'secure', label: 'Topics I am secure on', minLength: 15 }),
           Object.freeze({ id: 'revision', label: 'Topics needing revision', minLength: 15 }),
