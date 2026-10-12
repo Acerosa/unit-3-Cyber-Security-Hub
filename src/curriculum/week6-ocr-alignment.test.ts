@@ -123,10 +123,13 @@ describe("Week 6 OCR 2.6 legal alignment", () => {
     const restored = activityFromPackage(
       pkg as import("./from-package").ContentPackage,
       "week6-revision-organiser"
-    ) as { sections?: Array<{ code?: string; title?: string }> };
+    ) as { sections?: Array<{ code?: string; title?: string; fields?: unknown[] }> };
     expect(revision).toContain("Other considerations (ethical, legal, operational, implications for stakeholders)");
     expect(revision).not.toContain("Other considerations (ethical, legal, operational, government initiatives)");
-    expect(restored.sections?.some((item) => item.title?.includes("implications for stakeholders"))).toBe(true);
+    const section26 = restored.sections?.find((item) => item.code === "2.6" || item.title?.includes("implications for stakeholders"));
+    expect(section26?.code).toBe("2.6");
+    expect(section26?.title).toContain("implications for stakeholders");
+    expect(Array.isArray(section26?.fields) && section26.fields.length).toBeGreaterThan(0);
   });
 
   it("keeps Northbank stakeholder roles and does not treat one law as the only possible answer where several may apply", () => {

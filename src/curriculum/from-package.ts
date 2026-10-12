@@ -127,6 +127,10 @@ function parseRemainder(activity: ContentActivity): Record<string, unknown> {
   }
 }
 
+function remainderHasStructuredSections(remainder: Record<string, unknown>): boolean {
+  return Array.isArray(remainder.sections) && remainder.sections.length > 0;
+}
+
 export function activityFromPackage(pkg: ContentPackage, activityId: string): Record<string, unknown> | null {
   const activity = (pkg.activities || []).find((item) => item.id === activityId);
   if (!activity) return null;
@@ -226,7 +230,9 @@ export function activityFromPackage(pkg: ContentPackage, activityId: string): Re
     else questions.push(question);
   });
 
-  if (sections.length) restored.sections = sections;
+  if (!remainderHasStructuredSections(remainder) && sections.length) {
+    restored.sections = sections;
+  }
   if (questions.length) restored.questions = questions;
   return normalizeActivityQuestions(restored);
 }
