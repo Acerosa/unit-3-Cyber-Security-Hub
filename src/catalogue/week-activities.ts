@@ -236,7 +236,6 @@ export const WEEK_HOST_ACTIVITY_IDS: Record<number, string[]> = {
   ],
   3: ["week3-ocr-question-practice", "week3-peer-marking"],
   4: [
-    "week4-ocr-question-practice",
     "week4-answer-improvement",
     "week4-mtm-mapping",
     "week4-northbank-exposure",
