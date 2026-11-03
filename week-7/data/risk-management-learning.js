@@ -62,11 +62,11 @@
         id: 'determine-risk',
         title: 'Determine risk level or score',
         summary:
-          'Combine likelihood and impact using the Week 7 hub scoring guide to produce a Low, Medium or High risk rating.',
+          'Calculate risk by combining the likelihood rating with the impact rating. Use the Week 7 hub scoring guide (Likelihood × Impact) to produce a Low, Medium or High risk rating. Do not invent a fourth colour-only scale.',
         northbankExample:
-          'High likelihood and High impact for stolen appointment-system credentials produces a High risk rating that should be addressed early.',
+          'Example calculations: High likelihood and High impact → High risk (appointment-system credential theft). Low likelihood and High impact → Medium risk. Medium likelihood and Medium impact → Medium risk. Low likelihood and Low impact → Low risk (public leaflet PDF briefly unavailable).',
         teachingPoint:
-          'The score supports prioritisation. It is not a substitute for a justified decision.'
+          'Read likelihood first, then impact, then look up the matching cell in the guide. The rating supports prioritisation; it does not replace a justified treatment decision.'
       }),
       Object.freeze({
         id: 'decide-treatment',
@@ -177,16 +177,16 @@
       }),
       Object.freeze({
         id: 'rm-5',
-        prompt: '“We installed antivirus” alone is a weak effectiveness measure because:',
+        prompt: 'Using the Week 7 scoring guide, High likelihood and High impact calculate to which risk rating?',
         options: Object.freeze([
-          'It does not show whether risk actually reduced',
-          'Antivirus can never be mentioned in cyber security',
-          'Installation always proves High risk remains',
-          'Effectiveness measures are illegal to record'
+          'High',
+          'Low',
+          'Medium only when impact is Low',
+          'No rating is possible without a colour key'
         ]),
         correctIndex: 0,
         explanation:
-          'Effectiveness needs an observable indicator of reduced likelihood or impact, not only installation.'
+          'High × High maps to High on the Week 7 guide. Colour is optional; the text label is what matters.'
       }),
       Object.freeze({
         id: 'rm-6',
@@ -216,16 +216,16 @@
       }),
       Object.freeze({
         id: 'rm-8',
-        prompt: 'Which distractor treatment is not required as a Northbank register decision in this unit?',
+        prompt: 'Using the Week 7 scoring guide, Low likelihood and High impact calculate to which risk rating?',
         options: Object.freeze([
-          'Transfer (as a required register option)',
-          'Mitigate',
-          'Accept',
-          'Prioritise later'
+          'Medium',
+          'Low',
+          'High',
+          'Accept automatically with no rating'
         ]),
         correctIndex: 0,
         explanation:
-          'This unit’s register decisions use Mitigate, Accept and Prioritise. Transfer may appear as a quiz distractor only.'
+          'Low × High maps to Medium. Likelihood and impact must both be set before you look up the rating; Accept is a treatment decision made after scoring.'
       })
     ])
   });

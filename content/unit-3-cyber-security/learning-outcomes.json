@@ -8,5 +8,16 @@
       "title": "Understand the need for cyber security"
     },
     "relationships": {}
+  },
+  {
+    "schema": "lp.content.learning-outcome",
+    "schemaVersion": "0.1.0",
+    "id": "LO3",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Understand measures used to protect against cyber security incidents",
+      "coverageNote": "Week 7 formative coverage focuses on 3.1 cyber security risk management and 3.2 testing and monitoring measures."
+    },
+    "relationships": {}
   }
 ]

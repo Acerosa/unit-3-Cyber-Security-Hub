@@ -9,7 +9,8 @@
   },
   "relationships": {
     "learningOutcomes": [
-      "LO1"
+      "LO1",
+      "LO3"
     ],
     "assignments": [
       "formative-practice"
