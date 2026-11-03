@@ -139,12 +139,13 @@
     "metadata": {
       "teachingWeek": 7,
       "title": "Risk management, testing and monitoring",
-      "status": "available"
+      "status": "available",
+      "professionalPractice": "LO3 / 3.1 risk management and 3.2 testing and monitoring"
     },
     "relationships": {
       "curriculum": "unit-3-cyber-security-curriculum",
       "learningOutcomes": [
-        "LO1"
+        "LO3"
       ],
       "assignment": "formative-practice",
       "sessions": [

@@ -47,7 +47,7 @@
         Object.freeze({ likelihood: 'High', impact: 'High', risk: 'High', numeric: '9' })
       ]),
       note:
-        'Risk ratings use text labels (Low, Medium, High). Colour is optional and never the only indicator. Numeric helpers are for discussion only.'
+        'How to calculate: choose Likelihood, choose Impact, then read the matching row in the matrix (Likelihood × Impact). Example: Medium × High → High; Low × Low → Low. Risk ratings use text labels (Low, Medium, High). Colour is optional and never the only indicator. Numeric helpers (1–9) are for discussion only.'
     }),
     sampleRows: Object.freeze([
       Object.freeze({
