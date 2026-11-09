@@ -1,136 +1,150 @@
-import { useEffect, useState } from "react";
-import { MOCK_QUESTIONS } from "../exam-practice/mock-questions";
-import { remainingMs } from "../exam-practice/policy";
-import { examPracticeReleased } from "../exam-practice/release";
-import { browserExamStore, type ExamStore } from "../exam-practice/store";
+import { resolveActivityVersion } from "@learning-platform/core";
+import { useEffect, useMemo, useState } from "react";
+import { evidence } from "@learning-platform/core";
+import {
+  createCatalogueDraftStore,
+  type CatalogueDraft
+} from "../catalogue/activity-draft";
 import { formatCountdown } from "../catalogue/knowledge-report";
+import { catalogueActivity } from "../catalogue/week-activities";
+import { activeContentPackage } from "../curriculum/apply-runtime";
+import { examPracticeReleased } from "../exam-practice/release";
 import { createSitePath } from "../paths";
+
+const ACTIVITY_ID = "u3-lo12-timed-mini-mock";
+
+type Phase = {
+  phase?: string;
+  standardDurationSeconds?: number;
+  serverNow?: string;
+  assessmentType?: string;
+};
+
+function phaseOf(draft: CatalogueDraft | null): Phase | null {
+  const value = (draft as { knowledgeReportPhase?: Phase } | null)?.knowledgeReportPhase;
+  return value && typeof value === "object" ? value : null;
+}
 
 export function ExamMiniMockPage({
   root,
   released = examPracticeReleased(),
-  store
+  platform
 }: {
   root: string;
   released?: boolean;
-  store?: ExamStore;
+  platform?: {
+    submission?: { submit?: (payload: unknown) => Promise<unknown> };
+    progress?: { createStore?: (options: unknown) => { hydrate?: () => Promise<CatalogueDraft | null>; save?: (state: unknown) => void } };
+    auth?: { isSignedIn?: () => boolean };
+  };
 }) {
-  const [active] = useState(() => store || browserExamStore("learner"));
-  const [phase, setPhase] = useState<"intro" | "live" | "submitted">("intro");
+  const activity = useMemo(() => {
+    const content = activeContentPackage();
+    return content ? catalogueActivity(content, ACTIVITY_ID) : null;
+  }, []);
+  const questions = (activity?.blocks || []).filter((block) => block.type === "short-response");
   const [responses, setResponses] = useState<Record<string, string>>({});
-  const [deadlineAt, setDeadlineAt] = useState<string | null>(null);
+  const [startedAt, setStartedAt] = useState<string | null>(null);
   const [serverNow, setServerNow] = useState<string | null>(null);
-  const [method, setMethod] = useState<string | null>(null);
+  const [durationSeconds, setDurationSeconds] = useState(20 * 60);
+  const [submitted, setSubmitted] = useState(false);
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
-    const loaded = active.load();
-    setServerNow(loaded.serverNow);
-    if (loaded.mock.status === "submitted") {
-      setPhase("submitted");
-      setResponses(loaded.mock.responses);
-      setMethod(loaded.mock.submissionMethod);
-      setDeadlineAt(loaded.mock.deadlineAt);
-    } else if (loaded.mock.status === "started" && loaded.mock.deadlineAt) {
-      setPhase("live");
-      setResponses(loaded.mock.responses);
-      setDeadlineAt(loaded.mock.deadlineAt);
-    }
-  }, [active]);
-
-  useEffect(() => {
-    if (phase !== "live" || !deadlineAt || !serverNow) return;
-    const offset = Date.parse(serverNow) - Date.now();
-    const timer = window.setInterval(() => {
-      const clock = new Date(Date.now() + offset).toISOString();
-      if (remainingMs(deadlineAt, clock) <= 0) {
-        const saved = active.submitMock("automatic");
-        setPhase("submitted");
-        setMethod(saved.mock.submissionMethod);
-        setNotice("Time is up. Your answers have been submitted.");
+    if (!activity || !platform) return;
+    const store = createCatalogueDraftStore(activity, platform as never);
+    let cancelled = false;
+    void (async () => {
+      const hydrated = await store?.hydrate?.();
+      if (cancelled || !hydrated) return;
+      const timing = phaseOf(hydrated);
+      const saved: Record<string, string> = {};
+      for (const [key, value] of Object.entries(hydrated.responses || {})) {
+        if (typeof value === "string") saved[key] = value;
       }
-    }, 1000);
-    return () => window.clearInterval(timer);
-  }, [active, deadlineAt, phase, serverNow]);
+      setResponses(saved);
+      setStartedAt(hydrated.startedAt || null);
+      setServerNow(timing?.serverNow || null);
+      if (timing?.standardDurationSeconds) setDurationSeconds(timing.standardDurationSeconds);
+      if (hydrated.submission?.status === "submitted" || timing?.phase === "submitted") setSubmitted(true);
+    })();
+    return () => { cancelled = true; };
+  }, [activity, platform]);
 
   if (!released) return <p>Exam practice is not available yet.</p>;
+  if (!activity) return <p>The mini-mock is not in this curriculum package.</p>;
 
-  const remaining = deadlineAt && serverNow ? remainingMs(deadlineAt, serverNow) : 20 * 60 * 1000;
+  const offset = serverNow ? Date.parse(serverNow) - Date.now() : 0;
+  const remaining = startedAt
+    ? new Date(startedAt).getTime() + durationSeconds * 1000 - (Date.now() + offset)
+    : durationSeconds * 1000;
+
+  async function save(next: Record<string, string>) {
+    const store = createCatalogueDraftStore(activity!, platform as never);
+    store?.save?.({ responses: next, checked: {}, results: {} });
+  }
 
   return (
     <article className="panel exam-practice">
       <h2>LO1 and LO2 Timed Mini-Mock</h2>
-      {phase === "intro" ? (
-        <>
-          <p>20 minutes. 20 marks. About one minute per mark. No hints and no model answers.</p>
-          <ul>
-            <li>The timer starts on the server when you select Start Mini-Mock.</li>
-            <li>You can move between questions. Answers are saved as you type.</li>
-            <li>Refreshing the page does not restart the timer.</li>
-            <li>When the time ends, the attempt is submitted and locked.</li>
-          </ul>
-          <button
-            type="button"
-            className="lp-button"
-            onClick={() => {
-              const started = active.startMock();
-              setPhase(started.mock.status === "submitted" ? "submitted" : "live");
-              setDeadlineAt(started.mock.deadlineAt);
-              setServerNow(started.serverNow);
-              setResponses(started.mock.responses);
-              setMethod(started.mock.submissionMethod);
-            }}
-          >
-            Start Mini-Mock
-          </button>
-        </>
+      <p>20 marks. The deadline is the server start time plus the allowed minutes. Refreshing does not start a new sitting.</p>
+      {!startedAt && !submitted ? (
+        <button
+          type="button"
+          className="lp-button"
+          onClick={() => {
+            const store = createCatalogueDraftStore(activity, platform as never);
+            store?.save?.({ responses, checked: {}, results: {}, startedAt: undefined });
+            setNotice("Your sitting starts when the learning record confirms the server time.");
+          }}
+        >
+          Start Mini-Mock
+        </button>
       ) : null}
-      {phase === "live" ? (
-        <>
-          <p className="knowledge-report__timer" role="timer" aria-live="polite">
-            Time remaining {formatCountdown(remaining)}
-          </p>
-          {remaining < 2 * 60 * 1000 ? <p role="status">Less than two minutes remain.</p> : null}
-          {MOCK_QUESTIONS.map((question, index) => (
-            <section key={question.id}>
-              <h3>Question {index + 1} · {question.command} · {question.marks} marks</h3>
-              <p>{question.scenario}</p>
-              <label htmlFor={question.id}>{question.prompt}</label>
-              <textarea
-                id={question.id}
-                value={responses[question.id] || ""}
-                onChange={(event) => {
-                  const next = { ...responses, [question.id]: event.target.value };
-                  setResponses(next);
-                  const saved = active.saveMock(next);
-                  if (saved.mock.status === "submitted") {
-                    setPhase("submitted");
-                    setMethod(saved.mock.submissionMethod);
-                  }
-                }}
-              />
-            </section>
-          ))}
-          <button
-            type="button"
-            className="lp-button"
-            onClick={() => {
-              const saved = active.submitMock("manual");
-              setPhase("submitted");
-              setMethod(saved.mock.submissionMethod);
-              setNotice("Your mini-mock has been submitted.");
-            }}
-          >
-            Submit Mini-Mock
-          </button>
-        </>
+      {startedAt && !submitted ? (
+        <p className="knowledge-report__timer" role="timer">Time remaining {formatCountdown(remaining)}</p>
       ) : null}
-      {phase === "submitted" ? (
+      {notice ? <p role="status">{notice}</p> : null}
+      {questions.map((block) => {
+        const id = String(block.content?.questionId || block.id);
+        return (
+          <section key={id}>
+            <label htmlFor={id}>{String(block.content?.prompt || "Your answer")}</label>
+            <textarea
+              id={id}
+              value={responses[id] || ""}
+              disabled={submitted || !startedAt}
+              onChange={(event) => {
+                const next = { ...responses, [id]: event.target.value };
+                setResponses(next);
+                void save(next);
+              }}
+            />
+          </section>
+        );
+      })}
+      {startedAt && !submitted ? (
+        <button
+          type="button"
+          className="lp-button"
+          onClick={() => {
+            void platform?.submission?.submit?.({
+              activityKey: activity.id,
+              activityVersion: resolveActivityVersion(activity),
+              responses: questions.map((block) => evidence.written(
+                String(block.content?.questionId || block.id),
+                responses[String(block.content?.questionId || block.id)] || ""
+              ))
+            }).then(() => setSubmitted(true));
+          }}
+        >
+          Submit Mini-Mock
+        </button>
+      ) : null}
+      {submitted ? (
         <>
           <h3>Submission confirmed</h3>
-          <p>{notice || "Your answers are locked."}</p>
-          <p>{method === "automatic" ? "Submitted automatically when the time ended." : "Submitted by you."}</p>
-          <p>Marks are not shown until your teacher has finished marking.</p>
+          <p>Your answers are locked. Marks stay hidden until your teacher finalises them.</p>
           <p><a href={createSitePath(root, "exam-practice/reflection/")}>Continue to Immediate Reflection</a></p>
         </>
       ) : null}

@@ -149,9 +149,35 @@ describe("exam practice pages", () => {
     expect(store.load().mock.awarded).toBeNull();
   });
 
-  it("does not use the activity progress storage key", () => {
-    const store = readFileSync(resolve("src/exam-practice/store.ts"), "utf8");
-    expect(store).toContain("unit3-exam-practice-draft");
-    expect(store).not.toContain("activity_states");
+  it("keeps the deployed knowledge report and adds a separate timed paper", () => {
+    const report = (pkg as { activities: Array<{ id: string; version: string; metadata?: { knowledgeReport?: Record<string, unknown> } }> }).activities
+      .find((activity) => activity.id === "u3-cyber-security-knowledge-report");
+    const paper = (pkg as { activities: Array<{ id: string; version: string; blocks?: Array<{ type?: string; content?: { maxMarks?: number } }>; metadata?: { knowledgeReport?: Record<string, unknown> } }> }).activities
+      .find((activity) => activity.id === "u3-lo12-timed-mini-mock");
+    expect(report?.version).toBe("1.1.0");
+    expect(report?.metadata?.knowledgeReport).toMatchObject({
+      durationMinutes: 30,
+      minWords: 500,
+      additionalTimeMinutes: 15,
+      additionalTimeThresholdWords: 400
+    });
+    expect(report?.metadata?.knowledgeReport?.assessmentType).toBeUndefined();
+    expect(paper?.metadata?.knowledgeReport?.assessmentType).toBe("timed-written-paper");
+    expect(paper?.metadata?.knowledgeReport?.minWords).toBeUndefined();
+    expect(paper?.metadata?.knowledgeReport?.additionalTimeMinutes).toBeUndefined();
+    const marks = (paper?.blocks || [])
+      .filter((block) => block.type === "short-response")
+      .map((block) => block.content?.maxMarks);
+    expect(marks).toEqual([3, 4, 3, 4, 6]);
+  });
+
+  it("does not keep a second examination timer or records table in the mini-mock page", () => {
+    const page = readFileSync(resolve("src/pages/ExamMiniMockPage.tsx"), "utf8");
+    const migration = readFileSync(resolve("../learning-platform-backend/supabase/migrations/20261109160000_timed_written_paper.sql"), "utf8");
+    expect(page).toContain("createCatalogueDraftStore");
+    expect(page).not.toContain("lo12_exam_records");
+    expect(migration).not.toContain("create table learning.lo12_exam_records");
+    expect(migration).toContain("assessmentType");
+    expect(migration).toContain("learning.effective_timed_duration_seconds");
   });
 });
