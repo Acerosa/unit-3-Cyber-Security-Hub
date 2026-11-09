@@ -1,5 +1,5 @@
 import { resolveActivityVersion } from "@learning-platform/core";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { evidence } from "@learning-platform/core";
 import {
   createCatalogueDraftStore,
@@ -46,11 +46,14 @@ export function ExamMiniMockPage({
   const questions = (activity?.blocks || []).filter((block) => block.type === "short-response");
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [startedAt, setStartedAt] = useState<string | null>(null);
-  const [serverNow, setServerNow] = useState<string | null>(null);
   const [durationSeconds, setDurationSeconds] = useState(20 * 60);
   const [submitted, setSubmitted] = useState(false);
   const [expired, setExpired] = useState(false);
   const [notice, setNotice] = useState("");
+  const [now, setNow] = useState(() => Date.now());
+  const [results, setResults] = useState<Array<{ questionKey: string; awarded: number | null; max: number; feedback: string; text: string }>>([]);
+  const submitting = useRef(false);
+  const clockOffset = useRef(0);
 
   function applyDraft(hydrated: CatalogueDraft | null) {
     if (!hydrated) return;
@@ -62,7 +65,7 @@ export function ExamMiniMockPage({
     setResponses(saved);
     const started = typeof timing?.authoritativeStartedAt === "string" ? timing.authoritativeStartedAt : null;
     setStartedAt(started);
-    setServerNow(timing?.serverNow || null);
+    if (timing?.serverNow) clockOffset.current = Date.parse(timing.serverNow) - Date.now();
     if (timing?.standardDurationSeconds) setDurationSeconds(timing.standardDurationSeconds);
     const locked = hydrated.submission?.status === "submitted" || timing?.phase === "submitted";
     setSubmitted(locked);
@@ -81,13 +84,73 @@ export function ExamMiniMockPage({
     return () => { cancelled = true; };
   }, [activity, platform]);
 
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 250);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const remaining = startedAt
+    ? new Date(startedAt).getTime() + durationSeconds * 1000 - (now + clockOffset.current)
+    : durationSeconds * 1000;
+  const timeUp = Boolean(startedAt) && remaining <= 0;
+  const submitRef = useRef<() => void>(() => {});
+  useEffect(() => {
+    if (timeUp && !submitted) submitRef.current();
+  }, [submitted, timeUp]);
+  useEffect(() => {
+    if (submitted) void loadResults();
+  }, [submitted]);
+
   if (!released) return <p>Exam practice is not available yet.</p>;
   if (!activity) return <p>The mini-mock is not in this curriculum package.</p>;
 
-  const offset = serverNow ? Date.parse(serverNow) - Date.now() : 0;
-  const remaining = startedAt
-    ? new Date(startedAt).getTime() + durationSeconds * 1000 - (Date.now() + offset)
-    : durationSeconds * 1000;
+  async function loadResults() {
+    const client = (platform as { client?: { schema: (name: string) => { from: (table: string) => { select: (columns: string) => { eq: (column: string, value: string) => Promise<{ data?: Array<Record<string, unknown>> }> } } } } } | undefined)?.client;
+    if (!client) return;
+    const { data } = await client.schema("api").from("my_responses").select("question_key, awarded_score, max_score, feedback_summary, response_payload").eq("activity_key", ACTIVITY_ID);
+    setResults((data || []).map((row) => ({
+      questionKey: String(row.question_key || ""),
+      awarded: typeof row.awarded_score === "number" ? row.awarded_score : null,
+      max: Number(row.max_score || 0),
+      feedback: typeof row.feedback_summary === "string" ? row.feedback_summary : "",
+      text: String((row.response_payload as { text?: string } | null)?.text || "")
+    })));
+  }
+
+  async function submitPaper() {
+    if (submitting.current || submitted || !platform?.submission?.submit || !activity) return;
+    submitting.current = true;
+    try {
+      const result = await platform.submission.submit({
+        activityKey: activity.id,
+        activityVersion: resolveActivityVersion(activity),
+        responses: questions.map((block) => evidence.written(
+          String(block.content?.questionId || block.id),
+          responses[String(block.content?.questionId || block.id)] || ""
+        ))
+      });
+      const row = result as { attempt_id?: string; attemptId?: string } | null;
+      const attemptId = row?.attempt_id || row?.attemptId;
+      const content = activeContentPackage();
+      const reflection = content ? catalogueActivity(content, "u3-lo12-reflection") : null;
+      if (reflection && attemptId) {
+        const reflectionStore = createCatalogueDraftStore(reflection, platform as never);
+        reflectionStore?.save?.({
+          responses: {},
+          checked: {},
+          results: {},
+          relatedActivityKey: activity.id,
+          relatedAttemptId: attemptId
+        }, { immediate: true });
+      }
+      setSubmitted(true);
+      setExpired(true);
+      await loadResults();
+    } finally {
+      submitting.current = false;
+    }
+  }
+  submitRef.current = () => { void submitPaper(); };
 
   async function save(next: Record<string, string>) {
     const store = createCatalogueDraftStore(activity!, platform as never);
@@ -97,7 +160,16 @@ export function ExamMiniMockPage({
   return (
     <article className="panel exam-practice">
       <h2>LO1 and LO2 Timed Mini-Mock</h2>
-      <p>20 marks. The deadline is the server start time plus the allowed minutes. Refreshing does not start a new sitting.</p>
+      <section aria-labelledby="mini-mock-instructions">
+        <h3 id="mini-mock-instructions">Examination instructions</h3>
+        <ul>
+          <li>There are five questions. The paper is out of 20 marks.</li>
+          <li>The time starts when the server records your start. Refreshing does not add time.</li>
+          <li>Answer all five questions. They are submitted together.</li>
+          <li>When the time ends, the saved answers are submitted. You cannot change them.</li>
+          <li>Marks and comments stay hidden until your teacher releases them.</li>
+        </ul>
+      </section>
       {!startedAt && !submitted ? (
         <button
           type="button"
@@ -111,7 +183,12 @@ export function ExamMiniMockPage({
               }
               store.save?.({ responses, checked: {}, results: {} }, { immediate: true });
               await store.flush?.();
-              applyDraft(await store.hydrate?.() || null);
+              let hydrated = await store.hydrate?.() || null;
+              for (let attempt = 0; attempt < 8 && !phaseOf(hydrated)?.authoritativeStartedAt; attempt += 1) {
+                await new Promise((resolve) => window.setTimeout(resolve, 250));
+                hydrated = await store.hydrate?.() || null;
+              }
+              applyDraft(hydrated);
               setNotice("The sitting uses the server start time. Refreshing restores these answers and does not open a second attempt.");
             })();
           }}
@@ -131,7 +208,7 @@ export function ExamMiniMockPage({
             <textarea
               id={id}
               value={responses[id] || ""}
-              disabled={submitted || expired || !startedAt}
+              disabled={submitted || expired || timeUp || !startedAt}
               onChange={(event) => {
                 const next = { ...responses, [id]: event.target.value };
                 setResponses(next);
@@ -145,33 +222,7 @@ export function ExamMiniMockPage({
         <button
           type="button"
           className="lp-button"
-          onClick={() => {
-            void platform?.submission?.submit?.({
-              activityKey: activity.id,
-              activityVersion: resolveActivityVersion(activity),
-              responses: questions.map((block) => evidence.written(
-                String(block.content?.questionId || block.id),
-                responses[String(block.content?.questionId || block.id)] || ""
-              ))
-            }).then((result) => {
-              setSubmitted(true);
-              setExpired(true);
-              const row = result as { attempt_id?: string; attemptId?: string } | null;
-              const attemptId = row?.attempt_id || row?.attemptId;
-              const content = activeContentPackage();
-              const reflection = content ? catalogueActivity(content, "u3-lo12-reflection") : null;
-              if (reflection && attemptId) {
-                const reflectionStore = createCatalogueDraftStore(reflection, platform as never);
-                reflectionStore?.save?.({
-                  responses: {},
-                  checked: {},
-                  results: {},
-                  relatedActivityKey: activity.id,
-                  relatedAttemptId: attemptId
-                }, { immediate: true });
-              }
-            });
-          }}
+          onClick={() => { void submitPaper(); }}
         >
           Submit Mini-Mock
         </button>
@@ -179,7 +230,20 @@ export function ExamMiniMockPage({
       {submitted ? (
         <>
           <h3>Submission confirmed</h3>
-          <p>Your answers are locked. Marks stay hidden until your teacher finalises them.</p>
+          {results.some((row) => row.awarded != null) ? (
+            <>
+              <p>Total {results.reduce((sum, row) => sum + (row.awarded || 0), 0)} / 20</p>
+              {results.map((row) => (
+                <section key={row.questionKey}>
+                  <h4>{row.questionKey} · {row.awarded ?? "—"} / {row.max}</h4>
+                  <p>{row.text}</p>
+                  {row.feedback ? <p>{row.feedback}</p> : null}
+                </section>
+              ))}
+            </>
+          ) : (
+            <p>Your answers are locked. Marks stay hidden until your teacher releases them.</p>
+          )}
           <p><a href={createSitePath(root, "exam-practice/reflection/")}>Continue to Immediate Reflection</a></p>
         </>
       ) : null}
