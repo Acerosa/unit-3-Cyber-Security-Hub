@@ -165,7 +165,7 @@ export function ExamMiniMockPage({
     if (!activity || token !== saveToken.current || submitted) return;
     setSaveState(tries > 0 ? "retrying" : "saving");
     const result = await confirmCatalogueResponses(activity, platform as never, next);
-    if (token !== saveToken.current) return;
+    if (token !== saveToken.current || result === "superseded") return;
     if (result === "saved") {
       confirmedRef.current = next;
       setSaveState("saved");

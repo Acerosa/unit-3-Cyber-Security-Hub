@@ -38,7 +38,18 @@ type ConfirmedStore = {
   isDirty?: () => boolean;
 };
 
-export type CatalogueSaveConfirmation = "saved" | "rejected" | "failed";
+export type CatalogueSaveConfirmation = "saved" | "rejected" | "failed" | "superseded";
+
+type SaveQueue = {
+  inflight: boolean;
+  latest: {
+    responses: Record<string, unknown>;
+    extra?: Record<string, unknown>;
+    resolve: (result: CatalogueSaveConfirmation) => void;
+  } | null;
+};
+
+const saveQueues = new Map<string, SaveQueue>();
 
 function responseRecord(value: unknown): Record<string, unknown> | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
@@ -48,7 +59,7 @@ function responseRecord(value: unknown): Record<string, unknown> | null {
   return responses as Record<string, unknown>;
 }
 
-export async function confirmCatalogueResponses(
+async function pushCatalogueResponses(
   activity: ActivityDocument,
   platform: DraftPlatform | undefined,
   responses: Record<string, unknown>,
@@ -69,6 +80,42 @@ export async function confirmCatalogueResponses(
   const remote = responseRecord(result);
   if (remote && !sameResponses(remote, responses)) return "rejected";
   return "saved";
+}
+
+async function drainSaveQueue(
+  activity: ActivityDocument,
+  platform: DraftPlatform | undefined,
+  queue: SaveQueue
+): Promise<void> {
+  if (queue.inflight) return;
+  queue.inflight = true;
+  try {
+    while (queue.latest) {
+      const job = queue.latest;
+      queue.latest = null;
+      const result = await pushCatalogueResponses(activity, platform, job.responses, job.extra);
+      if (queue.latest) job.resolve("superseded");
+      else job.resolve(result);
+    }
+  } finally {
+    queue.inflight = false;
+    if (queue.latest) void drainSaveQueue(activity, platform, queue);
+  }
+}
+
+export function confirmCatalogueResponses(
+  activity: ActivityDocument,
+  platform: DraftPlatform | undefined,
+  responses: Record<string, unknown>,
+  extra?: Record<string, unknown>
+): Promise<CatalogueSaveConfirmation> {
+  const queue = saveQueues.get(activity.id) || { inflight: false, latest: null };
+  saveQueues.set(activity.id, queue);
+  return new Promise((resolve) => {
+    if (queue.latest) queue.latest.resolve("superseded");
+    queue.latest = { responses, extra, resolve };
+    void drainSaveQueue(activity, platform, queue);
+  });
 }
 
 function sameResponses(remote: Record<string, unknown>, sent: Record<string, unknown>): boolean {

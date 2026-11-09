@@ -112,7 +112,7 @@ export function ExamAnswerWritingPage({
       return Boolean(answer?.original.trim() && answer.guidanceViewed && answer.revised.trim());
     });
     const result = await confirmCatalogueResponses(activity, platform, responses, { completed: complete });
-    if (token !== saveToken.current) return;
+    if (token !== saveToken.current || result === "superseded") return;
     if (result === "saved") {
       setSaveState("saved");
       return;

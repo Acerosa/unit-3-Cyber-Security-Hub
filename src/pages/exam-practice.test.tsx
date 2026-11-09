@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { confirmCatalogueResponses } from "../exam-practice/catalogue-draft";
 import { MOCK_QUESTIONS } from "../exam-practice/mock-questions";
 import {
   authorisedExtraSeconds,
@@ -169,6 +170,64 @@ describe("exam practice pages", () => {
     fireEvent.change(screen.getAllByLabelText("Your answer")[0], { target: { value: "Still here." } });
     expect(await screen.findByText("Could not save. Your answers are still in the editor.")).toBeTruthy();
     expect(screen.getAllByLabelText("Your answer")[0]).toHaveProperty("value", "Still here.");
+  });
+
+  it("shows the latest save when an older request fails after a newer one", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const releases: Array<(value: unknown) => void> = [];
+    let sent: Record<string, unknown> | null = null;
+    const platform = {
+      auth: { isSignedIn: () => true },
+      progress: {
+        createStore: () => ({
+          hydrate: async () => ({ responses: {} }),
+          save: (state: { responses: Record<string, unknown> }) => { sent = state.responses; },
+          flush: () => new Promise((resolve) => { releases.push(resolve); }),
+          isDirty: () => true
+        })
+      }
+    };
+    render(<ExamAnswerWritingPage root="." released platform={platform as never} saveDelayMs={0} />);
+    fireEvent.change(screen.getAllByLabelText("Your answer")[0], { target: { value: "First." } });
+    await vi.waitFor(() => expect(releases).toHaveLength(1));
+    fireEvent.change(screen.getAllByLabelText("Your answer")[0], { target: { value: "Second." } });
+    releases[0]({ responses: {} });
+    await vi.waitFor(() => expect(releases).toHaveLength(2));
+    releases[1]({ activityKey: "u3-lo12-answer-writing", state: { responses: sent } });
+    expect(await screen.findByText("Saved")).toBeTruthy();
+    expect(screen.queryByText("Could not save. Your answers are still in the editor.")).toBeNull();
+    expect(screen.getAllByLabelText("Your answer")[0]).toHaveProperty("value", "Second.");
+  });
+
+  it("does not accept an older response as confirmation of the current answer", async () => {
+    let releaseFirst: (value: unknown) => void = () => {};
+    const first = new Promise((resolve) => { releaseFirst = resolve; });
+    let calls = 0;
+    const platform = {
+      auth: { isSignedIn: () => true },
+      progress: {
+        createStore: () => ({
+          save: () => {},
+          flush: () => {
+            calls += 1;
+            if (calls === 1) return first;
+            return Promise.resolve({
+              activityKey: "race-activity",
+              state: { responses: { answer: "current" } }
+            });
+          },
+          isDirty: () => true
+        })
+      }
+    };
+    const activity = { id: "race-activity", version: "0.1.0" } as never;
+    const older = confirmCatalogueResponses(activity, platform, { answer: "stale" });
+    const newer = confirmCatalogueResponses(activity, platform, { answer: "current" });
+    releaseFirst({ activityKey: "race-activity", state: { responses: { answer: "stale" } } });
+    expect(await older).toBe("superseded");
+    expect(await newer).toBe("saved");
+    expect(calls).toBe(2);
   });
 
   it("reveals answer-writing guidance only after Compare My Answer", () => {
