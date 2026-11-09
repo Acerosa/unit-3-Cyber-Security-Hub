@@ -32,19 +32,68 @@ export async function loadCatalogueResponses(
   return hydrated?.responses || {};
 }
 
+type ConfirmedStore = {
+  save?: (state: unknown, options?: { immediate?: boolean }) => void;
+  flush?: () => Promise<unknown>;
+  isDirty?: () => boolean;
+};
+
+export type CatalogueSaveConfirmation = "saved" | "rejected" | "failed";
+
+function responseRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const row = value as { state?: { responses?: unknown }; responses?: unknown };
+  const responses = row.state?.responses ?? row.responses;
+  if (!responses || typeof responses !== "object" || Array.isArray(responses)) return null;
+  return responses as Record<string, unknown>;
+}
+
+export async function confirmCatalogueResponses(
+  activity: ActivityDocument,
+  platform: DraftPlatform | undefined,
+  responses: Record<string, unknown>,
+  extra?: Record<string, unknown>
+): Promise<CatalogueSaveConfirmation> {
+  const store = createCatalogueDraftStore(activity, platform as never) as ConfirmedStore | null;
+  if (!store?.save || !store.flush) return "failed";
+  const payload = { responses, checked: {}, results: {}, ...extra };
+  store.save(payload);
+  let result: unknown;
+  try {
+    result = await store.flush();
+  } catch {
+    return "failed";
+  }
+  const row = result && typeof result === "object" ? result as { activityKey?: string } : null;
+  if (!row?.activityKey) return store.isDirty?.() ? "failed" : "saved";
+  const remote = responseRecord(result);
+  if (remote && !sameResponses(remote, responses)) return "rejected";
+  return "saved";
+}
+
+function sameResponses(remote: Record<string, unknown>, sent: Record<string, unknown>): boolean {
+  const keys = new Set([...Object.keys(remote), ...Object.keys(sent)]);
+  for (const key of keys) {
+    if (stable(remote[key]) !== stable(sent[key])) return false;
+  }
+  return true;
+}
+
+function stable(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(stable).join(",")}]`;
+  if (value && typeof value === "object") {
+    return `{${Object.keys(value as Record<string, unknown>).sort().map((key) => `${key}:${stable((value as Record<string, unknown>)[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
 export function saveCatalogueResponses(
   activity: ActivityDocument,
   platform: DraftPlatform | undefined,
   responses: Record<string, unknown>,
   extra?: Record<string, unknown>
 ): void {
-  const store = createCatalogueDraftStore(activity, platform as never);
-  store?.save?.({
-    responses,
-    checked: {},
-    results: {},
-    ...extra
-  }, { immediate: true });
+  void confirmCatalogueResponses(activity, platform, responses, extra);
 }
 
 export function activityVersion(activity: ActivityDocument): string {

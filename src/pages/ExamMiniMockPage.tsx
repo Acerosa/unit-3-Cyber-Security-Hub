@@ -5,6 +5,7 @@ import {
   createCatalogueDraftStore,
   type CatalogueDraft
 } from "../catalogue/activity-draft";
+import { confirmCatalogueResponses } from "../exam-practice/catalogue-draft";
 import { formatCountdown } from "../catalogue/knowledge-report";
 import { catalogueActivity } from "../catalogue/week-activities";
 import { activeContentPackage } from "../curriculum/apply-runtime";
@@ -50,6 +51,11 @@ export function ExamMiniMockPage({
   const [submitted, setSubmitted] = useState(false);
   const [expired, setExpired] = useState(false);
   const [notice, setNotice] = useState("");
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "retrying" | "failed">("idle");
+  const confirmedRef = useRef<Record<string, string>>({});
+  const saveToken = useRef(0);
+  const responsesRef = useRef(responses);
+  responsesRef.current = responses;
   const [now, setNow] = useState(() => Date.now());
   const [results, setResults] = useState<Array<{ questionKey: string; awarded: number | null; max: number; feedback: string; text: string }>>([]);
   const submitting = useRef(false);
@@ -63,6 +69,8 @@ export function ExamMiniMockPage({
       if (typeof value === "string") saved[key] = value;
     }
     setResponses(saved);
+    confirmedRef.current = saved;
+    responsesRef.current = saved;
     const started = typeof timing?.authoritativeStartedAt === "string" ? timing.authoritativeStartedAt : null;
     setStartedAt(started);
     if (timing?.serverNow) clockOffset.current = Date.parse(timing.serverNow) - Date.now();
@@ -124,10 +132,11 @@ export function ExamMiniMockPage({
       const result = await platform.submission.submit({
         activityKey: activity.id,
         activityVersion: resolveActivityVersion(activity),
-        responses: questions.map((block) => evidence.written(
-          String(block.content?.questionId || block.id),
-          responses[String(block.content?.questionId || block.id)] || ""
-        ))
+        responses: questions.map((block) => {
+          const id = String(block.content?.questionId || block.id);
+          const text = timeUp ? (confirmedRef.current[id] || "") : (responsesRef.current[id] || "");
+          return evidence.written(id, text);
+        })
       });
       const row = result as { attempt_id?: string; attemptId?: string } | null;
       const attemptId = row?.attempt_id || row?.attemptId;
@@ -152,9 +161,27 @@ export function ExamMiniMockPage({
   }
   submitRef.current = () => { void submitPaper(); };
 
-  async function save(next: Record<string, string>) {
-    const store = createCatalogueDraftStore(activity!, platform as never);
-    store?.save?.({ responses: next, checked: {}, results: {} });
+  async function save(next: Record<string, string>, token: number, tries: number) {
+    if (!activity || token !== saveToken.current || submitted) return;
+    setSaveState(tries > 0 ? "retrying" : "saving");
+    const result = await confirmCatalogueResponses(activity, platform as never, next);
+    if (token !== saveToken.current) return;
+    if (result === "saved") {
+      confirmedRef.current = next;
+      setSaveState("saved");
+      return;
+    }
+    if (result === "rejected") {
+      setSaveState("failed");
+      setNotice("These answers were not saved. The server kept the earlier version.");
+      return;
+    }
+    if (tries < 2) {
+      window.setTimeout(() => { void save(responsesRef.current, token, tries + 1); }, 200);
+      return;
+    }
+    setSaveState("failed");
+    setNotice("These answers are not saved. They are still in the boxes.");
   }
 
   return (
@@ -199,7 +226,7 @@ export function ExamMiniMockPage({
       {startedAt && !submitted ? (
         <p className="knowledge-report__timer" role="timer">Time remaining {formatCountdown(remaining)}</p>
       ) : null}
-      {notice ? <p role="status">{notice}</p> : null}
+      <p role="status">{notice || (saveState === "saving" ? "Saving" : saveState === "saved" ? "Saved" : saveState === "retrying" ? "Retrying. These answers are not saved yet." : saveState === "failed" ? "These answers are not saved." : "")}</p>
       {questions.map((block) => {
         const id = String(block.content?.questionId || block.id);
         return (
@@ -210,9 +237,13 @@ export function ExamMiniMockPage({
               value={responses[id] || ""}
               disabled={submitted || expired || timeUp || !startedAt}
               onChange={(event) => {
-                const next = { ...responses, [id]: event.target.value };
+                const next = { ...responsesRef.current, [id]: event.target.value };
+                responsesRef.current = next;
                 setResponses(next);
-                void save(next);
+                const token = saveToken.current + 1;
+                saveToken.current = token;
+                setSaveState("saving");
+                window.setTimeout(() => { void save(responsesRef.current, token, 0); }, 300);
               }}
             />
           </section>

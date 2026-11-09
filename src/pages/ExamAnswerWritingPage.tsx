@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { catalogueActivity } from "../catalogue/week-activities";
 import { activeContentPackage } from "../curriculum/apply-runtime";
-import { loadCatalogueResponses, saveCatalogueResponses } from "../exam-practice/catalogue-draft";
+import { confirmCatalogueResponses, loadCatalogueResponses } from "../exam-practice/catalogue-draft";
 import { PRACTICE_QUESTIONS } from "../exam-practice/practice-questions";
 import { examPracticeReleased } from "../exam-practice/release";
 import { type ExamStore, type WritingAnswer } from "../exam-practice/store";
@@ -13,30 +13,46 @@ function blankAnswer(): WritingAnswer {
 
 const ACTIVITY_ID = "u3-lo12-answer-writing";
 
+type SaveState = "idle" | "saving" | "saved" | "retrying" | "failed";
+
+function saveMessage(state: SaveState): string {
+  if (state === "saving") return "Saving";
+  if (state === "saved") return "Saved";
+  if (state === "retrying") return "Retrying";
+  if (state === "failed") return "Could not save. Your answers are still in the editor.";
+  return "Not saved yet";
+}
+
 export function ExamAnswerWritingPage({
   root,
   released = examPracticeReleased(),
   store,
-  platform
+  platform,
+  saveDelayMs = 400
 }: {
   root: string;
   released?: boolean;
   store?: ExamStore;
   platform?: Parameters<typeof loadCatalogueResponses>[1];
+  saveDelayMs?: number;
 }) {
   const activity = useMemo(() => {
     const content = activeContentPackage();
     return content ? catalogueActivity(content, ACTIVITY_ID) : null;
   }, []);
   const [answers, setAnswers] = useState<Record<string, WritingAnswer>>({});
-  const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [saveState, setSaveState] = useState<SaveState>("idle");
   const [notice, setNotice] = useState("");
+  const answersRef = useRef(answers);
+  const saveToken = useRef(0);
+  const saveTimer = useRef<number | null>(null);
+  answersRef.current = answers;
 
   useEffect(() => {
     if (store) {
       const loaded = store.load();
       setAnswers(loaded.writing.answers);
-      setSavedAt(loaded.writing.updatedAt);
+      setSaveState(loaded.writing.updatedAt ? "saved" : "idle");
       return;
     }
     if (!activity) return;
@@ -48,8 +64,8 @@ export function ExamAnswerWritingPage({
         const saved = responses[`u3-lo12-answer-writing:${question.id}`];
         if (saved && typeof saved === "object") next[question.id] = { ...blankAnswer(), ...(saved as WritingAnswer) };
       }
-      setAnswers(next);
-      if (Object.keys(next).length) setSavedAt(new Date().toISOString());
+      setAnswers((current) => ({ ...next, ...current }));
+      if (Object.keys(next).length) setSaveState("saved");
     });
     return () => { cancelled = true; };
   }, [activity, platform, store]);
@@ -64,26 +80,48 @@ export function ExamAnswerWritingPage({
       [id]: { ...blankAnswer(), ...answers[id], ...patch }
     };
     setAnswers(next);
+    answersRef.current = next;
     if (store) {
-      const saved = store.saveWriting(next);
-      setSavedAt(saved.writing.updatedAt);
+      store.saveWriting(next);
+      setSaveState("saved");
       return;
     }
     if (!activity || !platform) {
       setNotice("Sign in to save this practice with your learning record.");
+      setSaveState("failed");
       return;
     }
+    const token = saveToken.current + 1;
+    saveToken.current = token;
+    setSaveState("saving");
+    setNotice("");
+    if (saveTimer.current != null) window.clearTimeout(saveTimer.current);
+    saveTimer.current = window.setTimeout(() => { void persist(token, 0); }, saveDelayMs);
+  }
+
+  async function persist(token: number, tries: number) {
+    if (!activity || token !== saveToken.current) return;
+    setSaveState(tries > 0 ? "retrying" : "saving");
+    const current = answersRef.current;
     const responses: Record<string, unknown> = {};
-    for (const [id, answer] of Object.entries(next)) {
+    for (const [id, answer] of Object.entries(current)) {
       responses[`u3-lo12-answer-writing:${id}`] = answer;
     }
     const complete = PRACTICE_QUESTIONS.every((question) => {
-      const answer = next[question.id];
+      const answer = current[question.id];
       return Boolean(answer?.original.trim() && answer.guidanceViewed && answer.revised.trim());
     });
-    saveCatalogueResponses(activity, platform, responses, { completed: complete });
-    setSavedAt(new Date().toISOString());
-    setNotice("");
+    const result = await confirmCatalogueResponses(activity, platform, responses, { completed: complete });
+    if (token !== saveToken.current) return;
+    if (result === "saved") {
+      setSaveState("saved");
+      return;
+    }
+    if (tries < 2) {
+      window.setTimeout(() => { void persist(token, tries + 1); }, 200);
+      return;
+    }
+    setSaveState("failed");
   }
 
   return (
@@ -91,7 +129,15 @@ export function ExamAnswerWritingPage({
       <h2>OCR Answer-Writing Practice</h2>
       <p>20 minutes. Guided practice for LO1 and LO2. This is not the mock examination.</p>
       <p>For each question, write your own answer before you compare it. Comparing shows an indicative answer and why a developed point earns more marks.</p>
-      <p aria-live="polite">{notice || (savedAt ? `Saved ${new Date(savedAt).toLocaleTimeString("en-GB")}` : "Not saved yet")}</p>
+      <p aria-live="polite">{notice || saveMessage(saveState)}</p>
+      {saveState === "failed" ? (
+        <button type="button" className="lp-button" onClick={() => {
+          const token = saveToken.current;
+          void persist(token, 0);
+        }}>
+          Retry save
+        </button>
+      ) : null}
       {PRACTICE_QUESTIONS.map((question, index) => {
         const answer = answers[question.id] || blankAnswer();
         return (

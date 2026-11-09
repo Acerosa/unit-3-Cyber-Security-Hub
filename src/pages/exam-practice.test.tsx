@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { MOCK_QUESTIONS } from "../exam-practice/mock-questions";
@@ -119,6 +119,56 @@ describe("exam practice pages", () => {
     expect(screen.getByText("Exam practice is not available yet.")).toBeTruthy();
     expect(buildUnit3Navigation(".", null, false).some((item) => item.id === "exam-practice")).toBe(false);
     expect(buildUnit3Navigation(".", null, true).some((item) => item.label === "Exam Practice")).toBe(true);
+  });
+
+  it("says Saved only after the server accepts the original and the improved answer", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    let sent: Record<string, unknown> | null = null;
+    const platform = {
+      auth: { isSignedIn: () => true },
+      progress: {
+        createStore: () => ({
+          hydrate: async () => ({ responses: {} }),
+          save: (state: { responses: Record<string, unknown> }) => { sent = state.responses; },
+          flush: async () => ({ activityKey: "u3-lo12-answer-writing", state: { responses: sent } }),
+          isDirty: () => true
+        })
+      }
+    };
+    render(<ExamAnswerWritingPage root="." released platform={platform as never} saveDelayMs={0} />);
+    fireEvent.change(screen.getAllByLabelText("Your answer")[0], { target: { value: "Confidentiality." } });
+    expect(screen.getByText("Saving")).toBeTruthy();
+    expect(await screen.findByText("Saved")).toBeTruthy();
+    fireEvent.click(screen.getAllByRole("button", { name: "Compare My Answer" })[0]);
+    fireEvent.change(screen.getByLabelText("Improved answer"), { target: { value: "Confidentiality, because the other client can read the return." } });
+    await vi.waitFor(() => {
+      const saved = sent?.["u3-lo12-answer-writing:aw-1"] as { original?: string; revised?: string };
+      expect(saved.revised).toContain("other client");
+      expect(saved.original).toBe("Confidentiality.");
+    });
+    expect(screen.getAllByLabelText("Your answer")[0]).toHaveProperty("value", "Confidentiality.");
+    expect(screen.getByText("Saved")).toBeTruthy();
+  });
+
+  it("keeps the typed answer when the server does not confirm the save", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const platform = {
+      auth: { isSignedIn: () => true },
+      progress: {
+        createStore: () => ({
+          hydrate: async () => ({ responses: {} }),
+          save: () => {},
+          flush: async () => ({ responses: {} }),
+          isDirty: () => true
+        })
+      }
+    };
+    render(<ExamAnswerWritingPage root="." released platform={platform as never} saveDelayMs={0} />);
+    fireEvent.change(screen.getAllByLabelText("Your answer")[0], { target: { value: "Still here." } });
+    expect(await screen.findByText("Could not save. Your answers are still in the editor.")).toBeTruthy();
+    expect(screen.getAllByLabelText("Your answer")[0]).toHaveProperty("value", "Still here.");
   });
 
   it("reveals answer-writing guidance only after Compare My Answer", () => {
