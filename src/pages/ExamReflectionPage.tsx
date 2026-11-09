@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { catalogueActivity } from "../catalogue/week-activities";
+import { activeContentPackage } from "../curriculum/apply-runtime";
+import { loadCatalogueDraft, loadCatalogueResponses, saveCatalogueResponses } from "../exam-practice/catalogue-draft";
 import { examPracticeReleased } from "../exam-practice/release";
-import { browserExamStore, type ExamStore, type ReflectionDraft } from "../exam-practice/store";
+import { type ExamStore, type ReflectionDraft } from "../exam-practice/store";
 import { createSitePath } from "../paths";
 
 const TOPICS = [
@@ -19,16 +22,40 @@ const TIME = [
   "No, I ran out of time."
 ];
 
+const REFLECTION_ID = "u3-lo12-reflection";
+const MOCK_ID = "u3-lo12-timed-mini-mock";
+
+function reflectionResponses(draft: ReflectionDraft): Record<string, unknown> {
+  return {
+    "u3-lo12-reflection:topic": draft.topic,
+    "u3-lo12-reflection:command": draft.command,
+    "u3-lo12-reflection:time": draft.time,
+    "u3-lo12-reflection:improve": draft.improve,
+    "u3-lo12-reflection:revise": draft.revise
+  };
+}
+
 export function ExamReflectionPage({
   root,
   released = examPracticeReleased(),
-  store
+  store,
+  platform,
+  mockSubmitted
 }: {
   root: string;
   released?: boolean;
   store?: ExamStore;
+  platform?: Parameters<typeof loadCatalogueResponses>[1];
+  mockSubmitted?: boolean;
 }) {
-  const [active] = useState(() => store || browserExamStore("learner"));
+  const reflection = useMemo(() => {
+    const content = activeContentPackage();
+    return content ? catalogueActivity(content, REFLECTION_ID) : null;
+  }, []);
+  const miniMock = useMemo(() => {
+    const content = activeContentPackage();
+    return content ? catalogueActivity(content, MOCK_ID) : null;
+  }, []);
   const [draft, setDraft] = useState<ReflectionDraft>({
     topic: "",
     command: "",
@@ -37,12 +64,53 @@ export function ExamReflectionPage({
     revise: "",
     submittedAt: null
   });
+  const [available, setAvailable] = useState(Boolean(store) || mockSubmitted === true);
+  const [relatedAttempt, setRelatedAttempt] = useState<string | null>(null);
 
   useEffect(() => {
-    setDraft(active.load().reflection);
-  }, [active]);
+    if (store) {
+      setDraft(store.load().reflection);
+      setAvailable(true);
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      if (miniMock && platform && mockSubmitted == null) {
+        const mockDraft = await loadCatalogueDraft(miniMock, platform);
+        const phase = (mockDraft as { knowledgeReportPhase?: { phase?: string }; submission?: { status?: string } } | null);
+        const submitted = phase?.knowledgeReportPhase?.phase === "submitted" || phase?.submission?.status === "submitted";
+        if (!cancelled) {
+          setAvailable(submitted);
+          const attemptId = (mockDraft as { attemptId?: string } | null)?.attemptId;
+          if (typeof attemptId === "string") setRelatedAttempt(attemptId);
+        }
+      }
+      if (!reflection || !platform) return;
+      const saved = await loadCatalogueResponses(reflection, platform);
+      if (cancelled) return;
+      const next: ReflectionDraft = {
+        topic: String(saved["u3-lo12-reflection:topic"] || ""),
+        command: String(saved["u3-lo12-reflection:command"] || ""),
+        time: String(saved["u3-lo12-reflection:time"] || ""),
+        improve: String(saved["u3-lo12-reflection:improve"] || ""),
+        revise: String(saved["u3-lo12-reflection:revise"] || ""),
+        submittedAt: typeof saved.submittedAt === "string" ? saved.submittedAt : null
+      };
+      setDraft(next);
+    })();
+    return () => { cancelled = true; };
+  }, [miniMock, mockSubmitted, platform, reflection, store]);
 
   if (!released) return <p>Exam practice is not available yet.</p>;
+  if (!available) {
+    return (
+      <article className="panel">
+        <h2>Immediate Reflection</h2>
+        <p>This opens after you submit the mini-mock. It does not show your mark.</p>
+        <p><a href={createSitePath(root, "exam-practice/mini-mock/")}>Back to the mini-mock</a></p>
+      </article>
+    );
+  }
 
   if (draft.submittedAt) {
     return (
@@ -59,8 +127,23 @@ export function ExamReflectionPage({
       className="panel exam-practice"
       onSubmit={(event) => {
         event.preventDefault();
-        const saved = active.saveReflection(draft);
-        setDraft(saved.reflection);
+        if (store) {
+          const saved = store.saveReflection(draft);
+          setDraft(saved.reflection);
+          return;
+        }
+        const submittedAt = new Date().toISOString();
+        if (reflection && platform) {
+          saveCatalogueResponses(reflection, platform, {
+            ...reflectionResponses(draft),
+            submittedAt
+          }, {
+            completed: true,
+            relatedActivityKey: MOCK_ID,
+            ...(relatedAttempt ? { relatedAttemptId: relatedAttempt } : {})
+          });
+        }
+        setDraft({ ...draft, submittedAt });
       }}
     >
       <h2>Immediate Reflection</h2>

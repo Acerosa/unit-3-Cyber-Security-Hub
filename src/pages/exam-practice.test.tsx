@@ -179,5 +179,27 @@ describe("exam practice pages", () => {
     expect(migration).not.toContain("create table learning.lo12_exam_records");
     expect(migration).toContain("assessmentType");
     expect(migration).toContain("learning.effective_timed_duration_seconds");
+    expect(migration).toContain("Expiry locks every question");
+    expect(migration).toContain("authoritativeStartedAt");
+  });
+
+  it("keeps answer-writing and reflection as ordinary catalogue activities", () => {
+    const activities = (pkg as { activities: Array<{ id: string; metadata?: { knowledgeReport?: unknown }; blocks?: Array<{ type?: string; content?: { prompt?: string; text?: string } }> }> }).activities;
+    const writing = activities.find((activity) => activity.id === "u3-lo12-answer-writing");
+    const reflection = activities.find((activity) => activity.id === "u3-lo12-reflection");
+    expect(writing?.metadata?.knowledgeReport).toBeUndefined();
+    expect(reflection?.metadata?.knowledgeReport).toBeUndefined();
+    expect((writing?.blocks || []).filter((block) => block.type === "short-response")).toHaveLength(6);
+    expect((reflection?.blocks || []).filter((block) => block.type === "short-response")).toHaveLength(5);
+    const reflectionText = JSON.stringify(reflection);
+    expect(reflectionText).not.toMatch(/indicative|maxMarks|marking guidance/i);
+    const writingText = JSON.stringify(writing);
+    expect(writingText).not.toMatch(/Award one mark|indicative/i);
+  });
+
+  it("hides reflection until the mini-mock is submitted", () => {
+    render(<ExamReflectionPage root="." released mockSubmitted={false} />);
+    expect(screen.getByText(/after you submit the mini-mock/i)).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Save reflection" })).toBeNull();
   });
 });

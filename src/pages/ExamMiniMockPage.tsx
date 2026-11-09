@@ -18,6 +18,7 @@ type Phase = {
   standardDurationSeconds?: number;
   serverNow?: string;
   assessmentType?: string;
+  authoritativeStartedAt?: string | null;
 };
 
 function phaseOf(draft: CatalogueDraft | null): Phase | null {
@@ -48,7 +49,25 @@ export function ExamMiniMockPage({
   const [serverNow, setServerNow] = useState<string | null>(null);
   const [durationSeconds, setDurationSeconds] = useState(20 * 60);
   const [submitted, setSubmitted] = useState(false);
+  const [expired, setExpired] = useState(false);
   const [notice, setNotice] = useState("");
+
+  function applyDraft(hydrated: CatalogueDraft | null) {
+    if (!hydrated) return;
+    const timing = phaseOf(hydrated);
+    const saved: Record<string, string> = {};
+    for (const [key, value] of Object.entries(hydrated.responses || {})) {
+      if (typeof value === "string") saved[key] = value;
+    }
+    setResponses(saved);
+    const started = typeof timing?.authoritativeStartedAt === "string" ? timing.authoritativeStartedAt : null;
+    setStartedAt(started);
+    setServerNow(timing?.serverNow || null);
+    if (timing?.standardDurationSeconds) setDurationSeconds(timing.standardDurationSeconds);
+    const locked = hydrated.submission?.status === "submitted" || timing?.phase === "submitted";
+    setSubmitted(locked);
+    setExpired(timing?.phase === "standard_expired" || locked);
+  }
 
   useEffect(() => {
     if (!activity || !platform) return;
@@ -56,17 +75,8 @@ export function ExamMiniMockPage({
     let cancelled = false;
     void (async () => {
       const hydrated = await store?.hydrate?.();
-      if (cancelled || !hydrated) return;
-      const timing = phaseOf(hydrated);
-      const saved: Record<string, string> = {};
-      for (const [key, value] of Object.entries(hydrated.responses || {})) {
-        if (typeof value === "string") saved[key] = value;
-      }
-      setResponses(saved);
-      setStartedAt(hydrated.startedAt || null);
-      setServerNow(timing?.serverNow || null);
-      if (timing?.standardDurationSeconds) setDurationSeconds(timing.standardDurationSeconds);
-      if (hydrated.submission?.status === "submitted" || timing?.phase === "submitted") setSubmitted(true);
+      if (cancelled) return;
+      applyDraft(hydrated);
     })();
     return () => { cancelled = true; };
   }, [activity, platform]);
@@ -93,9 +103,17 @@ export function ExamMiniMockPage({
           type="button"
           className="lp-button"
           onClick={() => {
-            const store = createCatalogueDraftStore(activity, platform as never);
-            store?.save?.({ responses, checked: {}, results: {}, startedAt: undefined });
-            setNotice("Your sitting starts when the learning record confirms the server time.");
+            void (async () => {
+              const store = createCatalogueDraftStore(activity, platform as never);
+              if (!store) {
+                setNotice("Sign in to start the mini-mock. The server records the start time.");
+                return;
+              }
+              store.save?.({ responses, checked: {}, results: {} }, { immediate: true });
+              await store.flush?.();
+              applyDraft(await store.hydrate?.() || null);
+              setNotice("The sitting uses the server start time. Refreshing restores these answers and does not open a second attempt.");
+            })();
           }}
         >
           Start Mini-Mock
@@ -113,7 +131,7 @@ export function ExamMiniMockPage({
             <textarea
               id={id}
               value={responses[id] || ""}
-              disabled={submitted || !startedAt}
+              disabled={submitted || expired || !startedAt}
               onChange={(event) => {
                 const next = { ...responses, [id]: event.target.value };
                 setResponses(next);
@@ -135,7 +153,24 @@ export function ExamMiniMockPage({
                 String(block.content?.questionId || block.id),
                 responses[String(block.content?.questionId || block.id)] || ""
               ))
-            }).then(() => setSubmitted(true));
+            }).then((result) => {
+              setSubmitted(true);
+              setExpired(true);
+              const row = result as { attempt_id?: string; attemptId?: string } | null;
+              const attemptId = row?.attempt_id || row?.attemptId;
+              const content = activeContentPackage();
+              const reflection = content ? catalogueActivity(content, "u3-lo12-reflection") : null;
+              if (reflection && attemptId) {
+                const reflectionStore = createCatalogueDraftStore(reflection, platform as never);
+                reflectionStore?.save?.({
+                  responses: {},
+                  checked: {},
+                  results: {},
+                  relatedActivityKey: activity.id,
+                  relatedAttemptId: attemptId
+                }, { immediate: true });
+              }
+            });
           }}
         >
           Submit Mini-Mock

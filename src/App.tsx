@@ -161,7 +161,7 @@ function PageBody({
     return (
       <>
         {joinPanel}
-        <ExamAnswerWritingPage root={context.root} />
+        <ExamAnswerWritingPage root={context.root} platform={platform as never} />
       </>
     );
   }
@@ -169,7 +169,7 @@ function PageBody({
     return (
       <>
         {joinPanel}
-        <ExamMiniMockPage root={context.root} />
+        <ExamMiniMockPage root={context.root} platform={platform as never} />
       </>
     );
   }
@@ -177,7 +177,7 @@ function PageBody({
     return (
       <>
         {joinPanel}
-        <ExamReflectionPage root={context.root} />
+        <ExamReflectionPage root={context.root} platform={platform as never} />
       </>
     );
   }

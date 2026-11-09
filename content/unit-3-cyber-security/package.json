@@ -23713,6 +23713,276 @@
         {"schema": "lp.content.block", "schemaVersion": "0.1.0", "id": "u3-lo12-timed-mini-mock-mm-5-scenario", "version": "0.1.0", "metadata": {}, "relationships": {}, "type": "paragraph", "content": {"text": "Discuss. 6 marks. Kindling Trust keeps a list of people who donate each month. A volunteer posts a screenshot of that list, including names and amounts, on the charity's social media account."}},
         {"schema": "lp.content.block", "schemaVersion": "0.1.0", "id": "u3-lo12-timed-mini-mock-mm-5", "version": "0.1.0", "metadata": {}, "relationships": {}, "type": "short-response", "content": {"questionId": "u3-lo12-timed-mini-mock:mm-5", "prompt": "Discuss the legal and operational issues this creates for Kindling Trust.", "maxMarks": 6, "minChars": 1}}
       ]
-    }
+    },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-lo12-answer-writing",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "OCR Answer-Writing Practice",
+      "cataloguePlacement": "unscheduled",
+      "summary": "Guided practice. Compare your answer after you have written it. This is not timed and it is not marked.",
+      "status": "planned"
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-answer-writing-aw-1-scenario",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Riverside College lets several students use one shared library login to print coursework."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-answer-writing-aw-1",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "questionId": "u3-lo12-answer-writing:aw-1",
+          "prompt": "Identify two cyber security aims that this arrangement puts at risk.",
+          "minChars": 1
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-answer-writing-aw-2-scenario",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Harbour Books uses one till password, written on a note beside the till. Weekend staff all know it."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-answer-writing-aw-2",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "questionId": "u3-lo12-answer-writing:aw-2",
+          "prompt": "Describe one vulnerability in this arrangement.",
+          "minChars": 1
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-answer-writing-aw-3-scenario",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Greenpath is a small charity. It keeps supporters' bank details so it can claim Gift Aid. A former volunteer left after a dispute about hours."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-answer-writing-aw-3",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "questionId": "u3-lo12-answer-writing:aw-3",
+          "prompt": "Explain why the former volunteer could be a threat to Greenpath, and what they might target.",
+          "minChars": 1
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-answer-writing-aw-4-scenario",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Larkspur Florist takes online orders for a busy Saturday. On Friday night the website and the card machine both stop working. The paper order book is in the shop."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-answer-writing-aw-4",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "questionId": "u3-lo12-answer-writing:aw-4",
+          "prompt": "Describe two impacts on Larkspur if the website and card machine stay unavailable through Saturday.",
+          "minChars": 1
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-answer-writing-aw-5-scenario",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Meadow Sixth Form emailed staff a message that looked like the headteacher asking them to open 'updated registers'. Several staff have not been shown how to check a sender's address. The attachment was malware."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-answer-writing-aw-5",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "questionId": "u3-lo12-answer-writing:aw-5",
+          "prompt": "Explain the threat and the vulnerability in this incident. Use the scenario.",
+          "minChars": 1
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-answer-writing-aw-6-scenario",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "paragraph",
+        "content": {
+          "text": "Kiln & Co is a small pottery shop. Customer names and delivery addresses were copied and a message arrived demanding payment to stop them being published. The shop has one owner, who also packs the orders."
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-answer-writing-aw-6",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "questionId": "u3-lo12-answer-writing:aw-6",
+          "prompt": "Discuss the issues the owner should consider before deciding whether to pay.",
+          "minChars": 1
+        }
+      }
+    ]
+  },
+  {
+    "schema": "lp.content.activity",
+    "schemaVersion": "0.1.0",
+    "id": "u3-lo12-reflection",
+    "version": "0.1.0",
+    "metadata": {
+      "title": "Immediate Reflection",
+      "cataloguePlacement": "unscheduled",
+      "summary": "Your own review after the mini-mock. It does not show a mark.",
+      "status": "planned"
+    },
+    "relationships": {
+      "learningOutcomes": [
+        "LO1"
+      ],
+      "assignment": "formative-practice",
+      "questions": [],
+      "assets": []
+    },
+    "blocks": [
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-reflection-topic",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "questionId": "u3-lo12-reflection:topic",
+          "prompt": "Which topic did you find most difficult?",
+          "minChars": 1
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-reflection-command",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "questionId": "u3-lo12-reflection:command",
+          "prompt": "Which examination command word did you find most difficult?",
+          "minChars": 1
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-reflection-time",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "questionId": "u3-lo12-reflection:time",
+          "prompt": "Did you manage your time?",
+          "minChars": 1
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-reflection-improve",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "questionId": "u3-lo12-reflection:improve",
+          "prompt": "What do you think you need to improve?",
+          "minChars": 1
+        }
+      },
+      {
+        "schema": "lp.content.block",
+        "schemaVersion": "0.1.0",
+        "id": "u3-lo12-reflection-revise",
+        "version": "0.1.0",
+        "metadata": {},
+        "relationships": {},
+        "type": "short-response",
+        "content": {
+          "questionId": "u3-lo12-reflection:revise",
+          "prompt": "Identify two topics you will revise before the mock examination.",
+          "minChars": 1
+        }
+      }
+    ]
+  }
   ]
 }
