@@ -1,8 +1,9 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { confirmCatalogueResponses } from "../exam-practice/catalogue-draft";
+import { decideTimedPaperSave } from "../exam-practice/timed-paper-save";
 import { MOCK_QUESTIONS } from "../exam-practice/mock-questions";
 import {
   authorisedExtraSeconds,
@@ -284,6 +285,8 @@ describe("exam practice pages", () => {
     const page = readFileSync(resolve("src/pages/ExamMiniMockPage.tsx"), "utf8");
     const migration = readFileSync(resolve("../learning-platform-backend/supabase/migrations/20261109160000_timed_written_paper.sql"), "utf8");
     expect(page).toContain("createCatalogueDraftStore");
+    expect(page).toContain("p_expected_revision");
+    expect(page).not.toContain("notice ||");
     expect(page).not.toContain("lo12_exam_records");
     expect(migration).not.toContain("create table learning.lo12_exam_records");
     expect(migration).toContain("assessmentType");
@@ -304,6 +307,140 @@ describe("exam practice pages", () => {
     expect(reflectionText).not.toMatch(/indicative|maxMarks|marking guidance/i);
     const writingText = JSON.stringify(writing);
     expect(writingText).not.toMatch(/Award one mark|indicative/i);
+  });
+
+  it("keeps a confirmed answer when a lost save response is retried", () => {
+    const sent = { "u3-lo12-timed-mini-mock:mm-1": "BETA newer confirmed answer" };
+    const ids = ["u3-lo12-timed-mini-mock:mm-1"];
+    expect(decideTimedPaperSave({
+      sent,
+      questionIds: ids,
+      row: null,
+      error: true,
+      tries: 0
+    }).action).toBe("retry");
+    expect(decideTimedPaperSave({
+      sent,
+      questionIds: ids,
+      row: {
+        revision: 4,
+        save_outcome: "conflict",
+        state: { responses: sent }
+      },
+      error: false,
+      tries: 1
+    })).toMatchObject({ action: "adopt", revision: 4 });
+    expect(decideTimedPaperSave({
+      sent: { "u3-lo12-timed-mini-mock:mm-1": "ALPHA stale overwrite" },
+      questionIds: ids,
+      row: {
+        revision: 4,
+        save_outcome: "conflict",
+        state: { responses: sent }
+      },
+      error: false,
+      tries: 0
+    })).toMatchObject({ action: "conflict", revision: 4 });
+  });
+
+  it("shows the save status and a conflict without replacing the typed answer", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const calls: Array<Record<string, unknown>> = [];
+    const started = "2026-11-10T07:00:00.000Z";
+    const platform = {
+      client: {
+        schema: () => ({
+          rpc: async (fn: string, args: Record<string, unknown>) => {
+            calls.push({ fn, ...args });
+            if (fn === "get_activity_state") {
+              return {
+                data: [{
+                  revision: 3,
+                  started_at: started,
+                  state: {
+                    responses: { "u3-lo12-timed-mini-mock:mm-1": "BETA newer confirmed answer" },
+                    knowledgeReportPhase: {
+                      authoritativeStartedAt: started,
+                      standardDurationSeconds: 1200,
+                      serverNow: started,
+                      phase: "in_progress"
+                    }
+                  }
+                }]
+              };
+            }
+            return {
+              data: [{
+                revision: 3,
+                save_outcome: "conflict",
+                started_at: started,
+                state: {
+                  responses: { "u3-lo12-timed-mini-mock:mm-1": "BETA newer confirmed answer" },
+                  knowledgeReportPhase: {
+                    authoritativeStartedAt: started,
+                    standardDurationSeconds: 1200,
+                    serverNow: started,
+                    phase: "in_progress"
+                  }
+                }
+              }]
+            };
+          }
+        })
+      }
+    };
+    render(<ExamMiniMockPage root="." released platform={platform as never} />);
+    const box = await screen.findByLabelText(/Explain which cyber security aim has failed/i);
+    expect((box as HTMLTextAreaElement).value).toBe("BETA newer confirmed answer");
+    fireEvent.change(box, { target: { value: "ALPHA stale overwrite" } });
+    expect(screen.getByRole("status").textContent).toBe("Saving");
+    await waitFor(() => expect(screen.getByRole("alert")).toBeTruthy());
+    expect(screen.getByRole("status").textContent).toBe("This assessment was updated in another tab.");
+    expect(screen.queryByRole("status")?.textContent).not.toBe("Saved");
+    expect((box as HTMLTextAreaElement).value).toBe("ALPHA stale overwrite");
+    expect(screen.getByText(/BETA newer confirmed answer/)).toBeTruthy();
+    const saveCall = calls.find((call) => call.fn === "save_activity_state");
+    expect(saveCall?.p_expected_revision).toBe(3);
+    fireEvent.click(screen.getByRole("button", { name: "Use the saved version" }));
+    expect((box as HTMLTextAreaElement).value).toBe("BETA newer confirmed answer");
+    expect(screen.getByRole("status").textContent).toBe("Saved");
+    expect(calls.filter((call) => call.fn === "save_activity_state")).toHaveLength(1);
+  });
+
+  it("keeps the save status visible after the mini-mock starts", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const platform = {
+      client: {
+        schema: () => ({
+          rpc: async (fn: string) => {
+            if (fn === "get_activity_state") return { data: [] };
+            return {
+              data: [{
+                revision: 1,
+                save_outcome: "saved",
+                started_at: "2026-11-10T07:00:00.000Z",
+                state: {
+                  responses: {},
+                  knowledgeReportPhase: {
+                    authoritativeStartedAt: "2026-11-10T07:00:00.000Z",
+                    standardDurationSeconds: 1200,
+                    serverNow: "2026-11-10T07:00:00.000Z",
+                    phase: "in_progress"
+                  }
+                }
+              }]
+            };
+          }
+        })
+      }
+    };
+    render(<ExamMiniMockPage root="." released platform={platform as never} />);
+    fireEvent.click(await screen.findByRole("button", { name: "Start Mini-Mock" }));
+    expect(await screen.findByText(/The sitting uses the server start time/)).toBeTruthy();
+    expect(screen.getByRole("status").textContent).toBe("Saved");
+    expect(screen.getByRole("timer")).toBeTruthy();
   });
 
   it("hides reflection until the mini-mock is submitted", () => {

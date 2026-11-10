@@ -1,15 +1,16 @@
 import { resolveActivityVersion } from "@learning-platform/core";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { evidence } from "@learning-platform/core";
-import {
-  createCatalogueDraftStore,
-  type CatalogueDraft
-} from "../catalogue/activity-draft";
-import { confirmCatalogueResponses } from "../exam-practice/catalogue-draft";
+import { createCatalogueDraftStore } from "../catalogue/activity-draft";
 import { formatCountdown } from "../catalogue/knowledge-report";
 import { catalogueActivity } from "../catalogue/week-activities";
 import { activeContentPackage } from "../curriculum/apply-runtime";
 import { examPracticeReleased } from "../exam-practice/release";
+import {
+  decideTimedPaperSave,
+  firstSaveRow,
+  type TimedPaperSaveRow
+} from "../exam-practice/timed-paper-save";
 import { createSitePath } from "../paths";
 
 const ACTIVITY_ID = "u3-lo12-timed-mini-mock";
@@ -22,9 +23,30 @@ type Phase = {
   authoritativeStartedAt?: string | null;
 };
 
-function phaseOf(draft: CatalogueDraft | null): Phase | null {
-  const value = (draft as { knowledgeReportPhase?: Phase } | null)?.knowledgeReportPhase;
-  return value && typeof value === "object" ? value : null;
+type Conflict = {
+  revision: number;
+  responses: Record<string, string>;
+};
+
+type RpcClient = {
+  schema: (name: string) => {
+    rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data?: unknown; error?: { message?: string } | null }>;
+    from?: (table: string) => { select: (columns: string) => { eq: (column: string, value: string) => Promise<{ data?: Array<Record<string, unknown>> }> } };
+  };
+};
+
+function phaseOf(row: TimedPaperSaveRow | null): Phase | null {
+  const value = row?.state?.knowledgeReportPhase;
+  return value && typeof value === "object" ? value as Phase : null;
+}
+
+function statusLabel(saveState: string) {
+  if (saveState === "saving") return "Saving";
+  if (saveState === "saved") return "Saved";
+  if (saveState === "retrying") return "Retrying. These answers are not saved yet.";
+  if (saveState === "failed") return "These answers are not saved.";
+  if (saveState === "conflict") return "This assessment was updated in another tab.";
+  return "";
 }
 
 export function ExamMiniMockPage({
@@ -36,8 +58,9 @@ export function ExamMiniMockPage({
   released?: boolean;
   platform?: {
     submission?: { submit?: (payload: unknown) => Promise<unknown> };
-    progress?: { createStore?: (options: unknown) => { hydrate?: () => Promise<CatalogueDraft | null>; save?: (state: unknown) => void } };
+    progress?: { createStore?: (options: unknown) => { save?: (state: unknown, options?: unknown) => void } };
     auth?: { isSignedIn?: () => boolean };
+    client?: RpcClient;
   };
 }) {
   const activity = useMemo(() => {
@@ -45,14 +68,19 @@ export function ExamMiniMockPage({
     return content ? catalogueActivity(content, ACTIVITY_ID) : null;
   }, []);
   const questions = (activity?.blocks || []).filter((block) => block.type === "short-response");
+  const questionIds = questions.map((block) => String(block.content?.questionId || block.id));
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [startedAt, setStartedAt] = useState<string | null>(null);
   const [durationSeconds, setDurationSeconds] = useState(20 * 60);
   const [submitted, setSubmitted] = useState(false);
   const [expired, setExpired] = useState(false);
   const [notice, setNotice] = useState("");
-  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "retrying" | "failed">("idle");
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "retrying" | "failed" | "conflict">("idle");
+  const [conflict, setConflict] = useState<Conflict | null>(null);
   const confirmedRef = useRef<Record<string, string>>({});
+  const serverAnswersRef = useRef<Record<string, string>>({});
+  const revisionRef = useRef(0);
+  const holdRef = useRef(false);
   const saveToken = useRef(0);
   const responsesRef = useRef(responses);
   responsesRef.current = responses;
@@ -61,33 +89,46 @@ export function ExamMiniMockPage({
   const submitting = useRef(false);
   const clockOffset = useRef(0);
 
-  function applyDraft(hydrated: CatalogueDraft | null) {
-    if (!hydrated) return;
-    const timing = phaseOf(hydrated);
-    const saved: Record<string, string> = {};
-    for (const [key, value] of Object.entries(hydrated.responses || {})) {
-      if (typeof value === "string") saved[key] = value;
-    }
-    setResponses(saved);
-    confirmedRef.current = saved;
-    responsesRef.current = saved;
-    const started = typeof timing?.authoritativeStartedAt === "string" ? timing.authoritativeStartedAt : null;
-    setStartedAt(started);
+  function applyTiming(row: TimedPaperSaveRow | null) {
+    const timing = phaseOf(row);
+    const started = typeof timing?.authoritativeStartedAt === "string"
+      ? timing.authoritativeStartedAt
+      : (typeof row?.started_at === "string" ? row.started_at : (typeof row?.startedAt === "string" ? row.startedAt : null));
+    if (started) setStartedAt(started);
     if (timing?.serverNow) clockOffset.current = Date.parse(timing.serverNow) - Date.now();
     if (timing?.standardDurationSeconds) setDurationSeconds(timing.standardDurationSeconds);
-    const locked = hydrated.submission?.status === "submitted" || timing?.phase === "submitted";
-    setSubmitted(locked);
-    setExpired(timing?.phase === "standard_expired" || locked);
+    const locked = timing?.phase === "submitted" || timing?.phase === "standard_expired";
+    if (timing?.phase === "submitted") setSubmitted(true);
+    if (locked) setExpired(true);
+  }
+
+  function rememberServer(row: TimedPaperSaveRow | null, replaceEditor: boolean) {
+    const saved = row?.state?.responses
+      ? Object.fromEntries(Object.entries(row.state.responses).filter((entry): entry is [string, string] => typeof entry[1] === "string"))
+      : {};
+    serverAnswersRef.current = saved;
+    confirmedRef.current = saved;
+    if (typeof row?.revision === "number") revisionRef.current = row.revision;
+    applyTiming(row);
+    if (replaceEditor) {
+      responsesRef.current = saved;
+      setResponses(saved);
+    }
   }
 
   useEffect(() => {
-    if (!activity || !platform) return;
-    const store = createCatalogueDraftStore(activity, platform as never);
+    if (!activity || !platform?.client) return;
     let cancelled = false;
     void (async () => {
-      const hydrated = await store?.hydrate?.();
-      if (cancelled) return;
-      applyDraft(hydrated);
+      const { data, error } = await platform.client!.schema("api").rpc("get_activity_state", {
+        p_activity_key: activity.id,
+        p_activity_version: resolveActivityVersion(activity)
+      });
+      if (cancelled || error) return;
+      const row = firstSaveRow(data);
+      if (!row) return;
+      revisionRef.current = Number(row.revision) || 0;
+      rememberServer(row, true);
     })();
     return () => { cancelled = true; };
   }, [activity, platform]);
@@ -113,9 +154,9 @@ export function ExamMiniMockPage({
   if (!activity) return <p>The mini-mock is not in this curriculum package.</p>;
 
   async function loadResults() {
-    const client = (platform as { client?: { schema: (name: string) => { from: (table: string) => { select: (columns: string) => { eq: (column: string, value: string) => Promise<{ data?: Array<Record<string, unknown>> }> } } } } } | undefined)?.client;
-    if (!client) return;
-    const { data } = await client.schema("api").from("my_responses").select("question_key, awarded_score, max_score, feedback_summary, response_payload").eq("activity_key", ACTIVITY_ID);
+    const client = platform?.client;
+    if (!client?.schema("api").from) return;
+    const { data } = await client.schema("api").from!("my_responses").select("question_key, awarded_score, max_score, feedback_summary, response_payload").eq("activity_key", ACTIVITY_ID);
     setResults((data || []).map((row) => ({
       questionKey: String(row.question_key || ""),
       awarded: typeof row.awarded_score === "number" ? row.awarded_score : null,
@@ -134,7 +175,9 @@ export function ExamMiniMockPage({
         activityVersion: resolveActivityVersion(activity),
         responses: questions.map((block) => {
           const id = String(block.content?.questionId || block.id);
-          const text = timeUp ? (confirmedRef.current[id] || "") : (responsesRef.current[id] || "");
+          const text = timeUp
+            ? (serverAnswersRef.current[id] || confirmedRef.current[id] || "")
+            : (responsesRef.current[id] || "");
           return evidence.written(id, text);
         })
       });
@@ -154,6 +197,7 @@ export function ExamMiniMockPage({
       }
       setSubmitted(true);
       setExpired(true);
+      holdRef.current = true;
       await loadResults();
     } finally {
       submitting.current = false;
@@ -161,27 +205,79 @@ export function ExamMiniMockPage({
   }
   submitRef.current = () => { void submitPaper(); };
 
-  async function save(next: Record<string, string>, token: number, tries: number) {
-    if (!activity || token !== saveToken.current || submitted) return;
+  async function save(next: Record<string, string>, token: number, tries: number, force = false) {
+    if (!activity || !platform?.client || token !== saveToken.current || submitted) return;
+    if (holdRef.current && !force) return;
+    if (timeUp && force) return;
     setSaveState(tries > 0 ? "retrying" : "saving");
-    const result = await confirmCatalogueResponses(activity, platform as never, next);
-    if (token !== saveToken.current || result === "superseded") return;
-    if (result === "saved") {
+    let data: unknown = null;
+    let error = false;
+    try {
+      const result = await platform.client.schema("api").rpc("save_activity_state", {
+        p_activity_key: activity.id,
+        p_activity_version: resolveActivityVersion(activity),
+        p_state: { responses: next, checked: {}, results: {} },
+        p_expected_revision: revisionRef.current
+      });
+      data = result.data;
+      error = Boolean(result.error);
+    } catch {
+      error = true;
+    }
+    if (token !== saveToken.current) return;
+    const decision = decideTimedPaperSave({
+      sent: next,
+      questionIds,
+      row: firstSaveRow(data),
+      error,
+      tries
+    });
+    if (decision.action === "retry") {
+      window.setTimeout(() => { void save(responsesRef.current, token, tries + 1, force); }, 200);
+      return;
+    }
+    const row = firstSaveRow(data);
+    if (decision.action === "saved" || decision.action === "adopt") {
+      revisionRef.current = decision.revision;
+      rememberServer(row, false);
       confirmedRef.current = next;
+      serverAnswersRef.current = { ...serverAnswersRef.current, ...next };
+      holdRef.current = false;
+      setConflict(null);
       setSaveState("saved");
+      setNotice("The sitting uses the server start time. Refreshing restores these answers and does not open a second attempt.");
       return;
     }
-    if (result === "rejected") {
+    if (decision.action === "conflict") {
+      revisionRef.current = decision.revision;
+      serverAnswersRef.current = decision.responses;
+      applyTiming(row);
+      holdRef.current = true;
+      setConflict({ revision: decision.revision, responses: decision.responses });
+      setSaveState("conflict");
+      return;
+    }
+    if (decision.action === "locked") {
+      applyTiming(row);
+      serverAnswersRef.current = decision.responses;
+      holdRef.current = true;
       setSaveState("failed");
-      setNotice("These answers were not saved. The server kept the earlier version.");
-      return;
-    }
-    if (tries < 2) {
-      window.setTimeout(() => { void save(responsesRef.current, token, tries + 1); }, 200);
+      setNotice("The time has ended. These answers were not saved.");
       return;
     }
     setSaveState("failed");
     setNotice("These answers are not saved. They are still in the boxes.");
+  }
+
+  function useSavedVersion() {
+    if (!conflict || submitted) return;
+    const saved = conflict.responses;
+    responsesRef.current = saved;
+    confirmedRef.current = saved;
+    setResponses(saved);
+    holdRef.current = false;
+    setConflict(null);
+    setSaveState("saved");
   }
 
   return (
@@ -203,20 +299,13 @@ export function ExamMiniMockPage({
           className="lp-button"
           onClick={() => {
             void (async () => {
-              const store = createCatalogueDraftStore(activity, platform as never);
-              if (!store) {
+              if (!platform?.client) {
                 setNotice("Sign in to start the mini-mock. The server records the start time.");
                 return;
               }
-              store.save?.({ responses, checked: {}, results: {} }, { immediate: true });
-              await store.flush?.();
-              let hydrated = await store.hydrate?.() || null;
-              for (let attempt = 0; attempt < 8 && !phaseOf(hydrated)?.authoritativeStartedAt; attempt += 1) {
-                await new Promise((resolve) => window.setTimeout(resolve, 250));
-                hydrated = await store.hydrate?.() || null;
-              }
-              applyDraft(hydrated);
-              setNotice("The sitting uses the server start time. Refreshing restores these answers and does not open a second attempt.");
+              const token = saveToken.current + 1;
+              saveToken.current = token;
+              await save(responsesRef.current, token, 0, true);
             })();
           }}
         >
@@ -226,7 +315,36 @@ export function ExamMiniMockPage({
       {startedAt && !submitted ? (
         <p className="knowledge-report__timer" role="timer">Time remaining {formatCountdown(remaining)}</p>
       ) : null}
-      <p role="status">{notice || (saveState === "saving" ? "Saving" : saveState === "saved" ? "Saved" : saveState === "retrying" ? "Retrying. These answers are not saved yet." : saveState === "failed" ? "These answers are not saved." : "")}</p>
+      <p role="status">{statusLabel(saveState)}</p>
+      {notice ? <p>{notice}</p> : null}
+      {conflict ? (
+        <section role="alert" aria-labelledby="mini-mock-conflict">
+          <h3 id="mini-mock-conflict">Updated in another tab</h3>
+          <p>This assessment was updated in another tab. Your typing is still in the boxes. The saved version is shown below and has not replaced it.</p>
+          <ul>
+            {questionIds.map((id) => (
+              <li key={id}>{id}: {conflict.responses[id] || ""}</li>
+            ))}
+          </ul>
+          {!submitted ? (
+            <button type="button" className="lp-button" onClick={useSavedVersion}>Use the saved version</button>
+          ) : null}
+          {!timeUp && !submitted ? (
+            <button
+              type="button"
+              className="lp-button"
+              onClick={() => {
+                holdRef.current = false;
+                const token = saveToken.current + 1;
+                saveToken.current = token;
+                void save(responsesRef.current, token, 0, true);
+              }}
+            >
+              Save the answers in the boxes
+            </button>
+          ) : null}
+        </section>
+      ) : null}
       {questions.map((block) => {
         const id = String(block.content?.questionId || block.id);
         return (
@@ -240,6 +358,7 @@ export function ExamMiniMockPage({
                 const next = { ...responsesRef.current, [id]: event.target.value };
                 responsesRef.current = next;
                 setResponses(next);
+                if (holdRef.current || submitted || timeUp) return;
                 const token = saveToken.current + 1;
                 saveToken.current = token;
                 setSaveState("saving");
@@ -249,7 +368,7 @@ export function ExamMiniMockPage({
           </section>
         );
       })}
-      {startedAt && !submitted ? (
+      {startedAt && !submitted && !conflict ? (
         <button
           type="button"
           className="lp-button"
