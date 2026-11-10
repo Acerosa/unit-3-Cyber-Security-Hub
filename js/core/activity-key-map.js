@@ -52,7 +52,6 @@
     "week2-northbank-vulnerability-register": true,
     "week3-ocr-question-practice": true,
     "week3-peer-marking": true,
-    "week4-ocr-question-practice": true,
     "week4-answer-improvement": true,
     "week4-mtm-mapping": true,
     "week4-northbank-exposure": true,

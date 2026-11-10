@@ -894,10 +894,7 @@
       "subtitle": "Examination practice with mark schemes revealed on review.",
       "scripts": [
         "js/week4-progress.js",
-        "js/core/backend-progress.js",
-        "js/week4-submit.js",
-        "week-4/data/ocr-practice.js",
-        "week-4/ocr-practice/app.js"
+        "js/core/backend-progress.js"
       ],
       "redirectTo": ""
     },

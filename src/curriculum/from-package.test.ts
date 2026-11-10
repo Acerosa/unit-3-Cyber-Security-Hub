@@ -331,7 +331,7 @@ describe("Unit 3 package hydration", () => {
     expect(cataloguePlayerMode(4, "week4-mtm-mapping", catalogueActivity(pkg, "week4-mtm-mapping"))).toBe("host");
     expect(cataloguePlayerMode(4, "week4-northbank-exposure", catalogueActivity(pkg, "week4-northbank-exposure"))).toBe("host");
     expect(cataloguePlayerMode(4, "week4-analyse-practice", catalogueActivity(pkg, "week4-analyse-practice"))).toBe("host");
-    expect(cataloguePlayerMode(4, "week4-ocr-question-practice", catalogueActivity(pkg, "week4-ocr-question-practice"))).toBe("host");
+    expect(cataloguePlayerMode(4, "week4-ocr-question-practice", catalogueActivity(pkg, "week4-ocr-question-practice"))).toBe("catalogue");
 
     const targets = catalogueActivity(pkg, "week4-targets-methods");
     expect((targets?.blocks || []).some((block) => block.type === "classification")).toBe(true);

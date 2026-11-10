@@ -164,6 +164,7 @@ test("Week 2 lists activities on the week page and links each activity to the ne
     "week-4/session1-retrieval/index.html",
     "week-4/session2-retrieval/index.html",
     "week-4/motivations-learning/index.html",
+    "week-4/ocr-practice/index.html",
     "week-4/targets-methods/index.html",
     "week-4/ethical-review/index.html"
   ];
@@ -233,7 +234,6 @@ test("Week 2 lists activities on the week page and links each activity to the ne
   assert.match(inventory.split("week-7/ocr-practice/index.html")[1].split('"redirectTo"')[0], /week-7\/ocr-practice\/app\.js/);
   assert.match(inventory.split("week-7/answer-improvement/index.html")[1].split('"redirectTo"')[0], /week-7\/answer-improvement\/app\.js/);
   assert.match(inventory.split("week-4/mtm-mapping/index.html")[1].split("week-4/northbank")[0], /week-4\/mtm-mapping\/app\.js/);
-  assert.match(inventory.split("week-4/ocr-practice/index.html")[1].split("week-4/passive-recon")[0], /week-4\/ocr-practice\/app\.js/);
   assert.match(inventory.split("week-4/analyse-practice/index.html")[1].split("week-4/answer-improvement")[0], /week-4\/analyse-practice\/app\.js/);
   assert.match(inventory.split("week-4/northbank-exposure/index.html")[1].split("week-4/ocr-practice")[0], /week-4\/northbank-exposure\/app\.js/);
   assert.match(inventory.split("week-3/ocr-practice/index.html")[1].split("week-3/peer-marking")[0], /week-3\/ocr-practice\/app\.js/);
