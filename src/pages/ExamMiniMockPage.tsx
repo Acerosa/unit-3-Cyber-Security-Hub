@@ -7,6 +7,7 @@ import { catalogueActivity } from "../catalogue/week-activities";
 import { activeContentPackage } from "../curriculum/apply-runtime";
 import { examPracticeReleased } from "../exam-practice/release";
 import { examRemoteReady, SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING } from "../exam-practice/resume-gate";
+import { readActivityRows, resolveMiniMockSitting } from "../exam-practice/sitting";
 import {
   decideTimedPaperSave,
   firstSaveRow,
@@ -153,9 +154,24 @@ export function ExamMiniMockPage({
           return;
         }
         const row = firstSaveRow(data);
-        if (row) {
-          revisionRef.current = Number(row.revision) || 0;
+        const attempts = await readActivityRows(platform.client, "my_attempts", activity.id);
+        const stored = await readActivityRows(platform.client, "my_responses", activity.id);
+        if (cancelled) return;
+        const sitting = resolveMiniMockSitting({
+          draft: row,
+          attempts: attempts.consulted ? attempts.rows : null,
+          responses: stored.consulted ? stored.rows : null
+        });
+        if (sitting.kind === "in-progress" && row) {
+          revisionRef.current = sitting.revision;
           rememberServer(row, true);
+        } else if (sitting.kind === "submitted" || sitting.kind === "released") {
+          holdRef.current = true;
+          responsesRef.current = sitting.responses;
+          setResponses(sitting.responses);
+          setSubmitted(true);
+          setExpired(true);
+          if (sitting.kind === "released") setResults(sitting.results);
         }
         setResume("ready");
       } catch {

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { catalogueActivity } from "../catalogue/week-activities";
 import { activeContentPackage } from "../curriculum/apply-runtime";
 import { readCatalogueDraft, saveCatalogueResponses } from "../exam-practice/catalogue-draft";
+import { miniMockIsSubmitted, readActivityRows, type AttemptRow } from "../exam-practice/sitting";
 import { examPracticeReleased } from "../exam-practice/release";
 import { examRemoteReady, SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING } from "../exam-practice/resume-gate";
 import { type ExamStore, type ReflectionDraft } from "../exam-practice/store";
@@ -48,7 +49,9 @@ export function ExamReflectionPage({
   root: string;
   released?: boolean;
   store?: ExamStore;
-  platform?: Parameters<typeof readCatalogueDraft>[1];
+  platform?: Parameters<typeof readCatalogueDraft>[1] & {
+    client?: Parameters<typeof readActivityRows>[0];
+  };
   platformState?: string;
   contentReady?: boolean;
   mockSubmitted?: boolean;
@@ -102,16 +105,27 @@ export function ExamReflectionPage({
     setResume("loading");
     void (async () => {
       if (miniMock && platform && mockSubmitted == null) {
+        let attempts: AttemptRow[] | null = null;
+        try {
+          const attemptRows = await readActivityRows(platform.client, "my_attempts", miniMock.id);
+          if (attemptRows.consulted) attempts = attemptRows.rows as AttemptRow[];
+        } catch {
+          if (!cancelled) setResume("failed");
+          return;
+        }
+        if (cancelled) return;
         const mockResult = await readCatalogueDraft(miniMock, platform);
         if (cancelled) return;
-        if (!mockResult.ok) {
+        if (!mockResult.ok && attempts == null) {
           setResume("failed");
           return;
         }
-        const mockDraft = mockResult.draft as { knowledgeReportPhase?: { phase?: string }; submission?: { status?: string }; attemptId?: string } | null;
-        const submitted = mockDraft?.knowledgeReportPhase?.phase === "submitted" || mockDraft?.submission?.status === "submitted";
-        setAvailable(submitted);
-        if (typeof mockDraft?.attemptId === "string") setRelatedAttempt(mockDraft.attemptId);
+        const mockDraft = mockResult.ok
+          ? mockResult.draft as { knowledgeReportPhase?: { phase?: string }; submission?: { status?: string }; attemptId?: string } | null
+          : null;
+        setAvailable(miniMockIsSubmitted(mockDraft, attempts));
+        const attemptId = attempts?.[0]?.attempt_id || mockDraft?.attemptId;
+        if (typeof attemptId === "string") setRelatedAttempt(attemptId);
       }
       if (!reflection || !platform) {
         if (!cancelled) setResume("ready");

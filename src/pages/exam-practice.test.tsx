@@ -643,4 +643,225 @@ describe("exam practice pages", () => {
     expect(screen.getByText(/after you submit the mini-mock/i)).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Save reflection" })).toBeNull();
   });
+
+  function sittingClient(options: {
+    draft?: unknown;
+    attempts?: unknown[];
+    responses?: unknown[];
+    fail?: "attempts" | "responses" | null;
+  }) {
+    const calls: string[] = [];
+    const platform = {
+      auth: { isSignedIn: () => true },
+      client: {
+        schema: () => ({
+          rpc: async (fn: string) => {
+            calls.push(fn);
+            if (fn === "get_activity_state") return { data: options.draft ? [options.draft] : [] };
+            return { data: [] };
+          },
+          from: (table: string) => ({
+            select: () => ({
+              eq: async () => {
+                calls.push(table);
+                if (options.fail === "attempts" && table === "my_attempts") throw new Error("offline");
+                if (options.fail === "responses" && table === "my_responses") throw new Error("offline");
+                if (table === "my_attempts") return { data: options.attempts || [] };
+                return { data: options.responses || [] };
+              }
+            })
+          })
+        })
+      }
+    };
+    return { calls, platform };
+  }
+
+  const inProgressDraft = {
+    revision: 2,
+    started_at: "2026-11-10T07:00:00.000Z",
+    state: {
+      responses: { "u3-lo12-timed-mini-mock:mm-1": "Still in progress." },
+      knowledgeReportPhase: {
+        authoritativeStartedAt: "2026-11-10T07:00:00.000Z",
+        standardDurationSeconds: 1200,
+        serverNow: "2026-11-10T07:00:00.000Z",
+        phase: "in_progress"
+      }
+    }
+  };
+
+  it("shows Start when there is no draft and no attempt", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const { platform } = sittingClient({});
+    render(<ExamMiniMockPage root="." released platform={platform as never} platformState="ready" />);
+    const start = await screen.findByRole("button", { name: "Start Mini-Mock" });
+    await waitFor(() => expect(start).toHaveProperty("disabled", false));
+    expect(screen.queryByText("Submission confirmed")).toBeNull();
+  });
+
+  it("keeps a submitted paper locked and hides marks that have not been released", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const { calls, platform } = sittingClient({
+      attempts: [{ attempt_id: "attempt-1", status: "completed", score: null }],
+      responses: [{
+        question_key: "u3-lo12-timed-mini-mock:mm-1",
+        awarded_score: null,
+        max_score: 3,
+        feedback_summary: null,
+        response_payload: { text: "Confidentiality failed." }
+      }]
+    });
+    render(<ExamMiniMockPage root="." released platform={platform as never} platformState="ready" />);
+    expect(await screen.findByText("Submission confirmed")).toBeTruthy();
+    expect(screen.getByText(/Marks stay hidden/)).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Start Mini-Mock" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Submit Mini-Mock" })).toBeNull();
+    const box = screen.getByLabelText(/Explain which cyber security aim has failed/i) as HTMLTextAreaElement;
+    expect(box.value).toBe("Confidentiality failed.");
+    expect(box.disabled).toBe(true);
+    expect(calls.filter((call) => call === "save_activity_state")).toHaveLength(0);
+  });
+
+  it("shows marks and feedback only after the attempt has been released", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const { platform } = sittingClient({
+      attempts: [{ attempt_id: "attempt-1", status: "completed", score: 3 }],
+      responses: [{
+        question_key: "u3-lo12-timed-mini-mock:mm-1",
+        awarded_score: 3,
+        max_score: 3,
+        feedback_summary: "The aim is named.",
+        response_payload: { text: "Confidentiality failed." }
+      }]
+    });
+    render(<ExamMiniMockPage root="." released platform={platform as never} platformState="ready" />);
+    expect(await screen.findByText("Total 3 / 20")).toBeTruthy();
+    expect(screen.getByText("The aim is named.")).toBeTruthy();
+    expect(screen.queryByText(/Marks stay hidden/)).toBeNull();
+    expect(screen.queryByRole("button", { name: "Start Mini-Mock" })).toBeNull();
+  });
+
+  it("does not reopen a submitted attempt when an older in-progress draft is also returned", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const { calls, platform } = sittingClient({
+      draft: inProgressDraft,
+      attempts: [{ attempt_id: "attempt-1", status: "completed", score: null }],
+      responses: [{
+        question_key: "u3-lo12-timed-mini-mock:mm-1",
+        awarded_score: null,
+        max_score: 3,
+        response_payload: { text: "Submitted answer." }
+      }]
+    });
+    render(<ExamMiniMockPage root="." released platform={platform as never} platformState="ready" />);
+    expect(await screen.findByText("Submission confirmed")).toBeTruthy();
+    expect(screen.queryByRole("timer")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Start Mini-Mock" })).toBeNull();
+    expect(calls.filter((call) => call === "save_activity_state")).toHaveLength(0);
+  });
+
+  it("locks the paper when the attempt record cannot be loaded", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const { calls, platform } = sittingClient({ fail: "attempts" });
+    render(<ExamMiniMockPage root="." released platform={platform as never} platformState="ready" />);
+    expect(await screen.findByRole("alert")).toHaveProperty("textContent", SAVED_ANSWERS_LOAD_FAILED);
+    expect(screen.getByRole("button", { name: "Start Mini-Mock" })).toHaveProperty("disabled", true);
+    fireEvent.click(screen.getByRole("button", { name: "Start Mini-Mock" }));
+    expect(calls.filter((call) => call === "save_activity_state")).toHaveLength(0);
+  });
+
+  it("waits for sign-in before showing a submitted mini-mock", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    let signedIn = false;
+    const { calls, platform } = sittingClient({
+      attempts: [{ attempt_id: "attempt-1", status: "completed", score: null }],
+      responses: []
+    });
+    platform.auth.isSignedIn = () => signedIn;
+    const view = render(<ExamMiniMockPage root="." released platform={platform as never} platformState="signed-out" />);
+    expect(screen.getByText(SAVED_ANSWERS_LOADING)).toBeTruthy();
+    expect(calls).toHaveLength(0);
+    signedIn = true;
+    view.rerender(<ExamMiniMockPage root="." released platform={platform as never} platformState="ready" />);
+    expect(await screen.findByText("Submission confirmed")).toBeTruthy();
+    expect(screen.getByText(/Marks stay hidden/)).toBeTruthy();
+  });
+
+  it("opens a saved reflection after the mini-mock attempt exists", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const saves: unknown[] = [];
+    const { platform } = sittingClient({
+      attempts: [{ attempt_id: "attempt-9", status: "completed", score: null }]
+    });
+    const withDraft = {
+      ...platform,
+      progress: {
+        createStore: (options: { activityKey: string }) => ({
+          hydrate: async () => options.activityKey === "u3-lo12-timed-mini-mock"
+            ? null
+            : {
+              responses: {
+                "u3-lo12-reflection:topic": "Threats and vulnerabilities.",
+                "u3-lo12-reflection:command": "Explain",
+                "u3-lo12-reflection:time": "No, I ran out of time.",
+                "u3-lo12-reflection:improve": "Use the scenario.",
+                "u3-lo12-reflection:revise": "CIA and legal duties.",
+                submittedAt: "2026-11-10T08:00:00.000Z"
+              }
+            },
+          save: (state: unknown) => { saves.push(state); }
+        })
+      }
+    };
+    render(<ExamReflectionPage root="." released platform={withDraft as never} platformState="ready" />);
+    expect(await screen.findByText("Reflection saved")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Save reflection" })).toBeNull();
+    expect(saves).toHaveLength(0);
+  });
+
+  it("restores an unfinished reflection after sign-in when the attempt exists", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    let signedIn = false;
+    const saves: unknown[] = [];
+    const { calls, platform } = sittingClient({
+      attempts: [{ attempt_id: "attempt-9", status: "completed", score: null }]
+    });
+    const withDraft = {
+      ...platform,
+      auth: { isSignedIn: () => signedIn },
+      progress: {
+        createStore: (options: { activityKey: string }) => ({
+          hydrate: async () => options.activityKey === "u3-lo12-timed-mini-mock"
+            ? null
+            : {
+              responses: {
+                "u3-lo12-reflection:topic": "Threats and vulnerabilities.",
+                "u3-lo12-reflection:command": "Explain",
+                "u3-lo12-reflection:time": "No, I ran out of time.",
+                "u3-lo12-reflection:improve": "Use the scenario.",
+                "u3-lo12-reflection:revise": "CIA and legal duties."
+              }
+            },
+          save: (state: unknown) => { saves.push(state); }
+        })
+      }
+    };
+    const view = render(<ExamReflectionPage root="." released platform={withDraft as never} platformState="signed-out" />);
+    expect(screen.getByText(SAVED_ANSWERS_LOADING)).toBeTruthy();
+    expect(calls).toHaveLength(0);
+    signedIn = true;
+    view.rerender(<ExamReflectionPage root="." released platform={withDraft as never} platformState="ready" />);
+    expect(await screen.findByDisplayValue("Use the scenario.")).toBeTruthy();
+    expect(screen.queryByText(/after you submit the mini-mock/i)).toBeNull();
+    expect(saves).toHaveLength(0);
+  });
 });
