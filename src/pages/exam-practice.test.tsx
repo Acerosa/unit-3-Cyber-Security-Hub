@@ -493,6 +493,33 @@ describe("exam practice pages", () => {
     expect(saves).toHaveLength(0);
   });
 
+  it("restores a saved answer when the hub has settled without a class enrolment", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const platform = {
+      auth: { isSignedIn: () => true },
+      progress: {
+        createStore: () => ({
+          hydrate: async () => ({
+            responses: {
+              "u3-lo12-answer-writing:aw-1": {
+                original: "Still stored.",
+                revised: "",
+                missing: "",
+                guidanceViewed: false
+              }
+            }
+          }),
+          save: () => {},
+          flush: async () => ({ activityKey: "u3-lo12-answer-writing" })
+        })
+      }
+    };
+    render(<ExamAnswerWritingPage root="." released platform={platform as never} platformState="no-enrolment" />);
+    expect(await screen.findByDisplayValue("Still stored.")).toBeTruthy();
+    expect(screen.getByText("Saved")).toBeTruthy();
+  });
+
   it("shows an error and keeps the assessment locked when loading fails", async () => {
     configureBundledPackage(pkg as never);
     (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
