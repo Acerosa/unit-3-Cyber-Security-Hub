@@ -161,7 +161,7 @@ function PageBody({
     return (
       <>
         {joinPanel}
-        <ExamAnswerWritingPage root={context.root} platform={platform as never} />
+        <ExamAnswerWritingPage root={context.root} platform={platform as never} platformState={platformState} contentReady={contentReady} />
       </>
     );
   }
@@ -169,7 +169,7 @@ function PageBody({
     return (
       <>
         {joinPanel}
-        <ExamMiniMockPage root={context.root} platform={platform as never} />
+        <ExamMiniMockPage root={context.root} platform={platform as never} platformState={platformState} contentReady={contentReady} />
       </>
     );
   }
@@ -177,7 +177,7 @@ function PageBody({
     return (
       <>
         {joinPanel}
-        <ExamReflectionPage root={context.root} platform={platform as never} />
+        <ExamReflectionPage root={context.root} platform={platform as never} platformState={platformState} contentReady={contentReady} />
       </>
     );
   }

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { catalogueActivity } from "../catalogue/week-activities";
 import { activeContentPackage } from "../curriculum/apply-runtime";
-import { confirmCatalogueResponses, loadCatalogueResponses } from "../exam-practice/catalogue-draft";
+import { confirmCatalogueResponses, readCatalogueDraft } from "../exam-practice/catalogue-draft";
 import { PRACTICE_QUESTIONS } from "../exam-practice/practice-questions";
 import { examPracticeReleased } from "../exam-practice/release";
+import { examRemoteReady, SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING } from "../exam-practice/resume-gate";
 import { type ExamStore, type WritingAnswer } from "../exam-practice/store";
 import { createSitePath } from "../paths";
 
@@ -13,13 +14,15 @@ function blankAnswer(): WritingAnswer {
 
 const ACTIVITY_ID = "u3-lo12-answer-writing";
 
-type SaveState = "idle" | "saving" | "saved" | "retrying" | "failed";
+type SaveState = "loading" | "idle" | "saving" | "saved" | "retrying" | "failed" | "load-failed";
 
 function saveMessage(state: SaveState): string {
+  if (state === "loading") return SAVED_ANSWERS_LOADING;
   if (state === "saving") return "Saving";
   if (state === "saved") return "Saved";
   if (state === "retrying") return "Retrying";
   if (state === "failed") return "Could not save. Your answers are still in the editor.";
+  if (state === "load-failed") return SAVED_ANSWERS_LOAD_FAILED;
   return "Not saved yet";
 }
 
@@ -28,53 +31,77 @@ export function ExamAnswerWritingPage({
   released = examPracticeReleased(),
   store,
   platform,
+  platformState,
+  contentReady,
   saveDelayMs = 400
 }: {
   root: string;
   released?: boolean;
   store?: ExamStore;
-  platform?: Parameters<typeof loadCatalogueResponses>[1];
+  platform?: Parameters<typeof readCatalogueDraft>[1];
+  platformState?: string;
+  contentReady?: boolean;
   saveDelayMs?: number;
 }) {
   const activity = useMemo(() => {
+    if (contentReady === false) return null;
     const content = activeContentPackage();
     return content ? catalogueActivity(content, ACTIVITY_ID) : null;
-  }, []);
+  }, [contentReady]);
+  const signedIn = platform?.auth?.isSignedIn?.();
+  const remoteReady = examRemoteReady(platformState, signedIn);
   const [answers, setAnswers] = useState<Record<string, WritingAnswer>>({});
-  const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [saveState, setSaveState] = useState<SaveState>(store ? "idle" : "loading");
   const [notice, setNotice] = useState("");
   const answersRef = useRef(answers);
   const saveToken = useRef(0);
   const saveTimer = useRef<number | null>(null);
+  const resumeReady = useRef(Boolean(store));
   answersRef.current = answers;
+  const editable = saveState !== "loading" && saveState !== "load-failed";
 
   useEffect(() => {
     if (store) {
       const loaded = store.load();
       setAnswers(loaded.writing.answers);
+      resumeReady.current = true;
       setSaveState(loaded.writing.updatedAt ? "saved" : "idle");
       return;
     }
-    if (!activity) return;
+    if (contentReady === false || !activity || !remoteReady) {
+      resumeReady.current = false;
+      setSaveState("loading");
+      return;
+    }
     let cancelled = false;
-    void loadCatalogueResponses(activity, platform).then((responses) => {
+    resumeReady.current = false;
+    setSaveState("loading");
+    void readCatalogueDraft(activity, platform).then((result) => {
       if (cancelled) return;
+      if (!result.ok) {
+        resumeReady.current = false;
+        setSaveState("load-failed");
+        return;
+      }
+      const responses = result.draft?.responses || {};
       const next: Record<string, WritingAnswer> = {};
       for (const question of PRACTICE_QUESTIONS) {
         const saved = responses[`u3-lo12-answer-writing:${question.id}`];
         if (saved && typeof saved === "object") next[question.id] = { ...blankAnswer(), ...(saved as WritingAnswer) };
       }
-      setAnswers((current) => ({ ...next, ...current }));
-      if (Object.keys(next).length) setSaveState("saved");
+      setAnswers(next);
+      resumeReady.current = true;
+      setSaveState(Object.keys(next).length ? "saved" : "idle");
     });
     return () => { cancelled = true; };
-  }, [activity, platform, store]);
+  }, [activity, contentReady, platform, remoteReady, store]);
 
   if (!released) {
     return <p>Exam practice is not available yet.</p>;
   }
 
   function update(id: string, patch: Partial<WritingAnswer>) {
+    if (!resumeReady.current) return;
     const next = {
       ...answers,
       [id]: { ...blankAnswer(), ...answers[id], ...patch }
@@ -100,7 +127,7 @@ export function ExamAnswerWritingPage({
   }
 
   async function persist(token: number, tries: number) {
-    if (!activity || token !== saveToken.current) return;
+    if (!resumeReady.current || !activity || token !== saveToken.current) return;
     setSaveState(tries > 0 ? "retrying" : "saving");
     const current = answersRef.current;
     const responses: Record<string, unknown> = {};
@@ -129,7 +156,7 @@ export function ExamAnswerWritingPage({
       <h2>OCR Answer-Writing Practice</h2>
       <p>20 minutes. Guided practice for LO1 and LO2. This is not the mock examination.</p>
       <p>For each question, write your own answer before you compare it. Comparing shows an indicative answer and why a developed point earns more marks.</p>
-      <p aria-live="polite">{notice || saveMessage(saveState)}</p>
+      <p aria-live="polite" role={saveState === "load-failed" ? "alert" : "status"}>{notice || saveMessage(saveState)}</p>
       {saveState === "failed" ? (
         <button type="button" className="lp-button" onClick={() => {
           const token = saveToken.current;
@@ -149,11 +176,13 @@ export function ExamAnswerWritingPage({
             <textarea
               id={`${question.id}-original`}
               value={answer.original}
+              disabled={!editable}
               onChange={(event) => update(question.id, { original: event.target.value })}
             />
             <button
               type="button"
               className="lp-button"
+              disabled={!editable}
               onClick={() => update(question.id, { guidanceViewed: true })}
             >
               Compare My Answer
@@ -172,12 +201,14 @@ export function ExamAnswerWritingPage({
                 <textarea
                   id={`${question.id}-missing`}
                   value={answer.missing}
+                  disabled={!editable}
                   onChange={(event) => update(question.id, { missing: event.target.value })}
                 />
                 <label htmlFor={`${question.id}-revised`}>Improved answer</label>
                 <textarea
                   id={`${question.id}-revised`}
                   value={answer.revised}
+                  disabled={!editable}
                   onChange={(event) => update(question.id, { revised: event.target.value })}
                 />
               </div>

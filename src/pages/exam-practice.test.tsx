@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { confirmCatalogueResponses } from "../exam-practice/catalogue-draft";
+import { SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING } from "../exam-practice/resume-gate";
 import { decideTimedPaperSave } from "../exam-practice/timed-paper-save";
 import { MOCK_QUESTIONS } from "../exam-practice/mock-questions";
 import {
@@ -139,6 +140,7 @@ describe("exam practice pages", () => {
       }
     };
     render(<ExamAnswerWritingPage root="." released platform={platform as never} saveDelayMs={0} />);
+    expect(await screen.findByText("Not saved yet")).toBeTruthy();
     fireEvent.change(screen.getAllByLabelText("Your answer")[0], { target: { value: "Confidentiality." } });
     expect(screen.getByText("Saving")).toBeTruthy();
     expect(await screen.findByText("Saved")).toBeTruthy();
@@ -168,6 +170,7 @@ describe("exam practice pages", () => {
       }
     };
     render(<ExamAnswerWritingPage root="." released platform={platform as never} saveDelayMs={0} />);
+    expect(await screen.findByText("Not saved yet")).toBeTruthy();
     fireEvent.change(screen.getAllByLabelText("Your answer")[0], { target: { value: "Still here." } });
     expect(await screen.findByText("Could not save. Your answers are still in the editor.")).toBeTruthy();
     expect(screen.getAllByLabelText("Your answer")[0]).toHaveProperty("value", "Still here.");
@@ -190,6 +193,7 @@ describe("exam practice pages", () => {
       }
     };
     render(<ExamAnswerWritingPage root="." released platform={platform as never} saveDelayMs={0} />);
+    expect(await screen.findByText("Not saved yet")).toBeTruthy();
     fireEvent.change(screen.getAllByLabelText("Your answer")[0], { target: { value: "First." } });
     await vi.waitFor(() => expect(releases).toHaveLength(1));
     fireEvent.change(screen.getAllByLabelText("Your answer")[0], { target: { value: "Second." } });
@@ -290,7 +294,7 @@ describe("exam practice pages", () => {
     expect(page).toContain("p_expected_revision");
     expect(page).toContain("authoritativeStartedAt");
     expect(page).toContain("standardDurationSeconds");
-    expect(page).toContain("disabled={submitted || expired || timeUp || !startedAt}");
+    expect(page).toContain("disabled={submitted || expired || timeUp || !startedAt || resume !== \"ready\"}");
     expect(page).not.toContain("notice ||");
     expect(page).not.toContain("lo12_exam_records");
     expect(page).not.toContain("additionalTimeMinutes");
@@ -442,10 +446,169 @@ describe("exam practice pages", () => {
       }
     };
     render(<ExamMiniMockPage root="." released platform={platform as never} />);
-    fireEvent.click(await screen.findByRole("button", { name: "Start Mini-Mock" }));
+    const start = await screen.findByRole("button", { name: "Start Mini-Mock" });
+    await waitFor(() => expect(start).toHaveProperty("disabled", false));
+    fireEvent.click(start);
     expect(await screen.findByText(/The sitting uses the server start time/)).toBeTruthy();
     expect(screen.getByRole("status").textContent).toBe("Saved");
     expect(screen.getByRole("timer")).toBeTruthy();
+  });
+
+  it("restores a saved answer after refresh and does not save the empty page", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const saves: unknown[] = [];
+    let releaseHydrate: (value: unknown) => void = () => {};
+    const platform = {
+      auth: { isSignedIn: () => true },
+      progress: {
+        createStore: () => ({
+          hydrate: () => new Promise((resolve) => { releaseHydrate = resolve; }),
+          save: (state: unknown) => { saves.push(state); },
+          flush: async () => ({ activityKey: "u3-lo12-answer-writing" }),
+          isDirty: () => false
+        })
+      }
+    };
+    const view = render(<ExamAnswerWritingPage root="." released platform={platform as never} platformState="signed-out" />);
+    expect(screen.getByText(SAVED_ANSWERS_LOADING)).toBeTruthy();
+    expect(screen.queryByText("Not saved yet")).toBeNull();
+    expect(screen.getAllByLabelText("Your answer")[0]).toHaveProperty("disabled", true);
+    expect(saves).toHaveLength(0);
+    view.rerender(<ExamAnswerWritingPage root="." released platform={platform as never} platformState="ready" />);
+    expect(screen.getByText(SAVED_ANSWERS_LOADING)).toBeTruthy();
+    releaseHydrate({
+      responses: {
+        "u3-lo12-answer-writing:aw-1": {
+          original: "Confidentiality and integrity.",
+          revised: "",
+          missing: "",
+          guidanceViewed: false
+        }
+      }
+    });
+    expect(await screen.findByDisplayValue("Confidentiality and integrity.")).toBeTruthy();
+    expect(screen.getByText("Saved")).toBeTruthy();
+    expect(screen.queryByText("Not saved yet")).toBeNull();
+    expect(saves).toHaveLength(0);
+  });
+
+  it("shows an error and keeps the assessment locked when loading fails", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const saves: unknown[] = [];
+    const platform = {
+      auth: { isSignedIn: () => true },
+      progress: {
+        createStore: () => ({
+          hydrate: async () => { throw new Error("offline"); },
+          save: (state: unknown) => { saves.push(state); },
+          flush: async () => { throw new Error("offline"); }
+        })
+      }
+    };
+    render(<ExamAnswerWritingPage root="." released platform={platform as never} platformState="ready" />);
+    expect(await screen.findByRole("alert")).toHaveProperty("textContent", SAVED_ANSWERS_LOAD_FAILED);
+    expect(screen.queryByText("Not saved yet")).toBeNull();
+    fireEvent.change(screen.getAllByLabelText("Your answer")[0], { target: { value: "Should not save." } });
+    expect(screen.getAllByLabelText("Your answer")[0]).toHaveProperty("value", "");
+    expect(saves).toHaveLength(0);
+  });
+
+  it("waits for a signed-in session before reading the mini-mock and does not save an empty paper", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const calls: string[] = [];
+    let releaseGet: (value: unknown) => void = () => {};
+    let signedIn = false;
+    const platform = {
+      auth: { isSignedIn: () => signedIn },
+      client: {
+        schema: () => ({
+          rpc: (fn: string) => {
+            calls.push(fn);
+            if (fn === "get_activity_state") return new Promise((resolve) => { releaseGet = resolve; });
+            return Promise.resolve({ data: [] });
+          }
+        })
+      }
+    };
+    const view = render(<ExamMiniMockPage root="." released platform={platform as never} platformState="signed-out" />);
+    expect(screen.getByText(SAVED_ANSWERS_LOADING)).toBeTruthy();
+    expect(calls).toHaveLength(0);
+    signedIn = true;
+    view.rerender(<ExamMiniMockPage root="." released platform={platform as never} platformState="ready" />);
+    expect(screen.getByText(SAVED_ANSWERS_LOADING)).toBeTruthy();
+    releaseGet({
+      data: [{
+        revision: 2,
+        started_at: "2026-11-10T07:00:00.000Z",
+        state: {
+          responses: { "u3-lo12-timed-mini-mock:mm-1": "Kept after refresh." },
+          knowledgeReportPhase: {
+            authoritativeStartedAt: "2026-11-10T07:00:00.000Z",
+            standardDurationSeconds: 1200,
+            serverNow: "2026-11-10T07:00:00.000Z",
+            phase: "in_progress"
+          }
+        }
+      }]
+    });
+    expect(await screen.findByDisplayValue("Kept after refresh.")).toBeTruthy();
+    expect(calls).toEqual(["get_activity_state"]);
+  });
+
+  it("locks the mini-mock when the saved sitting cannot be loaded", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const calls: string[] = [];
+    const platform = {
+      auth: { isSignedIn: () => true },
+      client: {
+        schema: () => ({
+          rpc: async (fn: string) => {
+            calls.push(fn);
+            if (fn === "get_activity_state") throw new Error("offline");
+            return { data: [] };
+          }
+        })
+      }
+    };
+    render(<ExamMiniMockPage root="." released platform={platform as never} platformState="ready" />);
+    expect(await screen.findByRole("alert")).toHaveProperty("textContent", SAVED_ANSWERS_LOAD_FAILED);
+    expect(screen.getByRole("button", { name: "Start Mini-Mock" })).toHaveProperty("disabled", true);
+    fireEvent.click(screen.getByRole("button", { name: "Start Mini-Mock" }));
+    expect(calls).toEqual(["get_activity_state"]);
+  });
+
+  it("restores a saved reflection and does not replace it with an empty form", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const saves: unknown[] = [];
+    const platform = {
+      auth: { isSignedIn: () => true },
+      progress: {
+        createStore: (options: { activityKey: string }) => ({
+          hydrate: async () => options.activityKey === "u3-lo12-timed-mini-mock"
+            ? { submission: { status: "submitted" }, attemptId: "attempt-1" }
+            : {
+              responses: {
+                "u3-lo12-reflection:topic": "Threats and vulnerabilities.",
+                "u3-lo12-reflection:command": "Explain",
+                "u3-lo12-reflection:time": "No, I ran out of time.",
+                "u3-lo12-reflection:improve": "Use the scenario.",
+                "u3-lo12-reflection:revise": "CIA and legal duties."
+              }
+            },
+          save: (state: unknown) => { saves.push(state); }
+        })
+      }
+    };
+    render(<ExamReflectionPage root="." released platform={platform as never} platformState="ready" />);
+    expect(screen.getByText(SAVED_ANSWERS_LOADING)).toBeTruthy();
+    expect(await screen.findByDisplayValue("Use the scenario.")).toBeTruthy();
+    expect(screen.getByLabelText("Threats and vulnerabilities.")).toHaveProperty("checked", true);
+    expect(saves).toHaveLength(0);
   });
 
   it("hides reflection until the mini-mock is submitted", () => {

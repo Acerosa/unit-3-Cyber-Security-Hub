@@ -6,6 +6,7 @@ import { formatCountdown } from "../catalogue/knowledge-report";
 import { catalogueActivity } from "../catalogue/week-activities";
 import { activeContentPackage } from "../curriculum/apply-runtime";
 import { examPracticeReleased } from "../exam-practice/release";
+import { examRemoteReady, SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING } from "../exam-practice/resume-gate";
 import {
   decideTimedPaperSave,
   firstSaveRow,
@@ -52,10 +53,14 @@ function statusLabel(saveState: string) {
 export function ExamMiniMockPage({
   root,
   released = examPracticeReleased(),
-  platform
+  platform,
+  platformState,
+  contentReady
 }: {
   root: string;
   released?: boolean;
+  platformState?: string;
+  contentReady?: boolean;
   platform?: {
     submission?: { submit?: (payload: unknown) => Promise<unknown> };
     progress?: { createStore?: (options: unknown) => { save?: (state: unknown, options?: unknown) => void } };
@@ -64,9 +69,12 @@ export function ExamMiniMockPage({
   };
 }) {
   const activity = useMemo(() => {
+    if (contentReady === false) return null;
     const content = activeContentPackage();
     return content ? catalogueActivity(content, ACTIVITY_ID) : null;
-  }, []);
+  }, [contentReady]);
+  const signedIn = platform?.auth?.isSignedIn?.();
+  const remoteReady = examRemoteReady(platformState, signedIn);
   const questions = (activity?.blocks || []).filter((block) => block.type === "short-response");
   const questionIds = questions.map((block) => String(block.content?.questionId || block.id));
   const [responses, setResponses] = useState<Record<string, string>>({});
@@ -88,6 +96,9 @@ export function ExamMiniMockPage({
   const [results, setResults] = useState<Array<{ questionKey: string; awarded: number | null; max: number; feedback: string; text: string }>>([]);
   const submitting = useRef(false);
   const clockOffset = useRef(0);
+  const [resume, setResume] = useState<"loading" | "ready" | "failed">(platform?.client ? "loading" : "ready");
+  const resumeRef = useRef(resume);
+  resumeRef.current = resume;
 
   function applyTiming(row: TimedPaperSaveRow | null) {
     const timing = phaseOf(row);
@@ -118,20 +129,35 @@ export function ExamMiniMockPage({
 
   useEffect(() => {
     if (!activity || !platform?.client) return;
+    if (contentReady === false || !remoteReady) {
+      setResume("loading");
+      return;
+    }
     let cancelled = false;
+    setResume("loading");
     void (async () => {
-      const { data, error } = await platform.client!.schema("api").rpc("get_activity_state", {
-        p_activity_key: activity.id,
-        p_activity_version: resolveActivityVersion(activity)
-      });
-      if (cancelled || error) return;
-      const row = firstSaveRow(data);
-      if (!row) return;
-      revisionRef.current = Number(row.revision) || 0;
-      rememberServer(row, true);
+      try {
+        const { data, error } = await platform.client!.schema("api").rpc("get_activity_state", {
+          p_activity_key: activity.id,
+          p_activity_version: resolveActivityVersion(activity)
+        });
+        if (cancelled) return;
+        if (error) {
+          setResume("failed");
+          return;
+        }
+        const row = firstSaveRow(data);
+        if (row) {
+          revisionRef.current = Number(row.revision) || 0;
+          rememberServer(row, true);
+        }
+        setResume("ready");
+      } catch {
+        if (!cancelled) setResume("failed");
+      }
     })();
     return () => { cancelled = true; };
-  }, [activity, platform]);
+  }, [activity, contentReady, platform, remoteReady]);
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 250);
@@ -209,7 +235,7 @@ export function ExamMiniMockPage({
   submitRef.current = () => { void submitPaper(); };
 
   async function save(next: Record<string, string>, token: number, tries: number, force = false) {
-    if (!activity || !platform?.client || token !== saveToken.current || submitted) return;
+    if (resumeRef.current !== "ready" || !activity || !platform?.client || token !== saveToken.current || submitted) return;
     if (holdRef.current && !force) return;
     if (timeUp && force) return;
     setSaveState(tries > 0 ? "retrying" : "saving");
@@ -300,8 +326,10 @@ export function ExamMiniMockPage({
         <button
           type="button"
           className="lp-button"
+          disabled={resume !== "ready"}
           onClick={() => {
             void (async () => {
+              if (resumeRef.current !== "ready") return;
               if (!platform?.client) {
                 setNotice("Sign in to start the mini-mock. The server records the start time.");
                 return;
@@ -318,7 +346,8 @@ export function ExamMiniMockPage({
       {startedAt && !submitted ? (
         <p className="knowledge-report__timer" role="timer">Time remaining {formatCountdown(remaining)}</p>
       ) : null}
-      <p role="status">{statusLabel(saveState)}</p>
+      {resume === "loading" ? <p role="status">{SAVED_ANSWERS_LOADING}</p> : <p role="status">{statusLabel(saveState)}</p>}
+      {resume === "failed" ? <p role="alert">{SAVED_ANSWERS_LOAD_FAILED}</p> : null}
       {notice ? <p>{notice}</p> : null}
       {conflict ? (
         <section role="alert" aria-labelledby="mini-mock-conflict">
@@ -356,7 +385,7 @@ export function ExamMiniMockPage({
             <textarea
               id={id}
               value={responses[id] || ""}
-              disabled={submitted || expired || timeUp || !startedAt}
+              disabled={submitted || expired || timeUp || !startedAt || resume !== "ready"}
               onChange={(event) => {
                 const next = { ...responsesRef.current, [id]: event.target.value };
                 responsesRef.current = next;

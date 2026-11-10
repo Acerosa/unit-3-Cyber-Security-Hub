@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { catalogueActivity } from "../catalogue/week-activities";
 import { activeContentPackage } from "../curriculum/apply-runtime";
-import { loadCatalogueDraft, loadCatalogueResponses, saveCatalogueResponses } from "../exam-practice/catalogue-draft";
+import { readCatalogueDraft, saveCatalogueResponses } from "../exam-practice/catalogue-draft";
 import { examPracticeReleased } from "../exam-practice/release";
+import { examRemoteReady, SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING } from "../exam-practice/resume-gate";
 import { type ExamStore, type ReflectionDraft } from "../exam-practice/store";
 import { createSitePath } from "../paths";
 
@@ -40,22 +41,30 @@ export function ExamReflectionPage({
   released = examPracticeReleased(),
   store,
   platform,
+  platformState,
+  contentReady,
   mockSubmitted
 }: {
   root: string;
   released?: boolean;
   store?: ExamStore;
-  platform?: Parameters<typeof loadCatalogueResponses>[1];
+  platform?: Parameters<typeof readCatalogueDraft>[1];
+  platformState?: string;
+  contentReady?: boolean;
   mockSubmitted?: boolean;
 }) {
   const reflection = useMemo(() => {
+    if (contentReady === false) return null;
     const content = activeContentPackage();
     return content ? catalogueActivity(content, REFLECTION_ID) : null;
-  }, []);
+  }, [contentReady]);
   const miniMock = useMemo(() => {
+    if (contentReady === false) return null;
     const content = activeContentPackage();
     return content ? catalogueActivity(content, MOCK_ID) : null;
-  }, []);
+  }, [contentReady]);
+  const signedIn = platform?.auth?.isSignedIn?.();
+  const remoteReady = examRemoteReady(platformState, signedIn);
   const [draft, setDraft] = useState<ReflectionDraft>({
     topic: "",
     command: "",
@@ -66,42 +75,70 @@ export function ExamReflectionPage({
   });
   const [available, setAvailable] = useState(Boolean(store) || mockSubmitted === true);
   const [relatedAttempt, setRelatedAttempt] = useState<string | null>(null);
+  const [resume, setResume] = useState<"loading" | "ready" | "failed">(store || mockSubmitted === false ? "ready" : "loading");
 
   useEffect(() => {
     if (store) {
       setDraft(store.load().reflection);
       setAvailable(true);
+      setResume("ready");
+      return;
+    }
+    if (mockSubmitted === false) {
+      setAvailable(false);
+      setResume("ready");
+      return;
+    }
+    if (contentReady === false || !remoteReady) {
+      setResume("loading");
       return;
     }
     let cancelled = false;
+    setResume("loading");
     void (async () => {
       if (miniMock && platform && mockSubmitted == null) {
-        const mockDraft = await loadCatalogueDraft(miniMock, platform);
-        const phase = (mockDraft as { knowledgeReportPhase?: { phase?: string }; submission?: { status?: string } } | null);
-        const submitted = phase?.knowledgeReportPhase?.phase === "submitted" || phase?.submission?.status === "submitted";
-        if (!cancelled) {
-          setAvailable(submitted);
-          const attemptId = (mockDraft as { attemptId?: string } | null)?.attemptId;
-          if (typeof attemptId === "string") setRelatedAttempt(attemptId);
+        const mockResult = await readCatalogueDraft(miniMock, platform);
+        if (cancelled) return;
+        if (!mockResult.ok) {
+          setResume("failed");
+          return;
         }
+        const mockDraft = mockResult.draft as { knowledgeReportPhase?: { phase?: string }; submission?: { status?: string }; attemptId?: string } | null;
+        const submitted = mockDraft?.knowledgeReportPhase?.phase === "submitted" || mockDraft?.submission?.status === "submitted";
+        setAvailable(submitted);
+        if (typeof mockDraft?.attemptId === "string") setRelatedAttempt(mockDraft.attemptId);
       }
-      if (!reflection || !platform) return;
-      const saved = await loadCatalogueResponses(reflection, platform);
+      if (!reflection || !platform) {
+        if (!cancelled) setResume("ready");
+        return;
+      }
+      const savedResult = await readCatalogueDraft(reflection, platform);
       if (cancelled) return;
-      const next: ReflectionDraft = {
+      if (!savedResult.ok) {
+        setResume("failed");
+        return;
+      }
+      const saved = savedResult.draft?.responses || {};
+      setDraft({
         topic: String(saved["u3-lo12-reflection:topic"] || ""),
         command: String(saved["u3-lo12-reflection:command"] || ""),
         time: String(saved["u3-lo12-reflection:time"] || ""),
         improve: String(saved["u3-lo12-reflection:improve"] || ""),
         revise: String(saved["u3-lo12-reflection:revise"] || ""),
         submittedAt: typeof saved.submittedAt === "string" ? saved.submittedAt : null
-      };
-      setDraft(next);
+      });
+      setResume("ready");
     })();
     return () => { cancelled = true; };
-  }, [miniMock, mockSubmitted, platform, reflection, store]);
+  }, [contentReady, miniMock, mockSubmitted, platform, reflection, remoteReady, store]);
 
   if (!released) return <p>Exam practice is not available yet.</p>;
+  if (resume === "loading") {
+    return <article className="panel"><h2>Immediate Reflection</h2><p role="status">{SAVED_ANSWERS_LOADING}</p></article>;
+  }
+  if (resume === "failed") {
+    return <article className="panel"><h2>Immediate Reflection</h2><p role="alert">{SAVED_ANSWERS_LOAD_FAILED}</p></article>;
+  }
   if (!available) {
     return (
       <article className="panel">
@@ -127,6 +164,7 @@ export function ExamReflectionPage({
       className="panel exam-practice"
       onSubmit={(event) => {
         event.preventDefault();
+        if (resume !== "ready") return;
         if (store) {
           const saved = store.saveReflection(draft);
           setDraft(saved.reflection);

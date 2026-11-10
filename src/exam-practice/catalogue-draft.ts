@@ -16,12 +16,30 @@ type DraftPlatform = {
   };
 };
 
+export type CatalogueDraftRead =
+  | { ok: true; draft: CatalogueDraft | null }
+  | { ok: false };
+
+export async function readCatalogueDraft(
+  activity: ActivityDocument,
+  platform?: DraftPlatform
+): Promise<CatalogueDraftRead> {
+  const store = createCatalogueDraftStore(activity, platform as never);
+  if (!store?.hydrate) return { ok: false };
+  try {
+    const draft = await store.hydrate();
+    return { ok: true, draft: draft || null };
+  } catch {
+    return { ok: false };
+  }
+}
+
 export async function loadCatalogueDraft(
   activity: ActivityDocument,
   platform?: DraftPlatform
 ): Promise<CatalogueDraft | null> {
-  const store = createCatalogueDraftStore(activity, platform as never);
-  return await store?.hydrate?.() || null;
+  const result = await readCatalogueDraft(activity, platform);
+  return result.ok ? result.draft : null;
 }
 
 export async function loadCatalogueResponses(
