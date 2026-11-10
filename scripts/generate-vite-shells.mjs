@@ -90,16 +90,6 @@ function classify(route) {
   if (route === "account/index.html") return { view: "account", page: "account", section: "account" };
   if (route === "help/index.html") return { view: "help", page: "help", section: "help" };
   if (route === "resources/index.html") return { view: "resources", page: "resources", section: "resources" };
-  if (route === "exam-practice/index.html") return { view: "exam-practice", page: "exam-practice", section: "exam-practice" };
-  if (route === "exam-practice/answer-writing/index.html") {
-    return { view: "exam-answer-writing", page: "exam-answer-writing", section: "exam-practice" };
-  }
-  if (route === "exam-practice/mini-mock/index.html") {
-    return { view: "exam-mini-mock", page: "exam-mini-mock", section: "exam-practice" };
-  }
-  if (route === "exam-practice/reflection/index.html") {
-    return { view: "exam-reflection", page: "exam-reflection", section: "exam-practice" };
-  }
   if (route === "activities/activity.html") {
     return { view: "week1-activity", page: "week1-activity", section: "week-1" };
   }

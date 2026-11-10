@@ -12,7 +12,7 @@ function read(relativePath) {
 }
 
 test("the committed inventory lists every learner-facing public route", function () {
-  assert.equal(routeFiles.length, 158);
+  assert.equal(routeFiles.length, 154);
   assert.equal(inventory.routes.filter((route) => route.view === "week").length, 7);
   assert.equal(inventory.routes.filter((route) => route.view === "week1-activity").length, 1);
   assert.equal(inventory.routes.some((route) => route.route === "activities/activity.html"), true);

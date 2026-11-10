@@ -40,15 +40,6 @@ export function breadcrumbs(context: PageContext): BreadcrumbItem[] {
       items.push({ label: route?.heading || "Knowledge Report", path: undefined });
     }
     return items;
-  } else if (context.section === "exam-practice" || context.page === "exam-practice") {
-    items.push({
-      label: "Exam Practice",
-      path: context.view === "exam-practice" ? undefined : "exam-practice/"
-    });
-    if (context.view !== "exam-practice") {
-      items.push({ label: route?.heading || "Exam Practice", path: undefined });
-    }
-    return items;
   } else if (context.page === "resources" || context.page === "help" || context.page === "account") {
     items.push({ label: route?.heading || context.page, path: undefined });
     return items;

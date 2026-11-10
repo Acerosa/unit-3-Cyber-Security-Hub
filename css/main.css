@@ -1055,40 +1055,6 @@ a {
   padding-left: 1.2rem;
 }
 
-.exam-practice textarea,
-.exam-practice label {
-  display: block;
-  width: 100%;
-  max-width: 42rem;
-}
-
-.exam-practice textarea {
-  min-height: 8rem;
-  margin: 0.35rem 0 1rem;
-  padding: 0.75rem;
-  font: inherit;
-  line-height: 1.5;
-}
-
-.exam-practice textarea:focus,
-.exam-practice input:focus {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 2px;
-}
-
-.exam-practice fieldset {
-  border: 1px solid var(--color-border, #d0d7de);
-  margin: 0 0 1rem;
-  padding: 0.75rem;
-}
-
-.exam-practice fieldset label {
-  display: flex;
-  gap: 0.5rem;
-  align-items: flex-start;
-  margin: 0.4rem 0;
-}
-
 @media (max-width: 800px) {
   .knowledge-report__layout {
     grid-template-columns: 1fr;

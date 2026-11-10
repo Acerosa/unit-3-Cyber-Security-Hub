@@ -16,7 +16,6 @@ export type KnowledgeReportConfig = {
   brief: string;
   guidance: KnowledgeReportSection[];
   sentenceStarters: string[];
-  assessmentType?: string;
 };
 
 type ReportMetadata = {
@@ -61,11 +60,7 @@ export function knowledgeReportConfig(activity: ActivityDocument | null | undefi
 }
 
 export function knowledgeReportActivities(activities: ActivityDocument[] | undefined): ActivityDocument[] {
-  return (activities || []).filter((activity) => {
-    const config = knowledgeReportConfig(activity);
-    const report = (activity?.metadata as ReportMetadata | undefined)?.knowledgeReport;
-    return Boolean(config) && report?.assessmentType !== "timed-written-paper";
-  });
+  return (activities || []).filter((activity) => knowledgeReportConfig(activity));
 }
 
 export function reportQuestionId(activity: ActivityDocument): string {

@@ -66,9 +66,6 @@ jobs:
 
       - name: Install, test and build
         working-directory: unit-3-Cyber-Security-Hub
-        env:
-          # Pull requests stay hidden. A push to the live branch publishes Exam Practice.
-          VITE_EXAM_PRACTICE: ${{ (github.event_name != 'pull_request' && (github.ref == 'refs/heads/unit-3-Cyber-Security-Hub' || github.ref == 'refs/heads/main')) && '1' || '' }}
         run: |
           npm ci
           npm test
