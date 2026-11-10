@@ -283,16 +283,21 @@ describe("exam practice pages", () => {
 
   it("does not keep a second examination timer or records table in the mini-mock page", () => {
     const page = readFileSync(resolve("src/pages/ExamMiniMockPage.tsx"), "utf8");
-    const migration = readFileSync(resolve("../learning-platform-backend/supabase/migrations/20261109160000_timed_written_paper.sql"), "utf8");
+    const save = readFileSync(resolve("src/exam-practice/timed-paper-save.ts"), "utf8");
+    const paper = (pkg as { activities: Array<{ id: string; metadata?: { knowledgeReport?: Record<string, unknown> } }> }).activities
+      .find((activity) => activity.id === "u3-lo12-timed-mini-mock");
     expect(page).toContain("createCatalogueDraftStore");
     expect(page).toContain("p_expected_revision");
+    expect(page).toContain("authoritativeStartedAt");
+    expect(page).toContain("standardDurationSeconds");
+    expect(page).toContain("disabled={submitted || expired || timeUp || !startedAt}");
     expect(page).not.toContain("notice ||");
     expect(page).not.toContain("lo12_exam_records");
-    expect(migration).not.toContain("create table learning.lo12_exam_records");
-    expect(migration).toContain("assessmentType");
-    expect(migration).toContain("learning.effective_timed_duration_seconds");
-    expect(migration).toContain("Expiry locks every question");
-    expect(migration).toContain("authoritativeStartedAt");
+    expect(page).not.toContain("additionalTimeMinutes");
+    expect(save).toContain("save_outcome");
+    expect(save).not.toContain("lo12_exam_records");
+    expect(paper?.metadata?.knowledgeReport?.assessmentType).toBe("timed-written-paper");
+    expect(paper?.metadata?.knowledgeReport?.durationMinutes).toBe(20);
   });
 
   it("keeps answer-writing and reflection as ordinary catalogue activities", () => {

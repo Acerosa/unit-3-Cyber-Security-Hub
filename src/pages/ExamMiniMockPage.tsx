@@ -157,13 +157,16 @@ export function ExamMiniMockPage({
     const client = platform?.client;
     if (!client?.schema("api").from) return;
     const { data } = await client.schema("api").from!("my_responses").select("question_key, awarded_score, max_score, feedback_summary, response_payload").eq("activity_key", ACTIVITY_ID);
-    setResults((data || []).map((row) => ({
+    setResults((data || []).map((row) => {
+      const score = row.awarded_score;
+      return {
       questionKey: String(row.question_key || ""),
-      awarded: typeof row.awarded_score === "number" ? row.awarded_score : null,
+      awarded: typeof score === "number" ? score : null,
       max: Number(row.max_score || 0),
       feedback: typeof row.feedback_summary === "string" ? row.feedback_summary : "",
       text: String((row.response_payload as { text?: string } | null)?.text || "")
-    })));
+      };
+    }));
   }
 
   async function submitPaper() {
