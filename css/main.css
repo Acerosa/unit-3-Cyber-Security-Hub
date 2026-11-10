@@ -585,6 +585,25 @@ html[data-theme="dark"] body {
   text-underline-offset: 0.15em;
 }
 
+/* The launch links are buttons. Card-link colour matches the cyan fill. */
+.exam-practice .hub-card a.card-link,
+.exam-practice .hub-card a.card-link:hover,
+.exam-practice .hub-card a.card-link:focus,
+.exam-practice .hub-card a.card-link:active,
+.exam-practice .hub-card a.card-link:visited {
+  color: var(--lp-primary-contrast);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+html[data-theme="dark"] .exam-practice .hub-card a.card-link,
+html[data-theme="dark"] .exam-practice .hub-card a.card-link:hover,
+html[data-theme="dark"] .exam-practice .hub-card a.card-link:focus,
+html[data-theme="dark"] .exam-practice .hub-card a.card-link:active,
+html[data-theme="dark"] .exam-practice .hub-card a.card-link:visited {
+  color: #10212B;
+}
+
 .hub-card.is-coming-soon {
   background: var(--color-surface-muted);
   border-style: dashed;
