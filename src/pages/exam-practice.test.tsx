@@ -776,6 +776,24 @@ describe("exam practice pages", () => {
     expect(calls.filter((call) => call === "save_activity_state")).toHaveLength(0);
   });
 
+  it("loads a submitted paper when the learner is signed in but the hub is still labelled loading", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    const { platform } = sittingClient({
+      attempts: [{ attempt_id: "attempt-1", status: "completed", score: 3 }],
+      responses: [{
+        question_key: "u3-lo12-timed-mini-mock:mm-1",
+        awarded_score: 3,
+        max_score: 3,
+        feedback_summary: "The aim is named.",
+        response_payload: { text: "Confidentiality failed." }
+      }]
+    });
+    render(<ExamMiniMockPage root="." released platform={platform as never} platformState="loading" />);
+    expect(await screen.findByText("Total 3 / 20")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Start Mini-Mock" })).toBeNull();
+  });
+
   it("waits for sign-in before showing a submitted mini-mock", async () => {
     configureBundledPackage(pkg as never);
     (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
