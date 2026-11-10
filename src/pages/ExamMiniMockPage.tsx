@@ -129,8 +129,14 @@ export function ExamMiniMockPage({
 
   useEffect(() => {
     if (!activity || !platform?.client) return;
-    if (contentReady === false || !remoteReady) {
+    if (signedIn === false) {
       setResume("loading");
+      setResponses({});
+      responsesRef.current = {};
+      return;
+    }
+    if (contentReady === false || !remoteReady) {
+      if (resumeRef.current !== "ready") setResume("loading");
       return;
     }
     let cancelled = false;

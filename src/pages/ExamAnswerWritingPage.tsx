@@ -68,9 +68,14 @@ export function ExamAnswerWritingPage({
       setSaveState(loaded.writing.updatedAt ? "saved" : "idle");
       return;
     }
-    if (contentReady === false || !activity || !remoteReady) {
+    if (signedIn === false) {
       resumeReady.current = false;
+      setAnswers({});
       setSaveState("loading");
+      return;
+    }
+    if (contentReady === false || !activity || !remoteReady) {
+      if (!resumeReady.current) setSaveState("loading");
       return;
     }
     let cancelled = false;

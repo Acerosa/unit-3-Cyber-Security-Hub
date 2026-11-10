@@ -89,8 +89,13 @@ export function ExamReflectionPage({
       setResume("ready");
       return;
     }
-    if (contentReady === false || !remoteReady) {
+    if (signedIn === false) {
       setResume("loading");
+      setDraft({ topic: "", command: "", time: "", improve: "", revise: "", submittedAt: null });
+      return;
+    }
+    if (contentReady === false || !remoteReady) {
+      if (resume !== "ready") setResume("loading");
       return;
     }
     let cancelled = false;
