@@ -151,9 +151,9 @@ export async function readActivityRows(
   table: "my_attempts" | "my_responses",
   activityKey: string
 ): Promise<{ consulted: boolean; rows: Array<Record<string, unknown>> }> {
-  const from = client?.schema("api").from;
-  if (typeof from !== "function") return { consulted: false, rows: [] };
-  const result = await from(table).select("*").eq("activity_key", activityKey);
+  const api = client?.schema("api");
+  if (typeof api?.from !== "function") return { consulted: false, rows: [] };
+  const result = await api.from(table).select("*").eq("activity_key", activityKey);
   if (result?.error) throw new Error(result.error.message || "The saved sitting could not be loaded.");
   return { consulted: true, rows: Array.isArray(result.data) ? result.data as Array<Record<string, unknown>> : [] };
 }

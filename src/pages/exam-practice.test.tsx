@@ -660,17 +660,20 @@ describe("exam practice pages", () => {
             if (fn === "get_activity_state") return { data: options.draft ? [options.draft] : [] };
             return { data: [] };
           },
-          from: (table: string) => ({
-            select: () => ({
-              eq: async () => {
-                calls.push(table);
-                if (options.fail === "attempts" && table === "my_attempts") throw new Error("offline");
-                if (options.fail === "responses" && table === "my_responses") throw new Error("offline");
-                if (table === "my_attempts") return { data: options.attempts || [] };
-                return { data: options.responses || [] };
-              }
-            })
-          })
+          from(table: string) {
+            if (this == null) throw new Error("unbound");
+            return {
+              select: () => ({
+                eq: async () => {
+                  calls.push(table);
+                  if (options.fail === "attempts" && table === "my_attempts") throw new Error("offline");
+                  if (options.fail === "responses" && table === "my_responses") throw new Error("offline");
+                  if (table === "my_attempts") return { data: options.attempts || [] };
+                  return { data: options.responses || [] };
+                }
+              })
+            };
+          }
         })
       }
     };
