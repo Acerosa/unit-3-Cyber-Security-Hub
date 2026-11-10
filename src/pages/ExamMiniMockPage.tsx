@@ -6,7 +6,7 @@ import { formatCountdown } from "../catalogue/knowledge-report";
 import { catalogueActivity } from "../catalogue/week-activities";
 import { activeContentPackage } from "../curriculum/apply-runtime";
 import { examPracticeReleased } from "../exam-practice/release";
-import { examRemoteReady, resumeReadAttempts, SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING } from "../exam-practice/resume-gate";
+import { examRemoteReady, resumeReadAttempts, SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING, withTimeout } from "../exam-practice/resume-gate";
 import { readActivityRows, resolveMiniMockSitting } from "../exam-practice/sitting";
 import {
   decideTimedPaperSave,
@@ -146,15 +146,15 @@ export function ExamMiniMockPage({
     void (async () => {
       for (let attempt = 0; attempt < tries && !cancelled; attempt += 1) {
         try {
-          const { data, error } = await platform.client!.schema("api").rpc("get_activity_state", {
+          const { data, error } = await withTimeout(platform.client!.schema("api").rpc("get_activity_state", {
             p_activity_key: activity.id,
             p_activity_version: resolveActivityVersion(activity)
-          });
+          }));
           if (cancelled) return;
           if (error) throw new Error(error.message || "The saved sitting could not be loaded.");
           const row = firstSaveRow(data);
-          const attempts = await readActivityRows(platform.client, "my_attempts", activity.id);
-          const stored = await readActivityRows(platform.client, "my_responses", activity.id);
+          const attempts = await withTimeout(readActivityRows(platform.client, "my_attempts", activity.id));
+          const stored = await withTimeout(readActivityRows(platform.client, "my_responses", activity.id));
           if (cancelled) return;
           const sitting = resolveMiniMockSitting({
             draft: row,

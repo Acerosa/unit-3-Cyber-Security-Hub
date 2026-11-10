@@ -9,7 +9,20 @@ export function sessionStillSettling(platformState?: string): boolean {
 }
 
 export function resumeReadAttempts(platformState?: string): number {
-  return sessionStillSettling(platformState) ? 12 : 1;
+  return sessionStillSettling(platformState) ? 30 : 1;
+}
+
+export function withTimeout<T>(work: Promise<T>, ms = 2500): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("timeout")), ms);
+    work.then((value) => {
+      clearTimeout(timer);
+      resolve(value);
+    }, (error) => {
+      clearTimeout(timer);
+      reject(error);
+    });
+  });
 }
 
 /**
