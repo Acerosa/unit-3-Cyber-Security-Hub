@@ -131,6 +131,7 @@ export function ExamMiniMockPage({
   useEffect(() => {
     if (!activity || !platform?.client) return;
     if (signedIn === false) {
+      resumeRef.current = "loading";
       setResume("loading");
       setResponses({});
       responsesRef.current = {};
@@ -140,6 +141,7 @@ export function ExamMiniMockPage({
       if (resumeRef.current !== "ready") setResume("loading");
       return;
     }
+    if (resumeRef.current === "ready") return;
     let cancelled = false;
     setResume("loading");
     const tries = resumeReadAttempts(platformState);
@@ -172,6 +174,7 @@ export function ExamMiniMockPage({
             setExpired(true);
             if (sitting.kind === "released") setResults(sitting.results);
           }
+          resumeRef.current = "ready";
           setResume("ready");
           return;
         } catch {
