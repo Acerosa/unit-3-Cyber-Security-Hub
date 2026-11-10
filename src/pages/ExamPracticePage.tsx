@@ -41,7 +41,7 @@ export function ExamPracticePage({
     );
   }
   return (
-    <section className="panel" aria-labelledby="exam-practice-heading">
+    <section className="panel exam-practice" aria-labelledby="exam-practice-heading">
       <h2 id="exam-practice-heading">Exam Practice: LO1 and LO2</h2>
       <p>
         Practice for the Unit 3 examination using what you have studied so far.

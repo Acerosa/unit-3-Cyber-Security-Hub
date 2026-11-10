@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 import { confirmCatalogueResponses } from "../exam-practice/catalogue-draft";
 import { SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING } from "../exam-practice/resume-gate";
 import { decideTimedPaperSave } from "../exam-practice/timed-paper-save";
+import { miniMockGroups } from "../exam-practice/mini-mock-paper";
 import { MOCK_QUESTIONS } from "../exam-practice/mock-questions";
 import {
   authorisedExtraSeconds,
@@ -283,6 +284,26 @@ describe("exam practice pages", () => {
       .filter((block) => block.type === "short-response")
       .map((block) => block.content?.maxMarks);
     expect(marks).toEqual([3, 4, 3, 4, 6]);
+    const groups = miniMockGroups(paper?.blocks || []);
+    expect(groups.map((group) => group.scenario)).toEqual(MOCK_QUESTIONS.map((question) => question.scenario));
+    expect(groups.flatMap((group) => group.questions.map((block) => block.content?.questionId))).toEqual([
+      "u3-lo12-timed-mini-mock:mm-1",
+      "u3-lo12-timed-mini-mock:mm-2",
+      "u3-lo12-timed-mini-mock:mm-3",
+      "u3-lo12-timed-mini-mock:mm-4",
+      "u3-lo12-timed-mini-mock:mm-5"
+    ]);
+  });
+
+  it("shows one shared scenario before every question in that group", () => {
+    const groups = miniMockGroups([
+      { type: "paragraph", content: { text: "Describe. 4 marks. One shared incident." } },
+      { type: "short-response", id: "a", content: { questionId: "a", maxMarks: 2 } },
+      { type: "short-response", id: "b", content: { questionId: "b", maxMarks: 2 } }
+    ]);
+    expect(groups).toHaveLength(1);
+    expect(groups[0]?.scenario).toBe("One shared incident.");
+    expect(groups[0]?.questions).toHaveLength(2);
   });
 
   it("does not keep a second examination timer or records table in the mini-mock page", () => {
@@ -582,6 +603,11 @@ describe("exam practice pages", () => {
       }]
     });
     expect(await screen.findByDisplayValue("Kept after refresh.")).toBeTruthy();
+    expect(screen.getAllByRole("heading", { name: "Scenario" })).toHaveLength(5);
+    expect(screen.getByText("Ash Lane Accountants emailed a client's tax return to a different client by mistake.")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Question 1" })).toBeTruthy();
+    expect(screen.getAllByText("3 marks")).toHaveLength(2);
+    expect(screen.getByRole("timer")).toBeTruthy();
     expect(calls).toEqual(["get_activity_state"]);
   });
 

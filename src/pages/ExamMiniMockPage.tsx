@@ -5,6 +5,7 @@ import { createCatalogueDraftStore } from "../catalogue/activity-draft";
 import { formatCountdown } from "../catalogue/knowledge-report";
 import { catalogueActivity } from "../catalogue/week-activities";
 import { activeContentPackage } from "../curriculum/apply-runtime";
+import { miniMockGroups } from "../exam-practice/mini-mock-paper";
 import { examPracticeReleased } from "../exam-practice/release";
 import { examRemoteReady, resumeReadAttempts, SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING, withTimeout } from "../exam-practice/resume-gate";
 import { readActivityRows, resolveMiniMockSitting } from "../exam-practice/sitting";
@@ -77,6 +78,7 @@ export function ExamMiniMockPage({
   const signedIn = platform?.auth?.isSignedIn?.();
   const remoteReady = examRemoteReady(platformState, signedIn);
   const questions = (activity?.blocks || []).filter((block) => block.type === "short-response");
+  const questionGroups = miniMockGroups(activity?.blocks || []);
   const questionIds = questions.map((block) => String(block.content?.questionId || block.id));
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [startedAt, setStartedAt] = useState<string | null>(null);
@@ -407,26 +409,38 @@ export function ExamMiniMockPage({
           ) : null}
         </section>
       ) : null}
-      {questions.map((block) => {
-        const id = String(block.content?.questionId || block.id);
+      {questionGroups.map((group, groupIndex) => {
+        const start = questionGroups.slice(0, groupIndex).reduce((count, item) => count + item.questions.length, 0);
         return (
-          <section key={id}>
-            <label htmlFor={id}>{String(block.content?.prompt || "Your answer")}</label>
-            <textarea
-              id={id}
-              value={responses[id] || ""}
-              disabled={submitted || expired || timeUp || !startedAt || resume !== "ready"}
-              onChange={(event) => {
-                const next = { ...responsesRef.current, [id]: event.target.value };
-                responsesRef.current = next;
-                setResponses(next);
-                if (holdRef.current || submitted || timeUp) return;
-                const token = saveToken.current + 1;
-                saveToken.current = token;
-                setSaveState("saving");
-                window.setTimeout(() => { void save(responsesRef.current, token, 0); }, 300);
-              }}
-            />
+          <section key={group.questions.map((block) => block.id).join("-") || group.scenario}>
+            <h3>Scenario</h3>
+            <p>{group.scenario}</p>
+            {group.questions.map((block, index) => {
+              const id = String(block.content?.questionId || block.id);
+              const marks = block.content?.maxMarks;
+              return (
+                <section key={id}>
+                  <h3>Question {start + index + 1}</h3>
+                  {typeof marks === "number" ? <p>{marks} marks</p> : null}
+                  <label htmlFor={id}>{String(block.content?.prompt || "Your answer")}</label>
+                  <textarea
+                    id={id}
+                    value={responses[id] || ""}
+                    disabled={submitted || expired || timeUp || !startedAt || resume !== "ready"}
+                    onChange={(event) => {
+                      const next = { ...responsesRef.current, [id]: event.target.value };
+                      responsesRef.current = next;
+                      setResponses(next);
+                      if (holdRef.current || submitted || timeUp) return;
+                      const token = saveToken.current + 1;
+                      saveToken.current = token;
+                      setSaveState("saving");
+                      window.setTimeout(() => { void save(responsesRef.current, token, 0); }, 300);
+                    }}
+                  />
+                </section>
+              );
+            })}
           </section>
         );
       })}
