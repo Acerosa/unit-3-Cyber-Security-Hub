@@ -15,6 +15,10 @@ import { focusJoinClassPanel, shouldOpenCoreOnboarding } from "./focus-join-clas
 import { useHubPlatform } from "./hooks/useHubPlatform";
 import { currentIds, type PageContext } from "./page-context";
 import { breadcrumbs, findRoute, pageHeader } from "./page-copy";
+import { ExamAnswerWritingPage } from "./pages/ExamAnswerWritingPage";
+import { ExamMiniMockPage } from "./pages/ExamMiniMockPage";
+import { ExamPracticePage } from "./pages/ExamPracticePage";
+import { ExamReflectionPage } from "./pages/ExamReflectionPage";
 import { AccountPage } from "./pages/AccountPage";
 import { ActivityPage } from "./pages/ActivityPage";
 import { HomePage } from "./pages/HomePage";
@@ -75,6 +79,10 @@ function PageBody({
     || context.view === "week1-activity"
     || context.view === "knowledge-reports"
     || context.view === "knowledge-report"
+    || context.view === "exam-practice"
+    || context.view === "exam-answer-writing"
+    || context.view === "exam-mini-mock"
+    || context.view === "exam-reflection"
     || (context.view === "account" && platformState !== "signed-out")
   );
   const joinPanel = showJoin ? (
@@ -138,6 +146,38 @@ function PageBody({
       <>
         {joinPanel}
         <ActivityPage context={context} contentReady={contentReady} adaptersReady={adaptersReady} platform={platform} platformState={platformState} />
+      </>
+    );
+  }
+  if (context.view === "exam-practice") {
+    return (
+      <>
+        {joinPanel}
+        <ExamPracticePage root={context.root} />
+      </>
+    );
+  }
+  if (context.view === "exam-answer-writing") {
+    return (
+      <>
+        {joinPanel}
+        <ExamAnswerWritingPage root={context.root} platform={platform as never} platformState={platformState} contentReady={contentReady} />
+      </>
+    );
+  }
+  if (context.view === "exam-mini-mock") {
+    return (
+      <>
+        {joinPanel}
+        <ExamMiniMockPage root={context.root} platform={platform as never} platformState={platformState} contentReady={contentReady} />
+      </>
+    );
+  }
+  if (context.view === "exam-reflection") {
+    return (
+      <>
+        {joinPanel}
+        <ExamReflectionPage root={context.root} platform={platform as never} platformState={platformState} contentReady={contentReady} />
       </>
     );
   }
