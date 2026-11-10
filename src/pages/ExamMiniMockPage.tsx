@@ -6,7 +6,7 @@ import { formatCountdown } from "../catalogue/knowledge-report";
 import { catalogueActivity } from "../catalogue/week-activities";
 import { activeContentPackage } from "../curriculum/apply-runtime";
 import { examPracticeReleased } from "../exam-practice/release";
-import { examRemoteReady, SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING } from "../exam-practice/resume-gate";
+import { examRemoteReady, resumeReadAttempts, SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING } from "../exam-practice/resume-gate";
 import { readActivityRows, resolveMiniMockSitting } from "../exam-practice/sitting";
 import {
   decideTimedPaperSave,
@@ -142,44 +142,49 @@ export function ExamMiniMockPage({
     }
     let cancelled = false;
     setResume("loading");
+    const tries = resumeReadAttempts(platformState);
     void (async () => {
-      try {
-        const { data, error } = await platform.client!.schema("api").rpc("get_activity_state", {
-          p_activity_key: activity.id,
-          p_activity_version: resolveActivityVersion(activity)
-        });
-        if (cancelled) return;
-        if (error) {
-          setResume("failed");
+      for (let attempt = 0; attempt < tries && !cancelled; attempt += 1) {
+        try {
+          const { data, error } = await platform.client!.schema("api").rpc("get_activity_state", {
+            p_activity_key: activity.id,
+            p_activity_version: resolveActivityVersion(activity)
+          });
+          if (cancelled) return;
+          if (error) throw new Error(error.message || "The saved sitting could not be loaded.");
+          const row = firstSaveRow(data);
+          const attempts = await readActivityRows(platform.client, "my_attempts", activity.id);
+          const stored = await readActivityRows(platform.client, "my_responses", activity.id);
+          if (cancelled) return;
+          const sitting = resolveMiniMockSitting({
+            draft: row,
+            attempts: attempts.consulted ? attempts.rows : null,
+            responses: stored.consulted ? stored.rows : null
+          });
+          if (sitting.kind === "in-progress" && row) {
+            revisionRef.current = sitting.revision;
+            rememberServer(row, true);
+          } else if (sitting.kind === "submitted" || sitting.kind === "released") {
+            holdRef.current = true;
+            responsesRef.current = sitting.responses;
+            setResponses(sitting.responses);
+            setSubmitted(true);
+            setExpired(true);
+            if (sitting.kind === "released") setResults(sitting.results);
+          }
+          setResume("ready");
           return;
+        } catch {
+          if (cancelled || attempt === tries - 1) {
+            if (!cancelled) setResume("failed");
+            return;
+          }
+          await new Promise((resolve) => window.setTimeout(resolve, 500));
         }
-        const row = firstSaveRow(data);
-        const attempts = await readActivityRows(platform.client, "my_attempts", activity.id);
-        const stored = await readActivityRows(platform.client, "my_responses", activity.id);
-        if (cancelled) return;
-        const sitting = resolveMiniMockSitting({
-          draft: row,
-          attempts: attempts.consulted ? attempts.rows : null,
-          responses: stored.consulted ? stored.rows : null
-        });
-        if (sitting.kind === "in-progress" && row) {
-          revisionRef.current = sitting.revision;
-          rememberServer(row, true);
-        } else if (sitting.kind === "submitted" || sitting.kind === "released") {
-          holdRef.current = true;
-          responsesRef.current = sitting.responses;
-          setResponses(sitting.responses);
-          setSubmitted(true);
-          setExpired(true);
-          if (sitting.kind === "released") setResults(sitting.results);
-        }
-        setResume("ready");
-      } catch {
-        if (!cancelled) setResume("failed");
       }
     })();
     return () => { cancelled = true; };
-  }, [activity, contentReady, platform, remoteReady]);
+  }, [activity, contentReady, platform, platformState, remoteReady]);
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 250);

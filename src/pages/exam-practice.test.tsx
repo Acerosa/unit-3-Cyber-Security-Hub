@@ -794,6 +794,37 @@ describe("exam practice pages", () => {
     expect(screen.queryByRole("button", { name: "Start Mini-Mock" })).toBeNull();
   });
 
+  it("retries a submitted paper when the first read fails while the hub is still loading", async () => {
+    configureBundledPackage(pkg as never);
+    (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;
+    let reads = 0;
+    const platform = {
+      auth: { isSignedIn: () => true },
+      client: {
+        schema: () => ({
+          rpc: async (fn: string) => {
+            if (fn !== "get_activity_state") return { data: [] };
+            reads += 1;
+            if (reads === 1) return { error: { message: "JWT" } };
+            return { data: [] };
+          },
+          from: (table: string) => ({
+            select: () => ({
+              eq: async () => table === "my_attempts"
+                ? { data: [{ attempt_id: "attempt-1", status: "completed", score: null }] }
+                : { data: [] }
+            })
+          })
+        })
+      }
+    };
+    render(<ExamMiniMockPage root="." released platform={platform as never} platformState="loading" />);
+    expect(screen.getByText(SAVED_ANSWERS_LOADING)).toBeTruthy();
+    expect(await screen.findByText("Submission confirmed")).toBeTruthy();
+    expect(reads).toBeGreaterThan(1);
+    expect(screen.queryByRole("button", { name: "Start Mini-Mock" })).toBeNull();
+  });
+
   it("waits for sign-in before showing a submitted mini-mock", async () => {
     configureBundledPackage(pkg as never);
     (window as unknown as { __lpPackage?: unknown }).__lpPackage = pkg;

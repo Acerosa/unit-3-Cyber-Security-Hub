@@ -4,7 +4,7 @@ import { activeContentPackage } from "../curriculum/apply-runtime";
 import { confirmCatalogueResponses, readCatalogueDraft } from "../exam-practice/catalogue-draft";
 import { PRACTICE_QUESTIONS } from "../exam-practice/practice-questions";
 import { examPracticeReleased } from "../exam-practice/release";
-import { examRemoteReady, SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING } from "../exam-practice/resume-gate";
+import { examRemoteReady, resumeReadAttempts, SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING } from "../exam-practice/resume-gate";
 import { type ExamStore, type WritingAnswer } from "../exam-practice/store";
 import { createSitePath } from "../paths";
 
@@ -81,25 +81,34 @@ export function ExamAnswerWritingPage({
     let cancelled = false;
     resumeReady.current = false;
     setSaveState("loading");
-    void readCatalogueDraft(activity, platform).then((result) => {
-      if (cancelled) return;
-      if (!result.ok) {
-        resumeReady.current = false;
-        setSaveState("load-failed");
+    const tries = resumeReadAttempts(platformState);
+    void (async () => {
+      for (let attempt = 0; attempt < tries && !cancelled; attempt += 1) {
+        const result = await readCatalogueDraft(activity, platform);
+        if (cancelled) return;
+        if (!result.ok) {
+          if (attempt === tries - 1) {
+            resumeReady.current = false;
+            setSaveState("load-failed");
+            return;
+          }
+          await new Promise((resolve) => window.setTimeout(resolve, 500));
+          continue;
+        }
+        const responses = result.draft?.responses || {};
+        const next: Record<string, WritingAnswer> = {};
+        for (const question of PRACTICE_QUESTIONS) {
+          const saved = responses[`u3-lo12-answer-writing:${question.id}`];
+          if (saved && typeof saved === "object") next[question.id] = { ...blankAnswer(), ...(saved as WritingAnswer) };
+        }
+        setAnswers(next);
+        resumeReady.current = true;
+        setSaveState(Object.keys(next).length ? "saved" : "idle");
         return;
       }
-      const responses = result.draft?.responses || {};
-      const next: Record<string, WritingAnswer> = {};
-      for (const question of PRACTICE_QUESTIONS) {
-        const saved = responses[`u3-lo12-answer-writing:${question.id}`];
-        if (saved && typeof saved === "object") next[question.id] = { ...blankAnswer(), ...(saved as WritingAnswer) };
-      }
-      setAnswers(next);
-      resumeReady.current = true;
-      setSaveState(Object.keys(next).length ? "saved" : "idle");
-    });
+    })();
     return () => { cancelled = true; };
-  }, [activity, contentReady, platform, remoteReady, store]);
+  }, [activity, contentReady, platform, platformState, remoteReady, store]);
 
   if (!released) {
     return <p>Exam practice is not available yet.</p>;

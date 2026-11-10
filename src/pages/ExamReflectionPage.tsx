@@ -4,7 +4,7 @@ import { activeContentPackage } from "../curriculum/apply-runtime";
 import { readCatalogueDraft, saveCatalogueResponses } from "../exam-practice/catalogue-draft";
 import { miniMockIsSubmitted, readActivityRows, type AttemptRow } from "../exam-practice/sitting";
 import { examPracticeReleased } from "../exam-practice/release";
-import { examRemoteReady, SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING } from "../exam-practice/resume-gate";
+import { examRemoteReady, resumeReadAttempts, SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING } from "../exam-practice/resume-gate";
 import { type ExamStore, type ReflectionDraft } from "../exam-practice/store";
 import { createSitePath } from "../paths";
 
@@ -103,22 +103,23 @@ export function ExamReflectionPage({
     }
     let cancelled = false;
     setResume("loading");
+    const tries = resumeReadAttempts(platformState);
     void (async () => {
+      for (let attempt = 0; attempt < tries && !cancelled; attempt += 1) {
+      try {
       if (miniMock && platform && mockSubmitted == null) {
         let attempts: AttemptRow[] | null = null;
         try {
           const attemptRows = await readActivityRows(platform.client, "my_attempts", miniMock.id);
           if (attemptRows.consulted) attempts = attemptRows.rows as AttemptRow[];
-        } catch {
-          if (!cancelled) setResume("failed");
-          return;
+        } catch (error) {
+          throw error;
         }
         if (cancelled) return;
         const mockResult = await readCatalogueDraft(miniMock, platform);
         if (cancelled) return;
         if (!mockResult.ok && attempts == null) {
-          setResume("failed");
-          return;
+          throw new Error("The saved reflection could not be loaded.");
         }
         const mockDraft = mockResult.ok
           ? mockResult.draft as { knowledgeReportPhase?: { phase?: string }; submission?: { status?: string }; attemptId?: string } | null
@@ -134,8 +135,7 @@ export function ExamReflectionPage({
       const savedResult = await readCatalogueDraft(reflection, platform);
       if (cancelled) return;
       if (!savedResult.ok) {
-        setResume("failed");
-        return;
+        throw new Error("The saved reflection could not be loaded.");
       }
       const saved = savedResult.draft?.responses || {};
       setDraft({
@@ -147,9 +147,18 @@ export function ExamReflectionPage({
         submittedAt: typeof saved.submittedAt === "string" ? saved.submittedAt : null
       });
       setResume("ready");
+      return;
+      } catch {
+        if (cancelled || attempt === tries - 1) {
+          if (!cancelled) setResume("failed");
+          return;
+        }
+        await new Promise((resolve) => window.setTimeout(resolve, 500));
+      }
+      }
     })();
     return () => { cancelled = true; };
-  }, [contentReady, miniMock, mockSubmitted, platform, reflection, remoteReady, store]);
+  }, [contentReady, miniMock, mockSubmitted, platform, platformState, reflection, remoteReady, store]);
 
   if (!released) return <p>Exam practice is not available yet.</p>;
   if (resume === "loading") {
