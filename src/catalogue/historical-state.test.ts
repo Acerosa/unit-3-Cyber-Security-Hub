@@ -17,7 +17,7 @@ const baseline13 = {
     { id: "q5", type: "single-choice", content: { questionId: "u3-w01-baseline:q5" } },
     { id: "q6", type: "single-choice", content: { questionId: "u3-w01-baseline:q6" } }
   ]
-} as ActivityDocument;
+} as unknown as ActivityDocument;
 
 describe("historical same-key recovery", () => {
   it("treats current-version state as normal", async () => {
@@ -117,7 +117,7 @@ describe("historical same-key recovery", () => {
           content: { questionId: "week2-session1-retrieval:s1-q1", sourceQuestionId: "s1-q1" }
         }
       ]
-    } as ActivityDocument;
+    } as unknown as ActivityDocument;
     await recoverCatalogueState({
       activity: retrieval,
       currentState: null,

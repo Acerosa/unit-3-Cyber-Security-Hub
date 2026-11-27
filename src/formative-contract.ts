@@ -5,7 +5,7 @@
 import type { ActivityBlockDocument } from "@learning-platform/ui";
 import { WEEK_HOST_ACTIVITY_IDS } from "./catalogue/week-activities";
 
-type KeyMap = {
+export type FormativeKeyMap = {
   catalogueVersionFor: (activityKey: string) => string;
   hardcodedCatalogueVersion?: (activityKey: string) => string;
   packageVersionFor?: (activityKey: string) => string;
@@ -22,9 +22,12 @@ type KeyMap = {
   ) => { response_type: string; response_payload: unknown } | null;
 };
 
+/** @deprecated Prefer FormativeKeyMap */
+type KeyMap = FormativeKeyMap;
+
 declare global {
   interface Window {
-    Unit3ActivityKeyMap?: KeyMap;
+    Unit3ActivityKeyMap?: FormativeKeyMap;
   }
 }
 

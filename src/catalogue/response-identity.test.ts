@@ -9,11 +9,11 @@ import {
 } from "./response-identity";
 
 const retrievalActivity = () => (
-  catalogueActivity(pkg as never, "week2-session1-retrieval") as ActivityDocument
+  catalogueActivity(pkg as never, "week2-session1-retrieval") as unknown as ActivityDocument
 );
 
 const sortActivity = () => (
-  catalogueActivity(pkg as never, "week2-threat-vulnerability-sort") as ActivityDocument
+  catalogueActivity(pkg as never, "week2-threat-vulnerability-sort") as unknown as ActivityDocument
 );
 
 describe("Cyber response identity restore adapter", () => {
@@ -98,7 +98,7 @@ describe("Cyber response identity restore adapter", () => {
           }
         }
       ]
-    } as ActivityDocument;
+    } as unknown as ActivityDocument;
     const bound = bindPersistedCatalogueDraft(
       colliding,
       { responses: { "S1-Q1": "B" }, checked: { "S1-Q1": true }, results: {} },
@@ -186,7 +186,7 @@ describe("Cyber response identity restore adapter", () => {
           }
         }
       ]
-    } as ActivityDocument;
+    } as unknown as ActivityDocument;
     const bound = bindPersistedCatalogueDraft(
       activity,
       { responses: { "S1-Q1": "A phishing email is a threat." }, checked: { "S1-Q1": true }, results: {} },
@@ -203,7 +203,7 @@ describe("Cyber response identity restore adapter", () => {
       blocks: [
         { id: "q1", type: "single-choice", content: { questionId: "u3-w01-baseline:q1" } }
       ]
-    } as ActivityDocument;
+    } as unknown as ActivityDocument;
     const bound = bindPersistedCatalogueDraft(
       baseline,
       { responses: { "BAS-Q01": "C" }, checked: { "BAS-Q01": true }, results: {} },

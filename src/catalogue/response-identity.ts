@@ -9,7 +9,8 @@
 import { questionIdFor, type ActivityBlockDocument, type ActivityDocument } from "@learning-platform/ui";
 import {
   localQuestionId,
-  resolveFormativeRpcQuestionId
+  resolveFormativeRpcQuestionId,
+  type FormativeKeyMap
 } from "../formative-contract";
 import { requiredCatalogueBlocks, type CatalogueDraft } from "./activity-draft";
 
@@ -20,10 +21,6 @@ declare global {
     };
   }
 }
-
-type KeyMap = {
-  normaliseQuestionKey: (questionId: string, activityKey: string) => string;
-};
 
 type IdentityTarget =
   | { kind: "question"; catalogueId: string; block: ActivityBlockDocument }
@@ -36,7 +33,7 @@ export type CatalogueIdentityBind = {
   ambiguousKeys: string[];
 };
 
-function storedIdentity(mapper: KeyMap, activityKey: string, questionId: string): string {
+function storedIdentity(mapper: FormativeKeyMap, activityKey: string, questionId: string): string {
   try {
     return String(resolveFormativeRpcQuestionId(mapper, activityKey, questionId) || "").trim();
   } catch {
@@ -113,7 +110,7 @@ function addTarget(
 
 export function catalogueStoredIdentityIndex(
   activity: ActivityDocument,
-  mapper: KeyMap
+  mapper: FormativeKeyMap
 ): Map<string, IdentityTarget[]> {
   const index = new Map<string, IdentityTarget[]>();
   const activityKey = String(activity.id || "").trim();
@@ -173,7 +170,7 @@ function mergeItemResponse(
 export function bindPersistedCatalogueDraft(
   activity: ActivityDocument,
   draft: CatalogueDraft | null | undefined,
-  mapper: KeyMap
+  mapper: FormativeKeyMap
 ): CatalogueIdentityBind {
   const source: CatalogueDraft = {
     responses: { ...(draft?.responses || {}) },

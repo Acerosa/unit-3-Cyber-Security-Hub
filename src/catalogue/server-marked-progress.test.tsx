@@ -27,7 +27,7 @@ describe("server-marked catalogue progress", () => {
     window.Unit3Week5Progress = { markStarted: vi.fn(), markCompleted: vi.fn() };
     const platform = {
       marking: {
-        markBlock: vi.fn(async () => ({
+        markBlock: vi.fn(async (_input?: Record<string, unknown>) => ({
           completed: true,
           correct: true,
           score: { correct: 1, total: 1 },
@@ -61,9 +61,11 @@ describe("server-marked catalogue progress", () => {
     });
     expect(first.querySelector("[data-lp-feedback-state='correct']")).toBeTruthy();
     expect(screen.getByText("1 / 8")).toBeTruthy();
-    const payload = platform.marking.markBlock.mock.calls[0][0];
+    const payload = platform.marking.markBlock.mock.calls[0]?.[0] as {
+      responses?: Record<string, unknown>;
+    } | undefined;
     expect(JSON.stringify(payload)).not.toMatch(/correctOptionId/);
-    expect(payload.responses).toEqual(expect.objectContaining({ optionId: expect.any(String) }));
+    expect(payload?.responses).toEqual(expect.objectContaining({ optionId: expect.any(String) }));
   });
 
   it("persists a checked catalogue response without submitting an attempt", async () => {
@@ -74,7 +76,7 @@ describe("server-marked catalogue progress", () => {
     const platform = {
       auth: { isSignedIn: () => true },
       marking: {
-        markBlock: vi.fn(async () => ({
+        markBlock: vi.fn(async (_input?: Record<string, unknown>) => ({
           completed: true,
           correct: true,
           score: { correct: 1, total: 1 },
@@ -180,7 +182,7 @@ describe("server-marked catalogue progress", () => {
     window.__lpPackage = pkg;
     const platform = {
       marking: {
-        markBlock: vi.fn(async () => ({
+        markBlock: vi.fn(async (_input?: Record<string, unknown>) => ({
           completed: true,
           correct: true,
           score: { correct: 1, total: 1 },
@@ -208,10 +210,14 @@ describe("server-marked catalogue progress", () => {
       expect(first.querySelector("[data-lp-feedback-state='correct']")).toBeTruthy();
     });
     expect(within(first).getByText(/Cyber security protects information systems, networks and data/)).toBeTruthy();
-    const payload = platform.marking.markBlock.mock.calls[0][0];
-    expect(payload.activityKey).toBe("u3-w01-misconceptions");
-    expect(payload.activityVersion).toBe("1.0.0");
-    expect(payload.block.content.questionId).toBe("u3-w01-misconceptions:m1");
+    const payload = platform.marking.markBlock.mock.calls[0]?.[0] as {
+      activityKey?: string;
+      activityVersion?: string;
+      block?: { content?: { questionId?: string } };
+    } | undefined;
+    expect(payload?.activityKey).toBe("u3-w01-misconceptions");
+    expect(payload?.activityVersion).toBe("1.0.0");
+    expect(payload?.block?.content?.questionId).toBe("u3-w01-misconceptions:m1");
     expect(JSON.stringify(payload)).not.toMatch(/correctOptionId/);
   });
 
@@ -219,7 +225,7 @@ describe("server-marked catalogue progress", () => {
     window.__lpPackage = pkg;
     const platform = {
       marking: {
-        markBlock: vi.fn(async () => ({
+        markBlock: vi.fn(async (_input?: Record<string, unknown>) => ({
           completed: true,
           correct: false,
           score: { correct: 0, total: 1 },
@@ -728,7 +734,7 @@ describe("server-marked catalogue progress", () => {
     const platform = {
       auth: { isSignedIn: () => true },
       marking: {
-        markBlock: vi.fn(async () => ({
+        markBlock: vi.fn(async (_input?: Record<string, unknown>) => ({
           completed: true,
           correct: true,
           score: { correct: 1, total: 1 },
@@ -768,7 +774,7 @@ describe("server-marked catalogue progress", () => {
     const platform = {
       auth: { isSignedIn: () => true },
       marking: {
-        markBlock: vi.fn(async () => ({
+        markBlock: vi.fn(async (_input?: Record<string, unknown>) => ({
           completed: true,
           correct: true,
           score: { correct: 1, total: 1 },
@@ -917,7 +923,7 @@ describe("server-marked catalogue progress", () => {
     const platform = {
       auth: { isSignedIn: () => true },
       marking: {
-        markBlock: vi.fn(async () => ({
+        markBlock: vi.fn(async (_input?: Record<string, unknown>) => ({
           completed: true,
           correct: true,
           score: { correct: 1, total: 1 },

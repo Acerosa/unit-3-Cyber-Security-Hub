@@ -337,7 +337,7 @@ export function KnowledgeReportPage({
       const timing = serverTiming(hydrated);
       if (hydrated) latestDraft = hydrated;
       if (timing) latestTiming = timing;
-      if (decisiveTiming(timing)) return { draft: hydrated, timing };
+      if (decisiveTiming(timing)) return { draft: hydrated ?? null, timing };
     }
     return { draft: latestDraft, timing: latestTiming };
   }

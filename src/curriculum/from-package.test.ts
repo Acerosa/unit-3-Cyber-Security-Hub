@@ -286,7 +286,10 @@ describe("Unit 3 package hydration", () => {
   it("keeps bundled available sessions when live publication omits session status", () => {
     const live = structuredClone(pkg);
     for (const session of live.sessions || []) {
-      if (session.metadata) delete session.metadata.status;
+      if (session.metadata && "status" in session.metadata) {
+        const metadata = session.metadata as { status?: string };
+        delete metadata.status;
+      }
     }
     const page = weekPageFromPackage(runtimeContentPackage(live), "week-2");
     expect(page?.sessions.length).toBeGreaterThan(1);

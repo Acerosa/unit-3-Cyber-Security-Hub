@@ -34,6 +34,14 @@ declare module "@learning-platform/core" {
     destroy(): void;
   }
 
+  export interface AuthState {
+    status: string;
+    session?: {
+      user?: { id?: string } | null;
+      access_token?: string;
+    } | null;
+  }
+
   export interface LearnerState {
     status: string;
     context?: {
@@ -43,22 +51,43 @@ declare module "@learning-platform/core" {
       yearGroup?: string;
       academicYear?: string;
       contactEmail?: string;
+      studentNumber?: string;
+      enrolments?: Array<Record<string, unknown>>;
     } | null;
+  }
+
+  export interface PlatformAuth {
+    signOut: () => Promise<void>;
+    getState?: () => AuthState;
+    subscribe?: (listener: (state: AuthState) => void) => () => void;
+    isSignedIn?: () => boolean;
+  }
+
+  export interface PlatformLearner {
+    subscribe: (listener: (state: LearnerState) => void) => () => void;
+    getState?: () => LearnerState;
+    refresh?: () => Promise<unknown>;
+  }
+
+  export interface PlatformSnapshot {
+    status: string;
   }
 
   export interface PlatformFacade {
     config: { hubName: string; accountPath: string };
     theme: ThemeService;
-    auth: { signOut: () => Promise<void> };
-    learner: {
-      subscribe: (listener: (state: LearnerState) => void) => () => void;
-    };
+    auth: PlatformAuth;
+    learner: PlatformLearner;
     state: {
-      getState?: () => { status: string };
-      subscribe: (listener: (snapshot: { status: string }) => void) => () => void;
+      getState?: () => PlatformSnapshot;
+      subscribe: (listener: (snapshot: PlatformSnapshot) => void) => () => void;
     };
     onboarding: unknown;
-    progress?: { getProgress?: () => Promise<unknown> };
+    progress?: {
+      getProgress?: () => Promise<unknown>;
+      getActivityState?: (activityKey: string, activityVersion: string) => Promise<unknown>;
+      createStore?: (options?: unknown) => unknown;
+    };
     assignments?: {
       getAssignments?: () => Promise<unknown>;
       getHubAssignments?: (hubCode: string) => Promise<unknown>;
@@ -68,7 +97,7 @@ declare module "@learning-platform/core" {
     enrolment?: unknown;
     features?: unknown;
     flags?: unknown;
-    initialise: () => Promise<unknown>;
+    initialise: () => Promise<PlatformSnapshot | unknown>;
     destroy: () => void;
     curriculum: {
       loadLatest: () => Promise<{
@@ -96,7 +125,12 @@ declare module "@learning-platform/core" {
     authService: unknown;
     learnerContext: unknown;
     onboardingService: unknown;
-  }): { element: HTMLElement; open: (trigger?: EventTarget | null) => void; destroy?: () => void };
+  }): {
+    element: HTMLElement;
+    open: (trigger?: EventTarget | null, options?: { mode?: "sign-in" | "register" }) => void;
+    showOnboarding?: () => void;
+    destroy?: () => void;
+  };
 }
 
 declare module "*.js";
@@ -106,9 +140,52 @@ declare module "@learning-platform/content" {
 }
 
 declare module "@learning-platform/core/advanced" {
+  export type HubSupabaseClient = {
+    auth: {
+      getSession: () => Promise<{ data: { session: { access_token?: string } | null } }>;
+    };
+    schema: (name: string) => {
+      rpc: (fn: string, args?: Record<string, unknown>) => Promise<{ data?: unknown; error?: { message?: string } | null }>;
+      from?: (table: string) => {
+        select: (columns: string) => {
+          eq: (column: string, value: string) => Promise<{ data?: unknown; error?: { message?: string } | null }>;
+        };
+      };
+    };
+  };
+
   export function createSupabaseClient(
     config: { projectUrl: string; publishableKey: string; hubCode: string },
     dependencies?: { createClient?: unknown; client?: unknown; authStorage?: unknown }
-  ): unknown;
+  ): HubSupabaseClient;
+
   export function createAuthStorageKey(projectUrl: string, hubCode: string): string;
+
+  export type FormativeMarkingContractInput = {
+    activityKey: string;
+    activityVersion: string;
+    responses: ReadonlyArray<{
+      question_id: string;
+      response_type: string;
+      response_payload: unknown;
+    }>;
+  };
+
+  export function createFormativeMarkingService(options: {
+    auth?: { isSignedIn?: () => boolean };
+    api?: {
+      markFormativeResponse?: (payload: Record<string, unknown>) => Promise<unknown>;
+    };
+    resolveFormativeContract?: (
+      input: FormativeMarkingContractInput
+    ) => unknown | Promise<unknown>;
+  }): {
+    markBlock: (input: {
+      activityKey: string;
+      activityVersion: string;
+      block: Record<string, unknown>;
+      responses?: unknown;
+      content?: unknown;
+    }) => Promise<Record<string, unknown>>;
+  };
 }

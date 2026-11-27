@@ -61,9 +61,15 @@ describe("timed knowledge report content", () => {
 });
 
 describe("Knowledge Report pages", () => {
+  type ProgressStore = {
+    save: ReturnType<typeof vi.fn>;
+    flush: ReturnType<typeof vi.fn>;
+    hydrate: ReturnType<typeof vi.fn>;
+  };
+
   function platform() {
-    const submit = vi.fn(async () => ({ attempt_id: "attempt" }));
-    const store = {
+    const submit = vi.fn(async (_payload?: Record<string, unknown>): Promise<{ attempt_id?: string } | undefined> => ({ attempt_id: "attempt" }));
+    const store: ProgressStore = {
       save: vi.fn(),
       flush: vi.fn(async () => ({
         startedAt: new Date().toISOString(),
@@ -75,7 +81,7 @@ describe("Knowledge Report pages", () => {
       submit,
       platform: {
         auth: { isSignedIn: () => true },
-        progress: { createStore: () => store },
+        progress: { createStore: (): ProgressStore => store },
         submission: { submit }
       }
     };
@@ -155,8 +161,8 @@ describe("Knowledge Report pages", () => {
     expect(screen.getByText("Submit this report? You will not be able to change it after you submit.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Submit Report" }));
     await waitFor(() => expect(submit).toHaveBeenCalledTimes(1));
-    const payload = submit.mock.calls[0][0] as { responses: Array<{ questionKey: string }> };
-    expect(payload.responses[0].questionKey).toBe("u3-cyber-security-knowledge-report-response");
+    const payload = submit.mock.calls[0]?.[0] as { responses?: Array<{ questionKey?: string }> } | undefined;
+    expect(payload?.responses?.[0]?.questionKey).toBe("u3-cyber-security-knowledge-report-response");
   });
 
   function visibleText() {
@@ -255,7 +261,7 @@ describe("Knowledge Report pages", () => {
   });
 
   it("reopens a finished additional-time report as read-only with no new sitting", async () => {
-    const submit = vi.fn(async () => ({ attempt_id: "attempt" }));
+    const submit = vi.fn(async (_payload?: Record<string, unknown>): Promise<{ attempt_id?: string } | undefined> => ({ attempt_id: "attempt" }));
     const accepted = {
       startedAt: new Date(Date.now() - 50 * 60_000).toISOString(),
       responses: { "u3-cyber-security-knowledge-report-response": "accepted final draft" },
@@ -307,7 +313,7 @@ describe("Knowledge Report pages", () => {
 
   it("reconciles a below-threshold expiry to additional time without refreshing or starting the clock", async () => {
     const startAdditionalTime = vi.fn();
-    const submit = vi.fn();
+    const submit = vi.fn(async (_payload?: Record<string, unknown>): Promise<{ attempt_id?: string } | undefined> => undefined);
     const getActivityState = vi.fn(async () => phaseRow("additional_available"));
     const flush = vi.fn(async () => null);
     const { platform: hub } = platform();
@@ -339,7 +345,7 @@ describe("Knowledge Report pages", () => {
   });
 
   it("reconciles a server-finalised expiry to the completed report without an additional-time offer", async () => {
-    const submit = vi.fn(async () => ({ attempt_id: "attempt" }));
+    const submit = vi.fn(async (_payload?: Record<string, unknown>): Promise<{ attempt_id?: string } | undefined> => ({ attempt_id: "attempt" }));
     const getActivityState = vi.fn(async () => phaseRow("standard_complete", "completed standard report"));
     const { platform: hub } = platform();
     hub.submission.submit = submit;
@@ -398,7 +404,7 @@ describe("Knowledge Report pages", () => {
 
   it("keeps the locked draft and retries a failed expiry reconciliation without starting additional time", async () => {
     const startAdditionalTime = vi.fn();
-    const submit = vi.fn();
+    const submit = vi.fn(async (_payload?: Record<string, unknown>): Promise<{ attempt_id?: string } | undefined> => undefined);
     const getActivityState = vi.fn()
       .mockRejectedValueOnce(new Error("network down"))
       .mockResolvedValueOnce(phaseRow("additional_available", "kept on this page"));
@@ -434,7 +440,7 @@ describe("Knowledge Report pages", () => {
   });
 
   it("handles repeated timer ticks at expiry with one reconciliation and no extra submission", async () => {
-    const submit = vi.fn();
+    const submit = vi.fn(async (_payload?: Record<string, unknown>): Promise<{ attempt_id?: string } | undefined> => undefined);
     const flush = vi.fn(async () => ({
       state: {
         responses: { "u3-cyber-security-knowledge-report-response": "saved standard work" },
@@ -465,7 +471,7 @@ describe("Knowledge Report pages", () => {
   it("follows a jumped server clock to the expiry screen without refreshing", async () => {
     const startedAt = new Date().toISOString();
     const startAdditionalTime = vi.fn();
-    const submit = vi.fn();
+    const submit = vi.fn(async (_payload?: Record<string, unknown>): Promise<{ attempt_id?: string } | undefined> => undefined);
     const getActivityState = vi.fn(async () => phaseRow("additional_available"));
     getActivityState.mockImplementation(async () => ({
       state: {
@@ -510,7 +516,7 @@ describe("Knowledge Report pages", () => {
   it("starts the 15-minute timer from the server row when the test clock is already ahead", async () => {
     const startedAt = new Date(Date.now() - 31 * 60_000).toISOString();
     const serverNow = new Date(Date.parse(startedAt) + 1_801_000).toISOString();
-    const submit = vi.fn();
+    const submit = vi.fn(async (_payload?: Record<string, unknown>): Promise<{ attempt_id?: string } | undefined> => undefined);
     const startAdditionalTime = vi.fn(async () => [{
       state: {
         responses: { "u3-cyber-security-knowledge-report-response": "saved standard work" },

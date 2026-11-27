@@ -140,7 +140,7 @@ describe("ActivityPage P0 persistence and finish", () => {
       status: string;
       dirty: boolean;
       saving: boolean;
-      lastRemoteSaveSucceeded: boolean;
+      lastRemoteSaveSucceeded: boolean | null;
     }) => void> = [];
     let lastSnapshot = {
       status: "idle",
@@ -165,7 +165,7 @@ describe("ActivityPage P0 persistence and finish", () => {
         status: string;
         dirty: boolean;
         saving: boolean;
-        lastRemoteSaveSucceeded: boolean;
+        lastRemoteSaveSucceeded: boolean | null;
       }) => void) => {
         listeners.push(listener);
         return () => {};
