@@ -92,12 +92,83 @@ function assertScriptOrder(html, label) {
 }
 
 const scored = scoredActivityDirs();
-// Catalogue routes retired per-activity app.js (D4). Remaining engines are host/hybrid
-// worksheets that still call renderSubmitPanel.
+const scoredRel = scored
+  .map((absDir) => path.relative(root, absDir).split(path.sep).join("/"))
+  .sort();
+
+// Catalogue-player activities must not keep a host renderSubmitPanel engine.
+const CATALOGUE_PLAYER_ACTIVITY_DIRS = ["week-4/ocr-practice"];
+const leakedHostEngines = scoredRel.filter((rel) =>
+  CATALOGUE_PLAYER_ACTIVITY_DIRS.includes(rel)
+);
 record(
-  "scored-activity-count",
-  scored.length === 30,
-  "expected 30 host/hybrid scored engines, found " + scored.length
+  "catalogue-player-has-no-host-engine",
+  leakedHostEngines.length === 0,
+  leakedHostEngines.length
+    ? "catalogue player still has host engine: " + leakedHostEngines.join(", ")
+    : ""
+);
+
+CATALOGUE_PLAYER_ACTIVITY_DIRS.forEach((rel) => {
+  const appPath = path.join(root, rel, "app.js");
+  const htmlPath = path.join(root, rel, "index.html");
+  record(
+    rel + "-catalogue-shell",
+    existsAt(rel + "/index.html") &&
+      !existsAt(rel + "/app.js") &&
+      /src\/main\.tsx/.test(fs.readFileSync(htmlPath, "utf8")),
+    existsAt(rel + "/app.js")
+      ? "legacy app.js still present"
+      : "expected Vite catalogue shell without app.js"
+  );
+});
+
+// Host/hybrid scored engines are the remaining week folders whose app.js still
+// calls renderSubmitPanel. Keep an explicit allowlist so catalogue migrations
+// update integrity intentionally instead of a brittle raw count.
+const EXPECTED_HOST_SCORED_ENGINES = [
+  "week-2/northbank-analysis",
+  "week-2/ocr-practice",
+  "week-2/peer-marking",
+  "week-2/vulnerabilities101",
+  "week-2/vulnerability-register",
+  "week-3/ocr-practice",
+  "week-3/peer-marking",
+  "week-4/analyse-practice",
+  "week-4/answer-improvement",
+  "week-4/mtm-mapping",
+  "week-4/northbank-exposure",
+  "week-5/answer-improvement",
+  "week-5/impact-analysis",
+  "week-5/ocr-practice",
+  "week-5/stakeholder-grid",
+  "week-6/answer-improvement",
+  "week-6/discuss-learning",
+  "week-6/discuss-planner",
+  "week-6/exercise-decision-record",
+  "week-6/government-initiatives",
+  "week-6/legislation-matching",
+  "week-6/ncsc-guidance",
+  "week-6/ocr-practice",
+  "week-6/revision-organiser",
+  "week-6/stakeholder-debate",
+  "week-7/answer-improvement",
+  "week-7/heightened-threat",
+  "week-7/ocr-practice",
+  "week-7/risk-register"
+].slice().sort();
+
+const missingHost = EXPECTED_HOST_SCORED_ENGINES.filter((rel) => !scoredRel.includes(rel));
+const extraHost = scoredRel.filter((rel) => !EXPECTED_HOST_SCORED_ENGINES.includes(rel));
+record(
+  "host-scored-engines-match-allowlist",
+  missingHost.length === 0 && extraHost.length === 0,
+  [
+    missingHost.length ? "missing: " + missingHost.join(", ") : "",
+    extraHost.length ? "unexpected: " + extraHost.join(", ") : ""
+  ]
+    .filter(Boolean)
+    .join("; ")
 );
 
 scored.forEach((absDir) => {
