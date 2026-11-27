@@ -77,9 +77,9 @@ const MALWARE_BLOCK = {
 function fakeSupabaseRpc(onRpc: (payload: Record<string, unknown>) => unknown[]) {
   const calls: Array<{ name: string; payload: Record<string, unknown> }> = [];
   const client = {
-    schema() {
+    schema(_name?: string) {
       return {
-        rpc(name: string, payload: Record<string, unknown>) {
+        rpc(name: string, payload: Record<string, unknown> = {}) {
           calls.push({ name, payload });
           return Promise.resolve({ data: onRpc(payload), error: null });
         }

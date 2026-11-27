@@ -20,16 +20,16 @@ export type DraftPhase = {
 };
 
 export type DraftRow = {
-  revision?: number;
+  revision?: number | null;
   started_at?: string | null;
   startedAt?: string | null;
   status?: string;
   state?: {
     responses?: Record<string, unknown>;
-    knowledgeReportPhase?: DraftPhase;
+    knowledgeReportPhase?: DraftPhase | Record<string, unknown>;
     submission?: { status?: string };
     attemptId?: string;
-  };
+  } | null;
 };
 
 export type ReleasedResult = {

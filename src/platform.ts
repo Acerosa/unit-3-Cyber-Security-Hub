@@ -1,5 +1,5 @@
 import { createPlatform } from "@learning-platform/core";
-import { createSupabaseClient } from "@learning-platform/core/advanced";
+import { createSupabaseClient, type HubSupabaseClient } from "@learning-platform/core/advanced";
 import { createClient } from "@supabase/supabase-js";
 import { validateLearnerSafePackage } from "@learning-platform/content";
 import { createAuthGatedFetch } from "./auth-gated-fetch";
@@ -22,12 +22,19 @@ export function ensureBundledConfigured() {
   return bundledReady;
 }
 
+function platformSnapshotStatus(value: unknown): string | null {
+  if (!value || typeof value !== "object") return null;
+  if (!("status" in value)) return null;
+  const status = (value as { status?: unknown }).status;
+  return typeof status === "string" ? status : null;
+}
+
 export function createHubPlatform(root: string, createPlatformFn = createPlatform) {
   ensureBundledConfigured();
   const config = supabaseConfig();
 
   // Late-bound client so the auth gate can await getSession during restore.
-  let clientRef: { auth: { getSession: () => Promise<{ data: { session: { access_token?: string } | null } }> } } | null = null;
+  let clientRef: HubSupabaseClient | null = null;
   const gatedFetch = createAuthGatedFetch(() => clientRef);
 
   const client = createSupabaseClient({
@@ -40,7 +47,7 @@ export function createHubPlatform(root: string, createPlatformFn = createPlatfor
       global: { fetch: gatedFetch }
     })
   });
-  clientRef = client as typeof clientRef;
+  clientRef = client;
 
   const platform = createPlatformFn({
     hubCode: APP_CONFIG.hubId,
@@ -111,7 +118,7 @@ export function createHubPlatform(root: string, createPlatformFn = createPlatfor
     await recoverLearnerAfterAuthRestore();
     const auth = platform.auth.getState?.();
     const learner = platform.learner.getState?.();
-    const platformStatus = platform.state.getState?.()?.status || snapshot?.status || null;
+    const platformStatus = platform.state.getState?.()?.status || platformSnapshotStatus(snapshot);
     console.info("UNIT3_PLATFORM_STARTUP", {
       coreVersion: APP_CONFIG.coreVersion,
       hubCode: APP_CONFIG.hubId,

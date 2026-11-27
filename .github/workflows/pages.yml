@@ -74,6 +74,7 @@ jobs:
           VITE_EXAM_PRACTICE: ${{ (github.event_name != 'pull_request' && (github.ref == 'refs/heads/unit-3-Cyber-Security-Hub' || github.ref == 'refs/heads/main')) && '1' || '' }}
         run: |
           npm ci
+          npm run typecheck
           npm test
 
       - name: Configure GitHub Pages

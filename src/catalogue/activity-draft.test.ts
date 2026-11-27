@@ -19,7 +19,7 @@ const malwareActivity = {
       }
     }
   ]
-} as ActivityDocument;
+} as unknown as ActivityDocument;
 
 describe("catalogue Finish evidence", () => {
   it("submits canonical MW-Q1 instead of the hosted catalogue question id", async () => {
@@ -33,7 +33,7 @@ describe("catalogue Finish evidence", () => {
       normaliseActivityVersion: (version: string) => version,
       normaliseOptionId: (value: string) => String(value || "").trim().toUpperCase()
     };
-    const submit = vi.fn(async () => ({ status: "completed" }));
+    const submit = vi.fn(async (_payload: Record<string, unknown>) => ({ status: "completed" }));
 
     const result = await submitCatalogueDraft(
       malwareActivity,
@@ -51,10 +51,14 @@ describe("catalogue Finish evidence", () => {
 
     expect(result.status).toBe("submitted");
     expect(submit).toHaveBeenCalledTimes(1);
-    const payload = submit.mock.calls[0][0];
-    expect(payload.activityKey).toBe("week2-malware-symptoms");
-    expect(payload.activityVersion).toBe("1.0.0");
-    expect(payload.responses[0]).toEqual(expect.objectContaining({
+    const payload = submit.mock.calls[0]?.[0] as {
+      activityKey?: string;
+      activityVersion?: string;
+      responses?: Array<Record<string, unknown>>;
+    } | undefined;
+    expect(payload?.activityKey).toBe("week2-malware-symptoms");
+    expect(payload?.activityVersion).toBe("1.0.0");
+    expect(payload?.responses?.[0]).toEqual(expect.objectContaining({
       questionKey: "MW-Q1",
       evidenceType: "single-choice",
       value: expect.objectContaining({ optionId: "C" })
@@ -85,7 +89,7 @@ describe("learner-safe checked results", () => {
   });
 
   it("does not persist stripped answer keys in catalogue drafts", () => {
-    const save = vi.fn();
+    const save = vi.fn((_state?: unknown, _options?: { immediate?: boolean; remote?: boolean }) => undefined);
     persistCatalogueDraft({ save }, {
       responses: { "u3-w01-misconceptions:m1": "true" },
       checked: { "u3-w01-misconceptions:m1": true },
@@ -97,9 +101,12 @@ describe("learner-safe checked results", () => {
       },
       completed: false
     });
-    const payload = save.mock.calls[0][0];
-    expect(payload.results["u3-w01-misconceptions:m1"]).toEqual({ correct: false });
+    const payload = save.mock.calls[0]?.[0] as {
+      results?: Record<string, unknown>;
+      completed?: boolean;
+    } | undefined;
+    expect(payload?.results?.["u3-w01-misconceptions:m1"]).toEqual({ correct: false });
     expect(JSON.stringify(payload)).not.toMatch(/correctOptionId/);
-    expect(payload.completed).toBe(false);
+    expect(payload?.completed).toBe(false);
   });
 });
