@@ -102,6 +102,10 @@ export function ExamMiniMockPage({
   const [resume, setResume] = useState<"loading" | "ready" | "failed">(platform?.client ? "loading" : "ready");
   const resumeRef = useRef(resume);
   resumeRef.current = resume;
+  const saveDebounceRef = useRef<number | null>(null);
+  useEffect(() => () => {
+    if (saveDebounceRef.current != null) window.clearTimeout(saveDebounceRef.current);
+  }, []);
 
   function applyTiming(row: TimedPaperSaveRow | null) {
     const timing = phaseOf(row);
@@ -435,7 +439,11 @@ export function ExamMiniMockPage({
                       const token = saveToken.current + 1;
                       saveToken.current = token;
                       setSaveState("saving");
-                      window.setTimeout(() => { void save(responsesRef.current, token, 0); }, 300);
+                      if (saveDebounceRef.current != null) window.clearTimeout(saveDebounceRef.current);
+                      saveDebounceRef.current = window.setTimeout(() => {
+                        saveDebounceRef.current = null;
+                        void save(responsesRef.current, token, 0);
+                      }, 300);
                     }}
                   />
                 </section>
