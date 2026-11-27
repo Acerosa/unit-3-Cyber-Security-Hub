@@ -33,6 +33,7 @@ import { ExamReflectionPage } from "./ExamReflectionPage";
 afterEach(() => {
   cleanup();
   resetCatalogueSaveQueues();
+  delete (window as unknown as { __lpPackage?: unknown }).__lpPackage;
   vi.useRealTimers();
 });
 

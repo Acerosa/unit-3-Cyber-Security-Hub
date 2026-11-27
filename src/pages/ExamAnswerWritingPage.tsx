@@ -56,9 +56,24 @@ export function ExamAnswerWritingPage({
   const answersRef = useRef(answers);
   const saveToken = useRef(0);
   const saveTimer = useRef<number | null>(null);
+  const retryTimer = useRef<number | null>(null);
   const resumeReady = useRef(Boolean(store));
+  const mounted = useRef(true);
   answersRef.current = answers;
   const editable = saveState !== "loading" && saveState !== "load-failed";
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      resumeReady.current = false;
+      saveToken.current += 1;
+      if (saveTimer.current != null) window.clearTimeout(saveTimer.current);
+      if (retryTimer.current != null) window.clearTimeout(retryTimer.current);
+      saveTimer.current = null;
+      retryTimer.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     if (store) {
@@ -141,7 +156,7 @@ export function ExamAnswerWritingPage({
   }
 
   async function persist(token: number, tries: number) {
-    if (!resumeReady.current || !activity || token !== saveToken.current) return;
+    if (!mounted.current || !resumeReady.current || !activity || token !== saveToken.current) return;
     setSaveState(tries > 0 ? "retrying" : "saving");
     const current = answersRef.current;
     const responses: Record<string, unknown> = {};
@@ -153,13 +168,14 @@ export function ExamAnswerWritingPage({
       return Boolean(answer?.original.trim() && answer.guidanceViewed && answer.revised.trim());
     });
     const result = await confirmCatalogueResponses(activity, platform, responses, { completed: complete });
-    if (token !== saveToken.current || result === "superseded") return;
+    if (!mounted.current || token !== saveToken.current || result === "superseded") return;
     if (result === "saved") {
       setSaveState("saved");
       return;
     }
     if (tries < 2) {
-      window.setTimeout(() => { void persist(token, tries + 1); }, 200);
+      if (retryTimer.current != null) window.clearTimeout(retryTimer.current);
+      retryTimer.current = window.setTimeout(() => { void persist(token, tries + 1); }, 200);
       return;
     }
     setSaveState("failed");

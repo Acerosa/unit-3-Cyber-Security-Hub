@@ -103,8 +103,18 @@ export function ExamMiniMockPage({
   const resumeRef = useRef(resume);
   resumeRef.current = resume;
   const saveDebounceRef = useRef<number | null>(null);
-  useEffect(() => () => {
-    if (saveDebounceRef.current != null) window.clearTimeout(saveDebounceRef.current);
+  const retryTimer = useRef<number | null>(null);
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      saveToken.current += 1;
+      if (saveDebounceRef.current != null) window.clearTimeout(saveDebounceRef.current);
+      if (retryTimer.current != null) window.clearTimeout(retryTimer.current);
+      saveDebounceRef.current = null;
+      retryTimer.current = null;
+    };
   }, []);
 
   function applyTiming(row: TimedPaperSaveRow | null) {
@@ -271,7 +281,7 @@ export function ExamMiniMockPage({
   submitRef.current = () => { void submitPaper(); };
 
   async function save(next: Record<string, string>, token: number, tries: number, force = false) {
-    if (resumeRef.current !== "ready" || !activity || !platform?.client || token !== saveToken.current || submitted) return;
+    if (!mounted.current || resumeRef.current !== "ready" || !activity || !platform?.client || token !== saveToken.current || submitted) return;
     if (holdRef.current && !force) return;
     if (timeUp && force) return;
     setSaveState(tries > 0 ? "retrying" : "saving");
@@ -289,7 +299,7 @@ export function ExamMiniMockPage({
     } catch {
       error = true;
     }
-    if (token !== saveToken.current) return;
+    if (!mounted.current || token !== saveToken.current) return;
     const decision = decideTimedPaperSave({
       sent: next,
       questionIds,
@@ -298,7 +308,8 @@ export function ExamMiniMockPage({
       tries
     });
     if (decision.action === "retry") {
-      window.setTimeout(() => { void save(responsesRef.current, token, tries + 1, force); }, 200);
+      if (retryTimer.current != null) window.clearTimeout(retryTimer.current);
+      retryTimer.current = window.setTimeout(() => { void save(responsesRef.current, token, tries + 1, force); }, 200);
       return;
     }
     const row = firstSaveRow(data);
@@ -358,129 +369,136 @@ export function ExamMiniMockPage({
           <li>Marks and comments stay hidden until your teacher releases them.</li>
         </ul>
       </section>
-      {!startedAt && !submitted ? (
-        <button
-          type="button"
-          className="lp-button"
-          disabled={resume !== "ready"}
-          onClick={() => {
-            void (async () => {
-              if (resumeRef.current !== "ready") return;
-              if (!platform?.client) {
-                setNotice("Sign in to start the mini-mock. The server records the start time.");
-                return;
-              }
-              const token = saveToken.current + 1;
-              saveToken.current = token;
-              await save(responsesRef.current, token, 0, true);
-            })();
-          }}
-        >
-          Start Mini-Mock
-        </button>
-      ) : null}
-      {startedAt && !submitted ? (
-        <p className="knowledge-report__timer" role="timer">Time remaining {formatCountdown(remaining)}</p>
-      ) : null}
-      {resume === "loading" ? <p role="status">{SAVED_ANSWERS_LOADING}</p> : <p role="status">{statusLabel(saveState)}</p>}
-      {resume === "failed" ? <p role="alert">{SAVED_ANSWERS_LOAD_FAILED}</p> : null}
-      {notice ? <p>{notice}</p> : null}
-      {conflict ? (
-        <section role="alert" aria-labelledby="mini-mock-conflict">
-          <h3 id="mini-mock-conflict">Updated in another tab</h3>
-          <p>This assessment was updated in another tab. Your typing is still in the boxes. The saved version is shown below and has not replaced it.</p>
-          <ul>
-            {questionIds.map((id) => (
-              <li key={id}>{id}: {conflict.responses[id] || ""}</li>
-            ))}
-          </ul>
-          {!submitted ? (
-            <button type="button" className="lp-button" onClick={useSavedVersion}>Use the saved version</button>
-          ) : null}
-          {!timeUp && !submitted ? (
-            <button
-              type="button"
-              className="lp-button"
-              onClick={() => {
-                holdRef.current = false;
-                const token = saveToken.current + 1;
-                saveToken.current = token;
-                void save(responsesRef.current, token, 0, true);
-              }}
-            >
-              Save the answers in the boxes
-            </button>
-          ) : null}
-        </section>
-      ) : null}
-      {questionGroups.map((group, groupIndex) => {
-        const start = questionGroups.slice(0, groupIndex).reduce((count, item) => count + item.questions.length, 0);
-        return (
-          <section key={group.questions.map((block) => block.id).join("-") || group.scenario}>
-            <h3>Scenario</h3>
-            <p>{group.scenario}</p>
-            {group.questions.map((block, index) => {
-              const id = String(block.content?.questionId || block.id);
-              const marks = block.content?.maxMarks;
-              return (
-                <section key={id}>
-                  <h3>Question {start + index + 1}</h3>
-                  {typeof marks === "number" ? <p>{marks} marks</p> : null}
-                  <label htmlFor={id}>{String(block.content?.prompt || "Your answer")}</label>
-                  <textarea
-                    id={id}
-                    value={responses[id] || ""}
-                    disabled={submitted || expired || timeUp || !startedAt || resume !== "ready"}
-                    onChange={(event) => {
-                      const next = { ...responsesRef.current, [id]: event.target.value };
-                      responsesRef.current = next;
-                      setResponses(next);
-                      if (holdRef.current || submitted || timeUp) return;
-                      const token = saveToken.current + 1;
-                      saveToken.current = token;
-                      setSaveState("saving");
-                      if (saveDebounceRef.current != null) window.clearTimeout(saveDebounceRef.current);
-                      saveDebounceRef.current = window.setTimeout(() => {
-                        saveDebounceRef.current = null;
-                        void save(responsesRef.current, token, 0);
-                      }, 300);
-                    }}
-                  />
-                </section>
-              );
-            })}
-          </section>
-        );
-      })}
-      {startedAt && !submitted && !conflict ? (
-        <button
-          type="button"
-          className="lp-button"
-          onClick={() => { void submitPaper(); }}
-        >
-          Submit Mini-Mock
-        </button>
-      ) : null}
-      {submitted ? (
+      {resume === "loading" ? (
+        <p role="status">{SAVED_ANSWERS_LOADING}</p>
+      ) : (
         <>
-          <h3>Submission confirmed</h3>
-          {results.some((row) => row.awarded != null) ? (
-            <>
-              <p>Total {results.reduce((sum, row) => sum + (row.awarded || 0), 0)} / 20</p>
-              {results.map((row) => (
-                <section key={row.questionKey}>
-                  <h4>{row.questionKey} · {row.awarded ?? "—"} / {row.max}</h4>
-                  <p>{row.text}</p>
-                  {row.feedback ? <p>{row.feedback}</p> : null}
-                </section>
-              ))}
-            </>
-          ) : (
-            <p>Your answers are locked. Marks stay hidden until your teacher releases them.</p>
-          )}
-          <p><a href={createSitePath(root, "exam-practice/reflection/")}>Continue to Immediate Reflection</a></p>
+                {!startedAt && !submitted ? (
+                  <button
+                    type="button"
+                    className="lp-button"
+                    disabled={resume !== "ready"}
+                    onClick={() => {
+                      void (async () => {
+                        if (resumeRef.current !== "ready") return;
+                        if (!platform?.client) {
+                          setNotice("Sign in to start the mini-mock. The server records the start time.");
+                          return;
+                        }
+                        const token = saveToken.current + 1;
+                        saveToken.current = token;
+                        await save(responsesRef.current, token, 0, true);
+                      })();
+                    }}
+                  >
+                    Start Mini-Mock
+                  </button>
+                ) : null}
+                {startedAt && !submitted ? (
+                  <p className="knowledge-report__timer" role="timer">Time remaining {formatCountdown(remaining)}</p>
+                ) : null}
+                <p role="status">{statusLabel(saveState)}</p>
+                {resume === "failed" ? <p role="alert">{SAVED_ANSWERS_LOAD_FAILED}</p> : null}
+                {notice ? <p>{notice}</p> : null}
+                {conflict ? (
+                  <section role="alert" aria-labelledby="mini-mock-conflict">
+                    <h3 id="mini-mock-conflict">Updated in another tab</h3>
+                    <p>This assessment was updated in another tab. Your typing is still in the boxes. The saved version is shown below and has not replaced it.</p>
+                    <ul>
+                      {questionIds.map((id) => (
+                        <li key={id}>{id}: {conflict.responses[id] || ""}</li>
+                      ))}
+                    </ul>
+                    {!submitted ? (
+                      <button type="button" className="lp-button" onClick={useSavedVersion}>Use the saved version</button>
+                    ) : null}
+                    {!timeUp && !submitted ? (
+                      <button
+                        type="button"
+                        className="lp-button"
+                        onClick={() => {
+                          holdRef.current = false;
+                          const token = saveToken.current + 1;
+                          saveToken.current = token;
+                          void save(responsesRef.current, token, 0, true);
+                        }}
+                      >
+                        Save the answers in the boxes
+                      </button>
+                    ) : null}
+                  </section>
+                ) : null}
+                {questionGroups.map((group, groupIndex) => {
+                  const start = questionGroups.slice(0, groupIndex).reduce((count, item) => count + item.questions.length, 0);
+                  return (
+                    <section key={group.questions.map((block) => block.id).join("-") || group.scenario}>
+                      <h3>Scenario</h3>
+                      <p>{group.scenario}</p>
+                      {group.questions.map((block, index) => {
+                        const id = String(block.content?.questionId || block.id);
+                        const marks = block.content?.maxMarks;
+                        return (
+                          <section key={id}>
+                            <h3>Question {start + index + 1}</h3>
+                            {typeof marks === "number" ? <p>{marks} marks</p> : null}
+                            <label htmlFor={id}>{String(block.content?.prompt || "Your answer")}</label>
+                            <textarea
+                              id={id}
+                              value={responses[id] || ""}
+                              disabled={submitted || expired || timeUp || !startedAt || resume !== "ready"}
+                              onChange={(event) => {
+                                const next = { ...responsesRef.current, [id]: event.target.value };
+                                responsesRef.current = next;
+                                setResponses(next);
+                                if (holdRef.current || submitted || timeUp) return;
+                                const token = saveToken.current + 1;
+                                saveToken.current = token;
+                                setSaveState("saving");
+                                if (saveDebounceRef.current != null) window.clearTimeout(saveDebounceRef.current);
+                                saveDebounceRef.current = window.setTimeout(() => {
+                                  saveDebounceRef.current = null;
+                                  void save(responsesRef.current, token, 0);
+                                }, 300);
+                              }}
+                            />
+                          </section>
+                        );
+                      })}
+                    </section>
+                  );
+                })}
+                {startedAt && !submitted && !conflict ? (
+                  <button
+                    type="button"
+                    className="lp-button"
+                    onClick={() => { void submitPaper(); }}
+                  >
+                    Submit Mini-Mock
+                  </button>
+                ) : null}
+                {submitted ? (
+                  <>
+                    <h3>Submission confirmed</h3>
+                    {results.some((row) => row.awarded != null) ? (
+                      <>
+                        <p>Total {results.reduce((sum, row) => sum + (row.awarded || 0), 0)} / 20</p>
+                        {results.map((row) => (
+                          <section key={row.questionKey}>
+                            <h4>{row.questionKey} · {row.awarded ?? "—"} / {row.max}</h4>
+                            <p>{row.text}</p>
+                            {row.feedback ? <p>{row.feedback}</p> : null}
+                          </section>
+                        ))}
+                      </>
+                    ) : (
+                      <p>Your answers are locked. Marks stay hidden until your teacher releases them.</p>
+                    )}
+                    <p><a href={createSitePath(root, "exam-practice/reflection/")}>Continue to Immediate Reflection</a></p>
+                  </>
+                ) : null}
+
         </>
-      ) : null}
+      )}
     </article>
   );
 }
