@@ -1,0 +1,22 @@
+{
+  "name": "unit-3-Cyber-Security-Hub",
+  "kind": "learner-hub",
+  "baseUrl": "https://acerosa.github.io/unit-3-Cyber-Security-Hub/",
+  "repository": "Acerosa/unit-3-Cyber-Security-Hub",
+  "pages": {
+    "expectedSource": "workflow",
+    "basePath": "/unit-3-Cyber-Security-Hub/"
+  },
+  "curriculum": {
+    "hubCode": "unit-3-cyber-security",
+    "courseKey": "ocr-level-3-it",
+    "supabaseUrl": "https://hubwpkrqndorznwzvaer.supabase.co",
+    "expectedPackageVersionEnv": "EXPECTED_CURRICULUM_VERSION",
+    "minActivityCount": 50,
+    "requirePublishedSource": true
+  },
+  "retries": {
+    "attempts": 8,
+    "delayMs": 15000
+  }
+}
