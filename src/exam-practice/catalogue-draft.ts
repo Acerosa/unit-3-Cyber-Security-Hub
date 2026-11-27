@@ -69,6 +69,18 @@ type SaveQueue = {
 
 const saveQueues = new Map<string, SaveQueue>();
 
+/** Drop queued catalogue saves so one page cannot leave work for the next. */
+export function resetCatalogueSaveQueues(): void {
+  for (const queue of saveQueues.values()) {
+    if (queue.latest) {
+      queue.latest.resolve("superseded");
+      queue.latest = null;
+    }
+    queue.inflight = false;
+  }
+  saveQueues.clear();
+}
+
 function responseRecord(value: unknown): Record<string, unknown> | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const row = value as { state?: { responses?: unknown }; responses?: unknown };

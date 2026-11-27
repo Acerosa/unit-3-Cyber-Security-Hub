@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { confirmCatalogueResponses } from "../exam-practice/catalogue-draft";
+import { confirmCatalogueResponses, resetCatalogueSaveQueues } from "../exam-practice/catalogue-draft";
 import { SAVED_ANSWERS_LOAD_FAILED, SAVED_ANSWERS_LOADING } from "../exam-practice/resume-gate";
 import { decideTimedPaperSave } from "../exam-practice/timed-paper-save";
 import { miniMockGroups } from "../exam-practice/mini-mock-paper";
@@ -30,7 +30,11 @@ import { ExamMiniMockPage } from "./ExamMiniMockPage";
 import { ExamPracticePage } from "./ExamPracticePage";
 import { ExamReflectionPage } from "./ExamReflectionPage";
 
-afterEach(() => cleanup());
+afterEach(() => {
+  cleanup();
+  resetCatalogueSaveQueues();
+  vi.useRealTimers();
+});
 
 const START = "2026-11-09T15:00:00.000Z";
 
@@ -421,8 +425,8 @@ describe("exam practice pages", () => {
       }
     };
     render(<ExamMiniMockPage root="." released platform={platform as never} />);
-    const box = await screen.findByLabelText(/Explain which cyber security aim has failed/i);
-    expect((box as HTMLTextAreaElement).value).toBe("BETA newer confirmed answer");
+    // Wait for resume hydrate: the textarea mounts empty while get_activity_state is in flight.
+    const box = await screen.findByDisplayValue("BETA newer confirmed answer");
     fireEvent.change(box, { target: { value: "ALPHA stale overwrite" } });
     expect(screen.getByRole("status").textContent).toBe("Saving");
     await waitFor(() => expect(screen.getByRole("alert")).toBeTruthy());
